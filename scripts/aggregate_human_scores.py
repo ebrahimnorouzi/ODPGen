@@ -15,7 +15,12 @@ DIMENSIONS = ["correctness_1_to_5", "completeness_1_to_5", "clarity_reusability_
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--ratings", nargs="+", required=True, help="Completed rating packet files")
+    parser.add_argument(
+        "--ratings",
+        nargs="+",
+        default=None,
+        help="Completed rating packet files (defaults to results/human_eval_packet.csv if present)",
+    )
     parser.add_argument("--mapping", default="results/human_eval_mapping.csv", help="Anonymized ID mapping CSV")
     parser.add_argument("--results-dir", default="results", help="Output directory")
     parser.add_argument(
@@ -141,12 +146,22 @@ def main() -> int:
     results_dir = Path(args.results_dir)
     results_dir.mkdir(parents=True, exist_ok=True)
 
+    if args.ratings:
+        rating_paths = [Path(p) for p in args.ratings]
+    else:
+        default_packet = results_dir / "human_eval_packet.csv"
+        if default_packet.exists():
+            rating_paths = [default_packet]
+            print(f"No --ratings provided; defaulting to {default_packet}")
+        else:
+            raise SystemExit("No --ratings provided and default results/human_eval_packet.csv not found.")
+
     mapping = load_mapping(Path(args.mapping))
     if not mapping:
         raise SystemExit("Mapping file is empty or missing anonymized_output_id rows.")
 
     score_rows: List[Dict[str, object]] = []
-    for rating_file in [Path(p) for p in args.ratings]:
+    for rating_file in rating_paths:
         table = read_table(rating_file)
         fallback_rater = rater_from_path(rating_file)
         for row in table:
@@ -168,7 +183,30 @@ def main() -> int:
             )
 
     if not score_rows:
-        raise SystemExit("No valid scored rows found in provided rating files.")
+        print("No valid scored rows found in provided rating files; writing empty summary artifacts.")
+        summary_rows = [
+            {
+                "evaluator_type": args.evaluator_type,
+                "model": "",
+                "config": "",
+                "n_scored_rows": 0,
+                "n_unique_outputs": 0,
+                "n_unique_evaluators": 0,
+                **{f"{dim}_mean": "" for dim in DIMENSIONS},
+                **{f"{dim}_median": "" for dim in DIMENSIONS},
+            }
+        ]
+        agreement_stats = {
+            dim: {
+                "comparable_outputs": 0,
+                "exact_agreement_pct": "",
+                "avg_rating_stddev": "",
+                "krippendorff_alpha_placeholder": "TODO",
+            }
+            for dim in DIMENSIONS
+        }
+        _write_outputs(results_dir, args.evaluator_type, score_rows, summary_rows, agreement_stats)
+        return 0
 
     grouped: Dict[Tuple[str, str], List[Dict[str, object]]] = defaultdict(list)
     for row in score_rows:
@@ -192,6 +230,17 @@ def main() -> int:
 
     agreement_stats = compute_agreement(score_rows)
 
+    _write_outputs(results_dir, args.evaluator_type, score_rows, summary_rows, agreement_stats)
+    return 0
+
+
+def _write_outputs(
+    results_dir: Path,
+    evaluator_type: str,
+    score_rows: List[Dict[str, object]],
+    summary_rows: List[Dict[str, object]],
+    agreement_stats: Dict[str, Dict[str, object]],
+) -> None:
     summary_path = results_dir / "human_eval_summary.csv"
     with summary_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(summary_rows[0].keys()))
@@ -211,13 +260,13 @@ def main() -> int:
         writer = csv.DictWriter(handle, fieldnames=fields)
         writer.writeheader()
         for dim in DIMENSIONS:
-            writer.writerow({"evaluator_type": args.evaluator_type, "dimension": dim, **agreement_stats[dim]})
+            writer.writerow({"evaluator_type": evaluator_type, "dimension": dim, **agreement_stats[dim]})
 
     report_path = results_dir / "human_eval_summary.md"
     lines = [
         "# Human/LLM Evaluation Summary",
         "",
-        f"Evaluator type: **{args.evaluator_type}**",
+        f"Evaluator type: **{evaluator_type}**",
         f"Scored rows: **{len(score_rows)}**",
         f"Unique outputs: **{len({str(r['anonymized_output_id']) for r in score_rows})}**",
         f"Unique evaluators: **{len({str(r['evaluator_id']) for r in score_rows})}**",
@@ -259,7 +308,6 @@ def main() -> int:
     print(f"Wrote summary CSV: {summary_path}")
     print(f"Wrote agreement CSV: {agreement_path}")
     print(f"Wrote summary report: {report_path}")
-    return 0
 
 
 if __name__ == "__main__":
