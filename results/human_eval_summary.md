@@ -1,11 +1,24 @@
-# Human Evaluation Summary
+# Human/LLM Evaluation Summary
 
-| model | config | items | correctness | completeness | clarity |
-|---|---:|---:|---:|---:|---:|
-| mock-odp-generator | cq-only | 3 | NA | NA | NA |
-| mock-odp-generator | scenario-cq | 3 | NA | NA | NA |
-| mock-odp-generator | scenario-cq-constraints | 3 | NA | NA | NA |
-| mock-odp-generator | scenario-cq-reasoning | 3 | NA | NA | NA |
-| mock-odp-generator | scenario-only | 3 | NA | NA | NA |
+Evaluator type: **mixed**
+Scored rows: **15**
+Unique outputs: **15**
+Unique evaluators: **1**
 
-Inter-rater agreement: not computed in this bootstrap run.
+## Mean / Median by Model + Config
+
+| Model | Config | Correctness (mean/median) | Completeness (mean/median) | Clarity-Reusability (mean/median) |
+|---|---|---:|---:|---:|
+| mock-odp-generator | cq-only | / | / | / |
+| mock-odp-generator | scenario-cq | / | / | / |
+| mock-odp-generator | scenario-cq-constraints | / | / | / |
+| mock-odp-generator | scenario-cq-reasoning | / | / | / |
+| mock-odp-generator | scenario-only | / | / | / |
+
+## Inter-rater Agreement (available stats)
+
+| Dimension | Comparable Outputs (>=2 evaluators) | Exact Agreement % | Avg Rating StdDev | Krippendorff Alpha |
+|---|---:|---:|---:|---|
+| correctness_1_to_5 | 0 |  |  | TODO |
+| completeness_1_to_5 | 0 |  |  | TODO |
+| clarity_reusability_1_to_5 | 0 |  |  | TODO |

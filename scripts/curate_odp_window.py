@@ -5,9 +5,17 @@ from datetime import date
 from pathlib import Path
 
 
-def parse_iso(d: str) -> date:
-    y, m, day = [int(x) for x in d.split("-")]
-    return date(y, m, day)
+def parse_iso(d: str | None) -> date | None:
+    if d is None:
+        return None
+    text = d.strip()
+    if not text:
+        return None
+    try:
+        y, m, day = [int(x) for x in text.split("-")]
+        return date(y, m, day)
+    except (TypeError, ValueError):
+        return None
 
 
 def main() -> None:
@@ -18,10 +26,20 @@ def main() -> None:
     args = parser.parse_args()
 
     threshold = parse_iso(args.after)
+    if threshold is None:
+        raise SystemExit(f"Invalid --after date: {args.after}")
     with args.catalog.open(encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
 
-    selected = [r for r in rows if parse_iso(r["publication_date"]) > threshold]
+    selected = []
+    skipped_missing_date = 0
+    for row in rows:
+        publication_date = parse_iso(row.get("publication_date"))
+        if publication_date is None:
+            skipped_missing_date += 1
+            continue
+        if publication_date > threshold:
+            selected.append(row)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=rows[0].keys())
@@ -33,6 +51,8 @@ def main() -> None:
     print(f"Selected: {len(selected)}")
     print(f"With scenarios: {with_scenarios}")
     print(f"With CQs: {with_cq}")
+    if skipped_missing_date:
+        print(f"Skipped rows with missing/invalid publication_date: {skipped_missing_date}")
 
 
 if __name__ == "__main__":
