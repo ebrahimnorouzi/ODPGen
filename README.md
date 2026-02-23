@@ -51,3 +51,22 @@ python3 scripts/aggregate_human_scores.py
 ```
 
 Note: the default generator is deterministic, so unchanged inputs produce stable outputs.
+
+## Using open-source Hugging Face models (e.g., Llama)
+
+You can switch from the built-in mock generator to open-source models hosted on Hugging Face:
+
+```bash
+pip install transformers torch
+python3 scripts/run_generation.py \
+  --backend huggingface \
+  --model meta-llama/Llama-3.2-3B-Instruct \
+  --config scenario-cq \
+  --temperature 0.2 \
+  --max-new-tokens 900
+```
+
+Notes:
+- `--backend mock` (default) keeps the deterministic local mock output.
+- `--backend huggingface` calls `transformers` text-generation pipeline with your selected model.
+- Choose a model that fits your local GPU/CPU memory budget.
