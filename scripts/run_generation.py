@@ -6,6 +6,26 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+
+def generate_with_huggingface(prompt: str, model: str, temperature: float, max_new_tokens: int) -> str:
+    try:
+        from transformers import pipeline
+    except ImportError as exc:
+        raise RuntimeError(
+            "Hugging Face backend requires the 'transformers' package. Install it with "
+            "`pip install transformers torch` and re-run generation."
+        ) from exc
+
+    generator = pipeline("text-generation", model=model)
+    output = generator(
+        prompt,
+        max_new_tokens=max_new_tokens,
+        temperature=max(temperature, 1e-5),
+        do_sample=temperature > 0,
+        return_full_text=False,
+    )
+    return output[0]["generated_text"].strip()
+
 CONFIG_TEMPLATE = {
     "scenario-only": "scenario_only.txt",
     "cq-only": "cq_only.txt",
@@ -59,9 +79,16 @@ def main() -> None:
     parser.add_argument("--prompts-dir", default="prompts", type=Path)
     parser.add_argument("--outputs-dir", default="outputs", type=Path)
     parser.add_argument("--model", default="mock-odp-generator")
+    parser.add_argument(
+        "--backend",
+        choices=["mock", "huggingface"],
+        default="mock",
+        help="Generation backend. Use 'huggingface' for open-source LLMs from Hugging Face Hub.",
+    )
     parser.add_argument("--config", choices=list(CONFIG_TEMPLATE.keys()) + ["all"], default="all")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--max-new-tokens", type=int, default=768)
     args = parser.parse_args()
 
     scenarios = json.loads(args.data.read_text(encoding="utf-8"))
@@ -80,17 +107,30 @@ def main() -> None:
                 (output_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
                 continue
 
-            response = mock_ontology(scenario, config)
+            if args.backend == "mock":
+                response = mock_ontology(scenario, config)
+                mock_mode = True
+            else:
+                response = generate_with_huggingface(
+                    prompt=prompt,
+                    model=args.model,
+                    temperature=args.temperature,
+                    max_new_tokens=args.max_new_tokens,
+                )
+                mock_mode = False
+
             response_hash = hashlib.sha256(response.encode("utf-8")).hexdigest()[:12]
             metadata = {
                 "model": args.model,
+                "backend": args.backend,
                 "config": config,
                 "scenario_id": scenario["scenario_id"],
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "temperature": args.temperature,
+                "max_new_tokens": args.max_new_tokens,
                 "prompt_hash": prompt_hash,
                 "response_hash": response_hash,
-                "mock_mode": True,
+                "mock_mode": mock_mode,
             }
             (output_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
             (output_dir / "raw_response.txt").write_text(response, encoding="utf-8")
