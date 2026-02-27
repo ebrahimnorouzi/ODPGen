@@ -1,0 +1,71 @@
+- What is the average pH, temperature, and turbidity at a given time?
+- What is the maximum, minimum, and average value of a parameter over a given time interval?
+
+Ontology Design Pattern (ODP):
+
+```turtle
+@prefix : <http://example.org/monitoring/>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix time: <http://www.w3.org/2006/time#>.
+
+# Classes
+:Station a owl:Class.
+:Measurement a owl:Class.
+:Parameter a owl:Class.
+
+:Station rdfs:subClassOf [ a owl:Restriction ;
+                            owl:onProperty :locatedAt ;
+                            owl:hasValue?location. ].
+
+:Measurement rdf:type owl:ObjectProperty.
+:Measurement rdfs:domain :Station.
+:Measurement rdfs:range :MeasurementInstance.
+
+:MeasurementInstance rdf:type owl:NamedIndividual.
+:MeasurementInstance rdf:type owl:Class.
+
+:Parameter rdfs:subClassOf owl:Thing.
+
+:Parameter rdf:type owl:ObjectProperty.
+:Parameter rdfs:domain :MeasurementInstance.
+:Parameter rdfs:range owl:Thing.
+
+:pH a :Parameter.
+:temperature a :Parameter.
+:turbidity a :Parameter.
+
+:MeasurementInstance rdf:type owl:DatatypeProperty.
+:MeasurementInstance :hasTimestamp rdf:type xsd:dateTime.
+:MeasurementInstance :hasUnit rdf:type xsd:string.
+
+:hasTimestamp rdfs:domain :MeasurementInstance.
+:hasTimestamp rdfs:range xsd:dateTime.
+
+:hasUnit rdfs:domain :MeasurementInstance.
+:hasUnit rdfs:range xsd:string.
+
+# Requirement-to-axiom mapping:
+1. Station: :Station
+2. Measurement: :Measurement
+3. Parameter: :Parameter
+4. hasTimestamp: :hasTimestamp
+5. hasUnit: :hasUnit
+
+# CQ-to-axiom mapping:
+CQ1: :Measurement :producedBy?station.
+CQ2: :Measurement :observes?parameter.
+CQ3: :MeasurementInstance :hasTimestamp?timestamp.
+CQ3: :MeasurementInstance :hasUnit?unit.
+CQ4:?average rdf:type av:Average ;
+                      av:averageOf (?measurement1 :hasValue?pH1) (?measurement2 :hasValue?pH2)... ;
+                      av:averageOf (?measurement1 :hasValue?temperature1) (?measurement2 :hasValue?temperature2)... ;
+                      av:averageOf (?measurement1 :hasValue?turbidity1) (?measurement2 :hasValue?turbidity2)....
+CQ5:?max rdf:type av:Max ;
+         av:maxValue?maxValue.
+CQ5:?min rdf:type av:Min ;
+         av:minValue?minValue.
+CQ5:?avg rdf:type av:Average ;
+         av:averageOf (?measurement1 :hasValue

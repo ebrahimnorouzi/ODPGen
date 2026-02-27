@@ -1,0 +1,83 @@
+- Which cases are related to a specific judge?
+
+Ontology Design Pattern (ODP):
+
+```turtle
+@prefix : <http://example.org/legal_case#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+
+# Classes
+:Participant a owl:Class.
+:Judge a owl:Class.
+:Plaintiff a owl:Class.
+:Defendant a owl:Class.
+:Case a owl:Class.
+:Participation a owl:Class.
+:CaseParticipation a owl:Class.
+
+# Object properties
+:hasRole rdf:Property ;
+    rdfs:domain :Participant ;
+    rdfs:range :Role.
+:hasRoleValue rdf:Property ;
+    rdfs:domain :Role ;
+    rdfs:range xsd:string.
+:participatesIn rdf:Property ;
+    rdfs:domain :Participation ;
+    rdfs:range :Case.
+:hasStartTime rdf:Property ;
+    rdfs:domain :Participation ;
+    rdfs:range xsd:dateTime.
+:hasEndTime rdf:Property ;
+    rdfs:domain :Participation ;
+    rdfs:range xsd:dateTime.
+
+# Data properties
+:roleValue owl:DatatypeProperty ;
+    rdfs:domain :Role ;
+    rdfs:range xsd:string.
+:startTime owl:DatatypeProperty ;
+    rdfs:domain :Participation ;
+    rdfs:range xsd:dateTime.
+:endTime owl:DatatypeProperty ;
+    rdfs:domain :Participation ;
+    rdfs:range xsd:dateTime.
+
+# Individuals
+:Judge1 a :Judge.
+:Plaintiff1 a :Plaintiff.
+:Defendant1 a :Defendant.
+:Case1 a :Case.
+:Participation1 a :Participation ;
+    :hasRole :Plaintiff ;
+    :hasRoleValue "Plaintiff" ;
+    :participatesIn :Case1 ;
+    :hasStartTime "2022-01-01T00:00:00Z" ;
+    :hasEndTime "2022-12-31T23:59:59Z".
+
+# Axioms
+:Participant owl:disjointWith :Case.
+:Participant owl:disjointWith :Judge.
+:Participant owl:disjointWith :Plaintiff.
+:Participant owl:disjointWith :Defendant.
+
+:Case owl:disjointWith :Judge.
+:Case owl:disjointWith :Plaintiff.
+:Case owl:disjointWith :Defendant.
+
+:Participation owl:disjointWith :CaseParticipation.
+
+:Participation1 rdf:type :CaseParticipation.
+
+:Judge rdfs:subClassOf [
+    rdf:type owl:Class ;
+    rdf:value :Participant ;
+    owl:onProperty :hasRole ;
+    owl:someValuesFrom :Judge.
+].
+
+:Plaintiff rdfs:subClassOf [
+    rdf:type

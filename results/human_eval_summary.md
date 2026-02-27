@@ -1,19 +1,15 @@
 # Human/LLM Evaluation Summary
 
 Evaluator type: **mixed**
-Scored rows: **15**
-Unique outputs: **15**
+Scored rows: **1**
+Unique outputs: **1**
 Unique evaluators: **1**
 
 ## Mean / Median by Model + Config
 
 | Model | Config | Correctness (mean/median) | Completeness (mean/median) | Clarity-Reusability (mean/median) |
 |---|---|---:|---:|---:|
-| mock-odp-generator | cq-only | / | / | / |
-| mock-odp-generator | scenario-cq | / | / | / |
-| mock-odp-generator | scenario-cq-constraints | / | / | / |
-| mock-odp-generator | scenario-cq-reasoning | / | / | / |
-| mock-odp-generator | scenario-only | / | / | / |
+| mistralai | Mistral-7B-Instruct-v0.3 | / | / | / |
 
 ## Inter-rater Agreement (available stats)
 

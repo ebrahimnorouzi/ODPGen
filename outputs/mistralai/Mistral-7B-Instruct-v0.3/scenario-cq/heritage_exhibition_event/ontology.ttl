@@ -1,0 +1,75 @@
+- Which artifacts are displayed in a specific room during an exhibition?
+- Which exhibitions are curated by a specific curator?
+
+Ontology Design Pattern (ODP):
+
+```turtle
+@prefix : <http://example.org/museum#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+
+# Classes
+:Artifact rdf:type owl:Class.
+:Room rdf:type owl:Class.
+:Exhibition rdf:type owl:Class.
+:Curator rdf:type owl:Class.
+
+# Object Properties
+:hasArtifact rdf:type owl:ObjectProperty ;
+  rdfs:domain :Exhibition ;
+  rdfs:range :Artifact.
+
+:curatedBy rdf:type owl:ObjectProperty ;
+  rdfs:domain :Exhibition ;
+  rdfs:range :Curator.
+
+:isInRoom rdf:type owl:ObjectProperty ;
+  rdfs:domain :Exhibition ;
+  rdfs:range :Room.
+
+# Data Properties
+:startDate rdf:type owl:DatatypeProperty ;
+  rdfs:domain :Exhibition ;
+  rdfs:range xsd:date.
+
+:endDate rdf:type owl:DatatypeProperty ;
+  rdfs:domain :Exhibition ;
+  rdfs:range xsd:date.
+
+# Axioms
+:Artifact owl:disjointWith :Exhibition.
+:Room owl:disjointWith :Exhibition.
+:Curator owl:disjointWith :Exhibition.
+
+# Requirement-to-axiom mapping:
+1. Semantic faithfulness to the scenario
+2. Support for all CQs
+3. Avoidance of unsupported additions
+
+# CQ-to-axiom mapping:
+CQ1: :hasArtifact
+CQ2: :curatedBy
+CQ3: :startDate, :endDate
+CQ4: :hasArtifact, :isInRoom
+CQ5: :curatedBy
+
+# List of intentionally excluded concepts:
+- No explicit exclusions were made in this ODP.
+```
+
+1) Requirement-to-axiom mapping:
+- Semantic faithfulness to the scenario: All classes, object properties, data properties, and axioms are defined based on the provided scenario.
+- Support for all CQs: Each competency question is addressed by a corresponding object property or data property.
+- Avoidance of unsupported additions: No additional concepts or relationships were added that are not explicitly mentioned in the scenario.
+
+2) CQ-to-axiom mapping:
+- CQ1: :hasArtifact
+- CQ2: :curatedBy
+- CQ3: :startDate, :endDate
+- CQ4: :hasArtifact, :isInRoom
+- CQ5: :curatedBy
+
+3) List of intentionally excluded concepts:
+- No explicit exclusions were made in this ODP.
