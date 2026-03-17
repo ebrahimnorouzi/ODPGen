@@ -99,24 +99,85 @@ def extract_turtle(response: str) -> str:
 
 def maybe_fix_common_turtle_issues(ttl: str) -> str:
     """
-    Conservative cleanup for a very common model error:
-    predicates written without the ':' prefix even though the ontology
-    defines ':' as the default namespace only for qnames like :has_method.
+    Conservative cleanup for common model errors in generated Turtle.
 
-    This only fixes predicate positions after a subject line continuation:
-        ; has_method :Method1 .
-    ->  ; :has_method :Method1 .
+    Fixes applied (in order):
 
-    It deliberately avoids broad rewriting.
+    1. Spurious leading colon on standard prefixes:
+           :rdfs:label  ->  rdfs:label
+           :owl:Class   ->  owl:Class
+           :rdf:type    ->  rdf:type
+           :xsd:string  ->  xsd:string
+       This is a systematic bug produced by Llama 2 70B.
+
+    2. Standalone ';' lines between statements (Llama 2 section headings):
+           . <blank>
+           ; :Scenario-requirement-to-axiom mapping
+        -> # :Scenario-requirement-to-axiom mapping
+       A ';' predicate separator is only valid *within* a subject block.
+       Between statements (after '.') it is invalid Turtle — convert to comments.
+
+    3. Missing colon on custom predicates after ';':
+           ; has_method :Method1 .
+        -> ; :has_method :Method1 .
+       Only applied to tokens that do NOT start with a known standard prefix.
     """
+    # Fix 1: :rdfs: / :owl: / :rdf: / :xsd: / :skos: / :dc: spurious leading colon
+    _STANDARD = ("rdf", "rdfs", "owl", "xsd", "skos", "dc", "dcterms", "sh", "prov")
+    ttl = re.sub(
+        r":(rdf|rdfs|owl|xsd|skos|dc|dcterms|sh|prov):",
+        r"\1:",
+        ttl,
+    )
+
+    # Fix 2: standalone ';' section-heading lines between Turtle statements
+    lines = ttl.splitlines()
+    fixed_lines = []
+    between_statements = True  # True at start-of-file and after every '.'
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            fixed_lines.append(line)
+            continue
+
+        if stripped.startswith(";") and between_statements:
+            # Section heading written as '; text' between subjects → comment
+            fixed_lines.append("# " + stripped[1:].strip())
+            continue
+
+        fixed_lines.append(line)
+
+        # Track whether we're between top-level statements
+        if stripped.endswith("."):
+            between_statements = True
+        elif stripped.endswith(";") or stripped.endswith(","):
+            between_statements = False
+
+    ttl = "\n".join(fixed_lines)
+
+    # Fix 3: custom predicate after ';' missing the ':' prefix
     ttl = re.sub(
         r"(^\s*[;]\s*)([A-Za-z_][A-Za-z0-9_-]*)(\s+)",
         lambda m: f"{m.group(1)}:{m.group(2)}{m.group(3)}"
-        if not m.group(2).startswith(("rdf", "rdfs", "owl", "xsd"))
+        if not m.group(2).startswith(_STANDARD)
         else m.group(0),
         ttl,
         flags=re.MULTILINE,
     )
+
+    # Fix 4: truncated output — if the document ends without a closing '.', strip the
+    # incomplete trailing statement so rdflib does not crash at end-of-buffer.
+    lines = ttl.splitlines()
+    last_dot = -1
+    for i in range(len(lines) - 1, -1, -1):
+        stripped = lines[i].strip()
+        if stripped.endswith(".") and not stripped.startswith("#"):
+            last_dot = i
+            break
+    if last_dot >= 0 and last_dot < len(lines) - 1:
+        ttl = "\n".join(lines[: last_dot + 1])
+
     return ttl
 
 
@@ -419,7 +480,8 @@ def main() -> None:
                     )
 
                 ontology_ttl = extract_turtle(response)
-                if args.fix_common_turtle_issues:
+                # Always fix for HuggingFace (systematic prefix bugs); flag enables it for OpenAI too
+                if args.fix_common_turtle_issues or args.backend == "huggingface":
                     ontology_ttl = maybe_fix_common_turtle_issues(ontology_ttl)
 
                 response_hash = hashlib.sha256(response.encode("utf-8")).hexdigest()[:12]
