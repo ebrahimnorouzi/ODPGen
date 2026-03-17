@@ -1,0 +1,199 @@
+@prefix : <https://example.org/reconstructed/temporalindirection.owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dul: <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#> .
+
+<https://example.org/reconstructed/temporalindirection.owl> a owl:Ontology ;
+  rdfs:label "Temporal Indirection Ontology Design Pattern (reconstructed)"@en ;
+  dcterms:source <https://ceur-ws.org/Vol-4093/paper8.pdf> ;
+  rdfs:comment "Best-effort reconstruction of the Temporal Indirection ontology from the WOP 2025 paper 'An Ontology Design Pattern for Representing Temporal Indirection'. The GitHub repository cited by the paper was unavailable at the time of reconstruction, so this file should be treated as a faithful reconstruction rather than a verified original release."@en ;
+  owl:versionInfo "reconstructed-from-paper-2026-03-17" .
+
+### Classes
+
+:PersistentReference a owl:Class ;
+  rdfs:label "Persistent Reference"@en ;
+  rdfs:comment "A stable identifier whose semantics remain constant while the actual referent may change over time."@en ;
+  rdfs:subClassOf dul:InformationObject ,
+    [ a owl:Restriction ; owl:onProperty :hasTemporalBinding ; owl:someValuesFrom :TemporalBinding ] ,
+    [ a owl:Restriction ; owl:onProperty :hasResolutionContext ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass owl:Thing ] .
+
+:ReferentEntity a owl:Class ;
+  rdfs:label "Referent Entity"@en ;
+  rdfs:comment "The actual entity denoted by a persistent reference at a given time."@en ;
+  rdfs:subClassOf dul:Entity .
+
+:TemporalBinding a owl:Class ;
+  rdfs:label "Temporal Binding"@en ;
+  rdfs:comment "A reified binding between a persistent reference and a referent entity for a specific valid-time interval."@en ;
+  rdfs:subClassOf dul:Situation ,
+    [ a owl:Restriction ; owl:onProperty :bindsTo ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :ReferentEntity ] ,
+    [ a owl:Restriction ; owl:onProperty :hasValidTime ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :TemporalInterval ] ,
+    [ a owl:Restriction ; owl:onProperty :hasTransitionIn ; owl:someValuesFrom :TransitionEvent ] ,
+    [ a owl:Restriction ; owl:onProperty :hasTransitionOut ; owl:someValuesFrom :TransitionEvent ] .
+
+:TransitionEvent a owl:Class ;
+  rdfs:label "Transition Event"@en ;
+  rdfs:comment "An event that ends one binding and starts another."@en ;
+  rdfs:subClassOf dul:Event ,
+    [ a owl:Restriction ; owl:onProperty :changesFrom ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :ReferentEntity ] ,
+    [ a owl:Restriction ; owl:onProperty :changesTo ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :ReferentEntity ] ,
+    [ a owl:Restriction ; owl:onProperty :triggeredBy ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :TransitionRule ] .
+
+:TransitionRule a owl:Class ;
+  rdfs:label "Transition Rule"@en ;
+  rdfs:comment "A rule that governs when and how referent transitions occur."@en ;
+  rdfs:subClassOf dul:Norm .
+
+:ResolutionContext a owl:Class ;
+  rdfs:label "Resolution Context"@en ;
+  rdfs:comment "The interpretive context that specifies which conventions and rules apply when resolving a persistent reference."@en ;
+  rdfs:subClassOf dul:Description .
+
+:Convention a owl:Class ;
+  rdfs:label "Convention"@en ;
+  rdfs:comment "A domain-specific convention, policy, or standard used by a resolution context."@en ;
+  rdfs:subClassOf dul:Description .
+
+:TemporalInterval a owl:Class ;
+  rdfs:label "Temporal Interval"@en ;
+  rdfs:comment "A custom interval class with explicit start and end timestamps."@en ;
+  rdfs:subClassOf dul:TimeInterval ,
+    [ a owl:Restriction ; owl:onProperty :hasStartTime ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onDataRange xsd:dateTime ] ,
+    [ a owl:Restriction ; owl:onProperty :hasEndTime ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onDataRange xsd:dateTime ] .
+
+:Observation a owl:Class ;
+  rdfs:label "Observation"@en ;
+  rdfs:comment "An observation linked both to the stable reference and to the specific referent active at observation time."@en ;
+  rdfs:subClassOf owl:Thing .
+
+:ObservableProperty a owl:Class ;
+  rdfs:label "Observable Property"@en ;
+  rdfs:comment "A property whose observed value is recorded in an observation."@en ;
+  rdfs:subClassOf dul:Quality .
+
+:Result a owl:Class ;
+  rdfs:label "Result"@en ;
+  rdfs:comment "The result value or outcome produced by an observation."@en ;
+  rdfs:subClassOf owl:Thing .
+
+### Object properties
+
+:hasTemporalBinding a owl:ObjectProperty ;
+  rdfs:label "has temporal binding"@en ;
+  rdfs:domain :PersistentReference ;
+  rdfs:range :TemporalBinding .
+
+:bindsTo a owl:ObjectProperty ;
+  rdfs:label "binds to"@en ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :ReferentEntity .
+
+:hasValidTime a owl:ObjectProperty , owl:FunctionalProperty ;
+  rdfs:label "has valid time"@en ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :TemporalInterval .
+
+:hasTransition a owl:ObjectProperty ;
+  rdfs:label "has transition"@en ;
+  rdfs:comment "Generic super-property for transition relations associated with a temporal binding or persistent reference."@en .
+
+:hasTransitionIn a owl:ObjectProperty ;
+  rdfs:label "has transition in"@en ;
+  rdfs:subPropertyOf :hasTransition ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :TransitionEvent .
+
+:hasTransitionOut a owl:ObjectProperty ;
+  rdfs:label "has transition out"@en ;
+  rdfs:subPropertyOf :hasTransition ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :TransitionEvent .
+
+:changes a owl:ObjectProperty ;
+  rdfs:label "changes"@en ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range :ReferentEntity ;
+  rdfs:comment "Generic super-property for referent changes caused by a transition event."@en .
+
+:changesFrom a owl:ObjectProperty , owl:FunctionalProperty ;
+  rdfs:label "changes from"@en ;
+  rdfs:subPropertyOf :changes ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range :ReferentEntity .
+
+:changesTo a owl:ObjectProperty , owl:FunctionalProperty ;
+  rdfs:label "changes to"@en ;
+  rdfs:subPropertyOf :changes ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range :ReferentEntity .
+
+:hasResolutionContext a owl:ObjectProperty , owl:FunctionalProperty ;
+  rdfs:label "has resolution context"@en ;
+  rdfs:domain :PersistentReference ;
+  rdfs:range :ResolutionContext .
+
+:defines a owl:ObjectProperty ;
+  rdfs:label "defines"@en ;
+  rdfs:domain :ResolutionContext ;
+  rdfs:range :TransitionRule .
+
+:follows a owl:ObjectProperty ;
+  rdfs:label "follows"@en ;
+  rdfs:domain :ResolutionContext ;
+  rdfs:range :Convention .
+
+:triggeredBy a owl:ObjectProperty , owl:FunctionalProperty ;
+  rdfs:label "triggered by"@en ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range :TransitionRule .
+
+:observedEntity a owl:ObjectProperty ;
+  rdfs:label "observed entity"@en ;
+  rdfs:domain :Observation ;
+  rdfs:range :PersistentReference .
+
+:observedReferentEntity a owl:ObjectProperty ;
+  rdfs:label "observed referent entity"@en ;
+  rdfs:domain :Observation ;
+  rdfs:range :ReferentEntity .
+
+:observedProperty a owl:ObjectProperty ;
+  rdfs:label "observed property"@en ;
+  rdfs:domain :Observation ;
+  rdfs:range :ObservableProperty .
+
+:hasResult a owl:ObjectProperty ;
+  rdfs:label "has result"@en ;
+  rdfs:domain :Observation ;
+  rdfs:range :Result .
+
+### Data properties
+
+:hasStartTime a owl:DatatypeProperty , owl:FunctionalProperty ;
+  rdfs:label "has start time"@en ;
+  rdfs:domain :TemporalInterval ;
+  rdfs:range xsd:dateTime .
+
+:hasEndTime a owl:DatatypeProperty , owl:FunctionalProperty ;
+  rdfs:label "has end time"@en ;
+  rdfs:domain :TemporalInterval ;
+  rdfs:range xsd:dateTime .
+
+:hasTimestamp a owl:DatatypeProperty , owl:FunctionalProperty ;
+  rdfs:label "has timestamp"@en ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range xsd:dateTime .
+
+:observationTime a owl:DatatypeProperty , owl:FunctionalProperty ;
+  rdfs:label "observation time"@en ;
+  rdfs:domain :Observation ;
+  rdfs:range xsd:dateTime .
+
+:hasUniqueID a owl:DatatypeProperty ;
+  rdfs:label "has unique ID"@en ;
+  rdfs:range xsd:string ;
+  rdfs:comment "Identifier string shown in the figures for both persistent references and referent entities."@en .

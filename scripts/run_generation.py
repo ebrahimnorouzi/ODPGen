@@ -2,29 +2,144 @@
 import argparse
 import hashlib
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+
+# ---------------------------------------------------------------------------
+# Chat-model detection helpers
+# ---------------------------------------------------------------------------
+
+_CHAT_KEYWORDS = ("chat", "instruct", "it", "-rl", "assistant", "tulu", "vicuna", "alpaca")
+
+def _is_chat_model(model_name: str) -> bool:
+    """Heuristic: model names containing chat/instruct keywords use a chat template."""
+    lower = model_name.lower()
+    return any(kw in lower for kw in _CHAT_KEYWORDS)
 
 
-def generate_with_huggingface(prompt: str, model: str, temperature: float, max_new_tokens: int) -> str:
+# ---------------------------------------------------------------------------
+# Backends
+# ---------------------------------------------------------------------------
+
+def generate_with_huggingface(
+    prompt: str,
+    model: str,
+    temperature: float,
+    max_new_tokens: int,
+    hf_token: str | None = None,
+    quantize: str = "none",
+) -> str:
     try:
-        from transformers import pipeline
+        from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, pipeline
+        import torch
     except ImportError as exc:
         raise RuntimeError(
-            "Hugging Face backend requires the 'transformers' package. Install it with "
-            "`pip install transformers torch` and re-run generation."
+            "Hugging Face backend requires 'transformers' and 'torch'. "
+            "Install with: pip install transformers torch accelerate"
         ) from exc
 
-    generator = pipeline("text-generation", model=model)
-    output = generator(
-        prompt,
-        max_new_tokens=max_new_tokens,
-        temperature=max(temperature, 1e-5),
-        do_sample=temperature > 0,
-        return_full_text=False,
+    token = hf_token or os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")
+
+    # Build quantization config
+    quant_cfg = None
+    if quantize == "4bit":
+        try:
+            quant_cfg = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+            )
+        except Exception:
+            raise RuntimeError(
+                "4-bit quantization requires 'bitsandbytes'. "
+                "Install with: pip install bitsandbytes"
+            )
+    elif quantize == "8bit":
+        try:
+            quant_cfg = BitsAndBytesConfig(load_in_8bit=True)
+        except Exception:
+            raise RuntimeError(
+                "8-bit quantization requires 'bitsandbytes'. "
+                "Install with: pip install bitsandbytes"
+            )
+
+    # Load tokenizer + model with device_map for multi-GPU / CPU offload
+    tokenizer = AutoTokenizer.from_pretrained(model, token=token)
+    model_obj = AutoModelForCausalLM.from_pretrained(
+        model,
+        device_map="auto",
+        quantization_config=quant_cfg,
+        torch_dtype=torch.float16 if quant_cfg is None else None,
+        token=token,
     )
-    return output[0]["generated_text"].strip()
+
+    pipe = pipeline(
+        "text-generation",
+        model=model_obj,
+        tokenizer=tokenizer,
+    )
+
+    # Use chat template for instruction-tuned models when supported
+    if _is_chat_model(model) and hasattr(tokenizer, "chat_template") and tokenizer.chat_template:
+        messages = [{"role": "user", "content": prompt}]
+        output = pipe(
+            messages,
+            max_new_tokens=max_new_tokens,
+            temperature=max(temperature, 1e-5),
+            do_sample=temperature > 0,
+            return_full_text=False,
+        )
+        text = output[0]["generated_text"]
+        # pipeline with chat template returns a list of message dicts
+        if isinstance(text, list):
+            text = text[-1].get("content", "")
+    else:
+        output = pipe(
+            prompt,
+            max_new_tokens=max_new_tokens,
+            temperature=max(temperature, 1e-5),
+            do_sample=temperature > 0,
+            return_full_text=False,
+        )
+        text = output[0]["generated_text"]
+
+    return text.strip()
+
+
+def generate_with_openai(
+    prompt: str,
+    model: str,
+    temperature: float,
+    max_new_tokens: int,
+) -> str:
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "OpenAI backend requires the OPENAI_API_KEY environment variable to be set."
+        )
+    try:
+        from openai import OpenAI
+    except ImportError as exc:
+        raise RuntimeError(
+            "OpenAI backend requires the 'openai' package. "
+            "Install with: pip install openai"
+        ) from exc
+
+    client = OpenAI(api_key=api_key)
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=temperature,
+        max_tokens=max_new_tokens,
+    )
+    return response.choices[0].message.content.strip()
+
+
+# ---------------------------------------------------------------------------
+# Config / template map
+# ---------------------------------------------------------------------------
 
 CONFIG_TEMPLATE = {
     "scenario-only": "scenario_only.txt",
@@ -40,59 +155,50 @@ def render(template: str, scenario_text: str, cq_list: list[str]) -> str:
     return template.replace("{{SCENARIO_TEXT}}", scenario_text).replace("{{CQ_LIST}}", cq_block)
 
 
-def slug(text: str) -> str:
-    return "".join(ch for ch in text.title() if ch.isalnum()) or "Entity"
-
-
-def mock_ontology(scenario: dict[str, Any], config: str) -> str:
-    sid = scenario["scenario_id"]
-    core = slug(sid)
-    cq_entities = [slug(cq.split()[0]) for cq in scenario.get("cq_list", [])][:3]
-    classes = [core, f"{core}Event", f"{core}Participant", *cq_entities]
-    classes = list(dict.fromkeys(classes))
-
-    lines = [
-        "@prefix : <http://example.org/odp/> .",
-        "@prefix owl: <http://www.w3.org/2002/07/owl#> .",
-        "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .",
-        "",
-        ":Pattern a owl:Ontology .",
-    ]
-    for c in classes:
-        lines.append(f":{c} a owl:Class .")
-    lines.extend(
-        [
-            ":hasParticipant a owl:ObjectProperty ; rdfs:domain :Pattern ; rdfs:range :" + classes[2] + " .",
-            ":hasTimestamp a owl:DatatypeProperty ; rdfs:domain :Pattern ; rdfs:range rdfs:Literal .",
-        ]
-    )
-    lines.append("")
-    lines.append("# Documentation")
-    lines.append(f"# config: {config}")
-    lines.append(f"# scenario_id: {sid}")
-    return "\n".join(lines)
-
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run ODP generation experiments.")
     parser.add_argument("--data", default="data/scenarios/pattern_scenarios.json", type=Path)
     parser.add_argument("--prompts-dir", default="prompts", type=Path)
     parser.add_argument("--outputs-dir", default="outputs", type=Path)
-    parser.add_argument("--model", default="mock-odp-generator")
+    parser.add_argument("--model", required=True, help="Model name (e.g. gpt-3.5-turbo, meta-llama/Llama-2-70b-chat-hf, bigscience/bloom).")
     parser.add_argument(
         "--backend",
-        choices=["mock", "huggingface"],
-        default="mock",
-        help="Generation backend. Use 'huggingface' for open-source LLMs from Hugging Face Hub.",
+        choices=["huggingface", "openai"],
+        required=True,
+        help=(
+            "Generation backend. "
+            "'huggingface' for open-source LLMs from Hugging Face Hub. "
+            "'openai' for OpenAI models (requires OPENAI_API_KEY env var)."
+        ),
     )
     parser.add_argument("--config", choices=list(CONFIG_TEMPLATE.keys()) + ["all"], default="all")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--temperature", type=float, default=0.0)
-    parser.add_argument("--max-new-tokens", type=int, default=768)
+    parser.add_argument("--max-new-tokens", type=int, default=1024)
+    parser.add_argument(
+        "--hf-token",
+        default=None,
+        help="Hugging Face access token for gated models (e.g. Llama 2). "
+             "Can also be set via HF_TOKEN environment variable.",
+    )
+    parser.add_argument(
+        "--quantize",
+        choices=["none", "4bit", "8bit"],
+        default="none",
+        help="Quantization mode for large HuggingFace models. "
+             "Requires 'bitsandbytes'. Recommended: 4bit for 70B+ models.",
+    )
     args = parser.parse_args()
 
     scenarios = json.loads(args.data.read_text(encoding="utf-8"))
     configs = list(CONFIG_TEMPLATE.keys()) if args.config == "all" else [args.config]
+
+    # Sanitise model name for use as a directory (replace / and : with _)
+    model_dir_name = args.model.replace("/", "_").replace(":", "_")
 
     for config in configs:
         template_path = args.prompts_dir / CONFIG_TEMPLATE[config]
@@ -100,24 +206,30 @@ def main() -> None:
         for scenario in scenarios:
             prompt = render(template, scenario["scenario_text"], scenario.get("cq_list", []))
             prompt_hash = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:12]
-            output_dir = args.outputs_dir / args.model / config / scenario["scenario_id"]
+            output_dir = args.outputs_dir / model_dir_name / config / scenario["scenario_id"]
             output_dir.mkdir(parents=True, exist_ok=True)
 
             if args.dry_run:
                 (output_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
+                print(f"[dry-run] wrote prompt → {output_dir / 'prompt.txt'}")
                 continue
 
-            if args.backend == "mock":
-                response = mock_ontology(scenario, config)
-                mock_mode = True
-            else:
+            if args.backend == "huggingface":
                 response = generate_with_huggingface(
                     prompt=prompt,
                     model=args.model,
                     temperature=args.temperature,
                     max_new_tokens=args.max_new_tokens,
+                    hf_token=args.hf_token,
+                    quantize=args.quantize,
                 )
-                mock_mode = False
+            else:  # openai
+                response = generate_with_openai(
+                    prompt=prompt,
+                    model=args.model,
+                    temperature=args.temperature,
+                    max_new_tokens=args.max_new_tokens,
+                )
 
             response_hash = hashlib.sha256(response.encode("utf-8")).hexdigest()[:12]
             metadata = {
@@ -130,12 +242,13 @@ def main() -> None:
                 "max_new_tokens": args.max_new_tokens,
                 "prompt_hash": prompt_hash,
                 "response_hash": response_hash,
-                "mock_mode": mock_mode,
+                "quantize": args.quantize if args.backend == "huggingface" else "n/a",
             }
             (output_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
             (output_dir / "raw_response.txt").write_text(response, encoding="utf-8")
             (output_dir / "ontology.ttl").write_text(response, encoding="utf-8")
             (output_dir / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+            print(f"[{args.backend}] {args.model} | {config} | {scenario['scenario_id']} → {output_dir}")
 
 
 if __name__ == "__main__":
