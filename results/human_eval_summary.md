@@ -1,15 +1,16 @@
 # Human/LLM Evaluation Summary
 
 Evaluator type: **mixed**
-Scored rows: **1**
-Unique outputs: **1**
+Scored rows: **28**
+Unique outputs: **28**
 Unique evaluators: **1**
 
 ## Mean / Median by Model + Config
 
 | Model | Config | Correctness (mean/median) | Completeness (mean/median) | Clarity-Reusability (mean/median) |
 |---|---|---:|---:|---:|
-| mistralai | Mistral-7B-Instruct-v0.3 | / | / | / |
+| bigscience_bloom-3b | scenario-cq | / | / | / |
+| meta-llama_Llama-2-70b-chat-hf | scenario-cq | / | / | / |
 
 ## Inter-rater Agreement (available stats)
 
