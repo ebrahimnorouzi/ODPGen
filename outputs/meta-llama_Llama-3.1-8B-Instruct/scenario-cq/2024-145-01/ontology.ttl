@@ -1,0 +1,105 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Court and Check Regulation Ontology" ;
+  rdfs:comment "An ontology for representing court hierarchies and bad check regulations.".
+
+:State a rdfs:Class ;
+  rdfs:label "State" ;
+  rdfs:comment "A state in a country.".
+
+:DistrictCourt a rdfs:Class ;
+  rdfs:label "District Court" ;
+  rdfs:comment "A district court in a state." ;
+  rdfs:subClassOf :Court.
+
+:Court a rdfs:Class ;
+  rdfs:label "Court" ;
+  rdfs:comment "A court with authority over other courts.".
+
+:HasAuthority a owl:ObjectProperty ;
+  rdfs:label "Has Authority" ;
+  rdfs:comment "A court has authority over another court." ;
+  rdfs:domain :Court ;
+  rdfs:range :Court.
+
+:LocatedIn a owl:ObjectProperty ;
+  rdfs:label "Located In" ;
+  rdfs:comment "A district court is located in a state." ;
+  rdfs:domain :DistrictCourt ;
+  rdfs:range :State.
+
+:HasDistrict a owl:ObjectProperty ;
+  rdfs:label "Has District" ;
+  rdfs:comment "A state has a number of districts." ;
+  rdfs:domain :State ;
+  rdfs:range :DistrictCourt.
+
+:Check a rdfs:Class ;
+  rdfs:label "Check" ;
+  rdfs:comment "A check transaction.".
+
+:BadCheck a rdfs:Class ;
+  rdfs:label "Bad Check" ;
+  rdfs:comment "A bad check transaction." ;
+  rdfs:subClassOf :Check.
+
+:CheckTransactionType a owl:DatatypeProperty ;
+  rdfs:label "Check Transaction Type" ;
+  rdfs:comment "The type of check transaction." ;
+  rdfs:domain :Check ;
+  rdfs:range xsd:string.
+
+:CheckPayment a rdfs:Class ;
+  rdfs:label "Check Payment" ;
+  rdfs:comment "A payment of a check." ;
+  rdfs:subClassOf :Check.
+
+:PaymentDate a owl:DatatypeProperty ;
+  rdfs:label "Payment Date" ;
+  rdfs:comment "The date of a check payment." ;
+  rdfs:domain :CheckPayment ;
+  rdfs:range xsd:date.
+
+:TransactionStatus a owl:DatatypeProperty ;
+  rdfs:label "Transaction Status" ;
+  rdfs:comment "The status of a check transaction." ;
+  rdfs:domain :Check ;
+  rdfs:range xsd:string.
+
+:India a :State ;
+  rdfs:label "India" ;
+  rdfs:comment "A country with states and districts.".
+
+:State1 a :State ;
+  rdfs:label "State 1" ;
+  rdfs:comment "A state in India." ;
+  :LocatedIn :India.
+
+:DistrictCourt1 a :DistrictCourt ;
+  rdfs:label "District Court 1" ;
+  rdfs:comment "A district court in State 1." ;
+  :LocatedIn :State1.
+
+:DistrictCourt2 a :DistrictCourt ;
+  rdfs:label "District Court 2" ;
+  rdfs:comment "A district court in State 1." ;
+  :LocatedIn :State1.
+
+:State1 :HasDistrict :DistrictCourt1.
+:State1 :HasDistrict :DistrictCourt2.
+
+:BadCheck1 a :BadCheck ;
+  rdfs:label "Bad Check 1" ;
+  rdfs:comment "A bad check transaction." ;
+  :CheckTransactionType "bad".
+
+:CheckPayment1 a :CheckPayment ;
+  rdfs:label "Check Payment 1" ;
+  rdfs:comment "A payment of a bad check." ;
+  :PaymentDate "2022-01-01" ;
+  :TransactionStatus "pending".

@@ -1,0 +1,87 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Sprinkler Use Case Ontology" ;
+  rdfs:comment "An ontology for the sprinkler use case, a well-known example in the CBN literature.".
+
+:Event a rdfs:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An event in the sprinkler use case.".
+
+:RainySeason a :Event ;
+  rdfs:label "Rainy Season" ;
+  rdfs:comment "It is rainy season.".
+
+:SprinklerOn a :Event ;
+  rdfs:label "Sprinkler is On" ;
+  rdfs:comment "The sprinkler is on.".
+
+:Raining a :Event ;
+  rdfs:label "It is Raining" ;
+  rdfs:comment "It is raining.".
+
+:PavementWet a :Event ;
+  rdfs:label "Pavement is Wet" ;
+  rdfs:comment "The pavement is wet.".
+
+:PavementSlippery a :Event ;
+  rdfs:label "Pavement is Slippery" ;
+  rdfs:comment "The pavement is slippery.".
+
+:CausalRelation a rdfs:Class ;
+  rdfs:label "Causal Relation" ;
+  rdfs:comment "A causal relation between two events.".
+
+:EffectWeight a rdfs:Class ;
+  rdfs:label "Effect Weight" ;
+  rdfs:comment "The effect weight of a causal relation.".
+
+:hasEffectWeight a owl:ObjectProperty ;
+  rdfs:label "has Effect Weight" ;
+  rdfs:comment "The effect weight of a causal relation." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :EffectWeight.
+
+:hasCause a owl:ObjectProperty ;
+  rdfs:label "has Cause" ;
+  rdfs:comment "The cause of a causal relation." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Event.
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has Effect" ;
+  rdfs:comment "The effect of a causal relation." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Event.
+
+:SprinklerOn_hasEffect_PavementWet a :CausalRelation ;
+  rdfs:label "Sprinkler On -> Pavement Wet" ;
+  rdfs:comment "The sprinkler being on causes the pavement to be wet." ;
+  :hasCause :SprinklerOn ;
+  :hasEffect :PavementWet ;
+  :hasEffectWeight "0.8"^^xsd:decimal.
+
+:PavementWet_hasEffect_PavementSlippery a :CausalRelation ;
+  rdfs:label "Pavement Wet -> Pavement Slippery" ;
+  rdfs:comment "The pavement being wet causes the pavement to be slippery." ;
+  :hasCause :PavementWet ;
+  :hasEffect :PavementSlippery ;
+  :hasEffectWeight "0.9"^^xsd:decimal.
+
+:RainySeason_hasEffect_Raining a :CausalRelation ;
+  rdfs:label "Rainy Season -> It is Raining" ;
+  rdfs:comment "The rainy season causes it to be raining." ;
+  :hasCause :RainySeason ;
+  :hasEffect :Raining ;
+  :hasEffectWeight "0.6"^^xsd:decimal.
+
+:SprinklerOn_hasEffect_Raining a :CausalRelation ;
+  rdfs:label "Sprinkler On -> It is Raining" ;
+  rdfs:comment "The sprinkler being on causes it to be raining." ;
+  :hasCause :SprinklerOn ;
+  :hasEffect :Raining ;
+  :hasEffectWeight "0.4"^^xsd:decimal.

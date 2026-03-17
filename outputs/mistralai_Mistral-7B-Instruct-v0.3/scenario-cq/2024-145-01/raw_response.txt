@@ -1,0 +1,78 @@
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Legal Tasks Ontology" ;
+  rdfs:comment "An ontology for managing legal tasks, focusing on court hierarchies and bad check crime regulations.".
+
+# Court classes and properties
+:Court a owl:Class ;
+  rdfs:label "Court" ;
+  rdfs:comment "A legal court.".
+
+:DistrictCourt a owl:Class ;
+  rdfs:subClassOf [ owl:Restriction [ owl:onProperty :hasAuthority ; owl:allValuesFrom :Court ] ] ;
+  rdfs:label "District Court" ;
+  rdfs:comment "A district court within a state.".
+
+:State a owl:Class ;
+  rdfs:label "State" ;
+  rdfs:comment "A geographical region in which district courts are located.".
+
+:hasAuthority a owl:ObjectProperty ;
+  rdfs:domain :Court ;
+  rdfs:range :Court ;
+  rdfs:label "Has Authority" ;
+  rdfs:comment "The court that has authority over another court.".
+
+:isLocatedIn a owl:ObjectProperty ;
+  rdfs:domain :DistrictCourt ;
+  rdfs:range :State ;
+  rdfs:label "Is Located In" ;
+  rdfs:comment "The state in which a district court is located.".
+
+# Bad check classes and properties
+:BadCheck a owl:Class ;
+  rdfs:label "Bad Check" ;
+  rdfs:comment "A check that has been written with insufficient funds.".
+
+:CheckTransaction a owl:Class ;
+  rdfs:subClassOf [ owl:Restriction [ owl:onProperty :hasType ; owl:allValuesFrom :BadCheck ] ] ;
+  rdfs:label "Check Transaction" ;
+  rdfs:comment "A transaction related to a bad check.".
+
+:hasType a owl:ObjectProperty ;
+  rdfs:domain :CheckTransaction ;
+  rdfs:range :xsd:string ;
+  rdfs:label "Has Type" ;
+  rdfs:comment "The type of a check transaction.".
+
+:isPayment a owl:ObjectProperty ;
+  rdfs:domain :CheckTransaction ;
+  rdfs:range :xsd:boolean ;
+  rdfs:label "Is Payment" ;
+  rdfs:comment "Whether a check transaction is a payment.".
+
+:getTransactionStatus a owl:ObjectProperty ;
+  rdfs:domain :CheckTransaction ;
+  rdfs:range :xsd:string ;
+  rdfs:label "Get Transaction Status" ;
+  rdfs:comment "The status of a check transaction.".
+
+# Scenario-requirement-to-axiom mapping:
+1. :DistrictCourt rdfs:subClassOf [ owl:Restriction [ owl:onProperty :hasAuthority ; owl:allValuesFrom :Court ] ]
+2. :State rdfs:subClassOf _:UnspecifiedGeographicalRegion. (Unspecified for the given scenario)
+3. :hasAuthority owl:ObjectProperty
+4. :isLocatedIn owl:ObjectProperty
+
+# CQ-to-axiom mapping:
+1. :DistrictCourt, :State, :hasAuthority, :isLocatedIn
+2. :DistrictCourt, :isLocatedIn
+3. :State, :hasAuthority
+4. :Court, :hasAuthority
+5. :CheckTransaction, :hasType
+6. :Check

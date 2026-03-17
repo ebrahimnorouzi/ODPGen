@@ -1,0 +1,105 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Temporal Indirection Ontology" ;
+  rdfs:comment "Ontology for modeling temporal indirection in various domains".
+
+:PersistentIdentifier a rdfs:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A stable referent that resolves to a specific entity over time".
+
+:Entity a rdfs:Class ;
+  rdfs:label "Entity" ;
+  rdfs:comment "An object or concept that can be referenced by a persistent identifier".
+
+:Referent a rdfs:Class ;
+  rdfs:label "Referent" ;
+  rdfs:comment "The entity currently referenced by a persistent identifier".
+
+:Transition a rdfs:Class ;
+  rdfs:label "Transition" ;
+  rdfs:comment "An event where a persistent identifier resolves to a new referent".
+
+:Observation a rdfs:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "A measurement or attribute associated with a specific referent".
+
+:TemporalBinding a rdfs:Class ;
+  rdfs:label "Temporal Binding" ;
+  rdfs:comment "A mapping of a persistent identifier to a referent at a specific timestamp".
+
+:Rule a rdfs:Class ;
+  rdfs:label "Rule" ;
+  rdfs:comment "A condition or policy that triggers a transition".
+
+:hasReferent a owl:ObjectProperty ;
+  rdfs:label "has Referent" ;
+  rdfs:comment "The entity currently referenced by a persistent identifier" ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :Referent.
+
+:hasTransition a owl:ObjectProperty ;
+  rdfs:label "has Transition" ;
+  rdfs:comment "The transition event where a persistent identifier resolved to a new referent" ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :Transition.
+
+:hasObservation a owl:ObjectProperty ;
+  rdfs:label "has Observation" ;
+  rdfs:comment "A measurement or attribute associated with a specific referent" ;
+  rdfs:domain :Referent ;
+  rdfs:range :Observation.
+
+:hasTemporalBinding a owl:ObjectProperty ;
+  rdfs:label "has Temporal Binding" ;
+  rdfs:comment "A mapping of a persistent identifier to a referent at a specific timestamp" ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TemporalBinding.
+
+:hasRule a owl:ObjectProperty ;
+  rdfs:label "has Rule" ;
+  rdfs:comment "A condition or policy that triggered a transition" ;
+  rdfs:domain :Transition ;
+  rdfs:range :Rule.
+
+:hasTimestamp a owl:ObjectProperty ;
+  rdfs:label "has Timestamp" ;
+  rdfs:comment "The timestamp when a transition occurred" ;
+  rdfs:domain :Transition ;
+  rdfs:range xsd:dateTime.
+
+:hasPreviousReferent a owl:ObjectProperty ;
+  rdfs:label "has Previous Referent" ;
+  rdfs:comment "The referent before a transition" ;
+  rdfs:domain :Transition ;
+  rdfs:range :Referent.
+
+:hasNextReferent a owl:ObjectProperty ;
+  rdfs:label "has Next Referent" ;
+  rdfs:comment "The referent after a transition" ;
+  rdfs:domain :Transition ;
+  rdfs:range :Referent.
+
+:hasTemporalBinding a owl:ObjectProperty ;
+  rdfs:label "has Temporal Binding" ;
+  rdfs:comment "A mapping of a persistent identifier to a referent at a specific timestamp" ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TemporalBinding.
+
+:TemporalBinding a owl:equivalentClass [ a owl:Restriction ;
+  owl:onProperty :hasTemporalBinding ;
+  owl:someValuesFrom :Referent ].
+
+:Transition a owl:equivalentClass [ a owl:Restriction ;
+  owl:onProperty :hasTransition ;
+  owl:someValuesFrom :Referent ].
+
+:hasTemporalBinding a owl:inverseOf :hasReferent.
+
+:hasTemporalBinding a owl:inverseOf :hasTransition.
+
+:hasTemporalBinding a owl:inverseOf :hasObservation.
