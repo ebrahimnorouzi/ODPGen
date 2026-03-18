@@ -1,71 +1,82 @@
-Reasoning:
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Extract atomic requirements from the scenario:
-* R1: Identity of Solid actors and their roles is unknown.
-* R2: No metadata about Solid infrastructure.
-* R3: Availability/Discovery of categories of data.
-* R4: Pod and app providers do not provide information on their data handling practices.
-* R5: Users cannot express their privacy policies.
-* R6: No logging or record-keeping.
-* R7: No legal compliance checks.
-2. Propose candidate classes and properties for each requirement:
-* R1:
-	+ Class: SolidActor
-	+ Property: hasRole
-* R2:
-	+ Class: SolidInfrastructure
-	+ Property: hasMetadata
-* R3:
-	+ Class: DataCategory
-	+ Property: isAvailable
-* R4:
-	+ Class: PodProvider
-	+ Class: AppProvider
-	+ Property: hasPrivacyNotice
-* R5:
-	+ Class: SolidUser
-	+ Property: hasPrivacyPolicy
-* R6:
-	+ Class: Log
-	+ Property: hasProvenanceMetadata
-* R7:
-	+ Class: LegalCompliance
-	+ Property: hasAuditingInformation
-3. Draft axioms for each candidate class and property:
-* R1:
-	+ Subclass: SolidActor ⊑ Person
-	+ Domain: hasRole ⊑ SolidActor
-	+ Range: Role ⊑ SolidActor
-	+ Cardinality: 1:1
-* R2:
-	+ Subclass: SolidInfrastructure ⊑ Infrastructure
-	+ Domain: hasMetadata ⊑ SolidInfrastructure
-	+ Range: Metadata ⊑ SolidInfrastructure
-	+ Cardinality: 1:1
-* R3:
-	+ Subclass: DataCategory ⊑ Category
-	+ Domain: isAvailable ⊑ DataCategory
-	+ Range: Boolean ⊑ DataCategory
-	+ Cardinality: 1:1
-* R4:
-	+ Subclass: PodProvider ⊑ Organization
-	+ Subclass: AppProvider ⊑ Organization
-	+ Domain: hasPrivacyNotice ⊑ PodProvider, AppProvider
-	+ Range: PrivacyNotice ⊑ PodProvider, AppProvider
-	+ Cardinality: 1:1
-* R5:
-	+ Subclass: SolidUser ⊑ Person
-	+ Domain: hasPrivacyPolicy ⊑ SolidUser
-	+ Range: PrivacyPolicy ⊑ SolidUser
-	+ Cardinality: 1:1
-* R6:
-	+ Subclass: Log ⊑ Record
-	+ Domain: hasProvenanceMetadata ⊑ Log
-	+ Range: ProvenanceMetadata ⊑ Log
-	+ Cardinality: 1:1
-* R7:
-	+ Subclass: LegalCompliance ⊑ Organization
-	+ Domain: hasAuditingInformation ⊑ LegalCompliance
-	+ Range: AuditingInformation ⊑ LegalCompliance
-	+ Cardinality: 1:1
-4. For each CQ, check which axioms enable answering it; note any CQs not yet covered.
+:Ontology a owl:Ontology ;
+rdfs:label "Solid Governance Ontology" ;
+rdfs:comment "An ontology for governing Solid applications".
+
+# C1 - Identity of Solid actors and their roles is unknown
+:SolidActor a owl:Class ;
+rdfs:label "Solid Actor" ;
+rdfs:comment "An actor involved in a Solid application".
+
+:SolidUser a :SolidActor ;
+rdfs:label "Solid User" ;
+rdfs:comment "A user of a Solid application".
+
+:SolidProvider a :SolidActor ;
+rdfs:label "Solid Provider" ;
+rdfs:comment "An entity providing a Solid Pod or app".
+
+# C2 - No metadata about Solid infrastructure
+:SolidInfrastructure a owl:Class ;
+rdfs:label "Solid Infrastructure" ;
+rdfs:comment "The infrastructure supporting a Solid application".
+
+:SolidPods a :SolidInfrastructure ;
+rdfs:label "Solid Pods" ;
+rdfs:comment "The containers hosting Solid apps".
+
+:SolidApps a :SolidInfrastructure ;
+rdfs:label "Solid Apps" ;
+rdfs:comment "The applications running on Solid Pods".
+
+# C3 - Availability/Discovery of categories of data
+:DataCategory a owl:Class ;
+rdfs:label "Data Category" ;
+rdfs:comment "A category of data in a Solid Pod".
+
+:SolidData a :DataCategory ;
+rdfs:label "Solid Data" ;
+rdfs:comment "Data stored in a Solid Pod".
+
+:DataLocation a owl:Class ;
+rdfs:label "Data Location" ;
+rdfs:comment "A location where data is stored".
+
+:SolidPod a :DataLocation ;
+rdfs:label "Solid Pod" ;
+rdfs:comment "A container hosting Solid apps and data".
+
+# C4 - Pod and app providers do not provide information on their data handling practices
+:DataHandlingPractices a owl:Class ;
+rdfs:label "Data Handling Practices" ;
+rdfs:comment "The practices used by Solid providers to handle data".
+
+:SolidProviderDataHandling a :DataHandlingPractices ;
+rdfs:label "Solid Provider Data Handling" ;
+rdfs:comment "The data handling practices of a Solid provider".
+
+:PrivacyNotice a owl:Class ;
+rdfs:label "Privacy Notice" ;
+rdfs:comment "A notice describing a Solid provider's data handling practices".
+
+:SolidProviderPrivacyNotice a :PrivacyNotice ;
+rdfs:label "Solid Provider Privacy Notice" ;
+rdfs:comment "A privacy notice provided by a Solid provider".
+
+# C5 - Users cannot express their privacy policies
+:PrivacyPolicy a owl:Class ;
+rdfs:label "Privacy Policy" ;
+rdfs:comment "A policy describing a user's privacy preferences".
+
+:SolidUserPrivacyPolicy a :PrivacyPolicy ;
+rdfs:label "Solid User Privacy Policy" ;
+rdfs:comment "A privacy policy set by a Solid user".
+
+:PrivacyPreference a owl:Class ;
+rdfs:label "Privacy Preference" ;
+rdfs:comment "A preference regarding data privacy".

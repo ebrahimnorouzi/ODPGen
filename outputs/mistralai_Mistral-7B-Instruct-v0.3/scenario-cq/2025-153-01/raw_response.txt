@@ -13,76 +13,84 @@
   rdfs:label "Persistent Identifier" ;
   rdfs:comment "A unique identifier that dynamically resolves to a specific entity.".
 
-:CurrentReferent rdf:Property ;
-  rdfs:domain :PersistentIdentifier ;
-  rdfs:range :Entity ;
+:CurrentReferent a owl:ObjectProperty ;
+  domain :PersistentIdentifier ;
+  range :Entity ;
   rdfs:label "Current Referent" ;
   rdfs:comment "The entity currently referenced by the persistent identifier.".
 
-:PastReferent rdf:Property ;
-  rdfs:domain :PersistentIdentifier ;
-  rdfs:range :Entity ;
+:PastReferent a owl:ObjectProperty ;
+  domain :PersistentIdentifier ;
+  range :Entity ;
   rdfs:label "Past Referent" ;
   rdfs:comment "The entity referenced by the persistent identifier at a past timestamp.".
 
-:Transition rdf:Property ;
-  rdfs:domain :PersistentIdentifier ;
-  rdfs:range :Time ;
-  rdfs:label "Transition" ;
-  rdfs:comment "The time when the referent transition occurred.".
-
-:Observation rdf:Property ;
-  rdfs:domain :Entity ;
-  rdfs:range :Observation ;
-  rdfs:label "Observation" ;
-  rdfs:comment "An observation associated with a specific referent.".
-
-:ReferentSequence rdf:Property ;
-  rdfs:domain :PersistentIdentifier ;
-  rdfs:range rdf:List ;
-  rdfs:label "Referent Sequence" ;
-  rdfs:comment "The full sequence of referents over time for a persistent identifier.".
-
-:TransitionRule rdf:Property ;
-  rdfs:domain :Transition ;
-  rdfs:range :Rule ;
-  rdfs:label "Transition Rule" ;
-  rdfs:comment "The rule that triggered the specific transition.".
-
-:Gap rdf:Class ;
-  rdfs:label "Gap" ;
-  rdfs:comment "A time period where no referent is associated with the persistent identifier.".
-
-:Overlap rdf:Class ;
-  rdfs:label "Overlap" ;
-  rdfs:comment "Two or more referents associated with the persistent identifier at the same time.".
-
-:Context rdf:Class ;
-  rdfs:label "Context" ;
-  rdfs:comment "The complete information required to rebuild the state of the system at a specific time point.".
-
-:Entity a owl:Class ;
-  rdfs:label "Entity" ;
-  rdfs:comment "A real-world object or concept that is referenced by a persistent identifier.".
+:TransitionTime a owl:DatatypeProperty ;
+  domain :Transition ;
+  range xsd:dateTime ;
+  rdfs:label "Transition Time" ;
+  rdfs:comment "The timestamp when a referent transition occurred.".
 
 :Observation a owl:Class ;
   rdfs:label "Observation" ;
-  rdfs:comment "A fact or measurement about an entity.".
+  rdfs:comment "An observation associated with a specific referent.".
+
+:hasObservation a owl:ObjectProperty ;
+  domain :Entity ;
+  range :Observation ;
+  rdfs:label "Has Observation" ;
+  rdfs:comment "The observations associated with a specific entity.".
+
+:Transition a owl:Class ;
+  rdfs:label "Transition" ;
+  rdfs:comment "A transition between two referents of a persistent identifier.".
+
+:Predecessor a owl:ObjectProperty ;
+  domain :Transition ;
+  range :Entity ;
+  rdfs:label "Predecessor" ;
+  rdfs:comment "The predecessor referent in a transition.".
+
+:Successor a owl:ObjectProperty ;
+  domain :Transition ;
+  range :Entity ;
+  rdfs:label "Successor" ;
+  rdfs:comment "The successor referent in a transition.".
 
 :Rule a owl:Class ;
   rdfs:label "Rule" ;
-  rdfs:comment "A set of conditions that determine when a transition occurs.".
+  rdfs:comment "The rule that triggered a specific transition.".
 
-:Time rdf:Class ;
-  rdfs:label "Time" ;
-  rdfs:comment "A point or interval in time.".
+:TriggeredBy a owl:ObjectProperty ;
+  domain :Transition ;
+  range :Rule ;
+  rdfs:label "Triggered By" ;
+  rdfs:comment "The rule that triggered a specific transition.".
 
-:hasObservation a owl:ObjectProperty ;
-  rdfs:domain :Entity ;
-  rdfs:range :Observation ;
-  rdfs:label "Has Observation" ;
-  rdfs:comment "An observation associated with an entity.".
+:Gap a owl:Class ;
+  rdfs:label "Gap" ;
+  rdfs:comment "A gap in the sequence of referents over time.".
+
+:Overlap a owl:Class ;
+  rdfs:label "Overlap" ;
+  rdfs:comment "An overlap in the sequence of referents over time.".
+
+:Context a owl:Class ;
+  rdfs:label "Context" ;
+  rdfs:comment "The complete context for a specific time point.".
+
+:AtTime a owl:ObjectProperty ;
+  domain :Context ;
+  range xsd:dateTime ;
+  rdfs:label "At Time" ;
+  rdfs:comment "The timestamp for a specific context.".
+
+:Contains a owl:ObjectProperty ;
+  domain :Context ;
+  range :Entity ;
+  rdfs:label "Contains" ;
+  rdfs:comment "The entities contained in a specific context.".
 ```
 
 Scenario-requirement-to-axiom mapping:
-1. `:PersistentIdentifier` encodes the
+1. Persistent identifier serves as a stable refer

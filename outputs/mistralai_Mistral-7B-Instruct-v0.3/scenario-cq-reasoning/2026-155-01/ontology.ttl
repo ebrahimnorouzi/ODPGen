@@ -1,75 +1,85 @@
-**Reasoning Steps**
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
 
-1. Atomic requirements:
-   - Survey activities performed on cultural properties
-   - Methods used in survey activities
-   - Observations produced during survey activities
-   - Experts and roles in survey activities
-   - Equipment configurations used in survey activities
-   - Interpretations based on observations
-   - Post-processed outputs and their relationship with acquisition activities
-   - Acquisition parameters characterizing an acquisition cycle
+:Ontology a owl:Ontology ;
+  rdfs:label "Cultural Heritage Survey ODP" ;
+  rdfs:comment "Models the structure of scientific survey activities on cultural heritage entities.".
 
-2. Candidate classes and properties:
-   - :Survey (owl:Class)
-     - rdfs:label "Survey"
-     - rdfs:comment "A scientific survey activity performed on cultural heritage entities."
-   - :CulturalProperty (owl:Class)
-     - rdfs:label "CulturalProperty"
-     - rdfs:comment "A physical object or site of cultural significance."
-   - :FeatureOfInterest (owl:Class)
-     - rdfs:label "FeatureOfInterest"
-     - rdfs:comment "A specific aspect or detail of a cultural property under investigation."
-   - :Method (owl:Class)
-     - rdfs:label "Method"
-     - rdfs:comment "A scientific technique or approach used in a survey."
-   - :Observation (owl:Class)
-     - rdfs:label "Observation"
-     - rdfs:comment "A recorded fact or measurement obtained during a survey."
-   - :Expert (owl:Class)
-     - rdfs:label "Expert"
-     - rdfs:comment "A person with specialized knowledge in a relevant field."
-   - :Role (owl:Class)
-     - rdfs:label "Role"
-     - rdfs:comment "A function or position within a survey activity."
-   - :EquipmentConfiguration (owl:Class)
-     - rdfs:label "EquipmentConfiguration"
-     - rdfs:comment "A specific arrangement or setup of hardware, software, and technical parameters used in a survey."
-   - :Interpretation (owl:Class)
-     - rdfs:label "Interpretation"
-     - rdfs:comment "A conclusion or inference drawn from observations."
-   - :PostProcessedOutput (owl:Class)
-     - rdfs:label "PostProcessedOutput"
-     - rdfs:comment "A processed or analyzed result derived from observations."
-   - :AcquisitionParameter (owl:Class)
-     - rdfs:label "AcquisitionParameter"
-     - rdfs:comment "A characteristic or setting that defines an acquisition cycle."
+# Atomic Requirements
+:Survey a owl:Class ;
+  rdfs:label "Survey" ;
+  rdfs:comment "A scientific survey activity on cultural heritage.".
 
-3. Draft axioms:
-   - :Survey rdf:type owl:Class.
-   - :CulturalProperty rdf:type owl:Class.
-   - :FeatureOfInterest rdf:type owl:Class.
-   - :Method rdf:type owl:Class.
-   - :Observation rdf:type owl:Class.
-   - :Expert rdf:type owl:Class.
-   - :Role rdf:type owl:Class.
-   - :EquipmentConfiguration rdf:type owl:Class.
-   - :Interpretation rdf:type owl:Class.
-   - :PostProcessedOutput rdf:type owl:Class.
-   - :AcquisitionParameter rdf:type owl:Class.
+:CulturalProperty a owl:Class ;
+  rdfs:label "Cultural Property" ;
+  rdfs:comment "A physical object or site of cultural significance.".
 
-   - :Survey owl:disjointWith :CulturalProperty.
-   - :Survey owl:disjointWith :FeatureOfInterest.
-   - :Survey owl:disjointWith :Method.
-   - :Survey owl:disjointWith :Observation.
-   - :Survey owl:disjointWith :Expert.
-   - :Survey owl:disjointWith :Role.
-   - :Survey owl:disjointWith :EquipmentConfiguration.
-   - :Survey owl:disjointWith :Interpretation.
-   - :Survey owl:disjointWith :PostProcessedOutput.
-   - :Survey owl:disjointWith :AcquisitionParameter.
+:FeatureOfInterest a owl:Class ;
+  rdfs:label "Feature of Interest" ;
+  rdfs:comment "A specific aspect of a cultural property under investigation.".
 
-   - :Survey owl:subClassOf [ a owl:Restriction ;
-                                  owl:onProperty :performedOn ;
-                                  owl:hasValue?CulturalProperty ;
-                                  owl:allValuesFrom :CulturalProperty ].
+:Method a owl:Class ;
+  rdfs:label "Method" ;
+  rdfs:comment "A scientific technique used in a survey.".
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "A result obtained during a survey.".
+
+:Expert a owl:Class ;
+  rdfs:label "Expert" ;
+  rdfs:comment "A person with specialized knowledge in a field relevant to the survey.".
+
+:Role a owl:Class ;
+  rdfs:label "Role" ;
+  rdfs:comment "A function or position within a survey.".
+
+:EquipmentConfiguration a owl:Class ;
+  rdfs:label "Equipment Configuration" ;
+  rdfs:comment "A specific arrangement of hardware, software, and technical settings used in a survey.".
+
+:Interpretation a owl:Class ;
+  rdfs:label "Interpretation" ;
+  rdfs:comment "A conclusion or claim derived from observations.".
+
+:PostprocessedOutput a owl:Class ;
+  rdfs:label "Postprocessed Output" ;
+  rdfs:comment "A result of a survey that has been processed or analyzed.".
+
+:AcquisitionParameter a owl:Class ;
+  rdfs:label "Acquisition Parameter" ;
+  rdfs:comment "A characteristic of an acquisition or observation activity.".
+
+# Properties
+:performedOn rdf:Property ;
+  rdfs:domain :Survey ;
+  rdfs:range [ a owl:Class ; owl:unionOf ( :CulturalProperty :FeatureOfInterest ) ] ;
+  rdfs:label "Performed on" ;
+  rdfs:comment "The cultural property or feature of interest that a survey was conducted on.".
+
+:usesMethod rdf:Property ;
+  rdfs:domain :Survey ;
+  rdfs:range :Method ;
+  rdfs:label "Uses method" ;
+  rdfs:comment "The method used in a survey.".
+
+:produces rdf:Property ;
+  rdfs:domain :Survey ;
+  rdfs:range :Observation ;
+  rdfs:label "Produces" ;
+  rdfs:comment "The observations produced during a survey.".
+
+:participatesIn rdf:Property ;
+  rdfs:domain :Expert ;
+  rdfs:range :Survey ;
+  rdfs:label "Participates in" ;
+  rdfs:comment "The surveys in which an expert participated.".
+
+:playsRole rdf:Property ;
+  rdfs:domain :Expert ;
+  rdfs:range :Role ;
+  rdfs:label "Plays role" ;
+  rdfs:comment "The role an expert played in a survey.".

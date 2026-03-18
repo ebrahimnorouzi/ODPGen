@@ -1,86 +1,107 @@
-1. **Reasoning for steps 1–6**
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
 
-### Step 1. Atomic requirements
-- The ontology must represent a policy that is being evaluated.
-- The ontology must represent parties relevant to policy evaluation.
-- The ontology must represent assets relevant to policy evaluation.
-- The ontology must represent collections of assets associated with a policy.
-- The ontology must represent collections of parties associated with a policy.
-- The ontology must represent rules associated with a policy.
-- The ontology must represent actions that were performed or attempted.
-- The ontology must represent events that have occurred and information about them.
-- The ontology must represent the number of times a rule has been exercised.
-- The ontology must represent the duration for which a rule has been exercised.
-- The ontology must represent recipients or recipient categories for the result of an exercised rule.
-- The ontology must represent whether a financial payment has been made and the amount paid.
-- The ontology must represent the current time.
-- The ontology must represent the location of a party.
-- The ontology must represent a party requesting access to an asset.
-- The ontology must represent a segment or part of an asset, such as minutes 4 to 9 of a video stream.
-- The ontology must represent a purpose for access, such as academic research.
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
 
-### Step 2. Candidate classes and properties
-- Classes:
-  - `:Policy`
-  - `:Rule`
-  - `:Party`
-  - `:Asset`
-  - `:AssetCollection`
-  - `:PartyCollection`
-  - `:Action`
-  - `:Event`
-  - `:Recipient`
-  - `:RecipientCategory`
-  - `:Payment`
-  - `:Purpose`
-  - `:AssetSegment`
-  - `:TemporalContext`
-  - `:Location`
-- Object properties:
-  - `:hasRule` (Policy → Rule)
-  - `:hasAssetCollection` (Policy → AssetCollection)
-  - `:hasPartyCollection` (Policy → PartyCollection)
-  - `:hasMemberAsset` (AssetCollection → Asset)
-  - `:hasMemberParty` (PartyCollection → Party)
-  - `:performedAction` (Party → Action)
-  - `:attemptedAction` (Party → Action)
-  - `:hasEvent` (Policy or Rule → Event)
-  - `:aboutRule` (Event → Rule)
-  - `:aboutAction` (Event → Action)
-  - `:hasRecipient` (Rule → Recipient)
-  - `:hasRecipientCategory` (Rule → RecipientCategory)
-  - `:hasPayment` (Rule → Payment)
-  - `:hasPurpose` (Rule → Purpose)
-  - `:hasTargetAsset` (Rule → Asset)
-  - `:hasTargetSegment` (Rule → AssetSegment)
-  - `:requestedBy` (Rule → Party)
-  - `:hasLocation` (Party → Location)
-  - `:hasTemporalContext` (Policy → TemporalContext)
-- Datatype properties:
-  - `:currentTime` (TemporalContext → xsd:dateTime)
-  - `:exerciseCount` (Rule → xsd:nonNegativeInteger)
-  - `:exerciseDuration` (Rule → xsd:duration)
-  - `:paymentMade` (Payment → xsd:boolean)
-  - `:amountPaid` (Payment → xsd:decimal)
-  - `:eventTime` (Event → xsd:dateTime)
-  - `:eventDescription` (Event → xsd:string)
-  - `:segmentStartMinute` (AssetSegment → xsd:decimal)
-  - `:segmentEndMinute` (AssetSegment → xsd:decimal)
+:Ontology a owl:Ontology ;
+  rdfs:label "ODRL policy evaluation context ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing contextual information used to evaluate ODRL-like policies, including parties, assets, collections, rules, actions, events, temporal context, recipients, and payments." .
 
-### Step 3. Draft axioms
-- Subclass axioms:
-  - `:AssetSegment rdfs:subClassOf :Asset`
-- Domain/range axioms:
-  - `:hasRule` domain `:Policy`, range `:Rule`
-  - `:hasAssetCollection` domain `:Policy`, range `:AssetCollection`
-  - `:hasPartyCollection` domain `:Policy`, range `:PartyCollection`
-  - `:hasMemberAsset` domain `:AssetCollection`, range `:Asset`
-  - `:hasMemberParty` domain `:PartyCollection`, range `:Party`
-  - `:performedAction` domain `:Party`, range `:Action`
-  - `:attemptedAction` domain `:Party`, range `:Action`
-  - `:hasEvent` domain `owl:Thing`, range `:Event`
-  - `:aboutRule` domain `:Event`, range `:Rule`
-  - `:aboutAction` domain `:Event`, range `:Action`
-  - `:hasRecipient` domain `:Rule`, range `:Recipient`
-  - `:hasRecipientCategory` domain `:Rule`, range `:RecipientCategory`
-  - `:hasPayment` domain
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "A policy being evaluated." .
+
+:Rule a owl:Class ;
+  rdfs:label "Rule" ;
+  rdfs:comment "A rule that is part of a policy and may be exercised." .
+
+:Party a owl:Class ;
+  rdfs:label "Party" ;
+  rdfs:comment "An agent or actor relevant to policy evaluation." .
+
+:Asset a owl:Class ;
+  rdfs:label "Asset" ;
+  rdfs:comment "A resource or content item governed by a policy." .
+
+:AssetCollection a owl:Class ;
+  rdfs:label "Asset collection" ;
+  rdfs:comment "A collection of assets associated with a policy." .
+
+:PartyCollection a owl:Class ;
+  rdfs:label "Party collection" ;
+  rdfs:comment "A collection of parties associated with a policy." .
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "An action that may be performed or attempted in relation to a rule or policy." .
+
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An event that has occurred and may provide contextual information for policy evaluation." .
+
+:Recipient a owl:Class ;
+  rdfs:label "Recipient" ;
+  rdfs:comment "A party that can receive the result of an exercised rule." .
+
+:RecipientCategory a owl:Class ;
+  rdfs:label "Recipient category" ;
+  rdfs:comment "A category of recipients that can receive the result of an exercised rule." .
+
+:Payment a owl:Class ;
+  rdfs:label "Payment" ;
+  rdfs:comment "A financial payment relevant to policy evaluation." .
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "A location associated with a party or event." .
+
+:TemporalContext a owl:Class ;
+  rdfs:label "Temporal context" ;
+  rdfs:comment "A temporal context used to represent current time for policy evaluation." .
+
+:hasRule a owl:ObjectProperty ;
+  rdfs:label "has rule" ;
+  rdfs:comment "Relates a policy to a rule that is part of it." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Rule .
+
+:hasAssetCollection a owl:ObjectProperty ;
+  rdfs:label "has asset collection" ;
+  rdfs:comment "Relates a policy to its asset collection." ;
+  rdfs:domain :Policy ;
+  rdfs:range :AssetCollection .
+
+:hasPartyCollection a owl:ObjectProperty ;
+  rdfs:label "has party collection" ;
+  rdfs:comment "Relates a policy to its party collection." ;
+  rdfs:domain :Policy ;
+  rdfs:range :PartyCollection .
+
+:hasAssetMember a owl:ObjectProperty ;
+  rdfs:label "has asset member" ;
+  rdfs:comment "Relates an asset collection to an asset that is part of it." ;
+  rdfs:domain :AssetCollection ;
+  rdfs:range :Asset .
+
+:hasPartyMember a owl:ObjectProperty ;
+  rdfs:label "has party member" ;
+  rdfs:comment "Relates a party collection to a party that is part of it." ;
+  rdfs:domain :PartyCollection ;
+  rdfs:range :Party .
+
+:hasLocation a owl:ObjectProperty ;
+  rdfs:label "has location" ;
+  rdfs:comment "Relates a party or event to a location." ;
+  rdfs:range :Location .
+
+:performedAction a owl:ObjectProperty ;
+  rdfs:label "performed action" ;
+  rdfs:comment "Relates a party to an action it performed." ;
+  rdfs:domain :Party ;
+  rdfs:range :Action .
+
+:

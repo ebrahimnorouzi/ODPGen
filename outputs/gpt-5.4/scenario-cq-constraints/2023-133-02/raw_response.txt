@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -6,93 +8,81 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "kHealth-Asthma causal influence ODP" ;
-  rdfs:comment "A minimal ontology design pattern for representing asthma-related factors, patient symptoms, medication intake, and outdoor environmental allergens connected by causal relations with effect weights." .
-
-:Factor a owl:Class ;
-  rdfs:label "Factor" ;
-  rdfs:comment "Anything in the scenario that can participate in a causal relation affecting another factor." .
+  rdfs:label "Asthma causal influence ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing causal influences with effect weights among outdoor environmental factors, asthma symptoms, and medication intake in the kHealth-Asthma use case." .
 
 :Patient a owl:Class ;
   rdfs:label "Patient" ;
-  rdfs:comment "A pediatric asthma patient in the self-monitoring project." .
+  rdfs:comment "A patient in the asthma self-monitoring use case." .
+
+:ObservationFeature a owl:Class ;
+  rdfs:label "Observation feature" ;
+  rdfs:comment "A feature observed in the asthma use case, including symptoms, medication intake, and outdoor environmental factors." .
 
 :Symptom a owl:Class ;
   rdfs:label "Symptom" ;
-  rdfs:comment "An asthma symptom experienced by a patient, such as cough, chest tightness, wheezing, or breathing pattern." ;
-  rdfs:subClassOf :Factor .
+  rdfs:comment "An asthma symptom observed for a patient, such as cough, chest tightness, wheezing, or breathing pattern." ;
+  rdfs:subClassOf :ObservationFeature .
 
 :MedicationIntake a owl:Class ;
   rdfs:label "Medication intake" ;
   rdfs:comment "The intake of medication by a patient." ;
-  rdfs:subClassOf :Factor .
+  rdfs:subClassOf :ObservationFeature .
 
-:OutdoorEnvironmentalAllergen a owl:Class ;
-  rdfs:label "Outdoor environmental allergen" ;
-  rdfs:comment "An outdoor environmental factor considered in the scenario, such as pollen or air quality index, that may causally affect symptoms or medication intake." ;
-  rdfs:subClassOf :Factor .
+:OutdoorEnvironmentalFactor a owl:Class ;
+  rdfs:label "Outdoor environmental factor" ;
+  rdfs:comment "An outdoor environmental feature relevant to asthma, such as pollen or air quality index." ;
+  rdfs:subClassOf :ObservationFeature .
 
 :CausalRelation a owl:Class ;
   rdfs:label "Causal relation" ;
-  rdfs:comment "A relation stating that one factor causally affects another factor, optionally with an effect weight." .
+  rdfs:comment "A relation representing that one observed feature causally affects another, optionally with an effect weight." .
 
-:hasSymptom a owl:ObjectProperty ;
-  rdfs:label "has symptom" ;
-  rdfs:comment "Relates a patient to a symptom the patient experiences." ;
+:hasFeature a owl:ObjectProperty ;
+  rdfs:label "has feature" ;
+  rdfs:comment "Relates a patient to an observed feature associated with that patient." ;
   rdfs:domain :Patient ;
-  rdfs:range :Symptom .
-
-:hasMedicationIntake a owl:ObjectProperty ;
-  rdfs:label "has medication intake" ;
-  rdfs:comment "Relates a patient to a medication intake event or state." ;
-  rdfs:domain :Patient ;
-  rdfs:range :MedicationIntake .
-
-:hasCausalRelation a owl:ObjectProperty ;
-  rdfs:label "has causal relation" ;
-  rdfs:comment "Relates a factor to a causal relation in which it participates as the cause." ;
-  rdfs:domain :Factor ;
-  rdfs:range :CausalRelation .
+  rdfs:range :ObservationFeature .
 
 :hasCause a owl:ObjectProperty ;
   rdfs:label "has cause" ;
-  rdfs:comment "Relates a causal relation to the factor that acts as its cause." ;
+  rdfs:comment "Relates a causal relation to the feature that acts as the cause." ;
   rdfs:domain :CausalRelation ;
-  rdfs:range :Factor .
+  rdfs:range :ObservationFeature .
 
 :hasEffect a owl:ObjectProperty ;
   rdfs:label "has effect" ;
-  rdfs:comment "Relates a causal relation to the factor that is affected." ;
+  rdfs:comment "Relates a causal relation to the feature that is affected." ;
   rdfs:domain :CausalRelation ;
-  rdfs:range :Factor .
+  rdfs:range :ObservationFeature .
+
+:affectsPatient a owl:ObjectProperty ;
+  rdfs:label "affects patient" ;
+  rdfs:comment "Relates an observed feature to the patient affected in the use case." ;
+  rdfs:domain :ObservationFeature ;
+  rdfs:range :Patient .
 
 :effectWeight a owl:DatatypeProperty ;
   rdfs:label "effect weight" ;
   rdfs:comment "A numeric weight expressing the strength of a causal effect." ;
   rdfs:domain :CausalRelation ;
   rdfs:range xsd:decimal .
+```
 
-:isPresent a owl:DatatypeProperty ;
-  rdfs:label "is present" ;
-  rdfs:comment "A boolean indicator of whether a factor is present, to support what-if questions about absence or presence." ;
-  rdfs:domain :Factor ;
-  rdfs:range xsd:boolean .
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
 
-:Cough a owl:Class ;
-  rdfs:label "Cough" ;
-  rdfs:comment "A cough symptom experienced by a patient." ;
-  rdfs:subClassOf :Symptom .
+1. PASS — Turtle syntax is well-formed with declared prefixes, terminated triples, and no unmatched brackets.
+2. PASS — All prefixes used in the ontology body (owl, rdf, rdfs, xsd, :) are declared at the top.
+3. PASS — All domain and range declarations refer only to classes defined in this ontology or xsd:decimal.
+4. PASS — No contradictory axioms are present; there are no disjointness or incompatible subclass/domain-range assertions.
+5. PASS — All CQs are supported by the pattern through :CausalRelation, :hasCause, :hasEffect, :effectWeight, and the classes for symptoms, medication intake, outdoor environmental factors, and patient.
+6. PASS — All concepts are grounded in the scenario or CQs; no extra domain concepts or individuals were introduced.
 
-:ChestTightness a owl:Class ;
-  rdfs:label "Chest tightness" ;
-  rdfs:comment "A chest tightness symptom experienced by a patient." ;
-  rdfs:subClassOf :Symptom .
+3. Scope report: (a) requirements from the scenario that are covered, (b) any scenario concepts explicitly excluded and why.
 
-:Wheezing a owl:Class ;
-  rdfs:label "Wheezing" ;
-  rdfs:comment "A wheezing symptom experienced by a patient." ;
-  rdfs:subClassOf :Symptom .
-
-:BreathingPattern a owl:Class ;
-  rdfs:label "Breathing pattern" ;
-  rdfs
+(a) Covered:
+- Pediatric asthma patient context at the abstract level via :Patient.
+- Patient-related observed data categories:
+  - symptoms via :Symptom,
+  - medication intake via :MedicationIntake,
+  - outdoor environment features via :Outdoor

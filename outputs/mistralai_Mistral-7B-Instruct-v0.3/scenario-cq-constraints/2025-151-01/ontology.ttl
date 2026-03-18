@@ -1,79 +1,99 @@
-@prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
-@prefix :     <http://example.org/odp#>.
-
 :Ontology a owl:Ontology ;
-    rdfs:label "Evaluation Request Ontology" ;
-    rdfs:comment "An ontology for modeling evaluation requests on assets.".
+  rdfs:label "Evaluation Request Ontology" ;
+  rdfs:comment "An ontology for modeling evaluation requests with temporal, spatial, role, and request-capability context.".
 
 :Request a owl:Class ;
-    rdfs:label "Evaluation Request" ;
-    rdfs:comment "A formal description of a requested action on a target asset.".
+  rdfs:label "Evaluation Request" ;
+  rdfs:comment "A formal description of a requested action by an assignee on a target asset.".
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "The requested action on a target asset.".
 
 :Assignee a owl:Class ;
-    rdfs:label "Assignee" ;
-    rdfs:comment "The party issuing the evaluation request.".
+  rdfs:label "Assignee" ;
+  rdfs:comment "The party issuing the evaluation request.".
 
-:Employee rdf:type owl:Class ;
-    rdfs:subClassOf [ a owl:Restriction ;
-                      owl:onProperty :assignee ;
-                      owl:hasValue :employee ;
-                      owl:allValuesFrom :Role ].
+:Employee a owl:Class ;
+  rdfs:label "Employee" ;
+  rdfs:comment "An employee of the organization.".
+
+:TargetAsset a owl:Class ;
+  rdfs:label "Target Asset" ;
+  rdfs:comment "The asset that is the target of the evaluation request.".
+
+:Time a owl:Class ;
+  rdfs:label "Time" ;
+  rdfs:comment "The time when the evaluation request was issued.".
+
+:Weekday a owl:Class ;
+  rdfs:label "Weekday" ;
+  rdfs:comment "A day of the week.".
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "The spatial location from which the request is made.".
+
+:EU a owl:Class ;
+  rdfs:label "EU" ;
+  rdfs:comment "The European Union.".
 
 :Role a owl:Class ;
-    rdfs:label "Role" ;
-    rdfs:comment "The role of the assignee.".
+  rdfs:label "Role" ;
+  rdfs:comment "The role of the assignee.".
 
-:Asset a owl:Class ;
-    rdfs:label "Asset" ;
-    rdfs:comment "The target asset of the evaluation request.".
+:RequestCapability a owl:Class ;
+  rdfs:label "Request Capability" ;
+  rdfs:comment "Additional contextual information that can be included in the evaluation request.".
 
-:Weekday a xsd:string ;
-    rdfs:subClassOf [ a owl:Restriction ;
-                      owl:onProperty :time ;
-                      owl:hasValue "Monday"^^xsd:string ;
-                      owl:allValuesFrom [ a owl:Class ;
-                                           owl:unionOf ( ( :Weekday "Tuesday"^^xsd:string )
-                                                            ( :Weekday "Wednesday"^^xsd:string )
-                                                            ( :Weekday "Thursday"^^xsd:string )
-                                                            ( :Weekday "Friday"^^xsd:string ) ) ] ].
+:hasAction a owl:ObjectProperty ;
+  rdfs:label "hasAction" ;
+  rdfs:comment "The action requested on the target asset.".
+  domain :Request ;
+  range :Action.
 
-:EU a xsd:string ;
-    rdfs:subClassOf [ a owl:Restriction ;
-                      owl:onProperty :location ;
-                      owl:hasValue "EU"^^xsd:string ;
-                      owl:allValuesFrom [ a owl:Class ;
-                                           owl:unionOf ( ( :Country "EU_Country_1" )
-                                                            ( :Country "EU_Country_2" )
-                                                           ... ) ] ].
+:hasAssignee a owl:ObjectProperty ;
+  rdfs:label "hasAssignee" ;
+  rdfs:comment "The assignee who issued the evaluation request.".
+  domain :Request ;
+  range :Assignee.
 
-:Time a owl:DatatypeProperty ;
-    rdfs:label "Time" ;
-    rdfs:comment "The time when the evaluation request was issued.".
+:hasTargetAsset a owl:ObjectProperty ;
+  rdfs:label "hasTargetAsset" ;
+  rdfs:comment "The target asset of the evaluation request.".
+  domain :Request ;
+  range :TargetAsset.
 
-:Location a owl:DatatypeProperty ;
-    rdfs:label "Location" ;
-    rdfs:comment "The location from which the evaluation request was issued.".
+:hasTime a owl:ObjectProperty ;
+  rdfs:label "hasTime" ;
+  rdfs:comment "The time when the evaluation request was issued.".
+  domain :Request ;
+  range :Time.
 
-:RequestedAction a owl:ObjectProperty ;
-    rdfs:label "Requested Action" ;
-    rdfs:comment "The action requested on the target asset.".
+:hasWeekday a owl:ObjectProperty ;
+  rdfs:label "hasWeekday" ;
+  rdfs:comment "The day of the week when the evaluation request was issued.".
+  domain :Time ;
+  range :Weekday.
 
-:AdditionalContext a owl:ObjectProperty ;
-    rdfs:label "Additional Context" ;
-    rdfs:comment "Additional contextual information included in the evaluation request.".
+:hasLocation a owl:ObjectProperty ;
+  rdfs:label "hasLocation" ;
+  rdfs:comment "The location from which the evaluation request was made.".
+  domain :Request ;
+  range :Location.
 
-:Request a owl:Class ;
-    rdf:type owl:FunctionalProperty ;
-    rdfs:domain :Assignee ;
-    rdfs:range :Role.
+:hasRole a owl:ObjectProperty ;
+  rdfs:label "hasRole" ;
+  rdfs:comment "The role of the assignee.".
+  domain :Assignee ;
+  range :Role.
 
-:assignee rdf:type owl:ObjectProperty ;
-    rdfs:domain :Request ;
-    rdfs:range :Assignee.
+:hasRequestCapability a owl:ObjectProperty ;
+  rdfs:label "hasRequestCapability" ;
+  rdfs:comment "Additional contextual information that can be included in the evaluation request.".
+  domain :Request ;
+  range :RequestCapability.
 
-:role rdf:type owl:ObjectProperty ;
-    rdfs:domain :Request ;
-    rdfs:range :Role.
+:isEmployee a owl:ObjectProperty ;
+  rdfs:label "isEmployee" ;
+  rdfs:comment "Indicates whether an individual is an employee.".

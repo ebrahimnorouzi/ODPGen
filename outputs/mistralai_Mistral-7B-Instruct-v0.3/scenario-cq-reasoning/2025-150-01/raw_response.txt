@@ -1,49 +1,79 @@
-**Reasoning Steps:**
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Atomic Requirements:
-   - MQTT Clients and Brokers
-   - MQTT NetworkConnections
-   - MQTT Participants (Clients/Brokers) and NetworkConnections
-   - MQTT Clients, ClientIDs, and SOSA platforms
-   - MQTT Clients and SOSA systems (sensors/actuators)
-   - MQTT Broker configuration (host/port)
-   - SOSA sensors, topics, and observations
-   - SOSA actuators, topics, and commands
-   - MQTT TopicSubjects and SOSA FeaturesOfInterest/Properties
-   - MQTT Topic Filters
-   - MQTT Control Packets
-   - MQTT PUBLISH/SUBSCRIBE/UNSUBSCRIBE packets
-   - MQTT Fixed Header, Variable Header, and Payload
-   - MQTT Topic in Variable Header
-   - QoS levels, RETAIN/DUP flags, PacketIdentifier
-   - SubscriptionEntries
-   - MQTT TopicFilters
-   - MQTT payload fields, content, content type, encoding, delimiter, size
+:Ontology a owl:Ontology ;
+  rdfs:label "MQTT Ontology" ;
+  rdfs:comment "Modeling MQTT messages and their semantics in the context of the EKI project.".
 
-2. Candidate Classes and Properties:
-   - :MQTTBroker, :MQTTClient, :NetworkConnection, :Participant, :SOSAPlatform, :SOSASystem, :Sensor, :Actuator, :TopicSubject, :TopicFilter, :ControlPacket, :PublishPacket, :SubscribePacket, :UnsubscribePacket, :FixedHeader, :VariableHeader, :Payload, :Observation, :Command, :QoS, :Retain, :Dup, :PacketIdentifier, :SubscriptionEntry, :Topic, :Content, :ContentType, :Encoding, :Delimiter, :Size
+# Requirement 1: Model MQTT Brokers
+:Broker a owl:Class ;
+  rdfs:label "MQTT Broker" ;
+  rdfs:comment "Represents an MQTT Broker.".
 
-3. Draft Axioms:
-   - :MQTTBroker rdfs:subClassOf owl:Class.
-   - :MQTTClient rdfs:subClassOf owl:Class.
-   - :NetworkConnection rdfs:subClassOf owl:Class.
-   - :Participant rdf:type owl:ObjectProperty ; rdfs:domain :MQTTBroker ; rdfs:range :MQTTClient.
-   - :SOSAPlatform rdfs:subClassOf owl:Class.
-   - :SOSASystem rdfs:subClassOf owl:Class.
-   - :Sensor rdf:type owl:Class ; rdfs:subClassOf :SOSASystem.
-   - :Actuator rdf:type owl:Class ; rdfs:subClassOf :SOSASystem.
-   - :TopicSubject rdf:type owl:ObjectProperty ; rdfs:domain :Observation ; rdfs:range :Topic.
-   - :TopicFilter rdf:type owl:ObjectProperty ; rdfs:domain :SubscriptionEntry ; rdfs:range :Topic.
-   - :ControlPacket rdf:type owl:Class.
-   - :PublishPacket rdf:type owl:Class ; rdfs:subClassOf :ControlPacket.
-   - :SubscribePacket rdf:type owl:Class ; rdfs:subClassOf :ControlPacket.
-   - :UnsubscribePacket rdf:type owl:Class ; rdfs:subClassOf :ControlPacket.
-   - :FixedHeader rdf:type owl:Class ; rdfs:subPropertyOf rdf:type.
-   - :VariableHeader rdf:type owl:Class ; rdfs:subPropertyOf rdf:type.
-   - :Payload rdf:type owl:Class ; rdfs:subPropertyOf rdf:type.
-   - :Observation rdf:type owl:Class.
-   - :Command rdf:type owl:Class.
-   - :QoS rdf:type owl:DatatypeProperty ; rdfs:domain :PublishPacket ; rdfs:range xsd:nonNegativeInteger.
-   - :Retain rdf:type owl:DatatypeProperty ; rdfs:domain :PublishPacket ; rdfs:range xsd:boolean.
-   - :Dup rdf:type owl:DatatypeProperty ; rdfs:domain :PublishPacket ; rdfs:range xsd:boolean.
-   - :PacketIdentifier rdf:type owl:Datatype
+:hasBrokerID a owl:ObjectProperty ;
+  rdfs:domain :Broker ;
+  rdfs:range xsd:string ;
+  rdfs:label "Has Broker ID" ;
+  rdfs:comment "Identifies the MQTT Broker.".
+
+:hasHostPort a owl:ObjectProperty ;
+  rdfs:domain :Broker ;
+  rdfs:range xsd:string ;
+  rdfs:label "Has Host and Port" ;
+  rdfs:comment "Specifies the host and port of the MQTT Broker.".
+
+# Requirement 2: Model MQTT Clients
+:Client a owl:Class ;
+  rdfs:label "MQTT Client" ;
+  rdfs:comment "Represents an MQTT Client.".
+
+:hasClientID a owl:ObjectProperty ;
+  rdfs:domain :Client ;
+  rdfs:range xsd:string ;
+  rdfs:label "Has Client ID" ;
+  rdfs:comment "Identifies the MQTT Client.".
+
+:runsOn a owl:ObjectProperty ;
+  rdfs:domain :Client ;
+  rdfs:range :SOSAPlatform ;
+  rdfs:label "Runs on SOSA Platform" ;
+  rdfs:comment "Specifies the SOSA platform the MQTT Client runs on.".
+
+:hosts a owl:ObjectProperty ;
+  rdfs:domain :Client ;
+  rdfs:range :SOSASystem ;
+  rdfs:label "Hosts SOSA System" ;
+  rdfs:comment "Specifies the SOSA system the MQTT Client hosts.".
+
+# Requirement 3: Model MQTT NetworkConnections
+:NetworkConnection a owl:Class ;
+  rdfs:label "MQTT NetworkConnection" ;
+  rdfs:comment "Represents an MQTT NetworkConnection.".
+
+:isSecure a owl:ObjectProperty ;
+  rdfs:domain :NetworkConnection ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "Is Secure" ;
+  rdfs:comment "Indicates whether the MQTT NetworkConnection is TLS-secured.".
+
+:isInitiatedBy a owl:ObjectProperty ;
+  rdfs:domain :NetworkConnection ;
+  rdfs:range (:Client | :Broker) ;
+  rdfs:label "Is Initiated By" ;
+  rdfs:comment "Specifies the MQTT participant that initiated the NetworkConnection.".
+
+# Requirement 4: Model MQTT Participants
+:Participant a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ;
+                    rdfs:subClassOf (:Broker | :Client) ] ;
+  rdfs:label "MQTT Participant" ;
+  rdfs:comment "Represents an MQTT Broker or Client.".
+
+# Requirement 5: Model SOSA Systems
+:SOSASystem a owl:Class ;
+  rdfs:label "SOSA System" ;
+  rd

@@ -1,57 +1,89 @@
-**Reasoning Steps**
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. **Extract atomic requirements from the scenario**
-	* C1: Identity of Solid actors and their roles is unknown
-	* C2: No metadata about Solid infrastructure
-	* C3: Availability/Discovery of categories of data
-	* C4: Pod and app providers do not provide information on their data handling practices
-	* C5: Users cannot express their privacy policies
-	* C6: No logging or record-keeping
-	* C7: No legal compliance checks
-2. **Propose candidate classes and properties for each requirement**
-	* C1: `:Actor`, `:Role`, `:Identity`
-	* C2: `:Infrastructure`, `:Specification`, `:Functionalities`
-	* C3: `:DataCategory`, `:Pod`, `:DataLocation`
-	* C4: `:DataHandlingPractice`, `:PrivacyNotice`, `:DataRequirement`
-	* C5: `:PrivacyPolicy`, `:UserPreference`, `:DataRequest`
-	* C6: `:Provenance`, `:ConsentRecord`, `:AccessLog`
-	* C7: `:LegalCompliance`, `:GDPRRight`, `:AuditInformation`
-3. **Draft axioms (subclass, domain, range, cardinality, disjointness) for each candidate**
-	* `:Actor` rdfs:subClassOf `:Entity`
-	* `:Role` rdfs:subClassOf `:Job`
-	* `:Identity` rdfs:subClassOf `:Information`
-	* `:Infrastructure` rdfs:subClassOf `:System`
-	* `:Specification` rdfs:subClassOf `:Document`
-	* `:Functionalities` rdfs:subClassOf `:Service`
-	* `:DataCategory` rdfs:subClassOf `:Classification`
-	* `:Pod` rdfs:subClassOf `:Container`
-	* `:DataLocation` rdfs:subClassOf `:Address`
-	* `:DataHandlingPractice` rdfs:subClassOf `:Procedure`
-	* `:PrivacyNotice` rdfs:subClassOf `:Statement`
-	* `:DataRequirement` rdfs:subClassOf `:Demand`
-	* `:PrivacyPolicy` rdfs:subClassOf `:Agreement`
-	* `:UserPreference` rdfs:subClassOf `:Choice`
-	* `:DataRequest` rdfs:subClassOf `:Request`
-	* `:Provenance` rdfs:subClassOf `:History`
-	* `:ConsentRecord` rdfs:subClassOf `:Record`
-	* `:AccessLog` rdfs:subClassOf `:Log`
-	* `:LegalCompliance` rdfs:subClassOf `:Regulation`
-	* `:GDPRRight` rdfs:subClassOf `:Right`
-	* `:AuditInformation` rdfs:subClassOf `:Information`
-4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
-	* CQ1: `:Policy` rdfs:label "Unique Identifier" ; rdfs:comment "Unique identifier of the policy".
-	* CQ2: `:Policy` :hasCreator `:Person`.
-	* CQ3: `:Policy` :hasIssueDate `:Date`.
-	* CQ4: `:Policy` :hasAssignee `:Person`.
-	* CQ5: `:Application` :uses `:Service`.
-	* CQ6: `:AccessMode` rdfs:label "Access Mode" ; rdfs:comment "Access mode being requested".
-	* CQ7: `:PersonalData` rdfs:label "Personal Data" ; rdfs:comment "Personal data being accessed".
-	* CQ8: `:Purpose` rdfs:label "Purpose" ; rdfs:comment "Purpose for accessing the data".
-	* CQs not yet covered: CQ1, CQ2, CQ3, CQ4, CQ5, CQ6, CQ7, CQ8
-5. **Add or refine axioms to cover any uncovered CQs**
-	* `:Policy` rdfs:subClassOf `:Document`
-	* `:Policy` :hasCreator `:Person`.
-	* `:Policy` :hasIssueDate `:Date`.
-	* `:Policy` :hasAssignee `:Person`.
-	* `:Application` rdfs:subClassOf `:Software`
-	* `:Application` :uses `:Service`.
+:Ontology a owl:Ontology ;
+  rdfs:label "Governance Patterns in Solid Apps Ontology" ;
+  rdfs:comment "Ontology for governance patterns in Solid apps".
+
+:Challenge a owl:Class ;
+  rdfs:label "Challenge" ;
+  rdfs:comment "Challenge in governance patterns in Solid apps".
+
+:IdentityChallenge a :Challenge ;
+  rdfs:label "Identity Challenge" ;
+  rdfs:comment "Challenge related to identity of Solid actors and their roles".
+
+:MetadataChallenge a :Challenge ;
+  rdfs:label "Metadata Challenge" ;
+  rdfs:comment "Challenge related to metadata about Solid infrastructure".
+
+:DataAvailabilityChallenge a :Challenge ;
+  rdfs:label "Data Availability Challenge" ;
+  rdfs:comment "Challenge related to availability/discovery of categories of data".
+
+:DataHandlingChallenge a :Challenge ;
+  rdfs:label "Data Handling Challenge" ;
+  rdfs:comment "Challenge related to data handling practices of Pod and app providers".
+
+:PrivacyPolicyChallenge a :Challenge ;
+  rdfs:label "Privacy Policy Challenge" ;
+  rdfs:comment "Challenge related to users expressing their privacy policies".
+
+:LoggingChallenge a :Challenge ;
+  rdfs:label "Logging Challenge" ;
+  rdfs:comment "Challenge related to logging or record-keeping in Pods".
+
+:LegalComplianceChallenge a :Challenge ;
+  rdfs:label "Legal Compliance Challenge" ;
+  rdfs:comment "Challenge related to legal compliance checks in Solid".
+
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "Policy in governance patterns in Solid apps".
+
+:PolicyIdentifier a owl:DatatypeProperty ;
+  rdfs:label "Policy Identifier" ;
+  rdfs:comment "Unique identifier of the policy" ;
+  domain :Policy ;
+  range xsd:string.
+
+:PolicyCreator a owl:ObjectProperty ;
+  rdfs:label "Policy Creator" ;
+  rdfs:comment "Creator of the policy" ;
+  domain :Policy ;
+  range :Actor.
+
+:PolicyIssueDate a owl:DatatypeProperty ;
+  rdfs:label "Policy Issue Date" ;
+  rdfs:comment "Date when the policy was issued" ;
+  domain :Policy ;
+  range xsd:date.
+
+:PolicyAssignee a owl:ObjectProperty ;
+  rdfs:label "Policy Assignee" ;
+  rdfs:comment "Assignee of the policy" ;
+  domain :Policy ;
+  range :Actor.
+
+:Application a owl:Class ;
+  rdfs:label "Application" ;
+  rdfs:comment "Application/service being used to access the data".
+
+:AccessMode a owl:Class ;
+  rdfs:label "Access Mode" ;
+  rdfs:comment "Access mode being requested".
+
+:PersonalData a owl:Class ;
+  rdfs:label "Personal Data" ;
+  rdfs:comment "Personal data being accessed".
+
+:Purpose a owl:Class ;
+  rdfs:label "Purpose" ;
+  rdfs:comment "Purpose for accessing the data".
+
+:Actor a owl:Class ;
+  rdfs:label "Actor" ;
+  rdfs:comment "Actor in governance patterns in Solid apps".

@@ -1,82 +1,89 @@
 ```turtle
-@prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix : <http://example.org/odp#>.
-
 :Ontology a owl:Ontology ;
   rdfs:label "ODRL Policy Evaluation Ontology" ;
   rdfs:comment "An ontology for representing ODRL policies and their evaluation.".
 
-# Scenario-requirement-to-axiom mapping
+:Time a owl:Class ;
+  rdfs:label "Time" ;
+  rdfs:comment "Represents the current time.".
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "Represents the location of a party.".
+
 :Asset a owl:Class ;
   rdfs:label "Asset" ;
-  rdfs:comment "A digital item subject to an ODRL policy.".
+  rdfs:comment "Represents an asset in an asset collection.".
 
 :Party a owl:Class ;
   rdfs:label "Party" ;
-  rdfs:comment "An entity involved in an ODRL policy.".
+  rdfs:comment "Represents a party in a party collection.".
 
 :Action a owl:Class ;
   rdfs:label "Action" ;
-  rdfs:comment "An operation that can be performed on an asset.".
+  rdfs:comment "Represents an action that has been performed or attempted.".
 
 :Event a owl:Class ;
   rdfs:label "Event" ;
-  rdfs:comment "An occurrence of an action or a rule exercise.".
+  rdfs:comment "Represents an event that has occurred.".
 
 :Rule a owl:Class ;
   rdfs:label "Rule" ;
-  rdfs:comment "A condition in an ODRL policy.".
+  rdfs:comment "Represents a rule in an ODRL policy.".
 
-:Payment a owl:Class ;
-  rdfs:label "Payment" ;
-  rdfs:comment "A financial transaction related to an ODRL policy.".
+:Recipient a owl:Class ;
+  rdfs:label "Recipient" ;
+  rdfs:comment "Represents a recipient or category of recipients.".
 
-# CQ-to-axiom mapping
-:CurrentTime rdf:Property ;
-  rdfs:label "Current Time" ;
-  rdfs:comment "The current point in time.".
+:FinancialPayment a owl:Class ;
+  rdfs:label "FinancialPayment" ;
+  rdfs:comment "Represents a financial payment.".
 
-:Location rdf:Property ;
-  rdfs:label "Location" ;
-  rdfs:comment "The geographical position of a party.".
+:hasTime a owl:ObjectProperty ;
+  rdfs:label "hasTime" ;
+  rdfs:comment "Relates a Time to an Event.".
 
-:hasAsset owl:ObjectProperty ;
-  rdfs:label "Has Asset" ;
-  rdfs:comment "A party or a rule has an asset.".
+:hasLocation a owl:ObjectProperty ;
+  rdfs:label "hasLocation" ;
+  rdfs:comment "Relates a Party to a Location.".
 
-:hasParty owl:ObjectProperty ;
-  rdfs:label "Has Party" ;
-  rdfs:comment "A policy has a party.".
+:hasAsset a owl:ObjectProperty ;
+  rdfs:label "hasAsset" ;
+  rdfs:comment "Relates a Policy to an Asset.".
 
-:performedAction owl:ObjectProperty ;
-  rdfs:label "Performed Action" ;
-  rdfs:comment "A party or an event performed an action.".
+:hasParty a owl:ObjectProperty ;
+  rdfs:label "hasParty" ;
+  rdfs:comment "Relates a Policy to a Party.".
 
-:exercisedRule owl:ObjectProperty ;
-  rdfs:label "Exercised Rule" ;
-  rdfs:comment "An event exercised a rule.".
+:performedAction a owl:ObjectProperty ;
+  rdfs:label "performedAction" ;
+  rdfs:comment "Relates an Event to an Action.".
 
-:hasEvent owl:ObjectProperty ;
-  rdfs:label "Has Event" ;
-  rdfs:comment "A rule or a party has an event.".
+:exercisedRule a owl:ObjectProperty ;
+  rdfs:label "exercisedRule" ;
+  rdfs:comment "Relates an Event to a Rule.".
 
-:hasRecipient owl:ObjectProperty ;
-  rdfs:label "Has Recipient" ;
-  rdfs:comment "A rule has a recipient or a category of recipients.".
+:hasRecipient a owl:ObjectProperty ;
+  rdfs:label "hasRecipient" ;
+  rdfs:comment "Relates an Event to a Recipient.".
 
-:hasPayment owl:ObjectProperty ;
-  rdfs:label "Has Payment" ;
-  rdfs:comment "A party or an event has a payment.".
+:hasFinancialPayment a owl:ObjectProperty ;
+  rdfs:label "hasFinancialPayment" ;
+  rdfs:comment "Relates an Event to a FinancialPayment.".
 
-:amount xsd:decimal ;
-  rdfs:label "Amount" ;
-  rdfs:comment "The monetary value of a payment.".
+Scenario-requirement-to-axiom mapping:
+1. hasTime: Represents the current time in relation to an event.
+2. hasLocation: Represents the location of a party.
+3. hasAsset: Represents the assets in an asset collection of the policy being evaluated.
+4. hasParty: Represents the parties in a party collection of the policy being evaluated.
+5. performedAction: Represents the actions that have been performed or attempted.
+6. exercisedRule: Represents the rules that have been exercised.
+7. hasRecipient: Represents the recipients or categories of recipients that can receive the result of the rule that has been exercised.
+8. hasFinancialPayment: Represents whether a financial payment has been made and the amount paid.
 
-# Intentionally excluded concepts:
-- No scenario concepts were explicitly left out as they are all necessary for answering the CQs.
-```
-
-This ODP represents the scenario of evaluating ODRL policies for accessing a video stream, and it supports answering all the given CQs. The ontology includes classes for Asset, Party, Action, Event, Rule, and Payment, as well as properties to relate these classes. The properties are designed to capture the necessary relationships between the classes to answer the CQs. The ontology also includes a property for the current time and the amount of a payment. No scenario concepts were intentionally left out.
+CQ-to-axiom mapping:
+- What is the current time? :hasTime
+- What is the location of a party? :hasLocation
+- What assets are part of the asset collection of the policy that is being evaluated? :hasAsset
+- Which parties are part of the party collection of the policy that is being evaluated? :hasParty
+- What actions were already performed or attempted?

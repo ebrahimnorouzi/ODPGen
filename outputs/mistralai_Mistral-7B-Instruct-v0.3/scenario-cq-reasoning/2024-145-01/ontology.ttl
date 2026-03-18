@@ -1,3 +1,75 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
   rdfs:label "Legal Tasks Ontology" ;
-  rdfs:comment "An ontology for managing legal tasks.".
+  rdfs:comment "An ontology for managing legal tasks, court hierarchies, and bad check crime regulations.".
+
+# Court hierarchy
+:Court a owl:Class ;
+  rdfs:label "Court" ;
+  rdfs:comment "A legal entity responsible for hearing and deciding cases.".
+
+:DistrictCourt a owl:Class ;
+  rdfs:subClassOf [ owl:theClass :Court ] ;
+  rdfs:label "District Court" ;
+  rdfs:comment "A district-level court in a court hierarchy.".
+
+:StateCourt a owl:Class ;
+  rdfs:subClassOf [ owl:theClass :Court ] ;
+  rdfs:label "State Court" ;
+  rdfs:comment "A state-level court in a court hierarchy.".
+
+:HighCourt a owl:Class ;
+  rdfs:subClassOf [ owl:theClass :Court ] ;
+  rdfs:label "High Court" ;
+  rdfs:comment "A high-level court in a court hierarchy.".
+
+:hasAuthority a owl:ObjectProperty ;
+  rdfs:domain [ owl:theClass :Court ] ;
+  rdfs:range [ owl:theClass :Court ] ;
+  rdfs:label "Has Authority" ;
+  rdfs:comment "The court that has authority over another court.".
+
+# Court locations
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "A geographical location where a court is situated.".
+
+:State a owl:Class ;
+  rdfs:subClassOf [ owl:theClass :Location ] ;
+  rdfs:label "State" ;
+  rdfs:comment "A geographical state in India.".
+
+:hasLocation a owl:ObjectProperty ;
+  rdfs:domain [ owl:theClass :Court ] ;
+  rdfs:range [ owl:theClass :Location ] ;
+  rdfs:label "Has Location" ;
+  rdfs:comment "The location where a court is situated.".
+
+# Bad check regulations
+:Check a owl:Class ;
+  rdfs:label "Check" ;
+  rdfs:comment "A financial instrument that orders a bank to pay a certain amount of money to the bearer.".
+
+:BadCheck a owl:Class ;
+  rdfs:subClassOf [ owl:theClass :Check ] ;
+  rdfs:label "Bad Check" ;
+  rdfs:comment "A check that is not honored by the bank due to insufficient funds.".
+
+:Transaction a owl:Class ;
+  rdfs:label "Transaction" ;
+  rdfs:comment "A financial transaction involving a check.".
+
+:CheckTransaction a owl:Class ;
+  rdfs:subClassOf [ owl:theClass :Transaction ] ;
+  rdfs:label "Check Transaction" ;
+  rdfs:comment "A financial transaction related to a check.".
+
+:CheckPayment a owl:Class ;
+  rdfs:subClassOf [ owl:theClass :CheckTransaction ] ;
+  rdfs:label "Check Payment" ;
+  rdfs:comment "A check transaction that represents a payment.".

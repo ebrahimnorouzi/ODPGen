@@ -1,5 +1,3 @@
-### Turtle Ontology
-
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -8,8 +6,8 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Relational Database Access Control Ontology" ;
-  rdfs:comment "Ontology for securing access to a relational database queried via Structured Query Language (SQL)".
+  rdfs:label "Relational Database Access Policy Ontology" ;
+  rdfs:comment "Ontology for representing relational database access policies".
 
 :Database a owl:Class ;
   rdfs:label "Relational Database" ;
@@ -27,12 +25,12 @@
 
 :PrimaryKey a owl:Class ;
   rdfs:label "Primary Key" ;
-  rdfs:comment "Primary key relationship in the schema" ;
+  rdfs:comment "A primary key relationship in the schema" ;
   rdfs:subClassOf :Table.
 
 :ForeignKey a owl:Class ;
   rdfs:label "Foreign Key" ;
-  rdfs:comment "Foreign key relationship in the schema" ;
+  rdfs:comment "A foreign key relationship in the schema" ;
   rdfs:subClassOf :Table.
 
 :Policy a owl:Class ;
@@ -41,23 +39,49 @@
 
 :ReadAction a owl:Class ;
   rdfs:label "Read Action" ;
-  rdfs:comment "High-level read action".
+  rdfs:comment "A high-level read action".
 
 :ModifyAction a owl:Class ;
   rdfs:label "Modify Action" ;
-  rdfs:comment "High-level modify action".
+  rdfs:comment "A high-level modify action".
 
 :ViewActionScope a owl:Class ;
   rdfs:label "View Action Scope" ;
-  rdfs:comment "View action scope for read operations".
+  rdfs:comment "An action scope for read operations".
 
 :ProcessActionScope a owl:Class ;
   rdfs:label "Process Action Scope" ;
-  rdfs:comment "Process action scope for read operations".
+  rdfs:comment "An action scope for read operations".
 
-:Agent a owl:Class ;
-  rdfs:label "Agent" ;
-  rdfs:comment "An agent executing a SQL query".
+:TablePolicy a owl:Class ;
+  rdfs:label "Table Policy" ;
+  rdfs:comment "A policy defined at table level" ;
+  rdfs:subClassOf :Policy.
+
+:ColumnPolicy a owl:Class ;
+  rdfs:label "Column Policy" ;
+  rdfs:comment "A policy defined at column level" ;
+  rdfs:subClassOf :Policy.
+
+:RowPolicy a owl:Class ;
+  rdfs:label "Row Policy" ;
+  rdfs:comment "A policy defined at row level using conditions" ;
+  rdfs:subClassOf :Policy.
+
+:ProhibitedModifyAction a owl:Class ;
+  rdfs:label "Prohibited Modify Action" ;
+  rdfs:comment "A prohibited modify action on a table" ;
+  rdfs:subClassOf :ModifyAction.
+
+:TableReadProhibition a owl:Class ;
+  rdfs:label "Table Read Prohibition" ;
+  rdfs:comment "A table-level read prohibition" ;
+  rdfs:subClassOf :ReadAction.
+
+:ConditionalRowLevelReadRestriction a owl:Class ;
+  rdfs:label "Conditional Row-Level Read Restriction" ;
+  rdfs:comment "A conditional row-level read restriction for later enforcement" ;
+  rdfs:subClassOf :ReadAction.
 
 :SQLQuery a owl:Class ;
   rdfs:label "SQL Query" ;
@@ -73,45 +97,18 @@
   rdfs:comment "A SQL update statement" ;
   rdfs:subClassOf :SQLQuery.
 
-:TableRef a owl:Class ;
-  rdfs:label "Table Reference" ;
-  rdfs:comment "A reference to a table in a query" ;
+:SemanticActionType a owl:Class ;
+  rdfs:label "Semantic Action Type" ;
+  rdfs:comment "A semantic action type for a SQL statement" ;
   rdfs:subClassOf :SQLQuery.
 
-:ColumnRef a owl:Class ;
-  rdfs:label "Column Reference" ;
-  rdfs:comment "A reference to a column in a query" ;
+:ExecutingAgent a owl:Class ;
+  rdfs:label "Executing Agent" ;
+  rdfs:comment "The agent executing a SQL query".
+
+:SQLClause a owl:Class ;
+  rdfs:label "SQL Clause" ;
+  rdfs:comment "A SQL clause" ;
   rdfs:subClassOf :SQLQuery.
 
-:EffectiveActionScope a owl:Class ;
-  rdfs:label "Effective Action Scope" ;
-  rdfs:comment "Effective action scope for a query".
-
-:Violated a owl:Class ;
-  rdfs:label "Violated" ;
-  rdfs:comment "A referenced table or column is violated".
-
-:RowTag a owl:Class ;
-  rdfs:label "Row Tag" ;
-  rdfs:comment "A referenced table or column is tagged as a row".
-
-:PolicyHasAgent a owl:ObjectProperty ;
-  rdfs:label "Policy Has Agent" ;
-  rdfs:comment "A policy is associated with an agent" ;
-  rdfs:domain :Policy ;
-  rdfs:range :Agent.
-
-:PolicyHasAction a owl:ObjectProperty ;
-  rdfs:label "Policy Has Action" ;
-  rdfs:comment "A policy specifies an action" ;
-  rdfs:domain :Policy ;
-  rdfs:range :ReadAction.
-
-:PolicyHasScope a owl:ObjectProperty ;
-  rdfs:label "Policy Has Scope" ;
-  rdfs:comment "A policy specifies a scope" ;
-  rdfs:domain :Policy ;
-  rdfs:range :ViewActionScope.
-
-:TableHasPrimaryKey a owl:ObjectProperty ;
-  rdfs:label "Table Has Primary Key
+:ViewScope a owl:Class ;

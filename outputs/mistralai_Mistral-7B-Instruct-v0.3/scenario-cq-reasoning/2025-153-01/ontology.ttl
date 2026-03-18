@@ -1,19 +1,73 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
   rdfs:label "Persistent Identifier Ontology" ;
-  rdfs:comment "Ontology for managing persistent identifiers across domains.".
+  rdfs:comment "An ontology for managing persistent identifiers across time.".
 
-:PID a owl:Class ;
-  rdfs:label "PersistentIdentifier" ;
-  rdfs:comment "Unique string identifier.".
+:PersistentIdentifier a owl:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A unique identifier that dynamically resolves to a current referent.".
 
-:Entity a owl:Class ;
-  rdfs:label "Entity" ;
-  rdfs:comment "Anything that can be identified by a PID.".
+:Referent a owl:Class ;
+  rdfs:label "Referent" ;
+  rdfs:comment "The entity that a persistent identifier currently or previously refers to.".
+
+:TemporalBinding a owl:ObjectProperty ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :Referent ;
+  rdfs:label "Temporal Binding" ;
+  rdfs:comment "The relationship between a persistent identifier and its referent at a specific time.".
+
+:hasObservation a owl:ObjectProperty ;
+  rdfs:domain :Referent ;
+  rdfs:range :Observation ;
+  rdfs:label "Has Observation" ;
+  rdfs:comment "The relationship between a referent and its associated observations.".
+
+:Transition a owl:ObjectProperty ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TransitionEvent ;
+  rdfs:label "Transition" ;
+  rdfs:comment "The relationship between a persistent identifier and the event that caused its referent to change.".
+
+:TransitionEvent a owl:Class ;
+  rdfs:label "Transition Event" ;
+  rdfs:comment "An event that triggers a change in the referent of a persistent identifier.".
 
 :Observation a owl:Class ;
   rdfs:label "Observation" ;
-  rdfs:comment "Data associated with an entity.".
+  rdfs:comment "A factual statement about a referent, such as last trade price, trading volume, or settlement value.".
+
+:TimeStamp a xsd:dateTime ;
+  rdfs:label "TimeStamp" ;
+  rdfs:comment "A specific point in time.".
+
+:hasTimeStamp a owl:ObjectProperty ;
+  rdfs:domain [ a owl:Class ; owl:disjointWith (:TransitionEvent) ] ;
+  rdfs:range :TimeStamp ;
+  rdfs:label "Has TimeStamp" ;
+  rdfs:comment "The relationship between an entity and the time it was observed or a transition occurred.".
 
 :Rule a owl:Class ;
   rdfs:label "Rule" ;
-  rdfs:comment "Governs PID transitions.".
+  rdfs:comment "A set of conditions that trigger a transition event.".
+
+:appliesTo a owl:ObjectProperty ;
+  rdfs:domain :Rule ;
+  rdfs:range :TransitionEvent ;
+  rdfs:label "Applies To" ;
+  rdfs:comment "The relationship between a rule and the transition event it triggers.".
+
+:hasGap a owl:ObjectProperty ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :Gap ;
+  rdfs:label "Has Gap" ;
+  rdfs:comment "The relationship between a persistent identifier and a gap in its temporal bindings.".
+
+:Gap a owl:Class ;
+  rdfs:label "Gap" ;
+  rdfs:comment "A period of time during which a persistent identifier does not have a valid referent.".

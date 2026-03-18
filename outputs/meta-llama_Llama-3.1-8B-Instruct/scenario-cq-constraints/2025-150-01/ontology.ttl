@@ -5,90 +5,94 @@
 @prefix :     <http://example.org/odp#>.
 @prefix mqtt: <http://example.org/mqtt#>.
 @prefix qos:  <http://example.org/qos#>.
-@prefix sosa: <http://www.opengis.net/def/property/OGC/0/0616/>.
+@prefix sosa: <http://www.opengis.net/def/property/OGC/0.0.4/>.
 @prefix qudt: <http://qudt.org/>.
 
 :Ontology a owl:Ontology ;
   rdfs:label "MQTT Ontology" ;
-  rdfs:comment "Modeling MQTT message protocol for IoT and industrial settings".
+  rdfs:comment "Modeling MQTT message protocol in industrial and IoT settings".
+
+:MQTT a owl:Class ;
+  rdfs:label "MQTT" ;
+  rdfs:comment "Message Queuing Telemetry Transport protocol".
 
 :MQTTClient a owl:Class ;
   rdfs:label "MQTT Client" ;
-  rdfs:comment "Client in MQTT message protocol".
+  rdfs:comment "Client participating in MQTT protocol" ;
+  rdfs:subClassOf :MQTT.
 
 :MQTTBroker a owl:Class ;
   rdfs:label "MQTT Broker" ;
-  rdfs:comment "Broker in MQTT message protocol".
+  rdfs:comment "Broker participating in MQTT protocol" ;
+  rdfs:subClassOf :MQTT.
 
 :MQTTNetworkConnection a owl:Class ;
   rdfs:label "MQTT Network Connection" ;
-  rdfs:comment "Network connection in MQTT message protocol".
-
-:MQTTParticipant a owl:Class ;
-  rdfs:label "MQTT Participant" ;
-  rdfs:comment "Participant in MQTT message protocol".
-
-:MQTTClientID a owl:DatatypeProperty ;
-  rdfs:label "MQTT Client ID" ;
-  rdfs:comment "Client ID in MQTT message protocol" ;
-  domain :MQTTClient ;
-  range xsd:string.
-
-:MQTTNetworkConnectionTLS a owl:DatatypeProperty ;
-  rdfs:label "MQTT Network Connection TLS" ;
-  rdfs:comment "TLS status of MQTT network connection" ;
-  domain :MQTTNetworkConnection ;
-  range xsd:boolean.
-
-:MQTTNetworkConnectionInitiator a owl:DatatypeProperty ;
-  rdfs:label "MQTT Network Connection Initiator" ;
-  rdfs:comment "Initiator of MQTT network connection" ;
-  domain :MQTTNetworkConnection ;
-  range :MQTTParticipant.
-
-:MQTTNetworkConnectionAccepted a owl:DatatypeProperty ;
-  rdfs:label "MQTT Network Connection Accepted" ;
-  rdfs:comment "Accepted status of MQTT network connection" ;
-  domain :MQTTNetworkConnection ;
-  range xsd:boolean.
+  rdfs:comment "Network connection between MQTT clients and brokers" ;
+  rdfs:subClassOf :MQTT.
 
 :MQTTTopic a owl:Class ;
   rdfs:label "MQTT Topic" ;
-  rdfs:comment "Topic in MQTT message protocol".
+  rdfs:comment "Topic in MQTT protocol".
 
 :MQTTTopicFilter a owl:Class ;
   rdfs:label "MQTT Topic Filter" ;
-  rdfs:comment "Topic filter in MQTT message protocol".
+  rdfs:comment "Filter applied to MQTT topics".
 
 :MQTTControlPacket a owl:Class ;
   rdfs:label "MQTT Control Packet" ;
-  rdfs:comment "Control packet in MQTT message protocol".
+  rdfs:comment "Control packet in MQTT protocol".
 
 :MQTTPublishPacket a owl:Class ;
   rdfs:label "MQTT Publish Packet" ;
-  rdfs:comment "Publish packet in MQTT message protocol".
+  rdfs:comment "Publish packet in MQTT protocol".
 
 :MQTTSUBSCRIBEPacket a owl:Class ;
   rdfs:label "MQTT SUBSCRIBE Packet" ;
-  rdfs:comment "SUBSCRIBE packet in MQTT message protocol".
+  rdfs:comment "SUBSCRIBE packet in MQTT protocol".
 
-:MQTTUnsubscribePacket a owl:Class ;
+:MQTTUNSUBSCRIBEPacket a owl:Class ;
   rdfs:label "MQTT UNSUBSCRIBE Packet" ;
-  rdfs:comment "UNSUBSCRIBE packet in MQTT message protocol".
+  rdfs:comment "UNSUBSCRIBE packet in MQTT protocol".
 
-:MQTTClient a owl:disjointWith :MQTTBroker.
+:MQTTClientID a owl:DatatypeProperty ;
+  rdfs:label "MQTT Client ID" ;
+  rdfs:comment "Unique identifier for MQTT client" ;
+  rdfs:domain :MQTTClient ;
+  rdfs:range xsd:string.
 
-:MQTTClientID rdfs:subPropertyOf :MQTTClient.
-:MQTTNetworkConnectionTLS rdfs:subPropertyOf :MQTTNetworkConnection.
-:MQTTNetworkConnectionInitiator rdfs:subPropertyOf :MQTTNetworkConnection.
-:MQTTNetworkConnectionAccepted rdfs:subPropertyOf :MQTTNetworkConnection.
+:MQTTBrokerHost a owl:DatatypeProperty ;
+  rdfs:label "MQTT Broker Host" ;
+  rdfs:comment "Host of MQTT broker" ;
+  rdfs:domain :MQTTBroker ;
+  rdfs:range xsd:string.
 
-:MQTTTopic rdfs:subClassOf :MQTTParticipant.
-:MQTTTopicFilter rdfs:subClassOf :MQTTTopic.
-:MQTTControlPacket rdfs:subClassOf :MQTTParticipant.
-:MQTTPublishPacket rdfs:subClassOf :MQTTControlPacket.
-:MQTTSUBSCRIBEPacket rdfs:subClassOf :MQTTControlPacket.
-:MQTTUnsubscribePacket rdfs:subClassOf :MQTTControlPacket.
+:MQTTBrokerPort a owl:DatatypeProperty ;
+  rdfs:label "MQTT Broker Port" ;
+  rdfs:comment "Port of MQTT broker" ;
+  rdfs:domain :MQTTBroker ;
+  rdfs:range xsd:integer.
 
-:MQTTClientID rdfs:domain :MQTTClient.
-:MQTTNetworkConnectionTLS rdfs:domain :MQTTNetworkConnection.
+:MQTTNetworkConnectionTLS a owl:DatatypeProperty ;
+  rdfs:label "MQTT Network Connection TLS" ;
+  rdfs:comment "TLS security of MQTT network connection" ;
+  rdfs:domain :MQTTNetworkConnection ;
+  rdfs:range xsd:boolean.
+
+:MQTTTopicName a owl:DatatypeProperty ;
+  rdfs:label "MQTT Topic Name" ;
+  rdfs:comment "Name of MQTT topic" ;
+  rdfs:domain :MQTTTopic ;
+  rdfs:range xsd:string.
+
+:MQTTTopicFilterPattern a owl:DatatypeProperty ;
+  rdfs:label "MQTT Topic Filter Pattern" ;
+  rdfs:comment "Pattern of MQTT topic filter" ;
+  rdfs:domain :MQTTTopicFilter ;
+  rdfs:range xsd:string.
+
+:MQTTControlPacketPacketIdentifier a owl:DatatypeProperty ;
+  rdfs:label "MQTT Control Packet Packet Identifier" ;
+  rdfs:comment "Identifier of MQTT control packet" ;
+  rdfs:domain :MQTTControlPacket ;
+  rdfs:range xsd:integer.

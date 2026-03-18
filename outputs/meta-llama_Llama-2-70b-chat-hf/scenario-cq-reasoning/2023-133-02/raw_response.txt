@@ -1,59 +1,81 @@
-Reasoning steps:
-
-1. Extract atomic requirements from the scenario:
-* The ontology should represent the causal relations between outdoor environmental factors, asthma symptoms, and medication intake.
-* The ontology should be able to answer competency questions about the causal effects of outdoor environmental factors on medication intake and asthma symptoms.
-* The ontology should be able to represent the probability of a patient experiencing a cough due to outdoor environmental factors.
-* The ontology should be able to represent the effect of the presence or absence of outdoor environmental factors on medication intake.
-2. Propose candidate classes and properties for each requirement:
-* Classes:
-	+ OutdoorEnvironment
-	+ AsthmaSymptom
-	+ Medication
-	+ CausalRelation
-* Properties:
-	+ hasCausalEffect
-	+ causes
-	+ isCausedBy
-	+ hasProbability
-	+ hasEffectWeight
-3. Draft axioms for each candidate:
-* OutdoorEnvironment:
-	+ hasCausalEffect(pollen, AsthmaSymptom:Cough)
-	+ hasCausalEffect(AQI, AsthmaSymptom:Cough)
-* AsthmaSymptom:
-	+ causes(Medication:Intake)
-	+ isCausedBy(OutdoorEnvironment:Pollen)
-	+ isCausedBy(OutdoorEnvironment:AQI)
-* Medication:
-	+ hasProbability(AsthmaSymptom:Cough, 0.8)
-	+ hasProbability(AsthmaSymptom:Cough, 0.4)
-* CausalRelation:
-	+ hasEffectWeight(OutdoorEnvironment:Pollen, AsthmaSymptom:Cough, 0.8)
-	+ hasEffectWeight(OutdoorEnvironment:AQI, AsthmaSymptom:Cough, 0.4)
-4. Check which axioms enable answering each competency question:
-* Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI?
-	+ Yes, the axioms enable answering this question.
-* How much does the presence of an asthma symptom effect the intake of medication?
-	+ The axioms enable answering this question by providing the probability of a patient experiencing a cough due to outdoor environmental factors.
-* How does an outdoor environmental allergen affect the patient?
-	+ The axioms enable answering this question by providing the causal relations between outdoor environmental factors and asthma symptoms.
-* What is the probable cause of the cough experienced by the patient?
-	+ The axioms enable answering this question by providing the causal relations between outdoor environmental factors and asthma symptoms.
-* What if pollen (or AQI) allergen was not present in the outdoor environment, how would it effect the intake of medication?
-	+ The axioms do not enable answering this question directly, but we can infer the answer by reasoning about the inverse of the causal relations.
-* What if the patient did not experience a cough, how would it effect the intake of medication?
-	+ The axioms do not enable answering this question directly, but we can infer the answer by reasoning about the inverse of the causal relations.
-5. Add or refine axioms to cover any uncovered competency questions:
-* Add a new axiom to represent the inverse of the causal relations:
-	+ hasInverseCausalEffect(OutdoorEnvironment:Pollen, AsthmaSymptom:Cough)
-	+ hasInverseCausalEffect(OutdoorEnvironment:AQI, AsthmaSymptom:Cough)
-6. Remove any classes or properties not traceable to a requirement or competency question:
-* Remove the hasEffectWeight property, as it is not necessary to answer any of the competency questions.
-
-Final ontology:
+Turtle Ontology:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix x
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Asthma Ontology" ;
+rdfs:comment "An ontology for describing asthma symptoms, medication intake, and outdoor environmental factors.".
+
+:AsthmaPatient a owl:Class ;
+rdfs:label "Asthma Patient" ;
+rdfs:comment "An individual who has asthma.".
+
+:Symptom a owl:Class ;
+rdfs:label "Symptom" ;
+rdfs:comment "A symptom experienced by an asthma patient.".
+
+:Cough a owl:Class ;
+rdfs:label "Cough" ;
+rdfs:comment "A cough experienced by an asthma patient.".
+
+:ChestTightness a owl:Class ;
+rdfs:label "Chest Tightness" ;
+rdfs:comment "Chest tightness experienced by an asthma patient.".
+
+:Wheezing a owl:Class ;
+rdfs:label "Wheezing" ;
+rdfs:comment "Wheezing experienced by an asthma patient.".
+
+:BreathingPatterns a owl:Class ;
+rdfs:label "Breathing Patterns" ;
+rdfs:comment "Breathing patterns experienced by an asthma patient.".
+
+:Medication a owl:Class ;
+rdfs:label "Medication" ;
+rdfs:comment "A medication taken by an asthma patient.".
+
+:Pollen a owl:Class ;
+rdfs:label "Pollen" ;
+rdfs:comment "Pollen in the outdoor environment.".
+
+:AQI a owl:Class ;
+rdfs:label "AQI" ;
+rdfs:comment "Air Quality Index in the outdoor environment.".
+
+:Presence a owl:Class ;
+rdfs:label "Presence" ;
+rdfs:comment "The presence of an outdoor environmental factor.".
+
+:CausalRelation a owl:ObjectProperty ;
+rdfs:label "Causal Relation" ;
+rdfs:comment "A causal relation between two entities.".
+
+:EffectWeight a owl:DatatypeProperty ;
+rdfs:label "Effect Weight" ;
+rdfs:comment "The effect weight of a causal relation.".
+
+:AsthmaPatient :hasSymptom :Symptom.
+:AsthmaPatient :hasMedication :Medication.
+:Symptom :isCausedBy :Presence.
+:Presence :hasEffectWeight :EffectWeight.
+:Medication :isCausedBy :Presence.
+:Cough :isA :Symptom.
+:ChestTightness :isA :Symptom.
+:Wheezing :isA :Symptom.
+:BreathingPatterns :isA :Symptom.
+:Pollen :isA :Presence.
+:AQI :isA :Presence.
+```
+Reasoning Summary:
+
+* Extracted atomic requirements:
+	+ The presence of outdoor environmental allergens (pollen, AQI) affects the patient's symptoms.
+	+ The patient's symptoms (cough, chest tightness, wheezing, breathing patterns) are caused by the presence of outdoor environmental allergens.
+	+ The patient's medication intake is caused by the presence of outdoor environmental allergens.
+	+ The effect of outdoor environmental allergens on the patient's symptoms and medication intake can be quantified using effect weights.
+* Proposed candidate classes and properties:
+	+ :Asthma

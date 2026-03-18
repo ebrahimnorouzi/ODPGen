@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -6,109 +8,90 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Solid governance policy ODP" ;
-  rdfs:comment "An ontology design pattern for representing governance-relevant policy metadata in Solid apps, including policy identity, creator, issuance time, assignee, requesting application or service, requested access mode, personal data involved, and purpose of access." .
-
-#################################################################
-# Classes
-#################################################################
+    rdfs:label "Solid policy and data access governance ODP" ;
+    rdfs:comment "An ontology design pattern for representing governance-relevant policy metadata and data access requests in Solid settings, including policy identifier, creator, issuance time, assignee, application used, access mode, personal data involved, and purpose of access." .
 
 :Policy a owl:Class ;
-  rdfs:label "Policy" ;
-  rdfs:comment "A governance or privacy-related policy that captures conditions for accessing personal data." .
+    rdfs:label "Policy" ;
+    rdfs:comment "A governance or privacy-related policy that can be identified, created by an actor, issued at a time, and assigned to an actor." .
 
 :Actor a owl:Class ;
-  rdfs:label "Actor" ;
-  rdfs:comment "An entity involved in the Solid ecosystem, such as a user, provider, or other party relevant to a policy." .
+    rdfs:label "Actor" ;
+    rdfs:comment "An entity participating in Solid governance or data access contexts, such as a user, provider, or other responsible party." .
 
 :Application a owl:Class ;
-  rdfs:label "Application" ;
-  rdfs:comment "An application or service used to access data under a policy." .
+    rdfs:label "Application" ;
+    rdfs:comment "An application or service used to access data." .
+
+:AccessRequest a owl:Class ;
+    rdfs:label "Access request" ;
+    rdfs:comment "A request or governed act of accessing personal data through an application or service, with a specified access mode and purpose." .
 
 :AccessMode a owl:Class ;
-  rdfs:label "Access mode" ;
-  rdfs:comment "A mode of access being requested for data, such as a type of permitted operation." .
+    rdfs:label "Access mode" ;
+    rdfs:comment "A mode of access being requested for data, such as a type of permitted operation." .
 
 :PersonalData a owl:Class ;
-  rdfs:label "Personal data" ;
-  rdfs:comment "Personal data that is the subject of access under a policy." .
+    rdfs:label "Personal data" ;
+    rdfs:comment "Personal data that is the subject of an access request or policy-governed access." .
 
 :Purpose a owl:Class ;
-  rdfs:label "Purpose" ;
-  rdfs:comment "The purpose for which personal data is accessed under a policy." .
+    rdfs:label "Purpose" ;
+    rdfs:comment "The purpose for which personal data is being accessed." .
 
-#################################################################
-# Object Properties
-#################################################################
+:hasPolicyIdentifier a owl:DatatypeProperty ;
+    rdfs:label "has policy identifier" ;
+    rdfs:comment "Relates a policy to its unique identifier." ;
+    rdfs:domain :Policy ;
+    rdfs:range xsd:string .
 
 :hasCreator a owl:ObjectProperty ;
-  rdfs:label "has creator" ;
-  rdfs:comment "Relates a policy to the actor who created it." ;
-  rdfs:domain :Policy ;
-  rdfs:range :Actor .
-
-:hasAssignee a owl:ObjectProperty ;
-  rdfs:label "has assignee" ;
-  rdfs:comment "Relates a policy to the actor to whom the policy is assigned." ;
-  rdfs:domain :Policy ;
-  rdfs:range :Actor .
-
-:usesApplication a owl:ObjectProperty ;
-  rdfs:label "uses application" ;
-  rdfs:comment "Relates a policy to the application or service being used to access the data." ;
-  rdfs:domain :Policy ;
-  rdfs:range :Application .
-
-:hasAccessMode a owl:ObjectProperty ;
-  rdfs:label "has access mode" ;
-  rdfs:comment "Relates a policy to the access mode being requested." ;
-  rdfs:domain :Policy ;
-  rdfs:range :AccessMode .
-
-:hasPersonalData a owl:ObjectProperty ;
-  rdfs:label "has personal data" ;
-  rdfs:comment "Relates a policy to the personal data being accessed." ;
-  rdfs:domain :Policy ;
-  rdfs:range :PersonalData .
-
-:hasPurpose a owl:ObjectProperty ;
-  rdfs:label "has purpose" ;
-  rdfs:comment "Relates a policy to the purpose for accessing the data." ;
-  rdfs:domain :Policy ;
-  rdfs:range :Purpose .
-
-#################################################################
-# Datatype Properties
-#################################################################
-
-:policyIdentifier a owl:DatatypeProperty ;
-  rdfs:label "policy identifier" ;
-  rdfs:comment "The unique identifier of a policy." ;
-  rdfs:domain :Policy ;
-  rdfs:range xsd:string .
+    rdfs:label "has creator" ;
+    rdfs:comment "Relates a policy to the actor that created it." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Actor .
 
 :issuedAt a owl:DatatypeProperty ;
-  rdfs:label "issued at" ;
-  rdfs:comment "The date and time when a policy was issued." ;
-  rdfs:domain :Policy ;
-  rdfs:range xsd:dateTime .
+    rdfs:label "issued at" ;
+    rdfs:comment "Relates a policy to the date and time at which it was issued." ;
+    rdfs:domain :Policy ;
+    rdfs:range xsd:dateTime .
+
+:hasAssignee a owl:ObjectProperty ;
+    rdfs:label "has assignee" ;
+    rdfs:comment "Relates a policy to the actor to whom it is assigned." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Actor .
+
+:usesApplication a owl:ObjectProperty ;
+    rdfs:label "uses application" ;
+    rdfs:comment "Relates an access request to the application or service used to access the data." ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :Application .
+
+:hasAccessMode a owl:ObjectProperty ;
+    rdfs:label "has access mode" ;
+    rdfs:comment "Relates an access request to the access mode being requested." ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :AccessMode .
+
+:accessesPersonalData a owl:ObjectProperty ;
+    rdfs:label "accesses personal data" ;
+    rdfs:comment "Relates an access request to the personal data being accessed." ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :PersonalData .
+
+:hasPurpose a owl:ObjectProperty ;
+    rdfs:label "has purpose" ;
+    rdfs:comment "Relates an access request to the purpose for accessing the personal data." ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :Purpose .
+
+:governsAccessRequest a owl:ObjectProperty ;
+    rdfs:label "governs access request" ;
+    rdfs:comment "Relates a policy to an access request that it governs." ;
+    rdfs:domain :Policy ;
+    rdfs:range :AccessRequest .
 ```
 
-### 2. Scenario-requirement-to-axiom mapping
-
-Extracted scenario requirements that are directly relevant to the requested ODP and the CQs:
-
-1. **Users need governance-relevant policy information to be represented in machine-readable form.**  
-   - Encoded by:
-     - `:Policy a owl:Class`
-     - All policy metadata properties attached to `:Policy`:
-       - `:policyIdentifier`
-       - `:hasCreator`
-       - `:issuedAt`
-       - `:hasAssignee`
-       - `:usesApplication`
-       - `:hasAccessMode`
-       - `:hasPersonalData`
-       - `:hasPurpose`
-
-2. **Identity of Solid actors
+2. Scenario

@@ -1,55 +1,103 @@
-**Reasoning Steps**
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. **Extract atomic requirements from the scenario**
-	* MQTT Clients are connected to Brokers.
-	* MQTT NetworkConnections exist with TLS-security and initiator/acceptor information.
-	* MQTT participants (Clients/Brokers) use MQTT NetworkConnections.
-	* MQTT Clients run on SOSA platforms with ClientIDs.
-	* MQTT Clients host SOSA systems (sensors/actuators).
-	* MQTT Brokers are configured with host/port.
-	* SOSA sensors publish to MQTT Topics (observations).
-	* SOSA actuators listen to MQTT Topics (commands).
-	* SOSA FeaturesOfInterest, Properties appear as MQTT TopicSubjects and on MQTT Topics.
-	* MQTT Topic Filters match MQTT Topics.
-	* MQTT filter patterns (with wildcards) are stored.
-	* MQTT Clients send MQTT Control Packets.
-	* MQTT Brokers receive/forward MQTT Control Packets.
-	* MQTT Control Packets are sent by Clients (inverse).
-	* MQTT Publish packets carry Observations for SOSA FeatureOfInterest or Property.
-	* MQTT SUBSCRIBE packets request QoS=2 and filters.
-	* MQTT UNSUBSCRIBE packets remove filters under a certain path.
-	* MQTT Control Packets have Fixed Header, Variable Header, and Payload.
-	* MQTT PUBLISH packets have MQTT Topic in Variable Header.
-	* QoS levels are set in PUBLISH Fixed Header or SubscriptionEntry.
-	* RETAIN/DUP flags are set in PUBLISH.
-	* MQTT Control Packets have PacketIdentifier.
-	* MQTT SUBSCRIBE payloads contain SubscriptionEntries.
-	* MQTT Topic Filters (with QoS) are requested by SubscriptionEntry.
-	* MQTT UNSUBSCRIBE payloads remove MQTT TopicFilters.
-	* MQTT PUBLISH payloads encode SOSA Observations or Actuations.
-	* MQTT payload fields are encoded.
-	* MQTT PUBLISH payload has content, content type, encoding, and delimiter.
-	* MQTT payload size is a QUDT QuantityValue with unit.
-2. **Propose candidate classes and properties for each requirement**
-	* `MQTTClient`, `MQTTBroker`, `MQTTNetworkConnection`, `MQTTTopic`, `MQTTFilter`, `MQTTControlPacket`, `MQTTPublishPacket`, `MQTTSubscribePacket`, `MQTTUnsubscribePacket`, `MQTTPacketIdentifier`, `MQTTQoS`, `MQTTPayload`, `MQTTContent`, `MQTTContentType`, `MQTTEncoding`, `MQTTDelimiter`, `MQTTClientID`, `MQTTPacketSize`, `SOSASensor`, `SOSAActuator`, `SOSAFeatureOfInterest`, `SOSAProperty`, `MQTTTopicSubject`
-	* `connectedTo`, `uses`, `hasMQTTNetworkConnection`, `hasMQTTTopic`, `hasMQTTFilter`, `hasMQTTControlPacket`, `hasMQTTPublishPacket`, `hasMQTTSubscribePacket`, `hasMQTTUnsubscribePacket`, `hasMQTTPacketIdentifier`, `hasMQTTQoS`, `hasMQTTPayload`, `hasMQTTContent`, `hasMQTTContentType`, `hasMQTTEncoding`, `hasMQTTDelimiter`, `hasMQTTClientID`, `hasMQTTPacketSize`, `runsOn`, `hosts`, `configures`, `publishesTo`, `listensTo`, `appearsAs`, `matches`, `stores`, `sends`, `receives`, `forwards`, `sentBy`, `carries`, `requests`, `removes`, `hasFixedHeader`, `hasVariableHeader`, `hasPayload`, `hasPacketIdentifier`, `hasSubscriptionEntry`, `hasQoS`, `hasRETAINFlag`, `hasDUPFlag`
-3. **Draft axioms for each candidate**
-	* `MQTTClient` subclass of `Thing`
-	* `MQTTBroker` subclass of `Thing`
-	* `MQTTNetworkConnection` subclass of `Thing`
-	* `MQTTTopic` subclass of `Thing`
-	* `MQTTFilter` subclass of `Thing`
-	* `MQTTControlPacket` subclass of `Thing`
-	* `MQTTPublishPacket` subclass of `Thing`
-	* `MQTTSubscribePacket` subclass of `Thing`
-	* `MQTTUnsubscribePacket` subclass of `Thing`
-	* `MQTTPacketIdentifier` subclass of `Thing`
-	* `MQTTQoS` subclass of `Thing`
-	* `MQTTPayload` subclass of `Thing`
-	* `MQTTContent` subclass of `Thing`
-	* `MQTTContentType` subclass of `Thing`
-	* `MQTTEncoding` subclass of `Thing`
-	* `MQTTDelimiter` subclass of `Thing`
-	* `MQTTClientID` subclass of `Thing`
-	* `MQTTPacketSize` subclass of `Thing`
-	* `SOSASensor` subclass of `Thing
+:Ontology a owl:Ontology ;
+  rdfs:label "MQTT Ontology" ;
+  rdfs:comment "Modeling MQTT message protocol for IoT and industrial settings".
+
+:MQTT a owl:Class ;
+  rdfs:label "MQTT" ;
+  rdfs:comment "Message Queuing Telemetry Transport protocol".
+
+:MQTTClient a owl:Class ;
+  rdfs:label "MQTT Client" ;
+  rdfs:comment "Entity that connects to an MQTT Broker".
+
+:MQTTBroker a owl:Class ;
+  rdfs:label "MQTT Broker" ;
+  rdfs:comment "Entity that manages MQTT NetworkConnections".
+
+:MQTTNetworkConnection a owl:Class ;
+  rdfs:label "MQTT Network Connection" ;
+  rdfs:comment "Connection between an MQTT Client and an MQTT Broker".
+
+:MQTTTopic a owl:Class ;
+  rdfs:label "MQTT Topic" ;
+  rdfs:comment "Subject of an MQTT message".
+
+:MQTTTopicFilter a owl:Class ;
+  rdfs:label "MQTT Topic Filter" ;
+  rdfs:comment "Pattern used to match MQTT Topics".
+
+:MQTTControlPacket a owl:Class ;
+  rdfs:label "MQTT Control Packet" ;
+  rdfs:comment "Packet used to manage MQTT connections".
+
+:MQTTPublish a owl:Class ;
+  rdfs:label "MQTT Publish" ;
+  rdfs:comment "Packet used to send MQTT messages".
+
+:MQTTSUBSCRIBE a owl:Class ;
+  rdfs:label "MQTT SUBSCRIBE" ;
+  rdfs:comment "Packet used to request MQTT messages".
+
+:MQTTUnsubscribe a owl:Class ;
+  rdfs:label "MQTT UNSUBSCRIBE" ;
+  rdfs:comment "Packet used to cancel MQTT message subscriptions".
+
+:MQTTClientID a owl:DatatypeProperty ;
+  rdfs:label "MQTT Client ID" ;
+  rdfs:comment "Unique identifier for an MQTT Client" ;
+  rdfs:range xsd:string.
+
+:MQTTBrokerHost a owl:DatatypeProperty ;
+  rdfs:label "MQTT Broker Host" ;
+  rdfs:comment "Host IP address of an MQTT Broker" ;
+  rdfs:range xsd:string.
+
+:MQTTBrokerPort a owl:DatatypeProperty ;
+  rdfs:label "MQTT Broker Port" ;
+  rdfs:comment "Port number of an MQTT Broker" ;
+  rdfs:range xsd:integer.
+
+:MQTTNetworkConnectionTLS a owl:DatatypeProperty ;
+  rdfs:label "MQTT Network Connection TLS" ;
+  rdfs:comment "Indicates if an MQTT Network Connection is TLS-secured" ;
+  rdfs:range xsd:boolean.
+
+:MQTTTopicName a owl:DatatypeProperty ;
+  rdfs:label "MQTT Topic Name" ;
+  rdfs:comment "Name of an MQTT Topic" ;
+  rdfs:range xsd:string.
+
+:MQTTTopicFilterPattern a owl:DatatypeProperty ;
+  rdfs:label "MQTT Topic Filter Pattern" ;
+  rdfs:comment "Pattern used to match MQTT Topics" ;
+  rdfs:range xsd:string.
+
+:MQTTControlPacketIdentifier a owl:DatatypeProperty ;
+  rdfs:label "MQTT Control Packet Identifier" ;
+  rdfs:comment "Identifier of an MQTT Control Packet" ;
+  rdfs:range xsd:integer.
+
+:MQTTPublishPayload a owl:DatatypeProperty ;
+  rdfs:label "MQTT Publish Payload" ;
+  rdfs:comment "Payload of an MQTT Publish packet" ;
+  rdfs:range xsd:string.
+
+:MQTTSUBSCRIBEQoS a owl:DatatypeProperty ;
+  rdfs:label "MQTT SUBSCRIBE QoS" ;
+  rdfs:comment "QoS level requested by an MQTT SUBSCRIBE packet" ;
+  rdfs:range xsd:integer.
+
+:MQTTUnsubscribeTopicFilter a owl:DatatypeProperty ;
+  rdfs:label "MQTT UNSUBSCRIBE Topic Filter" ;
+  rdfs:comment "Topic filter removed by an MQTT UNSUBSCRIBE packet" ;
+  rdfs:range xsd:string.
+
+:MQTTClientPlatform a owl:ObjectProperty ;
+  rdfs:label "MQ

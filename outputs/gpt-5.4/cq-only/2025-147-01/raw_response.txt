@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -7,20 +9,16 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Ship description and propulsion ontology design pattern" ;
-  rdfs:comment "An OWL ontology design pattern for representing ships, their identification, dimensions, ownership, flag state, routes and trajectories, propulsion and engine arrangements, and multimodal ship representation data such as images, sonar signatures, and textual descriptions, sufficient to answer the stated competency questions." .
-
-#################################################################
-# Classes
-#################################################################
+  rdfs:comment "An ontology design pattern for describing ships, their identification, dimensions, flag registration, ownership, location, routes and trajectories, engines, fuels, propulsion systems and technologies, and ship representation data such as images, sonar, and text." .
 
 :Ship a owl:Class ;
   rdfs:label "Ship" ;
-  rdfs:comment "A vessel that can be identified, described, owned, registered under a flag, equipped with propulsion systems, and represented by data resources." .
+  rdfs:comment "A vessel that can be identified, described, owned, registered, routed, propelled, and represented by data resources." .
 
 :ContainerShip a owl:Class ;
-  rdfs:subClassOf :Ship ;
   rdfs:label "Container ship" ;
-  rdfs:comment "A ship of the container ship type." .
+  rdfs:comment "A ship specialized for carrying containers." ;
+  rdfs:subClassOf :Ship .
 
 :Organization a owl:Class ;
   rdfs:label "Organization" ;
@@ -31,20 +29,28 @@
   rdfs:comment "A person that can own ships." .
 
 :Owner a owl:Class ;
+  rdfs:label "Owner" ;
+  rdfs:comment "An entity that can own a ship." ;
   owl:equivalentClass [
     a owl:Class ;
-    owl:unionOf ( :Organization :Person )
-  ] ;
-  rdfs:label "Owner" ;
-  rdfs:comment "An entity that can own a ship, namely a person or an organization." .
+    owl:unionOf ( :Person :Organization )
+  ] .
 
 :Country a owl:Class ;
   rdfs:label "Country" ;
-  rdfs:comment "A country used to represent the flag state under which a ship is registered." .
+  rdfs:comment "A country under whose flag a ship can be registered." .
+
+:ShipIdentifier a owl:Class ;
+  rdfs:label "Ship identifier" ;
+  rdfs:comment "An identification record used to clearly identify a ship." .
 
 :ShipDimensions a owl:Class ;
   rdfs:label "Ship dimensions" ;
-  rdfs:comment "A description of a ship's physical dimensions such as length, beam, and draught." .
+  rdfs:comment "A description of a ship's physical dimensions." .
+
+:LengthUnit a owl:Class ;
+  rdfs:label "Length unit" ;
+  rdfs:comment "A unit used for length-related ship measurements such as draught, length, beam, height, and offsets." .
 
 :LocationDescription a owl:Class ;
   rdfs:label "Location description" ;
@@ -55,52 +61,46 @@
   rdfs:comment "A route associated with a ship, including actual or predicted routes." .
 
 :PredictedRoute a owl:Class ;
-  rdfs:subClassOf :Route ;
   rdfs:label "Predicted route" ;
-  rdfs:comment "A route predicted for a ship." .
+  rdfs:comment "A route predicted for a ship." ;
+  rdfs:subClassOf :Route .
 
 :Trajectory a owl:Class ;
   rdfs:label "Trajectory" ;
-  rdfs:comment "A trajectory associated with movement of a ship." .
-
-:SingleTrajectoryPart a owl:Class ;
-  rdfs:label "Single trajectory part" ;
-  rdfs:comment "A single part of a trajectory for which information can be recorded." .
+  rdfs:comment "A trajectory associated with movement of a ship or route." .
 
 :TrajectoryType a owl:Class ;
   rdfs:label "Trajectory type" ;
   rdfs:comment "A category used to distinguish types of trajectories." .
 
+:TrajectoryPart a owl:Class ;
+  rdfs:label "Trajectory part" ;
+  rdfs:comment "A single part of a trajectory." .
+
 :Engine a owl:Class ;
   rdfs:label "Engine" ;
-  rdfs:comment "An engine used in a ship and associated with fuel, power, and driven components." .
+  rdfs:comment "An engine used in a ship." .
 
-:ElectricEngine a owl:Class ;
-  rdfs:subClassOf :Engine ;
-  rdfs:label "Electric engine" ;
-  rdfs:comment "An engine of electric type." .
+:EngineType a owl:Class ;
+  rdfs:label "Engine type" ;
+  rdfs:comment "A category of ship engine." .
 
 :EngineCombination a owl:Class ;
   rdfs:label "Engine combination" ;
   rdfs:comment "A combination of engines that can exist in a ship." .
 
-:FuelType a owl:Class ;
-  rdfs:label "Fuel type" ;
-  rdfs:comment "A type of fuel used to power an engine." .
+:Fuel a owl:Class ;
+  rdfs:label "Fuel" ;
+  rdfs:comment "A fuel used to power a ship engine." .
 
 :DrivenComponent a owl:Class ;
   rdfs:label "Driven component" ;
-  rdfs:comment "A component that is driven by an engine." .
+  rdfs:comment "A component driven by a ship engine." .
 
 :PropulsionSystem a owl:Class ;
   rdfs:label "Propulsion system" ;
   rdfs:comment "A propulsion system that a ship can have." .
 
 :MotorizedPropulsionSystem a owl:Class ;
-  rdfs:subClassOf :PropulsionSystem ;
   rdfs:label "Motorized propulsion system" ;
-  rdfs:comment "A propulsion system that relies on one or more engines." .
-
-:NonEnginePropulsionSystem a owl:Class ;
-  rdfs:subClassOf :PropulsionSystem ;
-  rdfs
+  rdfs:comment "A propulsion system that relies on one or more engines." ;

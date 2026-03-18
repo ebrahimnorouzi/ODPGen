@@ -1,76 +1,92 @@
-1. **Reasoning for steps 1–6**
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
 
-### Step 1. Atomic requirements
-- A persistent identifier must be modeled as something stable over time.
-- A persistent identifier must be able to reference different entities at different times.
-- Each reference from a persistent identifier to an entity must be temporally qualified.
-- It must be possible to determine the entity currently referenced by a persistent identifier.
-- It must be possible to determine the entity referenced at a past timestamp.
-- It must be possible to identify when transitions between referents occurred.
-- Real-time or other observations must be associated with the specific referent entity, not directly with the persistent identifier.
-- Observations exposed through a persistent identifier must still be recoverable via the current or historical referent.
-- It must be possible to reconstruct the full sequence of referents for a persistent identifier over time.
-- It must be possible to represent rules that trigger transitions between referents.
-- It must be possible to associate a transition with the rule that triggered it.
-- It must be possible to detect temporal gaps or overlaps in bindings.
-- It must be possible to rebuild the complete context for any time point.
-- The pattern should be generic and reusable across domains such as finance, healthcare, environmental monitoring, digital services, regulation, and air transportation.
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
 
-### Step 2. Candidate classes and properties
-- For stable identifiers:
-  - Class: `:PersistentIdentifier`
-- For things that can be referenced:
-  - Class: `:Referent`
-- For temporal qualification of identifier-to-referent relation:
-  - Class: `:TemporalBinding`
-  - Object properties: `:bindsIdentifier`, `:bindsReferent`
-  - Datatype properties: `:validFrom`, `:validUntil`
-- For transitions:
-  - Class: `:ReferentTransition`
-  - Object properties: `:forIdentifier`, `:fromReferent`, `:toReferent`, `:triggeredByRule`
-  - Datatype property: `:transitionTime`
-- For rules:
-  - Class: `:TransitionRule`
-- For observations on referents:
-  - Class: `:Observation`
-  - Object property: `:observedReferent`
-  - Datatype property: `:observationTime`
-- For rebuilding context:
-  - Class: `:ContextSnapshot`
-  - Datatype property: `:contextTime`
-  - Object properties: `:snapshotIdentifier`, `:snapshotReferent`, `:includesObservation`
-- For current reference shortcut:
-  - Object property: `:currentlyReferences`
+:Ontology a owl:Ontology ;
+  rdfs:label "Temporal Indirection for Persistent Identifiers ODP" ;
+  rdfs:comment "An ontology design pattern for modeling persistent identifiers that stably denote changing referents over time, including temporal bindings, transitions, observations, and transition rules." .
 
-### Step 3. Draft axioms
-- `:PersistentIdentifier`, `:Referent`, `:TemporalBinding`, `:ReferentTransition`, `:TransitionRule`, `:Observation`, `:ContextSnapshot` as owl classes.
-- `:bindsIdentifier` domain `:TemporalBinding`, range `:PersistentIdentifier`.
-- `:bindsReferent` domain `:TemporalBinding`, range `:Referent`.
-- `:validFrom` domain `:TemporalBinding`, range `xsd:dateTime`.
-- `:validUntil` domain `:TemporalBinding`, range `xsd:dateTime`.
-- `:TemporalBinding` subclass of:
-  - exactly 1 `:bindsIdentifier`
-  - exactly 1 `:bindsReferent`
-  - exactly 1 `:validFrom`
-  - max 1 `:validUntil`
-- `:currentlyReferences` domain `:PersistentIdentifier`, range `:Referent`.
-- `:forIdentifier` domain `:ReferentTransition`, range `:PersistentIdentifier`.
-- `:fromReferent` domain `:ReferentTransition`, range `:Referent`.
-- `:toReferent` domain `:ReferentTransition`, range `:Referent`.
-- `:transitionTime` domain `:ReferentTransition`, range `xsd:dateTime`.
-- `:triggeredByRule` domain `:ReferentTransition`, range `:TransitionRule`.
-- `:ReferentTransition` subclass of:
-  - exactly 1 `:forIdentifier`
-  - exactly 1 `:toReferent`
-  - exactly 1 `:transitionTime`
-  - max 1 `:fromReferent`
-  - min 0 `:triggeredByRule`
-- `:observedReferent` domain `:Observation`, range `:Referent`.
-- `:observationTime` domain `:Observation`, range `xsd:dateTime`.
-- `:Observation` subclass of:
-  - exactly 1 `:observedReferent`
-  - exactly 1 `:observationTime`
-- `:snapshotIdentifier` domain `:ContextSnapshot`, range `:PersistentIdentifier`.
-- `:snapshotReferent` domain `:ContextSnapshot`, range `:Referent`.
-- `:includesObservation` domain `:ContextSnapshot`, range `:Observation`.
-- `:contextTime` domain `:
+:PersistentIdentifier a owl:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A stable identifier that refers to different entities at different times while preserving continuity for users and systems." .
+
+:Referent a owl:Class ;
+  rdfs:label "Referent" ;
+  rdfs:comment "An entity that can be referenced by a persistent identifier during some time interval." .
+
+:TemporalBinding a owl:Class ;
+  rdfs:label "Temporal Binding" ;
+  rdfs:comment "A time-scoped association between a persistent identifier and a referent." .
+
+:TransitionEvent a owl:Class ;
+  rdfs:label "Transition Event" ;
+  rdfs:comment "An event representing a change from one referent binding to another for a persistent identifier." .
+
+:TransitionRule a owl:Class ;
+  rdfs:label "Transition Rule" ;
+  rdfs:comment "A rule, policy, or condition that triggers or justifies a referent transition." .
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "A recorded attribute, measurement, or state associated with a referent at a time." .
+
+:ContextSnapshot a owl:Class ;
+  rdfs:label "Context Snapshot" ;
+  rdfs:comment "A reconstruction context for a specific time point, linking the identifier, active binding, referent, and associated observations." .
+
+:hasBinding a owl:ObjectProperty ;
+  rdfs:label "has binding" ;
+  rdfs:comment "Relates a persistent identifier to a temporal binding that specifies one of its time-scoped referents." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TemporalBinding .
+
+:bindsIdentifier a owl:ObjectProperty ;
+  rdfs:label "binds identifier" ;
+  rdfs:comment "Relates a temporal binding to the persistent identifier whose reference it specifies." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :PersistentIdentifier ;
+  owl:inverseOf :hasBinding .
+
+:hasReferent a owl:ObjectProperty ;
+  rdfs:label "has referent" ;
+  rdfs:comment "Relates a temporal binding to the referent that is in force during the binding interval." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :Referent .
+
+:isReferentInBinding a owl:ObjectProperty ;
+  rdfs:label "is referent in binding" ;
+  rdfs:comment "Relates a referent to a temporal binding in which it is referenced." ;
+  rdfs:domain :Referent ;
+  rdfs:range :TemporalBinding ;
+  owl:inverseOf :hasReferent .
+
+:hasCurrentBinding a owl:ObjectProperty ;
+  rdfs:label "has current binding" ;
+  rdfs:comment "Relates a persistent identifier to the temporal binding that is currently in force." ;
+  rdfs:subPropertyOf :hasBinding ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TemporalBinding .
+
+:hasCurrentReferent a owl:ObjectProperty ;
+  rdfs:label "has current referent" ;
+  rdfs:comment "Relates a persistent identifier directly to the referent that is currently in force." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :Referent ;
+  owl:propertyChainAxiom ( :hasCurrentBinding :hasReferent ) .
+
+:hasTransition a owl:ObjectProperty ;
+  rdfs:label "has transition" ;
+  rdfs:comment "Relates a persistent identifier to a transition event in its referent history." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TransitionEvent .
+
+:forIdentifier a owl:ObjectProperty ;
+  rdfs:label "for identifier" ;
+  rdfs:comment "Relates a transition event to the persistent identifier whose referent changed." ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range

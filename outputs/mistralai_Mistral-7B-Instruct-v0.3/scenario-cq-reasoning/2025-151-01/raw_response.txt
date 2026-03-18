@@ -1,91 +1,89 @@
-**Reasoning Steps**
-
-1. Atomic requirements:
-   - Request for an action on a target asset
-   - Issued by an employee
-   - Only on weekdays
-   - From the EU
-   - Additional contextual information
-
-2. Candidate classes and properties:
-   - :Request (owl:Class)
-   - :Action (owl:Class)
-   - :TargetAsset (owl:Class)
-   - :Employee (owl:Class)
-   - :Weekday (owl:Class)
-   - :EU (owl:Class)
-   - :Issuer (owl:ObjectProperty)
-   - :Target (owl:ObjectProperty)
-   - :Time (owl:DatatypeProperty)
-   - :Location (owl:ObjectProperty)
-   - :AdditionalContext (owl:ObjectProperty)
-
-3. Draft axioms:
-   - :Request subClassOf owl:Class.
-   - :Action, :TargetAsset, :Employee, :Weekday, :EU rdf:type owl:Class.
-   - :Issuer domain :Request ; range :Employee.
-   - :Target domain :Request ; range :TargetAsset.
-   - :Time domain :Request ; range xsd:dateTime.
-   - :Location domain :Request ; range :Location.
-   - :AdditionalContext domain :Request ; range rdf:Resource.
-   - :Weekday disjointUnion :EU.
-
-4. For each CQ, check which axioms enable answering it:
-   - What is the requested action? (:Request, :Action)
-   - Who is the party issuing the evaluation request? (:Request, :Issuer, :Employee)
-   - What is the target asset of the evaluation request? (:Request, :Target, :TargetAsset)
-   - When was the evaluation request issued? (:Request, :Time)
-   - What additional contextual information can be included in the evaluation request to further constrain it? (:Request, :AdditionalContext)
-   - Uncovered CQ: What is the location of the evaluation request? (:Request, :Location)
-
-5. Add or refine axioms to cover any uncovered CQs:
-   - :Location domain :Request ; range :Location.
-
-6. Remove any classes or properties not traceable to a requirement or CQ: N/A (all classes and properties are traceable)
-
-7. Output the final ontology:
-
 ```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
   rdfs:label "Evaluation Request Ontology" ;
-  rdfs:comment "An ontology for modeling evaluation requests with temporal, spatial, role, and request-capability context.".
+  rdfs:comment "An ontology for modeling evaluation requests on assets.".
 
-:Request a owl:Class ;
-  rdfs:label "Evaluation Request" ;
-  rdfs:comment "A formal description of a requested action on a target asset.".
+# Atomic Requirements
+:RequestedAction a owl:Class ;
+  rdfs:label "Requested Action" ;
+  rdfs:comment "The action requested in the evaluation request.".
 
-:Action a owl:Class ;
-  rdfs:label "Action" ;
-  rdfs:comment "The action being requested.".
+:Issuer a owl:Class ;
+  rdfs:label "Issuer" ;
+  rdfs:comment "The party issuing the evaluation request.".
 
 :TargetAsset a owl:Class ;
   rdfs:label "Target Asset" ;
-  rdfs:comment "The asset that the action is being requested on.".
+  rdfs:comment "The asset targeted by the evaluation request.".
 
-:Employee a owl:Class ;
-  rdfs:label "Employee" ;
-  rdfs:comment "An employee who can issue an evaluation request.".
-
-:Weekday a owl:Class ;
-  rdfs:label "Weekday" ;
-  rdfs:comment "A day of the week.".
-
-:EU a owl:Class ;
-  rdfs:label "EU" ;
-  rdfs:comment "The European Union.".
-
-:Issuer a owl:ObjectProperty ;
-  rdfs:label "Issuer" ;
-  rdfs:comment "The employee who issued the evaluation request.".
-
-:Target a owl:ObjectProperty ;
-  rdfs:label "Target" ;
-  rdfs:comment "The target asset of the evaluation request.".
-
-:Time a owl:DatatypeProperty ;
-  rdfs:label "Time" ;
+:IssueTime a owl:DatatypeProperty ;
+  rdfs:label "Issue Time" ;
   rdfs:comment "The time when the evaluation request was issued.".
+  owl:domain :EvaluationRequest ;
+  owl:range xsd:dateTime.
 
-:Location a owl:ObjectProperty ;
+:AdditionalContext a owl:Class ;
+  rdfs:label "Additional Context" ;
+  rdfs:comment "Additional contextual information related to the evaluation request.".
+
+:Role a owl:Class ;
+  rdfs:label "Role" ;
+  rdfs:comment "The role of the issuer.".
+
+:Location a owl:Class ;
   rdfs:label "Location" ;
-  rdfs:comment "The location from which the evaluation
+  rdfs:comment "The location from where the request was issued.".
+
+:Capability a owl:Class ;
+  rdfs:label "Capability" ;
+  rdfs:comment "The capability required to perform the requested action.".
+
+:EvaluationRequest a owl:Class ;
+  rdfs:label "Evaluation Request" ;
+  rdfs:comment "A request for an evaluation on a target asset.".
+  owl:disjointWith :Issuer, :TargetAsset, :IssueTime, :AdditionalContext, :Role, :Location, :Capability.
+
+:hasIssuer a owl:ObjectProperty ;
+  rdfs:label "Has Issuer" ;
+  rdfs:comment "The issuer of the evaluation request.".
+  owl:domain :EvaluationRequest ;
+  owl:range :Issuer.
+
+:hasTargetAsset a owl:ObjectProperty ;
+  rdfs:label "Has Target Asset" ;
+  rdfs:comment "The target asset of the evaluation request.".
+  owl:domain :EvaluationRequest ;
+  owl:range :TargetAsset.
+
+:hasAdditionalContext a owl:ObjectProperty ;
+  rdfs:label "Has Additional Context" ;
+  rdfs:comment "Additional contextual information related to the evaluation request.".
+  owl:domain :EvaluationRequest ;
+  owl:range :AdditionalContext.
+
+:hasRole a owl:ObjectProperty ;
+  rdfs:label "Has Role" ;
+  rdfs:comment "The role of the issuer.".
+  owl:domain :Issuer ;
+  owl:range :Role.
+
+:hasLocation a owl:ObjectProperty ;
+  rdfs:label "Has Location" ;
+  rdfs:comment "The location from where the request was issued.".
+  owl:domain :Issuer ;
+  owl:range :Location.
+
+:hasCapability a owl:ObjectProperty ;
+  rdfs:label "Has Capability" ;
+  rdfs:comment "The capability required to perform the requested action.".
+  owl:domain :RequestedAction ;
+  owl:range :Capability.
+
+# Competency Questions
+- What

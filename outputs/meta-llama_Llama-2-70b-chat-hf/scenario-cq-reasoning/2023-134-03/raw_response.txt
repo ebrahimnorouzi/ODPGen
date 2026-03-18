@@ -1,97 +1,84 @@
-Reasoning:
+Turtle Ontology:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Extract atomic requirements from the scenario:
-* C1: Identity of Solid actors and their roles is unknown
-* C2: No metadata about Solid infrastructure
-* C3: Availability/Discovery of categories of data
-* C4: Pod and app providers do not provide information on their data handling practices
-* C5: Users cannot express their privacy policies
-* C6: No logging or record-keeping
-* C7: No legal compliance checks
-2. Propose candidate classes and properties for each requirement:
-* C1:
-	+ Actor
-	+ Role
-	+ Identity
-* C2:
-	+ Pod
-	+ Infrastructure
-	+ Metadata
-* C3:
-	+ DataCategory
-	+ DataLocation
-	+ Availability
-* C4:
-	+ PodProvider
-	+ AppProvider
-	+ DataHandlingPractices
-* C5:
-	+ PrivacyPolicy
-	+ UserPreference
-	+ Consent
-* C6:
-	+ Log
-	+ RecordKeeping
-	+ Provenance
-* C7:
-	+ LegalCompliance
-	+ Auditing
-	+ GDPR
-3. Draft axioms for each candidate:
-* C1:
-	+ Actor subclass of owl:Thing.
-	+ Role subclass of owl:Thing.
-	+ Identity subclass of owl:Thing.
-	+ Actor has role Role.
-	+ Actor has identity Identity.
-* C2:
-	+ Pod subclass of owl:Thing.
-	+ Infrastructure subclass of owl:Thing.
-	+ Metadata subclass of owl:Thing.
-	+ Pod has metadata Metadata.
-	+ Infrastructure has metadata Metadata.
-* C3:
-	+ DataCategory subclass of owl:Thing.
-	+ DataLocation subclass of owl:Thing.
-	+ Availability subclass of owl:Thing.
-	+ DataCategory has dataLocation DataLocation.
-	+ DataCategory has availability Availability.
-* C4:
-	+ PodProvider subclass of owl:Thing.
-	+ AppProvider subclass of owl:Thing.
-	+ DataHandlingPractices subclass of owl:Thing.
-	+ PodProvider has dataHandlingPractices DataHandlingPractices.
-	+ AppProvider has dataHandlingPractices DataHandlingPractices.
-* C5:
-	+ PrivacyPolicy subclass of owl:Thing.
-	+ UserPreference subclass of owl:Thing.
-	+ Consent subclass of owl:Thing.
-	+ PrivacyPolicy has userPreference UserPreference.
-	+ PrivacyPolicy has consent Consent.
-* C6:
-	+ Log subclass of owl:Thing.
-	+ RecordKeeping subclass of owl:Thing.
-	+ Provenance subclass of owl:Thing.
-	+ Log has recordKeeping RecordKeeping.
-	+ Log has provenance Provenance.
-* C7:
-	+ LegalCompliance subclass of owl:Thing.
-	+ Auditing subclass of owl:Thing.
-	+ GDPR subclass of owl:Thing.
-	+ LegalCompliance has auditing Auditing.
-	+ LegalCompliance has gdpr GDPR.
-4. For each CQ, check which axioms enable answering it; note any CQs not yet covered:
-* CQ1: Who is maintaining the registry?
-	+ Covered by C1: Actor has role Role.
-* CQ2: When was the registry created/updated?
-	+ Not covered.
-* CQ3: What types of data are available?
-	+ Covered by C3: DataCategory has dataLocation DataLocation.
-* CQ4: Where is a specific type of data being stored?
-	+ Covered by C3: DataCategory has dataLocation DataLocation.
-* CQ5: What policy is associated with the data?
-	+ Covered by C5: PrivacyPolicy has userPreference UserPreference.
-* CQ6: Who is responsible for data handling practices?
-	+ Covered by C4: PodProvider has dataHandlingPractices DataHandlingPractices.
-* CQ7: Is the registry compliant with legal requirements?
-	+ Covered by C7: LegalCompliance has aud
+:Ontology a owl:Ontology ;
+rdfs:label "Solid Governance Ontology" ;
+rdfs:comment "An ontology for governing Solid apps".
+
+; C1 - Identity of Solid actors and their roles is unknown
+:SolidActor a owl:Class ;
+rdfs:label "Solid Actor" ;
+rdfs:comment "An actor that provides or uses a Solid pod".
+
+:SolidUser a :SolidActor ;
+rdfs:label "Solid User" ;
+rdfs:comment "A user of a Solid app".
+
+:SolidProvider a :SolidActor ;
+rdfs:label "Solid Provider" ;
+rdfs:comment "An entity that provides a Solid pod".
+
+; C2 - No metadata about Solid infrastructure
+:SolidPods a owl:Class ;
+rdfs:label "Solid Pods" ;
+rdfs:comment "A collection of Solid pods".
+
+:SolidPod a :SolidPods ;
+rdfs:label "Solid Pod" ;
+rdfs:comment "A pod that runs a Solid app".
+
+:SolidSpecification a owl:Class ;
+rdfs:label "Solid Specification" ;
+rdfs:comment "A specification for a Solid pod".
+
+:SolidFunctionality a owl:Class ;
+rdfs:label "Solid Functionality" ;
+rdfs:comment "A functionality installed within a Solid pod".
+
+; C3 - Availability/Discovery of categories of data
+:DataCategory a owl:Class ;
+rdfs:label "Data Category" ;
+rdfs:comment "A category of data stored in a Solid pod".
+
+:DataCategoryType a owl:ObjectProperty ;
+rdfs:label "Data Category Type" ;
+rdfs:comment "The type of data category".
+
+:SolidPodHasDataCategory a owl:ObjectProperty ;
+rdfs:label "Solid Pod Has Data Category" ;
+rdfs:comment "A relationship between a Solid pod and a data category".
+
+; C4 - Pod and app providers do not provide information on their data handling practices
+:PrivacyNotice a owl:Class ;
+rdfs:label "Privacy Notice" ;
+rdfs:comment "A machine-readable privacy notice for a Solid app".
+
+:DataHandlingPractices a owl:Class ;
+rdfs:label "Data Handling Practices" ;
+rdfs:comment "The practices used by a Solid app to handle data".
+
+:SolidAppProvidesPrivacyNotice a owl:ObjectProperty ;
+rdfs:label "Solid App Provides Privacy Notice" ;
+rdfs:comment "A relationship between a Solid app and its privacy notice".
+
+:SolidAppUsesDataHandlingPractices a owl:ObjectProperty ;
+rdfs:label "Solid App Uses Data Handling Practices" ;
+rdfs:comment "A relationship between a Solid app and its data handling practices".
+
+; C5 - Users cannot express their privacy policies
+:PrivacyPolicy a owl:Class ;
+rdfs:label "Privacy Policy" ;
+rdfs:comment "A policy that governs a user's privacy preferences".
+
+:PrivacyPreferrence a owl:Class ;
+rdfs:label "Privacy Preference" ;
+rdfs:comment "A preference regarding a user's privacy".
+
+:SolidUserHasPrivacyPolicy a owl:ObjectProperty ;
+rdfs:label "Solid User Has Privacy Policy" ;
+rdfs:comment "A relationship

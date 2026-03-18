@@ -1,12 +1,12 @@
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ndf-syntax-ns#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Database policy and SQL AST ODP" ;
-  rdfs:comment "An ontology design pattern for representing relational database schemas, policies over schema elements and rows, and SQL queries as AST-based semantic graphs that can be checked against policy constraints." .
+  rdfs:label "Database policy and SQL semantic graph ODP" ;
+  rdfs:comment "An ontology design pattern for representing relational database schema elements, policies over agents and schema targets, SQL statements as AST-based semantic graphs, operational scopes, and policy violation or row-tag classification over referenced schema elements." .
 
 #################################################################
 # Classes
@@ -34,11 +34,11 @@
 
 :Agent a owl:Class ;
   rdfs:label "Agent" ;
-  rdfs:comment "An agent for whom a policy can be defined and who can execute a query statement." .
+  rdfs:comment "An agent for which a policy can be defined or that can execute a query statement." .
 
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
-  rdfs:comment "A policy defined for a specific agent and applicable to a schema target or row condition." .
+  rdfs:comment "A policy defined for a specific agent and applicable to schema targets." .
 
 :Action a owl:Class ;
   rdfs:label "Action" ;
@@ -46,35 +46,54 @@
 
 :ReadAction a owl:Class ;
   rdfs:label "Read Action" ;
-  rdfs:comment "A high-level read action." ;
+  rdfs:comment "A high-level action representing read access." ;
   rdfs:subClassOf :Action .
 
 :ModifyAction a owl:Class ;
   rdfs:label "Modify Action" ;
-  rdfs:comment "A high-level modify action." ;
+  rdfs:comment "A high-level action representing modification access." ;
   rdfs:subClassOf :Action .
 
 :ActionScope a owl:Class ;
   rdfs:label "Action Scope" ;
-  rdfs:comment "An operational scope associated with an action, clause, or reference." .
+  rdfs:comment "An operational scope associated with an action." .
 
 :ViewActionScope a owl:Class ;
   rdfs:label "View Action Scope" ;
-  rdfs:comment "A scope indicating read access for viewing." ;
+  rdfs:comment "An action scope representing viewing-oriented read operations." ;
   rdfs:subClassOf :ActionScope .
 
 :ProcessActionScope a owl:Class ;
   rdfs:label "Process Action Scope" ;
-  rdfs:comment "A scope indicating read access for processing." ;
+  rdfs:comment "An action scope representing processing-oriented read operations." ;
   rdfs:subClassOf :ActionScope .
+
+:PolicyTarget a owl:Class ;
+  rdfs:label "Policy Target" ;
+  rdfs:comment "A target to which a policy applies." .
+
+:TableTarget a owl:Class ;
+  rdfs:label "Table Target" ;
+  rdfs:comment "A policy target at table level." ;
+  rdfs:subClassOf :PolicyTarget .
+
+:ColumnTarget a owl:Class ;
+  rdfs:label "Column Target" ;
+  rdfs:comment "A policy target at column level." ;
+  rdfs:subClassOf :PolicyTarget .
+
+:RowTarget a owl:Class ;
+  rdfs:label "Row Target" ;
+  rdfs:comment "A policy target at row level, expressed using conditions." ;
+  rdfs:subClassOf :PolicyTarget .
 
 :Condition a owl:Class ;
   rdfs:label "Condition" ;
-  rdfs:comment "A condition used to define a row-level policy for later enforcement." .
+  rdfs:comment "A condition used to define row-level policy applicability." .
 
 :Effect a owl:Class ;
   rdfs:label "Effect" ;
-  rdfs:comment "The effect of a policy, such as prohibition." .
+  rdfs:comment "The effect of a policy rule, such as prohibition." .
 
 :Prohibition a owl:Class ;
   rdfs:label "Prohibition" ;
@@ -83,24 +102,4 @@
 
 :SQLNode a owl:Class ;
   rdfs:label "SQL Node" ;
-  rdfs:comment "A node in an AST-based semantic graph for a SQL query." .
-
-:SQLStatement a owl:Class ;
-  rdfs:label "SQL Statement" ;
-  rdfs:comment "A SQL statement represented in the AST-based semantic graph." ;
-  rdfs:subClassOf :SQLNode .
-
-:SelectStatement a owl:Class ;
-  rdfs:label "Select Statement" ;
-  rdfs:comment "A SQL SELECT statement." ;
-  rdfs:subClassOf :SQLStatement .
-
-:UpdateStatement a owl:Class ;
-  rdfs:label "Update Statement" ;
-  rdfs:comment "A SQL UPDATE statement." ;
-  rdfs:subClassOf :SQLStatement .
-
-:SQLClause a owl:Class ;
-  rdfs:label "SQL Clause" ;
-  rdfs:comment "A clause within a SQL statement that can be assigned an operational scope." ;
-  rdfs:subClassOf :SQLNode .
+  rdfs:comment "A node in an AST-based semantic graph for a SQL query or statement." .

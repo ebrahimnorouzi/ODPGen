@@ -1,49 +1,66 @@
-**Turtle Ontology Design Pattern (ODP)**
-
 ```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
   rdfs:label "Legal Tasks and Court Hierarchies" ;
-  rdfs:comment "This ontology models the complex information required for legal tasks, focusing on court hierarchies and bad check crime regulations.".
+  rdfs:comment "This ontology models legal tasks, court hierarchies, and bad check crime related regulations.".
 
+# Court Hierarchy
 :Court a owl:Class ;
   rdfs:label "Court" ;
   rdfs:comment "Represents a court in the legal system.".
 
+:SupremeCourt a :Court ;
+  rdfs:label "Supreme Court" ;
+  rdfs:comment "The highest court in the legal system.".
+
 :AppellateCourt a owl:Class ;
   rdfs:label "Appellate Court" ;
-  rdfs:comment "Represents an appellate court in the legal system." ;
-  owl:disjointWith :Court.
+  rdfs:comment "A court that hears appeals from lower courts.".
 
 :DistrictCourt a owl:Class ;
   rdfs:label "District Court" ;
-  rdfs:comment "Represents a district court in the legal system." ;
-  owl:disjointWith :Court.
+  rdfs:comment "A court of general jurisdiction in a district.".
 
-:BadCheckRegulation a owl:Class ;
-  rdfs:label "Bad Check Regulation" ;
-  rdfs:comment "Represents a regulation related to bad check crimes.".
+:SubCourt a owl:Class ;
+  rdfs:label "Sub-Court" ;
+  rdfs:comment "A court that operates under a district court.".
 
-:HasJurisdiction rdf:Property ;
-  rdfs:label "Has Jurisdiction" ;
-  rdfs:comment "Indicates the court that has jurisdiction over a specific case." ;
-  owl:domain :Court ;
-  owl:range :Court.
+:isSubCourtOf a owl:ObjectProperty ;
+  rdfs:domain :DistrictCourt ;
+  rdfs:range :SubCourt ;
+  rdfs:label "isSubCourtOf" ;
+  rdfs:comment "Indicates a sub-court that operates under a district court.".
 
-:ImplementsRegulation rdf:Property ;
-  rdfs:label "Implements Regulation" ;
-  rdfs:comment "Indicates a court that implements a specific regulation." ;
-  owl:domain :Court ;
-  owl:range :BadCheckRegulation.
+# Legal Tasks
+:LegalTask a owl:Class ;
+  rdfs:label "Legal Task" ;
+  rdfs:comment "Represents a legal task that needs to be performed.".
 
+:CourtCase a :LegalTask ;
+  rdfs:label "Court Case" ;
+  rdfs:comment "A legal task that involves a court case.".
+
+:Legislation a :LegalTask ;
+  rdfs:label "Legislation" ;
+  rdfs:comment "A legal task that involves creating or interpreting legislation.".
+
+:Regulation a :LegalTask ;
+  rdfs:label "Regulation" ;
+  rdfs:comment "A legal task that involves creating or interpreting regulations.".
+
+:BadCheckCrime a :LegalTask ;
+  rdfs:label "Bad Check Crime" ;
+  rdfs:comment "A legal task related to bad check crimes.".
+
+# Assumptions and Exclusions
+- This ontology assumes a hierarchical court system with a Supreme Court, Appellate Courts, District Courts, and Sub-Courts.
+- This ontology does not model the specific roles or individuals within the court system.
+- This ontology does not model the specific laws, regulations, or court cases that would be handled by the court system.
 ```
 
-**Documentation**
-
-- Intent: This pattern models the court hierarchies and bad check crime regulations within a legal system.
-- Covered requirements:
-  - Models court hierarchies (Appellate Court and District Court).
-  - Represents unstructured legal information (court jurisdictions and regulations).
-- Known assumptions and exclusions:
-  - This pattern assumes a simple court hierarchy with only appellate and district courts.
-  - It does not model specific cases or legal proceedings.
-  - It does not cover other types of legal information or court structures.
+This ontology models a hierarchical court system and various legal tasks, with a focus on bad check crimes. It covers the requirements of modeling court hierarchies and legal tasks related to bad check crimes. It assumes a hierarchical court system with a Supreme Court, Appellate Courts, District Courts, and Sub-Courts, but does not model specific roles or individuals within the court system, nor does it model specific laws, regulations, or court cases.

@@ -22,91 +22,87 @@
   rdfs:label "Policy Creator" ;
   rdfs:comment "Person who created the policy".
 
-:PolicyCreator rdf:type owl:Restriction ;
-  owl:onProperty :hasPolicyCreator ;
-  owl:allValuesFrom :Person.
-
-:hasPolicyCreator a owl:ObjectProperty ;
-  rdfs:label "Has Policy Creator" ;
-  rdfs:comment "Relationship between policy and its creator".
-
-:PolicyIssueDate a owl:DatatypeProperty ;
-  rdfs:label "Policy Issue Date" ;
-  rdfs:comment "Date when the policy was issued" ;
-  owl:datatype xsd:date.
+:PolicyIssuer a owl:Class ;
+  rdfs:label "Policy Issuer" ;
+  rdfs:comment "Person or organization that issued the policy".
 
 :Assignee a owl:Class ;
   rdfs:label "Assignee" ;
-  rdfs:comment "Person assigned the policy".
-
-:Assignee rdf:type owl:Restriction ;
-  owl:onProperty :hasAssignee ;
-  owl:allValuesFrom :Person.
-
-:hasAssignee a owl:ObjectProperty ;
-  rdfs:label "Has Assignee" ;
-  rdfs:comment "Relationship between policy and its assignee".
+  rdfs:comment "Person or organization assigned the policy".
 
 :Application a owl:Class ;
   rdfs:label "Application" ;
   rdfs:comment "Application or service used to access data".
 
-:Application rdf:type owl:Restriction ;
-  owl:onProperty :usesApplication ;
-  owl:allValuesFrom :Application.
-
-:usesApplication a owl:ObjectProperty ;
-  rdfs:label "Uses Application" ;
-  rdfs:comment "Relationship between policy and application".
-
 :AccessMode a owl:Class ;
   rdfs:label "Access Mode" ;
-  rdfs:comment "Mode of access requested by the policy".
-
-:AccessMode rdf:type owl:Restriction ;
-  owl:onProperty :requestsAccessMode ;
-  owl:allValuesFrom :AccessMode.
-
-:requestsAccessMode a owl:ObjectProperty ;
-  rdfs:label "Requests Access Mode" ;
-  rdfs:comment "Relationship between policy and access mode".
+  rdfs:comment "Mode of access being requested (e.g., read, write)".
 
 :PersonalData a owl:Class ;
   rdfs:label "Personal Data" ;
-  rdfs:comment "Personal data being accessed by the policy".
-
-:PersonalData rdf:type owl:Restriction ;
-  owl:onProperty :accessesPersonalData ;
-  owl:allValuesFrom :PersonalData.
-
-:accessesPersonalData a owl:ObjectProperty ;
-  rdfs:label "Accesses Personal Data" ;
-  rdfs:comment "Relationship between policy and personal data".
+  rdfs:comment "Type of personal data being accessed".
 
 :Purpose a owl:Class ;
   rdfs:label "Purpose" ;
   rdfs:comment "Purpose for accessing the data".
 
-:Purpose rdf:type owl:Restriction ;
-  owl:onProperty :forPurpose ;
-  owl:allValuesFrom :Purpose.
+:issued a owl:DatatypeProperty ;
+  rdfs:label "Issued Date" ;
+  rdfs:comment "Date the policy was issued" ;
+  owl:datatype xsd:date.
+
+:hasCreator a owl:ObjectProperty ;
+  rdfs:label "Has Creator" ;
+  rdfs:comment "Creator of the policy" ;
+  rdfs:domain :Policy ;
+  rdfs:range :PolicyCreator.
+
+:hasIssuer a owl:ObjectProperty ;
+  rdfs:label "Has Issuer" ;
+  rdfs:comment "Issuer of the policy" ;
+  rdfs:domain :Policy ;
+  rdfs:range :PolicyIssuer.
+
+:assigns a owl:ObjectProperty ;
+  rdfs:label "Assigns" ;
+  rdfs:comment "Assigns the policy to an individual or organization" ;
+  rdfs:domain :Policy ;
+  rdfs:range :Assignee.
+
+:uses a owl:ObjectProperty ;
+  rdfs:label "Uses" ;
+  rdfs:comment "Application or service used to access data" ;
+  rdfs:domain :Policy ;
+  rdfs:range :Application.
+
+:requests a owl:ObjectProperty ;
+  rdfs:label "Requests" ;
+  rdfs:comment "Access mode being requested" ;
+  rdfs:domain :Policy ;
+  rdfs:range :AccessMode.
+
+:accesses a owl:ObjectProperty ;
+  rdfs:label "Accesses" ;
+  rdfs:comment "Type of personal data being accessed" ;
+  rdfs:domain :Policy ;
+  rdfs:range :PersonalData.
 
 :forPurpose a owl:ObjectProperty ;
   rdfs:label "For Purpose" ;
-  rdfs:comment "Relationship between policy and purpose".
-
-:Person a owl:Class ;
-  rdfs:label "Person" ;
-  rdfs:comment "Person involved in policy access".
+  rdfs:comment "Purpose for accessing the data" ;
+  rdfs:domain :Policy ;
+  rdfs:range :Purpose.
 ```
 
 **CQ-to-Axiom Mapping Table**
 
-| Competency Question | Enabling Axioms |
+| Competency Question | Enabling Classes and Properties |
 | --- | --- |
-| What is the unique identifier of the policy? | :PolicyID a owl:DatatypeProperty ;... |
-| Who is the creator of the policy? | :PolicyCreator a owl:Class ;... :hasPolicyCreator a owl:ObjectProperty ;... |
-| When was the policy issued? | :PolicyIssueDate a owl:DatatypeProperty ;... |
-| Who is the assignee of the policy? | :Assignee a owl:Class ;... :hasAssignee a owl:ObjectProperty ;... |
-| What application/service is being used to access the data? | :Application a owl:Class ;... :usesApplication a owl:ObjectProperty ;... |
-| What access mode is being requested? | :AccessMode a owl
+| What is the unique identifier of the policy? | :Policy, :PolicyID |
+| Who is the creator of the policy? | :Policy, :hasCreator, :PolicyCreator |
+| When was the policy issued? | :Policy, :issued |
+| Who is the assignee of the policy? | :Policy, :assigns, :Assignee |
+| What application/service is being used to access the data? | :Policy, :uses, :Application |
+| What access mode is being requested? | :Policy, :requests, :AccessMode |
+| What personal data is being accessed? | :Policy, :accesses, :PersonalData |
+| What is the purpose for accessing the data? | :Policy, :forPurpose, :Purpose |

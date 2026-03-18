@@ -1,7 +1,75 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
-  rdfs:label "Sprinkler Use Case Ontology" ;
-  rdfs:comment "An ontology for the sprinkler use case.".
+    rdfs:label "Sprinkler Use Case" ;
+    rdfs:comment "An ontology for the sprinkler use case.".
 
 :Event a owl:Class ;
-  rdfs:label "Event" ;
-  rdfs:comment "Represents an event.".
+    rdfs:label "Event" ;
+    rdfs:comment "Abstract class for events.".
+
+:RainySeason a :Event ;
+    rdfs:label "Rainy Season" ;
+    rdfs:comment "Event representing the rainy season.".
+
+:SprinklerOn a :Event ;
+    rdfs:label "Sprinkler On" ;
+    rdfs:comment "Event representing the sprinkler being on.".
+
+:Raining a :Event ;
+    rdfs:label "Raining" ;
+    rdfs:comment "Event representing it is raining.".
+
+:PavementWet a :Event ;
+    rdfs:label "Pavement Wet" ;
+    rdfs:comment "Event representing the pavement is wet.".
+
+:PavementSlippery a :Event ;
+    rdfs:label "Pavement Slippery" ;
+    rdfs:comment "Event representing the pavement is slippery.".
+
+:CausalRelation a owl:ObjectProperty ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "Property for causal relations between events.".
+
+:EffectWeight a xsd:decimal ;
+    rdfs:label "Effect Weight" ;
+    rdfs:comment "Datatype for effect weights.".
+
+:Causes rdfs:subPropertyOf :CausalRelation ;
+    rdfs:label "Causes" ;
+    rdfs:comment "Subproperty for direct causal relations.".
+
+:Mediates rdfs:subPropertyOf :CausalRelation ;
+    rdfs:label "Mediates" ;
+    rdfs:comment "Subproperty for causal relations mediated by another event.".
+
+:CausallyRelatedTo domain :Event ;
+    rdfs:label "Causally Related To" ;
+    rdfs:comment "Domain for causal relations.".
+
+:HasEffectWeight domain :CausalRelation ;
+    range :EffectWeight ;
+    rdfs:label "Has Effect Weight" ;
+    rdfs:comment "Property for the effect weight of a causal relation.".
+
+:IsMediatedBy domain :CausalRelation ;
+    range :Event ;
+    rdfs:label "Is Mediated By" ;
+    rdfs:comment "Property for the event that a causal relation is mediated by.".
+
+:IsDirectlyCausedBy domain :Event ;
+    range :Event ;
+    rdfs:label "Is Directly Caused By" ;
+    rdfs:comment "Property for the event that directly causes another event.".
+
+Reasoning Summary:
+1. Extracted atomic requirements:
+   - The ontology represents events and causal relations between them.
+   - There are five specific events: rainy season, sprinkler on, raining, pavement wet, and pavement slippery.
+   - Causal relations have an effect weight.
+   - Some causal relations are mediated by other events.

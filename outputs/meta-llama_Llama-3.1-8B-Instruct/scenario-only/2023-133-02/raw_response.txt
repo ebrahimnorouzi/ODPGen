@@ -17,61 +17,82 @@
   rdfs:label "Asthma Symptom" ;
   rdfs:comment "A symptom of asthma, e.g. cough, chest tightness".
 
-:AsthmaMedication a owl:Class ;
-  rdfs:label "Asthma Medication" ;
-  rdfs:comment "A medication for asthma".
+:Cough a owl:Class ;
+  rdfs:label "Cough" ;
+  rdfs:comment "A specific asthma symptom, cough" ;
+  rdfs:subClassOf :AsthmaSymptom.
+
+:ChestTightness a owl:Class ;
+  rdfs:label "Chest Tightness" ;
+  rdfs:comment "A specific asthma symptom, chest tightness" ;
+  rdfs:subClassOf :AsthmaSymptom.
+
+:Wheezing a owl:Class ;
+  rdfs:label "Wheezing" ;
+  rdfs:comment "A specific asthma symptom, wheezing" ;
+  rdfs:subClassOf :AsthmaSymptom.
+
+:BreathingPattern a owl:Class ;
+  rdfs:label "Breathing Pattern" ;
+  rdfs:comment "A specific asthma symptom, breathing pattern" ;
+  rdfs:subClassOf :AsthmaSymptom.
+
+:Medication a owl:Class ;
+  rdfs:label "Medication" ;
+  rdfs:comment "A medication taken by an asthma patient".
 
 :OutdoorEnvironmentFeature a owl:Class ;
   rdfs:label "Outdoor Environment Feature" ;
-  rdfs:comment "A feature of the outdoor environment, e.g. pollen, air quality index".
+  rdfs:comment "A feature of the outdoor environment, e.g. pollen, AQI".
 
-:AsthmaSymptomCause a owl:ObjectProperty ;
-  rdfs:label "Causes Asthma Symptom" ;
-  rdfs:comment "A causal relation between an outdoor environment feature and an asthma symptom" ;
-  owl:propertyChain (:OutdoorEnvironmentFeature :AsthmaSymptomCause :AsthmaSymptom) ;
-  owl:inverseOf :AsthmaSymptomEffect.
+:Pollen a owl:Class ;
+  rdfs:label "Pollen" ;
+  rdfs:comment "A specific outdoor environment feature, pollen" ;
+  rdfs:subClassOf :OutdoorEnvironmentFeature.
 
-:AsthmaSymptomEffect a owl:ObjectProperty ;
-  rdfs:label "Effect of Asthma Symptom" ;
-  rdfs:comment "The effect weight of an asthma symptom caused by an outdoor environment feature" ;
-  rdfs:range xsd:float.
+:AirQualityIndex a owl:Class ;
+  rdfs:label "Air Quality Index" ;
+  rdfs:comment "A specific outdoor environment feature, AQI" ;
+  rdfs:subClassOf :OutdoorEnvironmentFeature.
 
 :AsthmaPatientHasSymptom a owl:ObjectProperty ;
-  rdfs:label "Has Asthma Symptom" ;
-  rdfs:comment "A relation between an asthma patient and their symptoms" ;
-  owl:inverseOf :SymptomBelongsToPatient.
+  rdfs:label "has symptom" ;
+  rdfs:comment "A patient has a symptom" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :AsthmaSymptom.
 
-:AsthmaPatientHasMedication a owl:ObjectProperty ;
-  rdfs:label "Has Asthma Medication" ;
-  rdfs:comment "A relation between an asthma patient and their medications" ;
-  owl:inverseOf :MedicationBelongsToPatient.
+:AsthmaPatientTakesMedication a owl:ObjectProperty ;
+  rdfs:label "takes medication" ;
+  rdfs:comment "A patient takes a medication" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :Medication.
 
-:SymptomBelongsToPatient a owl:ObjectProperty ;
-  rdfs:label "Belongs to Asthma Patient" ;
-  rdfs:comment "A relation between an asthma symptom and its patient".
+:AsthmaPatientIsExposedTo a owl:ObjectProperty ;
+  rdfs:label "is exposed to" ;
+  rdfs:comment "A patient is exposed to an outdoor environment feature" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :OutdoorEnvironmentFeature.
 
-:MedicationBelongsToPatient a owl:ObjectProperty ;
-  rdfs:label "Belongs to Asthma Patient" ;
-  rdfs:comment "A relation between an asthma medication and its patient".
+:AsthmaSymptomHasEffectWeight a owl:DatatypeProperty ;
+  rdfs:label "has effect weight" ;
+  rdfs:comment "A symptom has an effect weight" ;
+  rdfs:domain :AsthmaSymptom ;
+  rdfs:range xsd:double.
 
-:AsthmaPatient a :AsthmaPatientHasSymptom+ ;
-  :AsthmaPatient a :AsthmaPatientHasMedication+.
+:AsthmaPatientHasCausalRelation a owl:ObjectProperty ;
+  rdfs:label "has causal relation" ;
+  rdfs:comment "A patient has a causal relation with a symptom" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :AsthmaSymptom.
 
-:AsthmaSymptom a :SymptomBelongsToPatient+.
-:AsthmaMedication a :MedicationBelongsToPatient+.
-```
+:AsthmaPatientHasCausalRelationWithPollen a owl:ObjectProperty ;
+  rdfs:label "has causal relation with pollen" ;
+  rdfs:comment "A patient has a causal relation with pollen" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :Pollen.
 
-**Documentation**
-
-### Intent
-This ontology design pattern models the causal relations between outdoor environment features and asthma symptoms, as well as the relations between asthma patients and their symptoms and medications.
-
-### Covered requirements
-* Modeling asthma patient monitoring data
-* Representing causal relations between outdoor environment features and asthma symptoms
-* Representing relations between asthma patients and their symptoms and medications
-
-### Known assumptions and exclusions
-* The ontology assumes that the data collected about asthma patients includes their symptoms, medication intake, and outdoor environment features.
-* The ontology excludes concepts not implied by the scenario, such as the underlying biological mechanisms of asthma or the effects of medication on symptoms.
-* The ontology uses a simple causal relation property (:AsthmaSymptomCause) to represent the effects of outdoor environment features on asthma symptoms, without considering more complex causal models.
+:AsthmaPatientHasCausalRelationWithAQI a owl:ObjectProperty ;
+  rdfs:label "has causal relation with AQI" ;
+  rdfs:comment "A patient has a causal relation with AQI" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :AirQualityIndex

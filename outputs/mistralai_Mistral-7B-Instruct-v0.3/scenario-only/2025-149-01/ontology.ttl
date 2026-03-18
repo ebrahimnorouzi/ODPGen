@@ -5,44 +5,56 @@
 @prefix : <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Database Access Control" ;
+  rdfs:label "Database Access Control Ontology" ;
   rdfs:comment "This ontology models the access control to a relational database queried via SQL.".
 
-# Database related classes
+# Classes
 :Database a owl:Class ;
   rdfs:label "Database" ;
   rdfs:comment "A relational database.".
-
-:SQLQuery a owl:Class ;
-  rdfs:label "SQL Query" ;
-  rdfs:comment "A Structured Query Language query.".
 
 :User a owl:Class ;
   rdfs:label "User" ;
   rdfs:comment "A user who queries the database.".
 
-# Access control related classes
-:AccessPermission a owl:Class ;
-  rdfs:label "Access Permission" ;
-  rdfs:comment "A permission that grants or denies access to a resource.".
+:Query a owl:Class ;
+  rdfs:label "SQL Query" ;
+  rdfs:comment "A Structured Query Language query.".
 
-:ReadPermission a owl:Class ;
-  rdfs:label "Read Permission" ;
-  rdfs:comment "A permission that grants read access to a resource.".
+:Permission a owl:Class ;
+  rdfs:label "Permission" ;
+  rdfs:comment "A right to execute a specific query.".
 
-:WritePermission a owl:Class ;
-  rdfs:label "Write Permission" ;
-  rdfs:comment "A permission that grants write access to a resource.".
+# Object Properties
+:queries a owl:ObjectProperty ;
+  rdfs:domain :User ;
+  rdfs:range :Query ;
+  rdfs:label "queries" ;
+  rdfs:comment "A user can execute a query.".
 
-:ExecutePermission a owl:Class ;
-  rdfs:label "Execute Permission" ;
-  rdfs:comment "A permission that grants execution permission to a SQL query.".
+:hasPermission a owl:ObjectProperty ;
+  rdfs:domain :User ;
+  rdfs:range :Permission ;
+  rdfs:label "hasPermission" ;
+  rdfs:comment "A user has a permission to execute a specific query.".
 
-# Relationships
-:Database rdf:type owl:ObjectProperty ;
-  rdfs:label "hasDatabase" ;
-  rdfs:comment "Relates a user to the database they are accessing.".
+# Data Properties
+:queryId a owl:DatatypeProperty ;
+  rdfs:domain :Query ;
+  rdfs:range xsd:string ;
+  rdfs:label "queryId" ;
+  rdfs:comment "The unique identifier of a query.".
 
-:SQLQuery rdf:type owl:ObjectProperty ;
-  rdfs:label "hasSQLQuery" ;
-  rdfs:comment "Relates a user to the SQL query they are executing.".
+:permissionId a owl:DatatypeProperty ;
+  rdfs:domain :Permission ;
+  rdfs:range xsd:string ;
+  rdfs:label "permissionId" ;
+  rdfs:comment "The unique identifier of a permission.".
+
+# Axioms
+:Database disjoint owl:Thing.
+:User disjoint owl:Thing.
+:Query disjoint owl:Thing.
+:Permission disjoint owl:Thing.
+
+:Permission owl:FunctionalProperty :permissionId.

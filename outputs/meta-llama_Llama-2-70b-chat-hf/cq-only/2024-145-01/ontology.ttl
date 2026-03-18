@@ -6,34 +6,44 @@
 
 :Ontology a owl:Ontology ; rdfs:label "Court Ontology" ; rdfs:comment "An ontology for court information".
 
-# Classes
 :Court a owl:Class ; rdfs:label "Court" ; rdfs:comment "A court of law".
 :DistrictCourt a owl:Class ; rdfs:label "District Court" ; rdfs:comment "A district court".
 :State a owl:Class ; rdfs:label "State" ; rdfs:comment "A state in a country".
+:Location a owl:Class ; rdfs:label "Location" ; rdfs:comment "A physical location".
+:Authority a owl:Class ; rdfs:label "Authority" ; rdfs:comment "A court with authority over another court".
+:Check a owl:Class ; rdfs:label "Check" ; rdfs:comment "A financial check".
+:Transaction a owl:Class ; rdfs:label "Transaction" ; rdfs:comment "A financial transaction".
+:Payment a owl:Class ; rdfs:label "Payment" ; rdfs:comment "A payment made with a check".
+:BadCheck a owl:Class ; rdfs:label "Bad Check" ; rdfs:comment "A check that has bounced".
 
-# Properties
-:hasJurisdiction a owl:ObjectProperty ; rdfs:label "has jurisdiction" ; rdfs:comment "A court has jurisdiction over a district".
-:isLocatedIn a owl:ObjectProperty ; rdfs:label "is located in" ; rdfs:comment "A court is located in a state".
-:hasAuthorityOver a owl:ObjectProperty ; rdfs:label "has authority over" ; rdfs:comment "A court has authority over a lower court".
-:transactionType a owl:DataProperty ; rdfs:label "transaction type" ; rdfs:comment "The type of a check transaction".
-:paymentDate a owl:DataProperty ; rdfs:label "payment date" ; rdfs:comment "The date a check payment was made".
-:transactionStatus a owl:DataProperty ; rdfs:label "transaction status" ; rdfs:comment "The status of a check payment transaction".
+:Court owl:hasClass :DistrictCourt.
+:DistrictCourt owl:hasClass :Court.
+:State owl:hasClass :DistrictCourt.
+:Location owl:hasClass :State.
+:Authority owl:hasClass :Court.
+:Check owl:hasClass :Transaction.
+:Payment owl:hasClass :Transaction.
+:BadCheck owl:hasClass :Check.
 
-# Individuals
-:Court1 a :Court ; rdfs:label "Court 1" ; rdfs:comment "A specific court".
-:Court2 a :Court ; rdfs:label "Court 2" ; rdfs:comment "Another specific court".
-:DistrictCourt1 a :DistrictCourt ; rdfs:label "District Court 1" ; rdfs:comment "A specific district court".
-:DistrictCourt2 a :DistrictCourt ; rdfs:label "District Court 2" ; rdfs:comment "Another specific district court".
-:State1 a :State ; rdfs:label "State 1" ; rdfs:comment "A specific state".
-:State2 a :State ; rdfs:label "State 2" ; rdfs:comment "Another specific state".
+:Court owl:hasProperty :name.
+:Court owl:hasProperty :location.
+:DistrictCourt owl:hasProperty :district.
+:State owl:hasProperty :name.
+:Location owl:hasProperty :address.
+:Authority owl:hasProperty :hasAuthorityOver.
+:Check owl:hasProperty :amount.
+:Check owl:hasProperty :date.
+:Payment owl:hasProperty :paymentDate.
+:Payment owl:hasProperty :paymentAmount.
+:BadCheck owl:hasProperty :bouncedDate.
 
-# Axioms
-:Court1 :hasJurisdiction :DistrictCourt1.
-:Court2 :hasJurisdiction :DistrictCourt2.
-:DistrictCourt1 :isLocatedIn :State1.
-:DistrictCourt2 :isLocatedIn :State2.
-:Court1 :hasAuthorityOver :DistrictCourt1.
-:Court2 :hasAuthorityOver :DistrictCourt2.
-:transactionType :hasValue "bad check".
-:paymentDate :hasValue "2022-01-01".
-:transactionStatus :hasValue "paid".
+:hasAuthorityOver a owl:ObjectProperty ; rdfs:label "has authority over" ; rdfs:comment "A court has authority over another court".
+:hasClass a owl:ObjectProperty ; rdfs:label "has class" ; rdfs:comment "A class inheritance relationship".
+:hasProperty a owl:ObjectProperty ; rdfs:label "has property" ; rdfs:comment "A property of a class".
+
+:name a owl:DatatypeProperty ; rdfs:label "name" ; rdfs:comment "The name of a court".
+:location a owl:DatatypeProperty ; rdfs:label "location" ; rdfs:comment "The location of a court".
+:district a owl:DatatypeProperty ; rdfs:label "district" ; rdfs:comment "The district of a district court".
+:address a owl:DatatypeProperty ; rdfs:label "address" ; rdfs:comment "The address of a location".
+:amount a owl:DatatypeProperty ; rdfs:label "amount" ; rdfs:comment "The amount of a check".
+:date a owl:DatatypeProperty ; rdfs:label "date" ; rdfs:comment "The date of a check".

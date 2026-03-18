@@ -5,8 +5,8 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-rdfs:label "Cultural Property Survey Ontology" ;
-rdfs:comment "An ontology for representing data related to cultural property surveys.".
+rdfs:label "Cultural Heritage Survey Ontology" ;
+rdfs:comment "An ontology for representing data related to cultural heritage surveys.".
 
 :Survey a owl:Class ;
 rdfs:label "Survey" ;
@@ -22,37 +22,55 @@ rdfs:comment "An observation produced during a survey or investigation activity.
 
 :Expert a owl:Class ;
 rdfs:label "Expert" ;
-rdfs:comment "An expert participant in a survey or investigation activity.".
+rdfs:comment "An individual with a specific role or expertise participating in a survey or investigation activity.".
 
 :Hardware a owl:Class ;
 rdfs:label "Hardware" ;
-rdfs:comment "A hardware device used to conduct a survey or investigation activity.".
+rdfs:comment "A physical device or equipment used to conduct a survey or investigation activity.".
 
 :Software a owl:Class ;
 rdfs:label "Software" ;
-rdfs:comment "A software tool used to conduct a survey or investigation activity.".
+rdfs:comment "A software application or tool used to conduct a survey or investigation activity.".
 
 :TechnicalConfiguration a owl:Class ;
 rdfs:label "Technical Configuration" ;
-rdfs:comment "A specific configuration of hardware, software, and other technical components used in a survey or investigation activity.".
+rdfs:comment "A specific combination of hardware, software, and settings used to conduct a survey or investigation activity.".
 
 :PostProcessedOutput a owl:Class ;
 rdfs:label "Post-Processed Output" ;
-rdfs:comment "An output produced after processing data collected during a survey or investigation activity.".
+rdfs:comment "An output produced after processing data collected during a survey or investigation activity, such as interactive images, spectra, or datasets.".
 
 :Acquisition a owl:Class ;
 rdfs:label "Acquisition" ;
-rdfs:comment "A specific acquisition cycle within a survey.".
+rdfs:comment "A specific photographic acquisition cycle within a survey.".
 
 :AcquisitionParameter a owl:Class ;
 rdfs:label "Acquisition Parameter" ;
-rdfs:comment "A parameter characterizing a specific acquisition cycle within a survey.".
+rdfs:comment "A parameter characterizing a specific photographic acquisition cycle, such as exposure time, ISO, or aperture.".
 
-:Survey -:hasInvestigation Investigation.
-:Investigation -:hasObservation Observation.
-:Observation -:hasExpert Expert.
-:Survey -:hasHardware Hardware.
-:Survey -:hasSoftware Software.
-:Survey -:hasTechnicalConfiguration TechnicalConfiguration.
-:PostProcessedOutput -:isDerivedFrom Observation.
-:Acquisition -:hasAcquisitionParameter AcquisitionParameter.
+:Interpretation a owl:Class ;
+rdfs:label "Interpretation" ;
+rdfs:comment "An interpretation or claim supported by the observations produced during a survey.".
+
+:Claim a owl:Class ;
+rdfs:label "Claim" ;
+rdfs:comment "A specific statement or assertion made based on the observations produced during a survey.".
+
+:Evidence a owl:Class ;
+rdfs:label "Evidence" ;
+rdfs:comment "A piece of data or information supporting a claim or interpretation produced during a survey.".
+
+:Survey -:hasInvestigation* :Investigation.
+:Investigation -:hasObservation* :Observation.
+:Observation -:hasExpert* :Expert.
+:Survey -:hasExpert* :Expert.
+:Expert -:hasRole* :Role.
+:Hardware -:isPartOf* :TechnicalConfiguration.
+:Software -:isPartOf* :TechnicalConfiguration.
+:TechnicalConfiguration -:hasHardware* :Hardware.
+:TechnicalConfiguration -:hasSoftware* :Software.
+:PostProcessedOutput -:isDerivedFrom* :Observation.
+:Acquisition -:hasAcquisitionParameter* :AcquisitionParameter.
+:AcquisitionParameter -:characterizes* :Acquisition.
+:Interpretation -:isSupportedBy* :Observation.
+:Claim -:isSupportedBy* :Interpretation.

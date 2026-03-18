@@ -1,61 +1,111 @@
-**Reasoning Steps**
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. **Extract atomic requirements from the scenario**
-	* Employees are the only ones allowed to access the system.
-	* Access is allowed only on weekdays.
-	* Access is allowed only from the EU.
-	* Evaluation needs temporal context.
-	* Evaluation needs spatial context.
-	* Evaluation needs role context.
-	* Evaluation needs request-capability context.
-2. **Propose candidate classes and properties for each requirement**
-	* Employees: class `:Employee`, property `:hasRole`
-	* Weekdays: class `:Weekday`, property `:hasDay`
-	* EU: class `:EU`, property `:hasLocation`
-	* Temporal context: class `:Time`, property `:hasDate`
-	* Spatial context: class `:Location`, property `:hasAddress`
-	* Role context: class `:Role`, property `:hasEmployee`
-	* Request-capability context: class `:Capability`, property `:hasRequest`
-	* Requested action: class `:Action`, property `:hasTarget`
-	* Target asset: class `:Asset`, property `:hasAction`
-	* Evaluation request: class `:EvaluationRequest`, property `:hasAction`, `:hasTarget`, `:hasIssuer`, `:hasDate`, `:hasLocation`, `:hasRole`, `:hasCapability`
-3. **Draft axioms for each candidate**
-	* `:Employee rdfs:subClassOf owl:Thing.`
-	* `:Weekday rdfs:subClassOf owl:Thing.`
-	* `:EU rdfs:subClassOf owl:Thing.`
-	* `:Time rdfs:subClassOf owl:Thing.`
-	* `:Location rdfs:subClassOf owl:Thing.`
-	* `:Role rdfs:subClassOf owl:Thing.`
-	* `:Capability rdfs:subClassOf owl:Thing.`
-	* `:Action rdfs:subClassOf owl:Thing.`
-	* `:Asset rdfs:subClassOf owl:Thing.`
-	* `:EvaluationRequest rdfs:subClassOf owl:Thing.`
-	* `:hasAction rdfs:domain :EvaluationRequest ; rdfs:range :Action.`
-	* `:hasTarget rdfs:domain :EvaluationRequest ; rdfs:range :Asset.`
-	* `:hasIssuer rdfs:domain :EvaluationRequest ; rdfs:range :Employee.`
-	* `:hasDate rdfs:domain :EvaluationRequest ; rdfs:range :Time.`
-	* `:hasLocation rdfs:domain :EvaluationRequest ; rdfs:range :Location.`
-	* `:hasRole rdfs:domain :EvaluationRequest ; rdfs:range :Role.`
-	* `:hasCapability rdfs:domain :EvaluationRequest ; rdfs:range :Capability.`
-	* `:Employee owl:disjoint :Weekday.`
-	* `:Weekday owl:disjoint :EU.`
-	* `:EU owl:disjoint :Time.`
-	* `:Time owl:disjoint :Location.`
-	* `:Location owl:disjoint :Role.`
-	* `:Role owl:disjoint :Capability.`
-	* `:Capability owl:disjoint :Action.`
-	* `:Action owl:disjoint :Asset.`
-	* `:Asset owl:disjoint :EvaluationRequest.`
-4. **Check which axioms enable answering each CQ**
-	* CQ1: What is the requested action?
-		+ Axioms: `:hasAction rdfs:domain :EvaluationRequest ; rdfs:range :Action.`
-	* CQ2: Who is the party issuing the evaluation request?
-		+ Axioms: `:hasIssuer rdfs:domain :EvaluationRequest ; rdfs:range :Employee.`
-	* CQ3: What is the target asset of the evaluation request?
-		+ Axioms: `:hasTarget rdfs:domain :EvaluationRequest ; rdfs:range :Asset.`
-	* CQ4: When was the evaluation request issued?
-		+ Axioms: `:hasDate rdfs:domain :EvaluationRequest ; rdfs:range :Time.`
-	* CQ5: What additional contextual information can be included in the evaluation request to further constrain it?
-		+ Axioms: `:hasLocation rdfs:domain :EvaluationRequest ; rdfs:range :Location.`, `:hasRole rdfs:domain :EvaluationRequest ; rdfs:range :Role.`, `:hasCapability rdfs:domain :EvaluationRequest ; rdfs:range :Capability.`
-5. **Add or refine axioms to cover any uncovered CQs**
-	* CQ6: What is the spatial context of
+:Ontology a owl:Ontology ;
+  rdfs:label "Evaluation Request Ontology" ;
+  rdfs:comment "Formal description of a requested action by an assignee on a target asset.".
+
+:Action a owl:Class ;
+  rdfs:label "Requested Action" ;
+  rdfs:comment "The requested action by an assignee on a target asset.".
+
+:Assignee a owl:Class ;
+  rdfs:label "Assignee" ;
+  rdfs:comment "The party issuing the evaluation request.".
+
+:TargetAsset a owl:Class ;
+  rdfs:label "Target Asset" ;
+  rdfs:comment "The target asset of the evaluation request.".
+
+:TemporalContext a owl:Class ;
+  rdfs:label "Temporal Context" ;
+  rdfs:comment "Temporal context of the evaluation request.".
+
+:SpatialContext a owl:Class ;
+  rdfs:label "Spatial Context" ;
+  rdfs:comment "Spatial context of the evaluation request.".
+
+:RoleContext a owl:Class ;
+  rdfs:label "Role Context" ;
+  rdfs:comment "Role context of the evaluation request.".
+
+:RequestCapabilityContext a owl:Class ;
+  rdfs:label "Request Capability Context" ;
+  rdfs:comment "Request capability context of the evaluation request.".
+
+:hasAction a owl:ObjectProperty ;
+  rdfs:label "has Action" ;
+  rdfs:comment "The requested action by an assignee on a target asset." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Action.
+
+:issuedBy a owl:ObjectProperty ;
+  rdfs:label "issued By" ;
+  rdfs:comment "The party issuing the evaluation request." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Assignee.
+
+:targets a owl:ObjectProperty ;
+  rdfs:label "targets" ;
+  rdfs:comment "The target asset of the evaluation request." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :TargetAsset.
+
+:issuedAt a owl:DatatypeProperty ;
+  rdfs:label "issued At" ;
+  rdfs:comment "When was the evaluation request issued?" ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range xsd:dateTime.
+
+:hasTemporalContext a owl:ObjectProperty ;
+  rdfs:label "has Temporal Context" ;
+  rdfs:comment "Temporal context of the evaluation request." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :TemporalContext.
+
+:hasSpatialContext a owl:ObjectProperty ;
+  rdfs:label "has Spatial Context" ;
+  rdfs:comment "Spatial context of the evaluation request." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :SpatialContext.
+
+:hasRoleContext a owl:ObjectProperty ;
+  rdfs:label "has Role Context" ;
+  rdfs:comment "Role context of the evaluation request." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :RoleContext.
+
+:hasRequestCapabilityContext a owl:ObjectProperty ;
+  rdfs:label "has Request Capability Context" ;
+  rdfs:comment "Request capability context of the evaluation request." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :RequestCapabilityContext.
+
+:EvaluationRequest a owl:Class ;
+  rdfs:label "Evaluation Request" ;
+  rdfs:comment "Formal description of a requested action by an assignee on a target asset." ;
+  owl:disjointWith :Action ;
+  owl:disjointWith :Assignee ;
+  owl:disjointWith :TargetAsset.
+
+:isAllowedTo a owl:ObjectProperty ;
+  rdfs:label "is Allowed To" ;
+  rdfs:comment "Access is allowed only to employees." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Employee.
+
+:isAllowedOn a owl:ObjectProperty ;
+  rdfs:label "is Allowed On" ;
+  rdfs:comment "Access is allowed only on weekdays." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Weekday.
+
+:isAllowedFrom a owl:ObjectProperty ;
+  rdfs:label "is Allowed From" ;
+  rdfs:comment "Access is allowed only from the EU." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs

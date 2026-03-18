@@ -1,12 +1,12 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix : <http://example.org/odp#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Weather and Pavement Conditions" ;
-  rdfs:comment "An ontology for modeling weather events and their effects on pavement conditions.".
+  rdfs:label "Weather and Pavement Ontology" ;
+  rdfs:comment "An ontology for modeling weather events and their effects on pavement.".
 
 # Classes
 :Event a owl:Class ;
@@ -14,60 +14,51 @@
   rdfs:comment "An occurrence or action that has an impact on the pavement.".
 
 :WeatherEvent a owl:Class ;
-  rdfs:subClassOf [ owl:allValuesFrom (:Event) ] ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Event ] ;
   rdfs:label "Weather Event" ;
-  rdfs:comment "A specific weather event that affects the pavement.".
+  rdfs:comment "A weather-related event that has an impact on the pavement.".
 
 :PavementCondition a owl:Class ;
   rdfs:label "Pavement Condition" ;
   rdfs:comment "The current state of the pavement.".
 
 :SlipperyPavement a owl:Class ;
-  rdfs:subClassOf [ owl:disjointUnion (:PavementCondition) ] ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :PavementCondition ] ;
   rdfs:label "Slippery Pavement" ;
-  rdfs:comment "A pavement condition where the surface is slippery.".
+  rdfs:comment "The pavement is slippery and dangerous to walk on.".
 
 :WetPavement a owl:Class ;
-  rdfs:subClassOf [ owl:disjointUnion (:PavementCondition) ] ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :PavementCondition ] ;
   rdfs:label "Wet Pavement" ;
-  rdfs:comment "A pavement condition where the surface is wet.".
+  rdfs:comment "The pavement is wet and may be slippery.".
 
 :Sprinkler a owl:Class ;
   rdfs:label "Sprinkler" ;
-  rdfs:comment "A device used to spray water.".
+  rdfs:comment "A device used to spray water for irrigation or cooling.".
 
-:SprinklerSystem a owl:Class ;
-  rdfs:subClassOf [ owl:allValuesFrom (:Sprinkler) ] ;
-  rdfs:label "Sprinkler System" ;
-  rdfs:comment "A system of sprinklers used to water an area.".
+:SprinklerState a owl:Class ;
+  rdfs:label "Sprinkler State" ;
+  rdfs:comment "The current state of the sprinkler system.".
+
+:On axiom: (:SprinklerState rdf:type owl:Enum; rdf:first :On ; rdf:rest [ a owl:Restriction ; owl:onClass :SprinklerState ; owl:someValuesFrom xsd:boolean ; rdf:first :true ] ) ;
+
+:Off axiom: (:SprinklerState rdf:type owl:Enum; rdf:first :Off ; rdf:rest [ a owl:Restriction ; owl:onClass :SprinklerState ; owl:someValuesFrom xsd:boolean ; rdf:first :false ] ) ;
 
 # Properties
 :hasEvent a owl:ObjectProperty ;
-  rdfs:domain [ owl:allValuesFrom (:PavementCondition) ] ;
-  rdfs:range (:Event) ;
+  rdfs:domain :PavementCondition ;
+  rdfs:range :Event ;
   rdfs:label "Has Event" ;
-  rdfs:comment "The event that caused the pavement condition.".
+  rdfs:comment "The event that caused the current pavement condition.".
 
 :causes a owl:ObjectProperty ;
-  rdfs:domain (:Event) ;
-  rdfs:range (:PavementCondition) ;
+  rdfs:domain :Event ;
+  rdfs:range :PavementCondition ;
   rdfs:label "Causes" ;
-  rdfs:comment "The pavement condition that is caused by the event.".
+  rdfs:comment "The pavement condition that an event is responsible for.".
 
-:isOn a owl:ObjectProperty ;
-  rdfs:domain (:SprinklerSystem) ;
-  rdfs:range xsd:boolean ;
-  rdfs:label "Is On" ;
-  rdfs:comment "Indicates whether the sprinkler system is turned on or off.".
-
-# Axioms
-:SlipperyPavement a owl:Class ;
-  owl:equivalentClass [ rdf:type owl:Class ;
-    owl:intersectionOf (
-      (:PavementCondition)
-      (owl:Restriction [
-        owl:onProperty :causes ;
-        owl:hasValue :SlipperyPavement
-      ])
-    )
-  ].
+:hasOutcome a owl:ObjectProperty ;
+  rdfs:domain :Event ;
+  rdfs:range :PavementCondition ;
+  rdfs:label "Has Outcome" ;
+  rdfs:comment "The pavement condition that would result from an event.".

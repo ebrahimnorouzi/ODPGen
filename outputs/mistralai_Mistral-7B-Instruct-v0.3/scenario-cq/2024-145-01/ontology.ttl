@@ -8,56 +8,66 @@
   rdfs:label "Legal Tasks Ontology" ;
   rdfs:comment "An ontology for managing legal tasks, focusing on court hierarchies and bad check crime regulations.".
 
-# Court classes and properties
+# Scenario-requirement-to-axiom mapping
 :Court a owl:Class ;
   rdfs:label "Court" ;
-  rdfs:comment "A legal court.".
-
-:DistrictCourt a owl:Class ;
-  rdfs:subClassOf [ owl:Restriction [ owl:onProperty :hasAuthority ; owl:allValuesFrom :Court ] ] ;
-  rdfs:label "District Court" ;
-  rdfs:comment "A district court within a state.".
+  rdfs:comment "A legal entity responsible for hearing and deciding cases.".
 
 :State a owl:Class ;
   rdfs:label "State" ;
-  rdfs:comment "A geographical region in which district courts are located.".
+  rdfs:comment "A political subdivision of a country.".
 
-:hasAuthority a owl:ObjectProperty ;
+:DistrictCourt subClassOf :Court ;
+  rdfs:label "District Court" ;
+  rdfs:comment "A court of lower jurisdiction in a state.".
+
+:HasState rdf:Property ;
+  rdfs:domain :Court ;
+  rdfs:range :State ;
+  rdfs:label "hasState" ;
+  rdfs:comment "The state where a court is located.".
+
+:HasSubordinate rdf:Property ;
   rdfs:domain :Court ;
   rdfs:range :Court ;
-  rdfs:label "Has Authority" ;
-  rdfs:comment "The court that has authority over another court.".
+  rdfs:label "hasSubordinate" ;
+  rdfs:comment "The court that has authority over a given court.".
 
-:isLocatedIn a owl:ObjectProperty ;
-  rdfs:domain :DistrictCourt ;
-  rdfs:range :State ;
-  rdfs:label "Is Located In" ;
-  rdfs:comment "The state in which a district court is located.".
-
-# Bad check classes and properties
 :BadCheck a owl:Class ;
   rdfs:label "Bad Check" ;
-  rdfs:comment "A check that has been written with insufficient funds.".
+  rdfs:comment "A check transaction that is not honored by the bank.".
 
-:CheckTransaction a owl:Class ;
-  rdfs:subClassOf [ owl:Restriction [ owl:onProperty :hasType ; owl:allValuesFrom :BadCheck ] ] ;
-  rdfs:label "Check Transaction" ;
-  rdfs:comment "A transaction related to a bad check.".
+:CheckPayment a owl:Class ;
+  rdfs:label "Check Payment" ;
+  rdfs:comment "A payment made using a check.".
 
-:hasType a owl:ObjectProperty ;
-  rdfs:domain :CheckTransaction ;
+:CheckTransactionType rdf:Property ;
+  rdfs:domain :BadCheck ;
   rdfs:range xsd:string ;
-  rdfs:label "Has Type" ;
-  rdfs:comment "The type of a check transaction.".
+  rdfs:label "checkTransactionType" ;
+  rdfs:comment "The type of the check transaction.".
 
-:isPayment a owl:ObjectProperty ;
-  rdfs:domain :CheckTransaction ;
-  rdfs:range xsd:boolean ;
-  rdfs:label "Is Payment" ;
-  rdfs:comment "Whether a check transaction is a payment.".
+:CheckPaymentOfBadCheck rdf:Property ;
+  rdfs:domain :BadCheck ;
+  rdfs:range :CheckPayment ;
+  rdfs:label "checkPaymentOfBadCheck" ;
+  rdfs:comment "The check payment related to a bad check.".
 
-:getTransactionStatus a owl:ObjectProperty ;
-  rdfs:domain :CheckTransaction ;
+:TransactionStatus rdf:Property ;
+  rdfs:domain :CheckPayment ;
   rdfs:range xsd:string ;
-  rdfs:label "Get Transaction Status" ;
-  rdfs:comment "The status of a check transaction.".
+  rdfs:label "transactionStatus" ;
+  rdfs:comment "The status of the check payment.".
+
+# CQ-to-axiom mapping
+- List all district courts in a given state: :DistrictCourt, :HasState
+- In which state is a given district court instance located?: :DistrictCourt, :HasState
+- How many districts are in a given state of India?: Not directly supported, as the ontology does not contain information about the number of districts in a state.
+- Which court has authority over a given court?: :Court, :HasSubordinate
+- What is the check transaction type for a bad check?: :BadCheck, :CheckTransactionType
+- When is a check payment of a bad check?: Not directly supported, as the ontology does not contain information about the date of a check payment.
+- What is the transaction status of a given check payment?: :CheckPayment, :TransactionStatus
+
+# Intentionally excluded concepts:
+- The number of districts in a state: The ontology does not contain information about the number of districts in a state.
+- The date of a check payment: The ontology does not contain information about the date of a check payment.

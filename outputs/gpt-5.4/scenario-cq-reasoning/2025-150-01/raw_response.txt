@@ -1,71 +1,101 @@
-1. **Reasoning for steps 1–6**
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
 
-### Step 1. Atomic requirements
-- The ontology must represent MQTT participants, at least Clients and Brokers.
-- The ontology must represent network connections between MQTT participants.
-- A network connection must support indicating whether it is TLS-secured.
-- A network connection must support indicating which participant initiated it.
-- A network connection must support indicating which participant accepted it.
-- The ontology must represent which MQTT participants use which network connections.
-- The ontology must represent MQTT Clients and their ClientIDs.
-- The ontology must represent which MQTT Clients run on SOSA Platforms.
-- The ontology must represent which MQTT Clients host SOSA Systems.
-- The ontology must distinguish hosted SOSA Systems such as Sensors and Actuators.
-- The ontology must represent MQTT Brokers configured with host and port.
-- The ontology must represent MQTT Topics.
-- The ontology must represent MQTT Topic Filters.
-- The ontology must represent filter patterns, including wildcard-containing patterns.
-- The ontology must represent matching relations between Topic Filters and Topics.
-- The ontology must represent TopicSubjects appearing on MQTT Topics.
-- TopicSubjects must be able to denote SOSA FeaturesOfInterest and observable/actuatable properties.
-- The ontology must represent MQTT Control Packets.
-- The ontology must represent packet specializations including PUBLISH, SUBSCRIBE, and UNSUBSCRIBE.
-- The ontology must represent which Clients send Control Packets.
-- The ontology must represent which Brokers receive Control Packets.
-- The ontology must represent which Brokers forward Control Packets.
-- The ontology must represent packet structure: Fixed Header, Variable Header, and Payload.
-- The ontology must represent which packet has which Packet Identifier.
-- The ontology must represent PUBLISH packets with a Topic in the Variable Header.
-- The ontology must represent QoS values used in PUBLISH fixed headers and subscription entries.
-- The ontology must represent RETAIN and DUP flags in PUBLISH.
-- The ontology must represent SUBSCRIBE payloads containing Subscription Entries.
-- A Subscription Entry must represent a requested Topic Filter and requested QoS.
-- The ontology must represent UNSUBSCRIBE payloads removing Topic Filters.
-- The ontology must represent PUBLISH payloads encoding Observations or Observation Collections.
-- The ontology must represent PUBLISH payloads encoding Actuations or Actuation Collections.
-- The ontology must represent fields encoded in a payload.
-- The ontology must represent payload content, content type, encoding, and delimiter.
-- The ontology must represent payload size as a quantity value with unit.
-- The ontology should align observation and actuation descriptions with MQTT transport semantics using reusable patterns.
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
 
-### Step 2. Candidate classes and properties
-- Classes: `MQTTParticipant`, `MQTTClient`, `MQTTBroker`.
-- Classes: `NetworkConnection`.
-- Properties: `usesConnection`, `initiatedBy`, `acceptedBy`, `tlsSecured`.
-- Datatype property: `clientId`.
-- Reused/general classes for SOSA alignment: `Platform`, `System`, `Sensor`, `Actuator`, `Observation`, `Actuation`, `FeatureOfInterest`, `Property`.
-- Properties: `runsOnPlatform`, `hostsSystem`, `publishesToTopic`, `listensToTopic`.
-- Classes: `Topic`, `TopicFilter`, `TopicSubject`.
-- Properties: `filterPattern`, `matchesTopic`, `hasTopicSubject`, `denotesFeatureOfInterest`, `denotesProperty`.
-- Classes: `ControlPacket`, `PublishPacket`, `SubscribePacket`, `UnsubscribePacket`.
-- Properties: `sentBy`, `receivedBy`, `forwardedBy`.
-- Classes: `FixedHeader`, `VariableHeader`, `Payload`.
-- Properties: `hasFixedHeader`, `hasVariableHeader`, `hasPayload`, `packetIdentifier`.
-- Property: `topicName` from variable header to topic.
-- Datatype properties on fixed header: `qosLevel`, `retainFlag`, `dupFlag`.
-- Classes: `SubscribePayload`, `UnsubscribePayload`, `PublishPayload`.
-- Class: `SubscriptionEntry`.
-- Properties: `hasSubscriptionEntry`, `requestedTopicFilter`, `requestedQoS`, `removesTopicFilter`.
-- Classes: `ObservationCollection`, `ActuationCollection`.
-- Properties: `encodesObservation`, `encodesObservationCollection`, `encodesActuation`, `encodesActuationCollection`.
-- Class: `PayloadField`.
-- Property: `encodesField`.
-- Datatype properties: `content`, `contentType`, `characterEncoding`, `delimiter`.
-- Classes: `QuantityValue`, `Unit`.
-- Property: `payloadSize`, `numericValue`, `unit`.
+:Ontology a owl:Ontology ;
+  rdfs:label "MQTT process data transport ODP" ;
+  rdfs:comment "A minimal ontology design pattern for describing MQTT participants, network connections, topics, topic filters, control packets, packet structure, payload characteristics, and alignments to SOSA-like process entities such as platforms, systems, observations, actuations, features of interest, and observable/actuatable properties." .
 
-### Step 3. Draft axioms
-- `MQTTClient ⊑ MQTTParticipant`, `MQTTBroker ⊑ MQTTParticipant`.
-- `MQTTClient ⊓ MQTTBroker ⊑ ⊥`.
-- `usesConnection` domain `MQTTParticipant`, range `NetworkConnection`.
-- `initiatedBy` domain `NetworkConnection`, range `MQTTParticipant`, max 1.
+#################################################################
+# Classes
+#################################################################
+
+:MQTTParticipant a owl:Class ;
+  rdfs:label "MQTT participant" ;
+  rdfs:comment "An entity participating in MQTT communication, such as a client or broker." .
+
+:MQTTClient a owl:Class ;
+  rdfs:label "MQTT client" ;
+  rdfs:comment "An MQTT participant that connects to a broker and sends or receives MQTT control packets." ;
+  rdfs:subClassOf :MQTTParticipant ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasClientId ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger
+    ] .
+
+:MQTTBroker a owl:Class ;
+  rdfs:label "MQTT broker" ;
+  rdfs:comment "An MQTT participant that accepts client connections and receives or forwards MQTT control packets." ;
+  rdfs:subClassOf :MQTTParticipant ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasHost ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasPort ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger
+    ] .
+
+:NetworkConnection a owl:Class ;
+  rdfs:label "network connection" ;
+  rdfs:comment "A generic network connection used by communicating participants." .
+
+:MQTTNetworkConnection a owl:Class ;
+  rdfs:label "MQTT network connection" ;
+  rdfs:comment "A network connection used for MQTT communication between participants." ;
+  rdfs:subClassOf :NetworkConnection ,
+    [ a owl:Restriction ;
+      owl:onProperty :isTlsSecured ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger
+    ] .
+
+:Platform a owl:Class ;
+  rdfs:label "platform" ;
+  rdfs:comment "A platform on which an MQTT client may run." .
+
+:System a owl:Class ;
+  rdfs:label "system" ;
+  rdfs:comment "A system hosted by an MQTT client, such as a sensor or actuator." .
+
+:Sensor a owl:Class ;
+  rdfs:label "sensor" ;
+  rdfs:comment "A system that produces observations." ;
+  rdfs:subClassOf :System .
+
+:Actuator a owl:Class ;
+  rdfs:label "actuator" ;
+  rdfs:comment "A system that performs actuations." ;
+  rdfs:subClassOf :System .
+
+:Observation a owl:Class ;
+  rdfs:label "observation" ;
+  rdfs:comment "An observation encoded in an MQTT publish payload." .
+
+:ObservationCollection a owl:Class ;
+  rdfs:label "observation collection" ;
+  rdfs:comment "A collection of observations encoded in an MQTT publish payload." .
+
+:Actuation a owl:Class ;
+  rdfs:label "actuation" ;
+  rdfs:comment "An actuation encoded in an MQTT publish payload." .
+
+:ActuationCollection a owl:Class ;
+  rdfs:label "actuation collection" ;
+  rdfs:comment "A collection of actuations encoded in an MQTT publish payload." .
+
+:FeatureOfInterest a owl:Class ;
+  rdfs:label "feature of interest" ;
+  rdfs:comment "A feature of interest referenced by MQTT topic subjects or payload-carried observations." .
+
+:Property a owl:Class ;
+  rdfs:label "property" ;
+  rdfs:comment "An observable or actuatable property referenced by MQTT topic subjects or payload-carried observations/actuations." .
+
+:MQTTTopic a owl:Class ;
+  rdfs:label "MQTT topic" ;
+  rdfs:comment "An MQTT topic used for publish or subscribe communication."

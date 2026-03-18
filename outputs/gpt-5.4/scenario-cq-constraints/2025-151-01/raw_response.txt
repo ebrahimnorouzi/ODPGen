@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -6,12 +8,12 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Evaluation Request ODP" ;
-  rdfs:comment "A minimal ontology design pattern for representing an evaluation request as a formal description of a requested action by an assignee on a target asset, optionally enriched with contextual information such as temporal, spatial, role, and request-capability context." .
+  rdfs:label "Evaluation Request Context ODP" ;
+  rdfs:comment "A minimal ontology design pattern for describing an evaluation request concerning a requested action by an assignee on a target asset, including issuer, issuance time, and additional contextual information such as temporal, spatial, role, and request-capability context." .
 
 :EvaluationRequest a owl:Class ;
   rdfs:label "Evaluation Request" ;
-  rdfs:comment "A formal description of a requested action by an assignee on a target asset, possibly enriched with additional contextual information for evaluation." .
+  rdfs:comment "A formal description of a requested action by an assignee on a target asset, issued for evaluation and optionally enriched with contextual information." .
 
 :Action a owl:Class ;
   rdfs:label "Action" ;
@@ -19,7 +21,7 @@
 
 :Party a owl:Class ;
   rdfs:label "Party" ;
-  rdfs:comment "An entity that issues an evaluation request." .
+  rdfs:comment "An entity that can issue an evaluation request or be assigned in it." .
 
 :Asset a owl:Class ;
   rdfs:label "Asset" ;
@@ -27,21 +29,21 @@
 
 :ContextInformation a owl:Class ;
   rdfs:label "Context Information" ;
-  rdfs:comment "Additional contextual information included in an evaluation request to further constrain evaluation." .
+  rdfs:comment "Additional contextual information included in an evaluation request to further constrain its evaluation." .
 
 :TemporalContext a owl:Class ;
   rdfs:label "Temporal Context" ;
-  rdfs:comment "Context information concerning time, such as weekday-related constraints." ;
+  rdfs:comment "Context information concerning time-related constraints relevant to evaluation, such as weekdays." ;
   rdfs:subClassOf :ContextInformation .
 
 :SpatialContext a owl:Class ;
   rdfs:label "Spatial Context" ;
-  rdfs:comment "Context information concerning location, such as geographic origin constraints." ;
+  rdfs:comment "Context information concerning location-related constraints relevant to evaluation, such as being from the EU." ;
   rdfs:subClassOf :ContextInformation .
 
 :RoleContext a owl:Class ;
   rdfs:label "Role Context" ;
-  rdfs:comment "Context information concerning role-related constraints, such as employee status." ;
+  rdfs:comment "Context information concerning role-related constraints relevant to evaluation, such as being an employee." ;
   rdfs:subClassOf :ContextInformation .
 
 :RequestCapabilityContext a owl:Class ;
@@ -49,48 +51,44 @@
   rdfs:comment "Context information concerning request-capability aspects relevant to evaluation." ;
   rdfs:subClassOf :ContextInformation .
 
-:requestedAction a owl:ObjectProperty ;
-  rdfs:label "requested action" ;
+:hasRequestedAction a owl:ObjectProperty ;
+  rdfs:label "has requested action" ;
   rdfs:comment "Relates an evaluation request to the action being requested." ;
   rdfs:domain :EvaluationRequest ;
   rdfs:range :Action .
 
-:issuedBy a owl:ObjectProperty ;
-  rdfs:label "issued by" ;
-  rdfs:comment "Relates an evaluation request to the party issuing it." ;
+:hasIssuer a owl:ObjectProperty ;
+  rdfs:label "has issuer" ;
+  rdfs:comment "Relates an evaluation request to the party issuing the evaluation request." ;
   rdfs:domain :EvaluationRequest ;
   rdfs:range :Party .
 
-:targetAsset a owl:ObjectProperty ;
-  rdfs:label "target asset" ;
-  rdfs:comment "Relates an evaluation request to the asset that is the target of the requested action." ;
+:hasAssignee a owl:ObjectProperty ;
+  rdfs:label "has assignee" ;
+  rdfs:comment "Relates an evaluation request to the party on whom the requested action is to be evaluated." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Party .
+
+:hasTargetAsset a owl:ObjectProperty ;
+  rdfs:label "has target asset" ;
+  rdfs:comment "Relates an evaluation request to the target asset of the requested action." ;
   rdfs:domain :EvaluationRequest ;
   rdfs:range :Asset .
-
-:issuedAt a owl:DatatypeProperty ;
-  rdfs:label "issued at" ;
-  rdfs:comment "Relates an evaluation request to the date and time at which it was issued." ;
-  rdfs:domain :EvaluationRequest ;
-  rdfs:range xsd:dateTime .
 
 :hasContextInformation a owl:ObjectProperty ;
   rdfs:label "has context information" ;
   rdfs:comment "Relates an evaluation request to additional contextual information that further constrains evaluation." ;
   rdfs:domain :EvaluationRequest ;
   rdfs:range :ContextInformation .
+
+:issuedAt a owl:DatatypeProperty ;
+  rdfs:label "issued at" ;
+  rdfs:comment "Records when the evaluation request was issued." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range xsd:dateTime .
 ```
 
-Validation report:
-1. PASS — Turtle syntax is well-formed with declared triples terminated properly.
-2. PASS — All prefixes used in the ontology body are declared at the top.
-3. PASS — All domains and ranges refer only to classes defined in this ontology or xsd:dateTime.
-4. PASS — No contradictory subclass, disjointness, or incompatible domain/range restrictions are present.
-5. PASS — Each CQ maps to at least one element: requestedAction, issuedBy, targetAsset, issuedAt, and hasContextInformation.
-6. PASS — All concepts are grounded in the scenario or CQs, including the four context types explicitly mentioned.
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
 
-Scope report:
-a) Covered requirements from the scenario:
-- Formal representation of an evaluation request.
-- Representation of the requested action.
-- Representation of the party issuing the request.
-- Representation
+1. PASS — Turtle syntax is well-formed with declared prefixes, terminated triples, and valid class/property blocks.
+2. PASS — All prefixes used in the ontology body (owl, rdf, rdfs, xsd

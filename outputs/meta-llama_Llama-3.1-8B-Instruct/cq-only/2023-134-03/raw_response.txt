@@ -11,59 +11,77 @@
 
 :Registry a owl:Class ;
   rdfs:label "Registry" ;
-  rdfs:comment "A collection of data with associated metadata".
+  rdfs:comment "A collection of data".
 
-:RegistryMaintainer a owl:Class ;
-  rdfs:label "Registry Maintainer" ;
-  rdfs:comment "An individual responsible for maintaining the registry".
-
-:RegistryCreationDate a owl:DatatypeProperty ;
-  rdfs:label "Registry Creation Date" ;
-  rdfs:comment "The date the registry was created" ;
-  rdfs:domain :Registry ;
-  rdfs:range xsd:date.
-
-:RegistryUpdateDate a owl:DatatypeProperty ;
-  rdfs:label "Registry Update Date" ;
-  rdfs:comment "The date the registry was last updated" ;
-  rdfs:domain :Registry ;
-  rdfs:range xsd:date.
+:Data a owl:Class ;
+  rdfs:label "Data" ;
+  rdfs:comment "A piece of information".
 
 :DataType a owl:Class ;
   rdfs:label "Data Type" ;
   rdfs:comment "A category of data".
 
-:DataStorageLocation a owl:DatatypeProperty ;
-  rdfs:label "Data Storage Location" ;
-  rdfs:comment "The physical location where the data is stored" ;
-  rdfs:domain :DataType ;
-  rdfs:range xsd:string.
+:StorageLocation a owl:Class ;
+  rdfs:label "Storage Location" ;
+  rdfs:comment "A place where data is stored".
 
-:DataPolicy a owl:Class ;
-  rdfs:label "Data Policy" ;
-  rdfs:comment "A set of rules governing the use of data".
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "A rule governing data access".
 
-:AssociatedPolicy a owl:ObjectProperty ;
-  rdfs:label "Associated Policy" ;
-  rdfs:comment "The policy associated with a data type" ;
-  rdfs:domain :DataType ;
-  rdfs:range :DataPolicy.
+:RegistryMaintainer a owl:Class ;
+  rdfs:label "Registry Maintainer" ;
+  rdfs:comment "A person responsible for the registry".
 
-:RegistryMaintains a owl:ObjectProperty ;
-  rdfs:label "Maintains Registry" ;
-  rdfs:comment "The individual responsible for maintaining a registry" ;
-  rdfs:domain :RegistryMaintainer ;
-  rdfs:range :Registry.
+:CreationDate a owl:DatatypeProperty ;
+  rdfs:label "Creation Date" ;
+  rdfs:comment "The date the registry was created" ;
+  rdfs:range xsd:date.
+
+:UpdateDate a owl:DatatypeProperty ;
+  rdfs:label "Update Date" ;
+  rdfs:comment "The date the registry was last updated" ;
+  rdfs:range xsd:date.
+
+:DataLocation a owl:ObjectProperty ;
+  rdfs:label "Data Location" ;
+  rdfs:comment "The storage location of a piece of data" ;
+  rdfs:domain :Data ;
+  rdfs:range :StorageLocation.
+
+:DataTypeOf a owl:ObjectProperty ;
+  rdfs:label "Data Type" ;
+  rdfs:comment "The category of a piece of data" ;
+  rdfs:domain :Data ;
+  rdfs:range :DataType.
+
+:PolicyOf a owl:ObjectProperty ;
+  rdfs:label "Policy" ;
+  rdfs:comment "The rule governing access to a piece of data" ;
+  rdfs:domain :Data ;
+  rdfs:range :Policy.
+
+:RegistryMaintainedBy a owl:ObjectProperty ;
+  rdfs:label "Maintained By" ;
+  rdfs:comment "The person responsible for the registry" ;
+  rdfs:domain :Registry ;
+  rdfs:range :RegistryMaintainer.
+
+:StorageLocationOf a owl:ObjectProperty ;
+  rdfs:label "Storage Location" ;
+  rdfs:comment "The place where data is stored" ;
+  rdfs:domain :Data ;
+  rdfs:range :StorageLocation.
 ```
 
 **CQ-to-Axiom Mapping Table**
 
-| Competency Question | Enabling Axioms |
+| Competency Question | Enabling Classes and Properties |
 | --- | --- |
-| Who is maintaining the registry? | `:RegistryMaintains a owl:ObjectProperty ; rdfs:domain :RegistryMaintainer ; rdfs:range :Registry.` |
-| When was the registry created/updated? | `:RegistryCreationDate a owl:DatatypeProperty ; rdfs:domain :Registry ; rdfs:range xsd:date.`<br>`:RegistryUpdateDate a owl:DatatypeProperty ; rdfs:domain :Registry ; rdfs:range xsd:date.` |
-| What types of data are available? | `:DataType a owl:Class ; rdfs:label "Data Type" ; rdfs:comment "A category of data".` |
-| Where is a specific type of data being stored? | `:DataStorageLocation a owl:DatatypeProperty ; rdfs:domain :DataType ; rdfs:range xsd:string.` |
-| What policy is associated with the data? | `:AssociatedPolicy a owl:ObjectProperty ; rdfs:domain :DataType ; rdfs:range :DataPolicy.` |
+| Who is maintaining the registry? | `:RegistryMaintainer`, `:RegistryMaintainedBy` |
+| When was the registry created/updated? | `:Registry`, `:CreationDate`, `:UpdateDate` |
+| What types of data are available? | `:Data`, `:DataTypeOf` |
+| Where is a specific type of data being stored? | `:Data`, `:DataLocation` |
+| What policy is associated with the data? | `:Data`, `:PolicyOf` |
 
-Note: The enabling axioms listed are the ones that directly support answering the corresponding competency question. There may be additional axioms that indirectly support the answer, but are not explicitly listed here.
+Note: The CQ-to-Axiom Mapping Table shows the classes and properties that enable answering each competency question. The classes and properties listed are the minimum required to answer each question, and no additional concepts are included.

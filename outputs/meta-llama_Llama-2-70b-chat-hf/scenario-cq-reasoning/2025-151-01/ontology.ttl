@@ -1,86 +1,73 @@
-Reasoning steps:
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Extract atomic requirements from the scenario:
-* The ontology should be able to represent a requested action on a target asset.
-* The ontology should be able to identify the party issuing the evaluation request.
-* The ontology should be able to identify the target asset of the evaluation request.
-* The ontology should be able to represent the time when the evaluation request was issued.
-* The ontology should be able to include additional contextual information to further constrain the evaluation request.
-2. Propose candidate classes and properties for each requirement:
-* RequestedAction
-	+ rdfs:label "RequestedAction"
-	+ rdfs:comment "A requested action on a target asset."
-* Party
-	+ rdfs:label "Party"
-	+ rdfs:comment "A party issuing an evaluation request."
-* TargetAsset
-	+ rdfs:label "TargetAsset"
-	+ rdfs:comment "The target asset of an evaluation request."
-* EvaluationRequest
-	+ rdfs:label "EvaluationRequest"
-	+ rdfs:comment "A request for evaluation of a target asset."
-* TemporalContext
-	+ rdfs:label "TemporalContext"
-	+ rdfs:comment "Contextual information about the time of the evaluation request."
-* SpatialContext
-	+ rdfs:label "SpatialContext"
-	+ rdfs:comment "Contextual information about the location of the evaluation request."
-* RoleContext
-	+ rdfs:label "RoleContext"
-	+ rdfs:comment "Contextual information about the role of the party issuing the evaluation request."
-* RequestCapabilityContext
-	+ rdfs:label "RequestCapabilityContext"
-	+ rdfs:comment "Contextual information about the capabilities of the party issuing the evaluation request."
-3. Draft axioms for each candidate class and property:
-* RequestedAction
-	+ subclass of: EvaluationRequest
-	+ domain: Party
-	+ range: TargetAsset
-	+ cardinality: 1
-* Party
-	+ subclass of: Organization
-	+ rdfs:label "Party"
-	+ rdfs:comment "A party issuing an evaluation request."
-* TargetAsset
-	+ subclass of: Asset
-	+ rdfs:label "TargetAsset"
-	+ rdfs:comment "The target asset of an evaluation request."
-* EvaluationRequest
-	+ subclass of: Request
-	+ domain: Party
-	+ range: TargetAsset
-	+ cardinality: 1
-	+ temporalContext: TemporalContext
-	+ spatialContext: SpatialContext
-	+ roleContext: RoleContext
-	+ requestCapabilityContext: RequestCapabilityContext
-* TemporalContext
-	+ subclass of: Context
-	+ rdfs:label "TemporalContext"
-	+ rdfs:comment "Contextual information about the time of the evaluation request."
-* SpatialContext
-	+ subclass of: Context
-	+ rdfs:label "SpatialContext"
-	+ rdfs:comment "Contextual information about the location of the evaluation request."
-* RoleContext
-	+ subclass of: Context
-	+ rdfs:label "RoleContext"
-	+ rdfs:comment "Contextual information about the role of the party issuing the evaluation request."
-* RequestCapabilityContext
-	+ subclass of: Context
-	+ rdfs:label "RequestCapabilityContext"
-	+ rdfs:comment "Contextual information about the capabilities of the party issuing the evaluation request."
-4. For each CQ, check which axioms enable answering it; note any CQs not yet covered:
-* CQ1: What is the requested action?
-	+ Answered by: RequestedAction
-* CQ2: Who is the party issuing the evaluation request?
-	+ Answered by: Party
-* CQ3: What is the target asset of the evaluation request?
-	+ Answered by: TargetAsset
-* CQ4: When was the evaluation request issued?
-	+ Answered by: TemporalContext
-* CQ5: What additional contextual information can be included in the evaluation request to further constrain it?
-	+ Answered by: SpatialContext, RoleContext, RequestCapabilityContext
-5. Add or refine axioms to cover any uncovered CQs:
-* Add a new class, RequestType, to cover the additional contextual information.
-* Add a new property, hasRequestType, to the EvaluationRequest class.
+:Ontology a owl:Ontology ;
+rdfs:label "Evaluation Request Ontology" ;
+rdfs:comment "An ontology for describing evaluation requests and their context".
+
+:EvaluationRequest a owl:Class ;
+rdfs:label "Evaluation Request" ;
+rdfs:comment "A request for evaluating a target asset".
+
+:Party a owl:Class ;
+rdfs:label "Party" ;
+rdfs:comment "A person or organization issuing an evaluation request".
+
+:TargetAsset a owl:Class ;
+rdfs:label "Target Asset" ;
+rdfs:comment "The asset being evaluated".
+
+:EvaluationContext a owl:Class ;
+rdfs:label "Evaluation Context" ;
+rdfs:comment "Additional contextual information for evaluating a target asset".
+
+:TemporalContext a owl:Class ;
+rdfs:label "Temporal Context" ;
+rdfs:comment "Context related to time".
+
+:SpatialContext a owl:Class ;
+rdfs:label "Spatial Context" ;
+rdfs:comment "Context related to location".
+
+:RoleContext a owl:Class ;
+rdfs:label "Role Context" ;
+rdfs:comment "Context related to roles and permissions".
+
+:RequestCapabilityContext a owl:Class ;
+rdfs:label "Request Capability Context" ;
+rdfs:comment "Context related to the capabilities of the requester".
+
+:EvaluationRequest a owl:ObjectProperty ;
+rdfs:label "evaluationRequest" ;
+rdfs:comment "The evaluation request made by a party".
+
+:Party a owl:ObjectProperty ;
+rdfs:label "party" ;
+rdfs:comment "The party issuing the evaluation request".
+
+:TargetAsset a owl:ObjectProperty ;
+rdfs:label "targetAsset" ;
+rdfs:comment "The target asset being evaluated".
+
+:EvaluationContext a owl:ObjectProperty ;
+rdfs:label "evaluationContext" ;
+rdfs:comment "The context in which the evaluation request was made".
+
+:TemporalContext a owl:ObjectProperty ;
+rdfs:label "temporalContext" ;
+rdfs:comment "The temporal context of the evaluation request".
+
+:SpatialContext a owl:ObjectProperty ;
+rdfs:label "spatialContext" ;
+rdfs:comment "The spatial context of the evaluation request".
+
+:RoleContext a owl:ObjectProperty ;
+rdfs:label "roleContext" ;
+rdfs:comment "The role context of the evaluation request".
+
+:RequestCapabilityContext a owl:ObjectProperty ;
+rdfs:label "requestCapabilityContext" ;
+rdfs:comment "The request capability context of the evaluation request".

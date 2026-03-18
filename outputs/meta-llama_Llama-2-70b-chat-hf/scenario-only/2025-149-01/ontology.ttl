@@ -5,14 +5,12 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-rdfs:label "Secure Access to Relational Database" ;
-rdfs:comment "Models secure access to a relational database (RDB) queried via Structured Query Language (SQL).".
-
-# Classes
+rdfs:label "Relational Database Security Ontology" ;
+rdfs:comment "An ontology for securing access to a relational database queried via SQL.".
 
 :User a owl:Class ;
 rdfs:label "User" ;
-rdfs:comment "An individual who accesses the relational database.".
+rdfs:comment "An individual who interacts with the relational database.".
 
 :Role a owl:Class ;
 rdfs:label "Role" ;
@@ -24,55 +22,72 @@ rdfs:comment "A specific access right granted to a user.".
 
 :Query a owl:Class ;
 rdfs:label "Query" ;
-rdfs:comment "A request to retrieve data from the relational database.".
+rdfs:comment "A request for data from the relational database.".
 
 :Result a owl:Class ;
 rdfs:label "Result" ;
 rdfs:comment "The output of a query.".
 
-# Properties
+:SQL a owl:Class ;
+rdfs:label "SQL" ;
+rdfs:comment "The query language used to interact with the relational database.".
 
-:hasRole a owl:ObjectProperty ;
-rdfs:label "hasRole" ;
-rdfs:comment "A user has a role." ;
+:UserHasRole a owl:ObjectProperty ;
+rdfs:label "has role" ;
+rdfs:comment "A user has a specific role." ;
 domain :User ;
 range :Role.
 
-:hasPermission a owl:ObjectProperty ;
-rdfs:label "hasPermission" ;
-rdfs:comment "A user has a permission." ;
+:RoleHasPermission a owl:ObjectProperty ;
+rdfs:label "has permission" ;
+rdfs:comment "A role has a specific permission." ;
 domain :Role ;
 range :Permission.
 
-:query a owl:ObjectProperty ;
-rdfs:label "query" ;
-rdfs:comment "A user submits a query." ;
-domain :User ;
-range :Query.
-
-:result a owl:ObjectProperty ;
-rdfs:label "result" ;
-rdfs:comment "A query produces a result." ;
+:QueryHasResult a owl:ObjectProperty ;
+rdfs:label "has result" ;
+rdfs:comment "A query has a specific result." ;
 domain :Query ;
 range :Result.
 
-# Axioms
+:SQLQuery a owl:ObjectProperty ;
+rdfs:label "is query" ;
+rdfs:comment "A query is written in SQL." ;
+domain :Query ;
+range :SQL.
 
-:User rdfs:subClassOf :Role.
-:Role rdfs:subClassOf :Permission.
-:Query rdfs:subClassOf :Result.
+:UserHasQuery a owl:ObjectProperty ;
+rdfs:label "has query" ;
+rdfs:comment "A user has a specific query." ;
+domain :User ;
+range :Query.
 
-:hasRole rdfs:domain :User.
-:hasRole rdfs:range :Role.
+:ResultHasData a owl:ObjectProperty ;
+rdfs:label "has data" ;
+rdfs:comment "A result has specific data." ;
+domain :Result ;
+range :Data.
 
-:hasPermission rdfs:domain :Role.
-:hasPermission rdfs:range :Permission.
+:Data a owl:Class ;
+rdfs:label "Data" ;
+rdfs:comment "The output data of a query.".
 
-:query rdfs:domain :User.
-:query rdfs:range :Query.
+:DataHasValue a owl:ObjectProperty ;
+rdfs:label "has value" ;
+rdfs:comment "Data has a specific value." ;
+domain :Data ;
+range :Value.
 
-:result rdfs:domain :Query.
-:result rdfs:range :Result.
+:Value a owl:Class ;
+rdfs:label "Value" ;
+rdfs:comment "A specific value in the output data.".
 
-:User rdfs:disjointWith :Query.
-:Role rdfs:disjointWith :Result.
+:UserHasPassword a owl:ObjectProperty ;
+rdfs:label "has password" ;
+rdfs:comment "A user has a specific password." ;
+domain :User ;
+range :Password.
+
+:Password a owl:Class ;
+rdfs:label "Password" ;
+rdfs:comment "A secret password for a user.".

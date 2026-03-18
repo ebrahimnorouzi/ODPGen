@@ -8,50 +8,70 @@
   rdfs:label "Referent Transition Ontology" ;
   rdfs:comment "Modeling referent transitions and associated observations.".
 
+:Entity a owl:Class ;
+  rdfs:label "Entity" ;
+  rdfs:comment "An entity that can be referenced.".
+
 :Referent a owl:Class ;
   rdfs:label "Referent" ;
-  rdfs:comment "An entity being referenced.".
+  rdfs:comment "A specific instance of an entity at a particular time.".
+
+:PersistentIdentifier a owl:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A unique identifier that references an entity.".
+
+:Timestamp a owl:DatatypeProperty ;
+  rdfs:label "Timestamp" ;
+  rdfs:comment "A point in time." ;
+  rdfs:range xsd:dateTime.
 
 :ReferentTransition a owl:Class ;
   rdfs:label "Referent Transition" ;
-  rdfs:comment "A change in the referenced entity.".
+  rdfs:comment "An event where a referent changes.".
 
-:ReferentTransitionTimestamp a owl:DatatypeProperty ;
-  rdfs:label "Referent Transition Timestamp" ;
-  rdfs:comment "The timestamp when the referent transition occurred." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range xsd:dateTime.
-
-:ReferentTransitionTrigger a owl:Class ;
-  rdfs:label "Referent Transition Trigger" ;
-  rdfs:comment "A rule that triggered a referent transition.".
+:Transition a owl:DatatypeProperty ;
+  rdfs:label "Transition" ;
+  rdfs:comment "The type of transition (e.g., creation, deletion)." ;
+  rdfs:range xsd:string.
 
 :Observation a owl:Class ;
   rdfs:label "Observation" ;
-  rdfs:comment "An association between a referent and an observation.".
+  rdfs:comment "A record of an event or state.".
 
-:ReferentTransitionObservation a owl:ObjectProperty ;
-  rdfs:label "Referent Transition Observation" ;
-  rdfs:comment "An observation associated with a referent transition." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :Observation.
+:ReferentObservation a owl:ObjectProperty ;
+  rdfs:label "Referent Observation" ;
+  rdfs:comment "An observation associated with a referent." ;
+  domain :Observation ;
+  range :Referent.
 
-:ReferentTransitionSequence a owl:Class ;
-  rdfs:label "Referent Transition Sequence" ;
-  rdfs:comment "A sequence of referent transitions over time.".
+:TransitionRule a owl:Class ;
+  rdfs:label "Transition Rule" ;
+  rdfs:comment "A rule that triggered a transition.".
+
+:TriggeredTransition a owl:ObjectProperty ;
+  rdfs:label "Triggered Transition" ;
+  rdfs:comment "A transition triggered by a rule." ;
+  domain :TransitionRule ;
+  range :ReferentTransition.
 
 :TemporalBinding a owl:Class ;
   rdfs:label "Temporal Binding" ;
-  rdfs:comment "A binding of a referent to a time point.".
+  rdfs:comment "A binding of a referent to a time interval.".
 
-:TemporalBindingGap a owl:Class ;
-  rdfs:label "Temporal Binding Gap" ;
+:TemporalGap a owl:Class ;
+  rdfs:label "Temporal Gap" ;
   rdfs:comment "A gap in temporal bindings.".
 
-:TemporalBindingOverlap a owl:Class ;
-  rdfs:label "Temporal Binding Overlap" ;
+:TemporalOverlap a owl:Class ;
+  rdfs:label "Temporal Overlap" ;
   rdfs:comment "An overlap in temporal bindings.".
 
 :CompleteContext a owl:Class ;
   rdfs:label "Complete Context" ;
   rdfs:comment "A complete context for a time point.".
+
+:RebuildsCompleteContext a owl:ObjectProperty ;
+  rdfs:label "Rebuilds Complete Context" ;
+  rdfs:comment "A property that rebuilds a complete context." ;
+  domain :TemporalBinding ;
+  range :CompleteContext.

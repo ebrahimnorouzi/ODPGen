@@ -1,28 +1,84 @@
-Reasoning Steps:
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Extract atomic requirements from the scenario:
-* The ontology should represent a relational database as a first-class schema entity.
-* The ontology should represent tables belonging to a database.
-* The ontology should represent columns belonging to a table.
-* The ontology should represent primary-key relationships in the schema.
-* The ontology should represent foreign-key relationships and distinguish same-named columns across different tables when they are not semantically linked.
-* The ontology should define a policy for a specific agent.
-* The policy should specify a high-level ReadAction.
-* The policy should specify a high-level ModifyAction.
-* The policy should specify a ViewActionScope for read operations.
-* The policy should specify a ProcessActionScope for read operations.
-* The policy should be defined at table level.
-* The policy should be defined at column level.
-* The policy should be defined at row level using conditions.
-* The ontology should express a prohibited modify action on a table.
-* The ontology should express a table-level read prohibition for processing.
-* The ontology should express a table-level read prohibition for viewing.
-* The ontology should express a conditional row-level read restriction for later enforcement.
-* The ontology should represent a SQL query as an AST-based semantic graph.
-* A SQL statement such as SelectStatement or UpdateStatement should be mapped to its semantic action type.
-* A query statement should be linked to the executing agent.
-* SQL clauses should be assigned operational scopes such as view or process.
-* Scope should be propagated to reference nodes as an effectiveActionScope.
-* A TableRef in the query should be linked to its corresponding schema Table.
-* A ColumnRef in the query should be linked to its corresponding schema Column.
-* The reasoner should infer whether a referenced table or column is Violated or RowTag based on the matching policy, action, and scope.
+:Ontology a owl:Ontology ;
+  rdfs:label "Relational Database Access Control Ontology" ;
+  rdfs:comment "An ontology for securing access to a relational database queried via SQL.".
+
+# Classes
+:Table a owl:Class ;
+  rdfs:label "Table" ;
+  rdfs:comment "A table in a relational database.".
+
+:Column a owl:Class ;
+  rdfs:label "Column" ;
+  rdfs:comment "A column in a table of a relational database.".
+
+:Row a owl:Class ;
+  rdfs:label "Row" ;
+  rdfs:comment "A row in a table of a relational database.".
+
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "A policy for securing access to a relational database.".
+
+:Agent a owl:Class ;
+  rdfs:label "Agent" ;
+  rdfs:comment "An agent that interacts with the relational database.".
+
+# Object Properties
+:table a owl:ObjectProperty ;
+  rdfs:label "table" ;
+  rdfs:comment "A table in a relational database.".
+
+:column a owl:ObjectProperty ;
+  rdfs:label "column" ;
+  rdfs:comment "A column in a table of a relational database.".
+
+:row a owl:ObjectProperty ;
+  rdfs:label "row" ;
+  rdfs:comment "A row in a table of a relational database.".
+
+:policy a owl:ObjectProperty ;
+  rdfs:label "policy" ;
+  rdfs:comment "A policy for securing access to a relational database.".
+
+:agent a owl:ObjectProperty ;
+  rdfs:label "agent" ;
+  rdfs:comment "An agent that interacts with the relational database.".
+
+# Data Properties
+:name a owl:DatatypeProperty ;
+  rdfs:label "name" ;
+  rdfs:comment "The name of a table, column, or row.".
+
+:primaryKey a owl:DatatypeProperty ;
+  rdfs:label "primaryKey" ;
+  rdfs:comment "A primary key in a table.".
+
+:foreignKey a owl:DatatypeProperty ;
+  rdfs:label "foreignKey" ;
+  rdfs:comment "A foreign key in a table.".
+
+:viewActionScope a owl:DatatypeProperty ;
+  rdfs:label "viewActionScope" ;
+  rdfs:comment "The view action scope for a policy.".
+
+:processActionScope a owl:DatatypeProperty ;
+  rdfs:label "processActionScope" ;
+  rdfs:comment "The process action scope for a policy.".
+
+:readProhibition a owl:DatatypeProperty ;
+  rdfs:label "readProhibition" ;
+  rdfs:comment "A read prohibition for a table or column.".
+
+:modifyProhibition a owl:DatatypeProperty ;
+  rdfs:label "modifyProhibition" ;
+  rdfs:comment "A modify prohibition for a table or column.".
+
+:viewProhibition a owl:DatatypeProperty ;
+  rdfs:label "viewProhibition" ;
+  rdfs:comment "A view prohibition for a table or column.".

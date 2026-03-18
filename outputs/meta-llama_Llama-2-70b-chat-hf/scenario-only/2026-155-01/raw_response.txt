@@ -1,3 +1,4 @@
+Turtle Ontology:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -7,84 +8,67 @@
 
 :Ontology a owl:Ontology ;
 rdfs:label "Cultural Heritage Survey ODP" ;
-rdfs:comment "Ontology for modeling scientific survey activities performed on cultural heritage entities".
-
-### Classes
+rdfs:comment "An OWL ontology for modeling scientific survey activities performed on cultural heritage entities.".
 
 :Survey a owl:Class ;
 rdfs:label "Survey" ;
-rdfs:comment "Represents a scientific survey activity performed on cultural heritage entities".
+rdfs:comment "A scientific survey activity performed on a cultural heritage entity.".
 
 :Observation a owl:Class ;
 rdfs:label "Observation" ;
-rdfs:comment "Represents a specific observation made during a survey".
+rdfs:comment "A specific observation made during a survey.".
 
 :Method a owl:Class ;
 rdfs:label "Method" ;
-rdfs:comment "Represents a specific method used during a survey".
+rdfs:comment "A specific method used during a survey.".
 
 :EquipmentConfiguration a owl:Class ;
 rdfs:label "EquipmentConfiguration" ;
-rdfs:comment "Represents a specific configuration of equipment used during a survey".
+rdfs:comment "A specific configuration of equipment used during a survey.".
 
 :InterpretationProcess a owl:Class ;
 rdfs:label "InterpretationProcess" ;
-rdfs:comment "Represents the process of interpreting data collected during a survey".
+rdfs:comment "A process of interpreting data collected during a survey.".
 
-### Properties
+:Survey obs:hasObservation :Observation ;
+rdfs:label "has observation" ;
+rdfs:comment "A survey has one or more observations.".
 
-:hasObservations a owl:ObjectProperty ;
-rdfs:label "has observations" ;
-rdfs:comment "Relates a survey to the observations made during that survey".
+:Survey m:usesMethod :Method ;
+rdfs:label "uses method" ;
+rdfs:comment "A survey uses one or more methods.".
 
-:usedMethod a owl:ObjectProperty ;
-rdfs:label "used method" ;
-rdfs:comment "Relates a survey to the method used during that survey".
+:Survey e:usesEquipmentConfiguration :EquipmentConfiguration ;
+rdfs:label "uses equipment configuration" ;
+rdfs:comment "A survey uses one or more equipment configurations.".
 
-:usedEquipmentConfiguration a owl:ObjectProperty ;
-rdfs:label "used equipment configuration" ;
-rdfs:comment "Relates a survey to the equipment configuration used during that survey".
+:Observation ip:isInterpretedBy :InterpretationProcess ;
+rdfs:label "is interpreted by" ;
+rdfs:comment "An observation is interpreted by one or more interpretation processes.".
 
-:generatedInterpretation a owl:ObjectProperty ;
-rdfs:label "generated interpretation" ;
-rdfs:comment "Relates a survey to the interpretation process that generated the interpretation".
+:Method m:hasEquipmentConfiguration :EquipmentConfiguration ;
+rdfs:label "has equipment configuration" ;
+rdfs:comment "A method has one or more equipment configurations.".
 
-### Axioms
+:EquipmentConfiguration e:isUsedBy :Survey ;
+rdfs:label "is used by" ;
+rdfs:comment "An equipment configuration is used by one or more surveys.".
 
-:Survey rdfs:subClassOf owl:Process.
-:Observation rdfs:subClassOf owl:Event.
-:Method rdfs:subClassOf owl:Concept.
-:EquipmentConfiguration rdfs:subClassOf owl:Concept.
-:InterpretationProcess rdfs:subClassOf owl:Process.
-
-:hasObservations rdfs:domain :Survey ;
-rdfs:range :Observation.
-
-:usedMethod rdfs:domain :Survey ;
-rdfs:range :Method.
-
-:usedEquipmentConfiguration rdfs:domain :Survey ;
-rdfs:range :EquipmentConfiguration.
-
-:generatedInterpretation rdfs:domain :Survey ;
-rdfs:range :InterpretationProcess.
-
-:Survey owl:disjointWith :Observation.
-:Survey owl:disjointWith :Method.
-:Survey owl:disjointWith :EquipmentConfiguration.
-:Survey owl:disjointWith :InterpretationProcess.
+:InterpretationProcess ip:hasInterpretationResult :xsd:string ;
+rdfs:label "has interpretation result" ;
+rdfs:comment "An interpretation process has one or more interpretation results.".
 ```
-Intent:
-The Cultural Heritage Survey ODP models the structure of scientific survey activities performed on cultural heritage entities, including the relationships between surveys, observations, methods, equipment configurations, and interpretation processes.
+Documentation:
+
+Intent: The Cultural Heritage Survey ODP models the structure of scientific survey activities performed on cultural heritage entities, including the relationships between surveys, observations, methods, equipment configurations, and interpretation processes.
 
 Covered requirements:
 
-* Represent the structure of scientific survey activities performed on cultural heritage entities
-* Model the relationships between surveys, observations, methods, equipment configurations, and interpretation processes
-* Include minimal but sufficient axioms (domain, range, subclass, disjointness where justified)
-* Add rdfs:label and rdfs:comment annotations to every class and property
-* Declare a mandatory ontology header
+* Model the structure of scientific survey activities performed on cultural heritage entities.
+* Represent the relationships between surveys, observations, methods, equipment configurations, and interpretation processes.
 
 Known assumptions and exclusions:
 
-* The ODP assumes that the surveys are performed on cultural heritage entities, but does not specify the nature of the entities or the type of data
+* The ontology assumes that all surveys are performed on cultural heritage entities.
+* The ontology does not include concepts related to the specific domain of cultural heritage, such as artifacts, monuments, or historical sites.
+* The ontology does not include concepts related to the interpretation of data collected during a survey, such as analysis or conclusion drawing.

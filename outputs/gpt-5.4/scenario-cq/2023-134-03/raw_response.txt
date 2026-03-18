@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -7,23 +9,19 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Solid governance registry ontology design pattern" ;
-  rdfs:comment "An ontology design pattern for representing a registry in a Solid setting, including its maintainer, creation and update times, available data categories, where data is stored, and the policy associated with the data." .
-
-#################################################################
-# Classes
-#################################################################
+  rdfs:comment "An ontology design pattern for representing a registry in a Solid governance context, including its maintainer, creation and update times, available data categories, storage locations, and associated policies." .
 
 :Registry a owl:Class ;
   rdfs:label "Registry" ;
-  rdfs:comment "A registry that records governance-relevant metadata about data available in a Solid environment." .
+  rdfs:comment "A registry that records governance-relevant metadata about available data categories, their storage locations, and associated policies." .
 
 :Actor a owl:Class ;
   rdfs:label "Actor" ;
-  rdfs:comment "An entity involved in the Solid environment, such as the maintainer of a registry." .
+  rdfs:comment "An entity involved in the Solid ecosystem, such as one that may maintain a registry." .
 
-:DataCategory a owl:Class ;
-  rdfs:label "Data category" ;
-  rdfs:comment "A type or category of data that may be available in a Pod or other Solid storage." .
+:DataType a owl:Class ;
+  rdfs:label "Data type" ;
+  rdfs:comment "A type or category of data that may be available and registered for discovery." .
 
 :StorageLocation a owl:Class ;
   rdfs:label "Storage location" ;
@@ -31,72 +29,68 @@
 
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
-  rdfs:comment "A policy associated with data, such as a privacy or data handling policy." .
+  rdfs:comment "A policy associated with data, such as a privacy policy or data handling policy." .
 
-#################################################################
-# Object Properties
-#################################################################
-
-:hasMaintainer a owl:ObjectProperty ;
-  rdfs:label "has maintainer" ;
+:maintainedBy a owl:ObjectProperty ;
+  rdfs:label "maintained by" ;
   rdfs:comment "Relates a registry to the actor maintaining it." ;
   rdfs:domain :Registry ;
   rdfs:range :Actor .
 
-:listsDataCategory a owl:ObjectProperty ;
-  rdfs:label "lists data category" ;
-  rdfs:comment "Relates a registry to a data category that it records as available." ;
+:hasDataType a owl:ObjectProperty ;
+  rdfs:label "has data type" ;
+  rdfs:comment "Relates a registry to a data type that is available and recorded in it." ;
   rdfs:domain :Registry ;
-  rdfs:range :DataCategory .
+  rdfs:range :DataType .
 
 :storedAt a owl:ObjectProperty ;
   rdfs:label "stored at" ;
-  rdfs:comment "Relates a data category to the storage location where that type of data is stored." ;
-  rdfs:domain :DataCategory ;
+  rdfs:comment "Relates a data type to the storage location where that type of data is stored." ;
+  rdfs:domain :DataType ;
   rdfs:range :StorageLocation .
 
 :hasPolicy a owl:ObjectProperty ;
   rdfs:label "has policy" ;
-  rdfs:comment "Relates a data category to the policy associated with that data." ;
-  rdfs:domain :DataCategory ;
+  rdfs:comment "Relates a data type to a policy associated with that data." ;
+  rdfs:domain :DataType ;
   rdfs:range :Policy .
-
-#################################################################
-# Datatype Properties
-#################################################################
 
 :createdAt a owl:DatatypeProperty ;
   rdfs:label "created at" ;
-  rdfs:comment "Relates a registry to the date-time when it was created." ;
+  rdfs:comment "Relates a registry to the date and time when it was created." ;
   rdfs:domain :Registry ;
   rdfs:range xsd:dateTime .
 
 :updatedAt a owl:DatatypeProperty ;
   rdfs:label "updated at" ;
-  rdfs:comment "Relates a registry to the date-time when it was last updated." ;
+  rdfs:comment "Relates a registry to the date and time when it was last updated." ;
   rdfs:domain :Registry ;
   rdfs:range xsd:dateTime .
 ```
 
-### 2. Scenario-requirement-to-axiom mapping
+2. Scenario-requirement-to-axiom mapping
 
-Extracted requirements from the scenario that are relevant to the given CQs:
+- Requirement: There is a governance-relevant registry in the Solid context.
+  - Axioms:
+    - `:Registry a owl:Class`
+    - `:Ontology ... rdfs:comment "An ontology design pattern for representing a registry in a Solid governance context..."`
 
-1. **There is a registry whose governance metadata can be queried.**  
-   - Axioms:
-     - `:Registry a owl:Class .`
+- Requirement: It should be possible to know who is maintaining the registry.
+  - Axioms:
+    - `:Actor a owl:Class`
+    - `:maintainedBy a owl:ObjectProperty`
+    - `:maintainedBy rdfs:domain :Registry`
+    - `:maintainedBy rdfs:range :Actor`
 
-2. **The registry has a maintainer, addressing the challenge that actor identity is otherwise unknown (C1).**  
-   - Axioms:
-     - `:Actor a owl:Class .`
-     - `:hasMaintainer a owl:ObjectProperty ; rdfs:domain :Registry ; rdfs:range :Actor .`
+- Requirement: It should be possible to know when the registry was created and updated.
+  - Axioms:
+    - `:createdAt a owl:DatatypeProperty`
+    - `:createdAt rdfs:domain :Registry`
+    - `:createdAt rdfs:range xsd:dateTime`
+    - `:updatedAt a owl:DatatypeProperty`
+    - `:updatedAt rdfs:domain :Registry`
+    - `:updatedAt rdfs:range xsd:dateTime`
 
-3. **The registry records when it was created and updated.**  
-   - Axioms:
-     - `:createdAt a owl:DatatypeProperty ; rdfs:domain :Registry ; rdfs:range xsd:dateTime .`
-     - `:updatedAt a owl:DatatypeProperty ; rdfs:domain :Registry ; rdfs:range xsd:dateTime .`
-
-4. **The registry records what types/categories of data are available, addressing data category discovery (C3).**  
-   - Axioms:
-     - `:DataCategory a owl:Class .`
-     - `:listsDataCategory a owl:ObjectProperty ; rdfs:domain :Registry ; rdfs:range :
+- Requirement: Solid apps need to know what categories/types of data are available.
+  - Axioms:
+    - `:DataType a owl

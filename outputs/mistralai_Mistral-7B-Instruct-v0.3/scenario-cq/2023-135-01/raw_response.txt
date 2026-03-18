@@ -1,5 +1,3 @@
-I'm an AI and don't have personal experiences or the ability to read books. However, I can help you design an ontology based on the provided scenario and competency questions related to an author's pseudonyms. Here's the Turtle syntax for the ontology design pattern (ODP):
-
 ```turtle
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -9,19 +7,19 @@ I'm an AI and don't have personal experiences or the ability to read books. Howe
 
 :Ontology a owl:Ontology ;
   rdfs:label "Author Pseudonyms Ontology" ;
-  rdfs:comment "An ontology for managing an author's pseudonyms and their works.".
+  rdfs:comment "An ontology for modeling authors adopting different names to publish books.".
 
 :Author a owl:Class ;
   rdfs:label "Author" ;
-  rdfs:comment "A person who writes books under different names.".
+  rdfs:comment "A person who writes books.".
 
 :Pseudonym a owl:Class ;
   rdfs:label "Pseudonym" ;
-  rdfs:comment "An alternative name used by an author to publish books.".
+  rdfs:comment "An alternative name used by an author.".
 
-:hasPseudonym rdf:Property ;
-  rdfs:domain :Author ;
-  rdfs:range :Pseudonym ;
+:hasPseudonym rdf:property ;
+  owl:domain :Author ;
+  owl:range :Pseudonym ;
   rdfs:label "hasPseudonym" ;
   rdfs:comment "Relates an author to a pseudonym.".
 
@@ -29,30 +27,48 @@ I'm an AI and don't have personal experiences or the ability to read books. Howe
   rdfs:label "Book" ;
   rdfs:comment "A written work published by an author.".
 
-:writtenBy rdf:Property ;
-  rdfs:domain :Book ;
-  rdfs:range :Author ;
+:writtenBy rdf:property ;
+  owl:domain :Book ;
+  owl:range :Author ;
   rdfs:label "writtenBy" ;
-  rdfs:comment "Relates a book to the author who wrote it.".
+  rdfs:comment "Relates a book to its author.".
 
-:publishedAs rdf:Property ;
-  rdfs:domain :Book ;
-  rdfs:range :Pseudonym ;
-  rdfs:label "publishedAs" ;
-  rdfs:comment "Relates a book to the pseudonym under which it was published.".
+:PublishedWork a owl:Class ;
+  rdf:type owl:UnionOf ;
+  rdf:first :Book ;
+  rdf:rest :PseudonymousWork ;
+  rdfs:label "PublishedWork" ;
+  rdfs:comment "Either a book or a pseudonymous work.".
+
+:PseudonymousWork a owl:Class ;
+  rdf:type owl:Restriction ;
+  owl:onProperty :writtenBy ;
+  owl:allValuesFrom :Pseudonym ;
+  rdfs:label "PseudonymousWork" ;
+  rdfs:comment "A work published under a pseudonym.".
+
+:hasTitle rdf:property ;
+  owl:domain :PublishedWork ;
+  owl:range xsd:string ;
+  rdfs:label "hasTitle" ;
+  rdfs:comment "Relates a published work to its title.".
 
 Scenario-requirement-to-axiom mapping:
-1. Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?
-   - :Book, :writtenBy, :hasPseudonym, :publishedAs
+1. The existence of the :Author, :Pseudonym, and :hasPseudonym classes and properties enables modeling authors adopting different names.
+2. The :PublishedWork class and the :hasTitle property enable modeling books and their titles.
+3. The :writtenBy property relates books to their authors.
+4. The :PseudonymousWork class restricts the :PublishedWork class to works published under a pseudonym.
 
-2. What alternative did C. S. Lewis use to assume the role of a book writer?
-   - :Author, :hasPseudonym
+CQ-to-axiom mapping:
+- Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?
+  - :Author, :Pseudonym, :hasPseudonym, :Book, :writtenBy, :hasTitle
 
-3. Show the trajectories of rivers which cross national parks?
-   - This requirement is not grounded in the scenario or CQs, so it is not included in the ontology.
+- What alternative did C. S. Lewis use to assume the role of a book writer?
+  - :Author, :Pseudonym, :hasPseudonym
+
+- Show the trajectories of rivers which cross national parks?
+  - This scenario is not related to the provided ontology.
 
 Intentionally excluded concepts:
-- Rivers and national parks: These concepts are not present in the scenario or CQs, so they are not included in the ontology.
+- The scenario does not provide information about rivers or national parks, so those concepts were not included in the ontology.
 ```
-
-This ontology design pattern focuses on the author's pseudonyms and their books, as required by the scenario and CQs. It does not include concepts related to rivers and national parks, as they are not relevant to the given scenario.

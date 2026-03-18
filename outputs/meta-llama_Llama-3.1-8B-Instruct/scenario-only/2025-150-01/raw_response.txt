@@ -9,61 +9,110 @@
   rdfs:label "MQTT Message Protocol Ontology" ;
   rdfs:comment "Modeling MQTT message protocols for automated process data.".
 
+:Message a owl:Class ;
+  rdfs:label "Message" ;
+  rdfs:comment "A message in the MQTT protocol.".
+
 :MQTTMessage a owl:Class ;
   rdfs:label "MQTT Message" ;
-  rdfs:comment "A message transmitted via MQTT protocol.".
+  rdfs:comment "A message in the MQTT protocol." ;
+  rdfs:subClassOf :Message.
 
-:MQTTMessageFormat a owl:Class ;
-  rdfs:label "MQTT Message Format" ;
-  rdfs:comment "Format of an MQTT message, e.g., plain text, CSV, JSON.".
+:Payload a owl:Class ;
+  rdfs:label "Payload" ;
+  rdfs:comment "The content of an MQTT message.".
 
-:MQTTMessageEncoding a owl:Class ;
-  rdfs:label "MQTT Message Encoding" ;
-  rdfs:comment "Encoding of an MQTT message, e.g., character set.".
+:MQTTMessage rdfs:subClassOf :Payload.
 
-:MQTTMessageFormatFormat a owl:Class ;
-  rdfs:label "MQTT Message Format Format" ;
-  rdfs:comment "Format of an MQTT message format, e.g., JSON.".
+:Format a owl:Class ;
+  rdfs:label "Format" ;
+  rdfs:comment "The format of an MQTT message payload.".
 
-:hasFormat a owl:Property ;
-  rdfs:label "has Format" ;
+:TextFormat a owl:Class ;
+  rdfs:label "Text Format" ;
+  rdfs:comment "Plain text format." ;
+  rdfs:subClassOf :Format.
+
+:CSVFormat a owl:Class ;
+  rdfs:label "Comma-Separated Values Format" ;
+  rdfs:comment "Comma-separated values format." ;
+  rdfs:subClassOf :Format.
+
+:JSONFormat a owl:Class ;
+  rdfs:label "JSON Format" ;
+  rdfs:comment "JSON format." ;
+  rdfs:subClassOf :Format.
+
+:Encoding a owl:Class ;
+  rdfs:label "Encoding" ;
+  rdfs:comment "The encoding of an MQTT message payload.".
+
+:CharacterEncoding a owl:Class ;
+  rdfs:label "Character Encoding" ;
+  rdfs:comment "Character encoding." ;
+  rdfs:subClassOf :Encoding.
+
+:MQTTMessage :hasFormat :Format ;
+  rdfs:label "has format" ;
   rdfs:comment "The format of an MQTT message." ;
   rdfs:domain :MQTTMessage ;
-  rdfs:range :MQTTMessageFormat.
+  rdfs:range :Format.
 
-:hasEncoding a owl:Property ;
-  rdfs:label "has Encoding" ;
+:MQTTMessage :hasEncoding :Encoding ;
+  rdfs:label "has encoding" ;
   rdfs:comment "The encoding of an MQTT message." ;
   rdfs:domain :MQTTMessage ;
-  rdfs:range :MQTTMessageEncoding.
+  rdfs:range :Encoding.
 
-:hasFormatFormat a owl:Property ;
-  rdfs:label "has Format Format" ;
-  rdfs:comment "The format of an MQTT message format." ;
-  rdfs:domain :MQTTMessageFormat ;
-  rdfs:range :MQTTMessageFormatFormat.
+:Payload :hasFormat :Format ;
+  rdfs:label "has format" ;
+  rdfs:comment "The format of a payload." ;
+  rdfs:domain :Payload ;
+  rdfs:range :Format.
 
-:MQTTMessageFormatFormat rdfs:subClassOf :MQTTMessageFormat ;
-  owl:disjointWith :MQTTMessageFormat.
+:Payload :hasEncoding :Encoding ;
+  rdfs:label "has encoding" ;
+  rdfs:comment "The encoding of a payload." ;
+  rdfs:domain :Payload ;
+  rdfs:range :Encoding.
 
-:MQTTMessageFormat rdfs:subClassOf :MQTTMessage ;
-  owl:disjointWith :MQTTMessage.
+:Format :hasSubFormat :TextFormat, :CSVFormat, :JSONFormat ;
+  rdfs:label "has sub-format" ;
+  rdfs:comment "The sub-formats of a format." ;
+  rdfs:domain :Format ;
+  rdfs:range :TextFormat, :CSVFormat, :JSONFormat.
 
-:MQTTMessageEncoding rdfs:subClassOf :MQTTMessage ;
-  owl:disjointWith :MQTTMessage.
+:Encoding :hasSubEncoding :CharacterEncoding ;
+  rdfs:label "has sub-encoding" ;
+  rdfs:comment "The sub-encodings of an encoding." ;
+  rdfs:domain :Encoding ;
+  rdfs:range :CharacterEncoding.
+
+:TextFormat :hasEncoding :CharacterEncoding ;
+  rdfs:label "has encoding" ;
+  rdfs:comment "The encoding of text format." ;
+  rdfs:domain :TextFormat ;
+  rdfs:range :CharacterEncoding.
+
+:CSVFormat :hasEncoding :CharacterEncoding ;
+  rdfs:label "has encoding" ;
+  rdfs:comment "The encoding of CSV format." ;
+  rdfs:domain :CSVFormat ;
+  rdfs:range :CharacterEncoding.
+
+:JSONFormat :hasEncoding :CharacterEncoding ;
+  rdfs:label "has encoding" ;
+  rdfs:comment "The encoding of JSON format." ;
+  rdfs:domain :JSONFormat ;
+  rdfs:range :CharacterEncoding.
 ```
 
 **Documentation**
 
-### Intent
-This ontology design pattern models the structure of Message Queuing Telemetry Transport (MQTT) messages, including their formats and encodings, to enable seamless alignment between observation and actuation process descriptions with transport semantics.
+**Intent:** This ontology models the structure of Message Queuing Telemetry Transport (MQTT) messages, including their formats and encodings.
 
-### Covered requirements
-* Modeling MQTT message protocols for automated process data
-* Capturing various payload formats and encodings used in MQTT message protocols
-* Enabling seamless alignment between observation and actuation process descriptions with transport semantics
+**Covered requirements:**
 
-### Known assumptions and exclusions
-* This ontology assumes that the context of the EKI project is relevant to the modeling of MQTT message protocols.
-* This ontology does not cover the specifics of the EKI project, which may be modeled separately.
-* This ontology does not include concepts not implied by the scenario, such as the specifics of the MQTT protocol or the context of the EKI project.
+* Modeling MQTT message protocols
+* Payload formats and encodings
+* Automated process data captured and transmitted via

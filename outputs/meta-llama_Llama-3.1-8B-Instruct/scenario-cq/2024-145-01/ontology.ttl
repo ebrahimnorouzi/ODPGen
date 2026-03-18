@@ -5,105 +5,107 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Court and Bad Check Regulations Ontology" ;
-  rdfs:comment "Ontology for court hierarchies and bad check regulations.".
+  rdfs:label "Legal Task Ontology" ;
+  rdfs:comment "Ontology for legal tasks and court hierarchies".
 
-:State a rdfs:Class ;
+:State a owl:Class ;
   rdfs:label "State" ;
-  rdfs:comment "A state in the United States or India.".
+  rdfs:comment "A state in the United States".
 
-:DistrictCourt a rdfs:Class ;
+:DistrictCourt a owl:Class ;
   rdfs:label "District Court" ;
-  rdfs:comment "A district court in a state.".
+  rdfs:comment "A district court in the United States".
 
-:State a :hasDistrictCourt ;
-  rdfs:label "has District Court" ;
-  rdfs:comment "A state has one or more district courts.".
+:StateDistrictCourt a owl:Class ;
+  rdfs:label "State-District Court" ;
+  rdfs:comment "A state-district court in the United States".
 
-:DistrictCourt a :locatedInState ;
-  rdfs:label "located in state" ;
-  rdfs:comment "A district court is located in a state.".
+:India a owl:Class ;
+  rdfs:label "India" ;
+  rdfs:comment "A country in Asia".
 
-:State a :hasAuthorityOver ;
-  rdfs:label "has authority over" ;
-  rdfs:comment "A state has authority over one or more district courts.".
+:District a owl:Class ;
+  rdfs:label "District" ;
+  rdfs:comment "A district in India".
 
-:DistrictCourt a :hasAuthorityOver ;
-  rdfs:label "has authority over" ;
-  rdfs:comment "A district court has authority over one or more lower courts.".
+:StateDistrict a owl:Class ;
+  rdfs:label "State-District" ;
+  rdfs:comment "A state-district in India".
 
-:Check a rdfs:Class ;
-  rdfs:label "Check" ;
-  rdfs:comment "A check transaction.".
-
-:Check a :hasTransactionStatus ;
-  rdfs:label "has transaction status" ;
-  rdfs:comment "A check has a transaction status.".
-
-:Check a :hasPaymentDate ;
-  rdfs:label "has payment date" ;
-  rdfs:comment "A check has a payment date.".
-
-:Check a :hasCheckType ;
-  rdfs:label "has check type" ;
-  rdfs:comment "A check has a check type.".
-
-:BadCheck a rdfs:Class ;
-  rdfs:label "Bad Check" ;
-  rdfs:comment "A bad check transaction.".
-
-:BadCheck a :hasCheckType ;
-  rdfs:label "has check type" ;
-  rdfs:comment "A bad check has a check type.".
-
-:Check a :hasTransactionStatus ;
-  rdfs:label "has transaction status" ;
-  rdfs:comment "A check has a transaction status.".
-
-:TransactionStatus a rdfs:Class ;
-  rdfs:label "Transaction Status" ;
-  rdfs:comment "The status of a check transaction.".
-
-:Check a :hasTransactionStatus ;
-  rdfs:label "has transaction status" ;
-  rdfs:comment "A check has a transaction status.".
-
-:CheckType a rdfs:Class ;
-  rdfs:label "Check Type" ;
-  rdfs:comment "The type of a check transaction.".
-
-:BadCheck a :hasCheckType ;
-  rdfs:label "has check type" ;
-  rdfs:comment "A bad check has a check type.".
-
-:PaymentDate a rdfs:Class ;
-  rdfs:label "Payment Date" ;
-  rdfs:comment "The date of a check payment.".
-
-:Check a :hasPaymentDate ;
-  rdfs:label "has payment date" ;
-  rdfs:comment "A check has a payment date.".
-
-:Authority a rdfs:Class ;
+:Authority a owl:Class ;
   rdfs:label "Authority" ;
-  rdfs:comment "The authority over a court.".
+  rdfs:comment "A court with authority over another court".
 
-:DistrictCourt a :hasAuthority ;
-  rdfs:label "has authority" ;
-  rdfs:comment "A district court has authority over one or more lower courts.".
+:Check a owl:Class ;
+  rdfs:label "Check" ;
+  rdfs:comment "A financial transaction".
 
-:State a :hasAuthorityOver ;
-  rdfs:label "has authority over" ;
-  rdfs:comment "A state has authority over one or more district courts.".
+:TransactionType a owl:Class ;
+  rdfs:label "Transaction Type" ;
+  rdfs:comment "The type of transaction".
 
-:DistrictCourt a :hasAuthorityOver ;
-  rdfs:label "has authority over" ;
-  rdfs:comment "A district court has authority over one or more lower courts.".
+:PaymentDate a owl:DatatypeProperty ;
+  rdfs:label "Payment Date" ;
+  rdfs:comment "The date of payment" ;
+  rdfs:domain :Check ;
+  rdfs:range xsd:date.
 
-:DistrictCourt a :hasDistrictCourt ;
-  rdfs:label "has district court" ;
-  rdfs:comment "A state has one or more district courts.".
+:TransactionStatus a owl:Class ;
+  rdfs:label "Transaction Status" ;
+  rdfs:comment "The status of a transaction".
 
-:State a :locatedInState ;
-  rdfs:label "located in state" ;
-  rdfs:comment "A district court is located in a state.".
+:BadCheck a owl:Class ;
+  rdfs:label "Bad Check" ;
+  rdfs:comment "A check with insufficient funds".
+
+:CheckTransactionType a owl:DatatypeProperty ;
+  rdfs:label "Check Transaction Type" ;
+  rdfs:comment "The type of check transaction" ;
+  rdfs:domain :BadCheck ;
+  rdfs:range xsd:string.
+
+:hasAuthority a owl:ObjectProperty ;
+  rdfs:label "Has Authority Over" ;
+  rdfs:comment "A court has authority over another court" ;
+  rdfs:domain :Authority ;
+  rdfs:range :Authority.
+
+:locatedIn a owl:ObjectProperty ;
+  rdfs:label "Located In" ;
+  rdfs:comment "A district court is located in a state" ;
+  rdfs:domain :DistrictCourt ;
+  rdfs:range :State.
+
+:hasDistrict a owl:ObjectProperty ;
+  rdfs:label "Has District" ;
+  rdfs:comment "A state has districts" ;
+  rdfs:domain :State ;
+  rdfs:range :District.
+
+:hasStateDistrict a owl:ObjectProperty ;
+  rdfs:label "Has State-District" ;
+  rdfs:comment "A state has state-districts" ;
+  rdfs:domain :State ;
+  rdfs:range :StateDistrict.
+
+:hasCheck a owl:ObjectProperty ;
+  rdfs:label "Has Check" ;
+  rdfs:comment "A bad check has a check transaction type" ;
+  rdfs:domain :BadCheck ;
+  rdfs:range :CheckTransactionType.
+
+:hasPaymentDate a owl:ObjectProperty ;
+  rdfs:label "Has Payment Date" ;
+  rdfs:comment "A check has a payment date" ;
+  rdfs:domain :Check ;
+  rdfs:range :PaymentDate.
+
+:hasTransactionStatus a owl:ObjectProperty ;
+  rdfs:label "Has Transaction Status" ;
+  rdfs:comment "A check payment has a transaction status" ;
+  rdfs:domain :CheckPayment ;
+  rdfs:range :TransactionStatus.
+
+:CheckPayment a owl:Class ;
+  rdfs:label "Check Payment" ;
+  rdfs:comment "A payment of a check".

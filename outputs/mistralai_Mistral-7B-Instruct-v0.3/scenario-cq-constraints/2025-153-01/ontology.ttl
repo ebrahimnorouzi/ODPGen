@@ -1,14 +1,8 @@
-@prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
-@prefix :     <http://example.org/odp#>.
-
 :Ontology a owl:Ontology ;
   rdfs:label "Persistent Identifier Ontology" ;
   rdfs:comment "An ontology for modeling persistent identifiers and their temporal bindings.".
 
-:PersistentIdentifier a owl:Class ;
+:PI a owl:Class ;
   rdfs:label "Persistent Identifier" ;
   rdfs:comment "A unique identifier that dynamically resolves to a specific entity over time.".
 
@@ -16,50 +10,54 @@
   rdfs:label "Referent" ;
   rdfs:comment "The entity that a persistent identifier currently or previously referred to.".
 
-:TemporalBinding a owl:Class ;
+:TemporalBinding a owl:ObjectProperty ;
   rdfs:label "Temporal Binding" ;
-  rdfs:comment "The association between a persistent identifier and a referent at a specific point in time.".
+  rdfs:comment "The relationship between a persistent identifier and a specific referent at a given timestamp." ;
+  domain :PI ;
+  range :Referent ;
+  owl:inverseOf :ResolvedBy.
 
-:hasReferent rdf:property ;
-  rdfs:domain :PersistentIdentifier ;
-  rdfs:range :Referent ;
-  rdfs:label "Has Referent" ;
-  rdfs:comment "The referent that a persistent identifier currently or previously referred to.".
-
-:hasTemporalBinding rdf:property ;
-  rdfs:domain :Referent ;
-  rdfs:range :TemporalBinding ;
-  rdfs:label "Has Temporal Binding" ;
-  rdfs:comment "The temporal binding associated with a referent.".
-
-:hasStartTime rdf:property ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range xsd:dateTime ;
-  rdfs:label "Has Start Time" ;
-  rdfs:comment "The start time of a temporal binding.".
-
-:hasEndTime rdf:property ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range xsd:dateTime ;
-  rdfs:label "Has End Time" ;
-  rdfs:comment "The end time of a temporal binding.".
+:ResolvedBy a owl:ObjectProperty ;
+  rdfs:label "Resolved By" ;
+  rdfs:comment "The relationship between a referent and the persistent identifier that currently or previously referred to it." ;
+  domain :Referent ;
+  range :PI ;
+  owl:inverseOf :TemporalBinding.
 
 :Observation a owl:Class ;
   rdfs:label "Observation" ;
   rdfs:comment "An observation associated with a specific referent.".
 
-:hasObservation rdf:property ;
-  rdfs:domain :Referent ;
-  rdfs:range :Observation ;
+:HasObservation a owl:ObjectProperty ;
   rdfs:label "Has Observation" ;
-  rdfs:comment "The observations associated with a specific referent.".
+  rdfs:comment "The relationship between a referent and an observation associated with it." ;
+  domain :Referent ;
+  range :Observation.
 
-:TransitionRule a owl:Class ;
-  rdfs:label "Transition Rule" ;
-  rdfs:comment "The rule that triggered a referent transition.".
+:Transition a owl:Class ;
+  rdfs:label "Transition" ;
+  rdfs:comment "A change in the referent associated with a persistent identifier.".
 
-:hasTransitionRule rdf:property ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range :TransitionRule ;
-  rdfs:label "Has Transition Rule" ;
-  rdfs:comment "The transition rule that triggered a referent transition.".
+:Triggers a owl:ObjectProperty ;
+  rdfs:label "Triggers" ;
+  rdfs:comment "The relationship between a transition and the rules that triggered it." ;
+  domain :Transition ;
+  range rdf:PlainLiteral.
+
+:Gap a owl:Class ;
+  rdfs:label "Gap" ;
+  rdfs:comment "A period during which a persistent identifier did not have a valid referent.".
+
+:Overlap a owl:Class ;
+  rdfs:label "Overlap" ;
+  rdfs:comment "A period during which multiple persistent identifiers referred to the same referent.".
+
+:Context a owl:Class ;
+  rdfs:label "Context" ;
+  rdfs:comment "The complete information about a specific time point, including all persistent identifiers, their referents, observations, and transitions.".
+
+:HasContext a owl:ObjectProperty ;
+  rdfs:label "Has Context" ;
+  rdfs:comment "The relationship between a specific time point and its associated context." ;
+  domain xsd:dateTime ;
+  range :Context.

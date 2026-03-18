@@ -1,6 +1,14 @@
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
 :Ontology a owl:Ontology ;
   rdfs:label "Solid Governance Patterns" ;
   rdfs:comment "An ontology for Solid apps governance patterns.".
+
+# Scenario-requirement-to-axiom mapping
 
 :SolidActor a owl:Class ;
   rdfs:label "Solid Actor" ;
@@ -14,9 +22,9 @@
   rdfs:label "Pod" ;
   rdfs:comment "Represents a Solid Pod.".
 
-:Infrastructure a owl:Class ;
-  rdfs:label "Infrastructure" ;
-  rdfs:comment "Represents the Solid infrastructure.".
+:SolidSpecification a owl:Class ;
+  rdfs:label "Solid Specification" ;
+  rdfs:comment "Represents a Solid specification.".
 
 :DataCategory a owl:Class ;
   rdfs:label "Data Category" ;
@@ -30,42 +38,50 @@
   rdfs:label "Privacy Policy" ;
   rdfs:comment "Represents a privacy policy.".
 
-:PolicyIdentifier a owl:DatatypeProperty ;
-  rdfs:label "Policy Identifier" ;
-  rdfs:comment "Identifies the unique identifier of the policy.".
-
-:Creator a owl:ObjectProperty ;
-  rdfs:label "Creator" ;
-  rdfs:comment "Identifies the creator of the policy.".
-
-:IssueDate a owl:DatatypeProperty ;
-  rdfs:label "Issue Date" ;
-  rdfs:comment "Identifies the date the policy was issued.".
-
-:Assignee a owl:ObjectProperty ;
-  rdfs:label "Assignee" ;
-  rdfs:comment "Identifies the assignee of the policy.".
-
-:AppService a owl:Class ;
-  rdfs:label "App Service" ;
-  rdfs:comment "Represents an application or service.".
-
-:AccessMode a owl:Class ;
-  rdfs:label "Access Mode" ;
-  rdfs:comment "Represents the access mode being requested.".
+:DataAccessRequest a owl:Class ;
+  rdfs:label "Data Access Request" ;
+  rdfs:comment "Represents a data access request.".
 
 :PersonalData a owl:Class ;
   rdfs:label "Personal Data" ;
   rdfs:comment "Represents personal data.".
 
+:AccessMode a owl:EnumValue ;
+  rdfs:label "Access Mode" ;
+  rdfs:comment "Represents the access mode for data.".
+
 :Purpose a owl:DatatypeProperty ;
+  rdfs:domain :DataAccessRequest ;
+  rdfs:range xsd:string ;
   rdfs:label "Purpose" ;
-  rdfs:comment "Identifies the purpose for accessing the data.".
+  rdfs:comment "The purpose for accessing the data.".
 
-:DataCategoryInPod a owl:ObjectProperty ;
-  rdfs:label "Data Category in Pod" ;
-  rdfs:comment "Identifies the data category in a Pod.".
+:DataCategory a owl:ObjectProperty ;
+  rdfs:domain :Data ;
+  rdfs:range :DataCategory ;
+  rdfs:label "Data Category" ;
+  rdfs:comment "The category of the data.".
 
-:DataHandlingPracticeInPod a owl:ObjectProperty ;
-  rdfs:label "Data Handling Practice in Pod" ;
-  rdfs:comment "Identifies the data handling practice in a Pod.".
+:Creator a owl:ObjectProperty ;
+  rdfs:domain :PrivacyPolicy ;
+  rdfs:range :SolidActor ;
+  rdfs:label "Creator" ;
+  rdfs:comment "The creator of the privacy policy.".
+
+:IssueDate a owl:DatatypeProperty ;
+  rdfs:domain :PrivacyPolicy ;
+  rdfs:range xsd:date ;
+  rdfs:label "Issue Date" ;
+  rdfs:comment "The date the privacy policy was issued.".
+
+:Assignee a owl:ObjectProperty ;
+  rdfs:domain :PrivacyPolicy ;
+  rdfs:range :SolidActor ;
+  rdfs:label "Assignee" ;
+  rdfs:comment "The assignee of the privacy policy.".
+
+:Application a owl:ObjectProperty ;
+  rdfs:domain :DataAccessRequest ;
+  rdfs:range :Application ;
+  rdfs:label "Application" ;
+  rdfs:comment "The application or service making the data access request.".

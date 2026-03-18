@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -6,28 +8,28 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Solid governance registry ontology design pattern" ;
-  rdfs:comment "A minimal ontology design pattern for representing a registry of data categories in a Solid setting, including who maintains the registry, when it was created or updated, what data types are available, where a data type is stored, and what policy is associated with the data." .
+  rdfs:label "Solid data registry governance pattern" ;
+  rdfs:comment "A minimal ontology design pattern for describing a registry of data categories in a Solid context, including its maintainer, creation and update times, storage locations for data categories, and associated policies." .
 
 :Registry a owl:Class ;
   rdfs:label "Registry" ;
-  rdfs:comment "A registry that records available data types, their storage locations, associated policies, and maintenance metadata." .
+  rdfs:comment "A registry that describes available data categories, their storage locations, and related governance information." .
 
 :Actor a owl:Class ;
   rdfs:label "Actor" ;
-  rdfs:comment "An entity that can maintain the registry." .
+  rdfs:comment "An entity involved in the Solid ecosystem, such as one that maintains a registry." .
 
-:DataType a owl:Class ;
-  rdfs:label "Data type" ;
-  rdfs:comment "A category or type of data available in a Pod." .
+:DataCategory a owl:Class ;
+  rdfs:label "Data category" ;
+  rdfs:comment "A type or category of data that may be available and stored in a Pod." .
 
 :StorageLocation a owl:Class ;
   rdfs:label "Storage location" ;
-  rdfs:comment "A location where a specific type of data is stored." .
+  rdfs:comment "A location where a specific data category is stored." .
 
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
-  rdfs:comment "A policy associated with a data type." .
+  rdfs:comment "A policy associated with a data category." .
 
 :maintainedBy a owl:ObjectProperty ;
   rdfs:label "maintained by" ;
@@ -35,52 +37,50 @@
   rdfs:domain :Registry ;
   rdfs:range :Actor .
 
+:hasDataCategory a owl:ObjectProperty ;
+  rdfs:label "has data category" ;
+  rdfs:comment "Relates a registry to a data category that is available." ;
+  rdfs:domain :Registry ;
+  rdfs:range :DataCategory .
+
+:storedAt a owl:ObjectProperty ;
+  rdfs:label "stored at" ;
+  rdfs:comment "Relates a data category to the storage location where it is stored." ;
+  rdfs:domain :DataCategory ;
+  rdfs:range :StorageLocation .
+
+:hasPolicy a owl:ObjectProperty ;
+  rdfs:label "has policy" ;
+  rdfs:comment "Relates a data category to a policy associated with that data." ;
+  rdfs:domain :DataCategory ;
+  rdfs:range :Policy .
+
 :createdAt a owl:DatatypeProperty ;
   rdfs:label "created at" ;
-  rdfs:comment "Relates a registry to the date and time when it was created." ;
+  rdfs:comment "The date and time when a registry was created." ;
   rdfs:domain :Registry ;
   rdfs:range xsd:dateTime .
 
 :updatedAt a owl:DatatypeProperty ;
   rdfs:label "updated at" ;
-  rdfs:comment "Relates a registry to the date and time when it was last updated." ;
+  rdfs:comment "The date and time when a registry was last updated." ;
   rdfs:domain :Registry ;
   rdfs:range xsd:dateTime .
-
-:hasDataType a owl:ObjectProperty ;
-  rdfs:label "has data type" ;
-  rdfs:comment "Relates a registry to a data type that is available." ;
-  rdfs:domain :Registry ;
-  rdfs:range :DataType .
-
-:storedAt a owl:ObjectProperty ;
-  rdfs:label "stored at" ;
-  rdfs:comment "Relates a data type to the storage location where it is stored." ;
-  rdfs:domain :DataType ;
-  rdfs:range :StorageLocation .
-
-:hasPolicy a owl:ObjectProperty ;
-  rdfs:label "has policy" ;
-  rdfs:comment "Relates a data type to a policy associated with that data." ;
-  rdfs:domain :DataType ;
-  rdfs:range :Policy .
 ```
 
-Validation report:
-1. PASS — Turtle syntax is well-formed with declared triples terminated properly.
-2. PASS — All prefixes used in the ontology body are declared at the top.
-3. PASS — All domains and ranges refer only to classes defined here or to xsd:dateTime.
-4. PASS — No contradictory subclass, disjointness, or incompatible domain/range restrictions are present.
-5. PASS — Each CQ maps to at least one element: maintainedBy, createdAt/updatedAt, hasDataType, storedAt, and hasPolicy.
-6. PASS — All concepts are grounded in the scenario or directly required by the competency questions.
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
 
-Scope report:
-(a) Covered requirements from the scenario:
-- C1 partially covered through :Actor and :maintainedBy, enabling identification of the registry maintainer.
-- C3 covered through :DataType, :hasDataType, and :storedAt, enabling discovery of available data categories and their storage locations.
-- C4 partially covered through :Policy and :hasPolicy, enabling association of policy information with data.
-- C6 minimally covered through :createdAt and :updatedAt as basic record metadata for the registry.
+1. PASS — Turtle syntax is well-formed with declared prefixes, terminated triples, and consistent use of semicolons.
+2. PASS — All prefixes used in the ontology body (owl, rdf, rdfs, xsd, :) are declared at the top.
+3. PASS — All domains and ranges refer only to classes defined in this ontology or the well-known datatype vocabulary xsd.
+4. PASS — No contradictory axioms, disjointness conflicts, or incompatible restrictions are present.
+5. PASS — Each CQ maps to ontology terms: maintainer via :maintainedBy, creation/update via :createdAt/:updatedAt, available data types via :hasDataCategory, storage via :storedAt, and associated policy via :hasPolicy.
+6. PASS — The ontology includes only concepts grounded in the scenario and competency questions: registry, actor, data category, storage location, policy, maintainer, and timestamps.
 
-(b) Explicitly excluded concepts and why:
-- Pod providers, app providers, Pods, apps, specifications, installed functionalities, privacy preferences, consent records, access logs, provenance details, GDPR rights, and auditing authorities are excluded because they are not necessary to answer the given competency questions and would violate the minimality constraint.
-- Specific role modeling is excluded because the CQs only require identifying
+3. Scope report: (a) requirements from the scenario that are covered, (b) any scenario concepts explicitly excluded and why.
+
+(a) Covered requirements:
+- Registry maintenance information is modeled through :Registry and :maintainedBy, addressing the CQ about who maintains the registry.
+- Registry creation and update metadata are modeled through :createdAt and :updatedAt.
+- Availability of categories of data is modeled through :hasDataCategory.
+- Location of storage for a specific data type is modeled through :storedAt.

@@ -1,32 +1,28 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ndf-syntax-ns#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Sprinkler causal Bayesian network ontology design pattern" ;
-  rdfs:comment "A minimal ontology design pattern for representing events and weighted causal relations in the sprinkler use case, including mediated causal influence relevant to slippery pavement." .
+  rdfs:label "Causal Bayesian Network Sprinkler ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing events and weighted causal relations in the sprinkler causal Bayesian network use case." .
 
 :Event a owl:Class ;
   rdfs:label "Event" ;
-  rdfs:comment "An event represented as a node in the sprinkler causal model." .
+  rdfs:comment "A node in the causal model representing an event or condition." .
 
 :CausalRelation a owl:Class ;
   rdfs:label "Causal relation" ;
-  rdfs:comment "A directed causal relation between two events, optionally with an effect weight." .
+  rdfs:comment "A directed causal link between a cause event and an effect event, optionally with an effect weight." .
 
-:hasCause a owl:ObjectProperty ;
-  rdfs:label "has cause" ;
-  rdfs:comment "Relates an event to an event that is responsible for causing it." ;
+:causes a owl:ObjectProperty ;
+  rdfs:label "causes" ;
+  rdfs:comment "Relates an event to another event that it causally influences." ;
   rdfs:domain :Event ;
-  rdfs:range :Event .
-
-:hasEffect a owl:ObjectProperty ;
-  rdfs:label "has effect" ;
-  rdfs:comment "Relates a causal relation to the event that it affects." ;
-  rdfs:domain :CausalRelation ;
   rdfs:range :Event .
 
 :hasCauseEvent a owl:ObjectProperty ;
@@ -35,62 +31,60 @@
   rdfs:domain :CausalRelation ;
   rdfs:range :Event .
 
-:hasEffectWeight a owl:DatatypeProperty ;
-  rdfs:label "has effect weight" ;
-  rdfs:comment "Associates a causal relation with a numeric effect weight expressing causal strength." ;
-  rdfs:domain :CausalRelation ;
-  rdfs:range xsd:decimal .
-
-:isMediatedBy a owl:ObjectProperty ;
-  rdfs:label "is mediated by" ;
-  rdfs:comment "Relates a causal relation to an event through which its effect is mediated." ;
+:hasEffectEvent a owl:ObjectProperty ;
+  rdfs:label "has effect event" ;
+  rdfs:comment "Relates a causal relation to the event that acts as its effect." ;
   rdfs:domain :CausalRelation ;
   rdfs:range :Event .
 
-:RainySeason a owl:Class ;
-  rdfs:label "Rainy season" ;
+:mediatesEffectOn a owl:ObjectProperty ;
+  rdfs:label "mediates effect on" ;
+  rdfs:comment "Relates an event to another event whose causal effect it mediates." ;
+  rdfs:domain :Event ;
+  rdfs:range :Event .
+
+:hasMediatorEvent a owl:ObjectProperty ;
+  rdfs:label "has mediator event" ;
+  rdfs:comment "Relates a causal relation to an event that mediates the effect from cause to effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Event .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+  rdfs:label "has effect weight" ;
+  rdfs:comment "Associates a causal relation with a numeric effect weight." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal .
+
+:RainySeasonEvent a owl:Class ;
+  rdfs:label "Rainy season event" ;
   rdfs:comment "The event that it is rainy season." ;
   rdfs:subClassOf :Event .
 
-:SprinklerOn a owl:Class ;
-  rdfs:label "Sprinkler on" ;
+:SprinklerOnEvent a owl:Class ;
+  rdfs:label "Sprinkler on event" ;
   rdfs:comment "The event that the sprinkler is on." ;
   rdfs:subClassOf :Event .
 
-:Raining a owl:Class ;
-  rdfs:label "Raining" ;
+:RainingEvent a owl:Class ;
+  rdfs:label "Raining event" ;
   rdfs:comment "The event that it is raining." ;
   rdfs:subClassOf :Event .
 
-:PavementWet a owl:Class ;
-  rdfs:label "Pavement wet" ;
+:PavementWetEvent a owl:Class ;
+  rdfs:label "Pavement wet event" ;
   rdfs:comment "The event that the pavement is wet." ;
   rdfs:subClassOf :Event .
 
-:PavementSlippery a owl:Class ;
-  rdfs:label "Pavement slippery" ;
+:PavementSlipperyEvent a owl:Class ;
+  rdfs:label "Pavement slippery event" ;
   rdfs:comment "The event that the pavement is slippery." ;
   rdfs:subClassOf :Event .
+```
 
-:rainySeasonCausesRaining a :CausalRelation ;
-  rdfs:label "rainy season causes raining" ;
-  rdfs:comment "The causal relation from rainy season to raining." ;
-  :hasCauseEvent :rainySeasonEvent ;
-  :hasEffect :rainingEvent ;
-  :hasEffectWeight "0.6"^^xsd:decimal .
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
 
-:sprinklerOnCausesPavementWet a :CausalRelation ;
-  rdfs:label "sprinkler on causes pavement wet" ;
-  rdfs:comment "The causal relation from sprinkler being on to pavement being wet." ;
-  :hasCauseEvent :sprinklerOnEvent ;
-  :hasEffect :pavementWetEvent .
-
-:rainingCausesPavementWet a :CausalRelation ;
-  rdfs:label "raining causes pavement wet" ;
-  rdfs:comment "The causal relation from raining to pavement being wet." ;
-  :hasCauseEvent :rainingEvent ;
-  :hasEffect :pavementWetEvent .
-
-:pavementWetCausesPavementSlippery a :CausalRelation ;
-  rdfs:label "pavement wet causes pavement slippery" ;
-  rdfs:
+1. PASS — Turtle syntax is well-formed with declared prefixes, terminated triples, and no unmatched brackets.
+2. PASS — All prefixes used in the ontology body (`owl:`, `rdf:`, `rdfs:`, `xsd:`, `:`) are declared at the top.
+3. PASS — All domains and ranges refer only to classes defined in this ontology (`:Event`, `:CausalRelation`) or the standard datatype `xsd:decimal`.
+4. PASS — No contradictory subclass, disjointness, or incompatible domain/range axioms are present.
+5. PASS — CQs are supported by `:Event`, `:causes`, `:CausalRelation`, `:hasEffectWeight`, and

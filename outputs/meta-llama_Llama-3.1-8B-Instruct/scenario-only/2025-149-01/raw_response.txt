@@ -6,74 +6,87 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Relational Database Access Security Ontology" ;
-  rdfs:comment "Models access control to a relational database queried via SQL.".
+  rdfs:label "Relational Database Access Ontology" ;
+  rdfs:comment "Ontology for modeling access to relational databases queried via SQL.".
 
 :User a owl:Class ;
-  rdfs:label "Database User" ;
-  rdfs:comment "An individual with access rights to the database.".
+  rdfs:label "User" ;
+  rdfs:comment "An individual who accesses the relational database.".
 
-:Role a owl:Class ;
-  rdfs:label "Database Role" ;
-  rdfs:comment "A set of privileges assigned to a user for database access.".
+:Database a owl:Class ;
+  rdfs:label "Relational Database" ;
+  rdfs:comment "A relational database instance.".
 
-:Privilege a owl:Class ;
-  rdfs:label "Database Privilege" ;
-  rdfs:comment "A specific right to perform an action on the database.".
+:SQLQuery a owl:Class ;
+  rdfs:label "SQL Query" ;
+  rdfs:comment "A query expressed in Structured Query Language (SQL).".
 
-:hasPrivilege a owl:ObjectProperty ;
-  rdfs:label "has Privilege" ;
-  rdfs:comment "A user or role has a specific privilege." ;
-  owl:domain :User ;
-  owl:domain :Role ;
-  owl:range :Privilege.
+:Access a owl:Class ;
+  rdfs:label "Access" ;
+  rdfs:comment "The act of accessing a relational database.".
 
-:assignsRole a owl:ObjectProperty ;
-  rdfs:label "assigns Role" ;
-  rdfs:comment "An administrator assigns a role to a user." ;
-  owl:domain :User ;
-  owl:domain :Administrator ;
-  owl:range :Role.
+:hasUser a owl:ObjectProperty ;
+  rdfs:label "has User" ;
+  rdfs:comment "The user who performed the access." ;
+  rdfs:domain :Access ;
+  rdfs:range :User.
 
-:grantsPrivilege a owl:ObjectProperty ;
-  rdfs:label "grants Privilege" ;
-  rdfs:comment "An administrator grants a privilege to a user or role." ;
-  owl:domain :Administrator ;
-  owl:range :Privilege.
+:hasDatabase a owl:ObjectProperty ;
+  rdfs:label "has Database" ;
+  rdfs:comment "The relational database instance being accessed." ;
+  rdfs:domain :Access ;
+  rdfs:range :Database.
 
-:isDisjointWith a owl:ObjectProperty ;
-  rdfs:label "is disjoint with" ;
-  rdfs:comment "Two roles or privileges are mutually exclusive." ;
-  owl:propertyChain [ a owl:ObjectProperty ;
-    owl:propertyChain :hasPrivilege ;
-    owl:propertyChain :assignsRole ].
+:hasSQLQuery a owl:ObjectProperty ;
+  rdfs:label "has SQL Query" ;
+  rdfs:comment "The SQL query executed during access." ;
+  rdfs:domain :Access ;
+  rdfs:range :SQLQuery.
 
-:User rdfs:subClassOf :Entity ;
-:Role rdfs:subClassOf :Entity ;
-:Privilege rdfs:subClassOf :Entity.
+:UserID a owl:DatatypeProperty ;
+  rdfs:label "User ID" ;
+  rdfs:comment "A unique identifier for the user." ;
+  rdfs:domain :User ;
+  rdfs:range xsd:string.
 
-:Entity a owl:Class ;
-  rdfs:label "Database Entity" ;
-  rdfs:comment "A user, role, or privilege in the database access control system.".
+:DatabaseName a owl:DatatypeProperty ;
+  rdfs:label "Database Name" ;
+  rdfs:comment "The name of the relational database instance." ;
+  rdfs:domain :Database ;
+  rdfs:range xsd:string.
 
-:Administrator a owl:Class ;
-  rdfs:label "Database Administrator" ;
-  rdfs:comment "An individual responsible for managing database access rights.".
+:SQLQueryText a owl:DatatypeProperty ;
+  rdfs:label "SQL Query Text" ;
+  rdfs:comment "The text of the SQL query." ;
+  rdfs:domain :SQLQuery ;
+  rdfs:range xsd:string.
+
+:AccessTime a owl:DatatypeProperty ;
+  rdfs:label "Access Time" ;
+  rdfs:comment "The timestamp of the access event." ;
+  rdfs:domain :Access ;
+  rdfs:range xsd:dateTime.
+
+:Access a owl:disjointWith :Database ;
+  owl:disjointWith :SQLQuery ;
+  owl:disjointWith :User.
+
 ```
 
 **Documentation**
 
-### Intent
-This ontology design pattern models the access control to a relational database queried via SQL, focusing on users, roles, privileges, and administrators.
+**Intent:** This ontology models the relationships between users, relational databases, SQL queries, and access events in the context of securing access to a relational database queried via SQL.
 
-### Covered requirements
-* Securing access to a relational database
-* Structured Query Language (SQL) querying
-* Users, roles, and privileges as database entities
-* Administrator role in managing access rights
+**Covered requirements:**
 
-### Known assumptions and exclusions
-* This ontology assumes a simple access control system where users, roles, and privileges are the primary entities.
-* It does not model complex access control scenarios, such as role hierarchies or conditional access rights.
-* The ontology does not include any specific SQL queries or database schema details.
-* The administrator role is assumed to be a single entity responsible for managing access rights; in a real-world scenario, this might involve multiple administrators or a more complex organizational structure.
+* Modeling access to relational databases queried via SQL
+* Identifying users, relational databases, and SQL queries
+* Recording access events with timestamps
+* Establishing relationships between users, databases, queries, and access events
+
+**Known assumptions and exclusions:**
+
+* This ontology assumes a basic understanding of relational databases and SQL queries.
+* It does not model the underlying database schema or the specific SQL queries executed.
+* It does not address authentication or authorization mechanisms.
+* It focuses solely on the relationships between users, databases, queries, and access events.

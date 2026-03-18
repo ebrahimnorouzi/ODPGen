@@ -5,69 +5,101 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Environmental Allergen and Asthma Symptom Ontology" ;
-  rdfs:comment "Ontology for modeling the relationship between environmental allergens and asthma symptoms.".
+  rdfs:label "Patient Allergy and Medication Intake Ontology" ;
+  rdfs:comment "Ontology for modeling patient allergy and medication intake".
 
 :Patient a owl:Class ;
   rdfs:label "Patient" ;
-  rdfs:comment "A person who experiences asthma symptoms.".
+  rdfs:comment "A person who experiences allergy and takes medication".
 
-:Medication a owl:Class ;
-  rdfs:label "Medication" ;
-  rdfs:comment "A substance used to treat asthma symptoms.".
+:Allergy a owl:Class ;
+  rdfs:label "Allergy" ;
+  rdfs:comment "A condition where the body's immune system reacts to a foreign substance".
 
 :EnvironmentalAllergen a owl:Class ;
   rdfs:label "Environmental Allergen" ;
-  rdfs:comment "A substance in the environment that can cause allergic reactions.".
+  rdfs:comment "A substance in the environment that can cause an allergic reaction".
 
-:AsthmaSymptom a owl:Class ;
-  rdfs:label "Asthma Symptom" ;
-  rdfs:comment "A symptom experienced by a patient with asthma.".
+:Pollen a owl:Class ;
+  rdfs:label "Pollen" ;
+  rdfs:comment "A fine powder produced by trees, grasses, and weeds".
+
+:AQI a owl:Class ;
+  rdfs:label "Air Quality Index" ;
+  rdfs:comment "A measure of the level of air pollution in a given area".
+
+:Medication a owl:Class ;
+  rdfs:label "Medication" ;
+  rdfs:comment "A substance used to prevent or treat a disease".
+
+:Intake a owl:Class ;
+  rdfs:label "Medication Intake" ;
+  rdfs:comment "The act of taking medication".
+
+:Symptom a owl:Class ;
+  rdfs:label "Symptom" ;
+  rdfs:comment "A subjective experience that indicates the presence of a disease".
+
+:Cough a owl:Class ;
+  rdfs:label "Cough" ;
+  rdfs:comment "A symptom characterized by a sudden, forceful expulsion of air from the lungs".
 
 :Causes a owl:ObjectProperty ;
   rdfs:label "Causes" ;
-  rdfs:comment "The relationship between an environmental allergen and an asthma symptom." ;
-  rdfs:domain :EnvironmentalAllergen ;
-  rdfs:range :AsthmaSymptom.
+  rdfs:comment "Indicates that one thing leads to another" ;
+  domain :Allergy ;
+  range :Intake.
 
-:Effect a owl:ObjectProperty ;
+:Affects a owl:ObjectProperty ;
+  rdfs:label "Affects" ;
+  rdfs:comment "Indicates that one thing influences another" ;
+  domain :EnvironmentalAllergen ;
+  range :Intake.
+
+:Effect a owl:DatatypeProperty ;
   rdfs:label "Effect" ;
-  rdfs:comment "The relationship between an asthma symptom and the intake of medication." ;
-  rdfs:domain :AsthmaSymptom ;
-  rdfs:range :Medication.
+  rdfs:comment "Indicates the magnitude of the effect" ;
+  domain :EnvironmentalAllergen ;
+  range xsd:float.
 
 :ProbableCause a owl:ObjectProperty ;
   rdfs:label "Probable Cause" ;
-  rdfs:comment "The relationship between an asthma symptom and its probable cause." ;
-  rdfs:domain :AsthmaSymptom ;
-  rdfs:range :EnvironmentalAllergen.
+  rdfs:comment "Indicates the most likely reason for a symptom" ;
+  domain :Symptom ;
+  range :Allergy.
 
-:HasAllergen a owl:ObjectProperty ;
-  rdfs:label "Has Allergen" ;
-  rdfs:comment "The relationship between an environmental allergen and its effect on the patient." ;
-  rdfs:domain :EnvironmentalAllergen ;
-  rdfs:range :Patient.
+:Without a owl:ObjectProperty ;
+  rdfs:label "Without" ;
+  rdfs:comment "Indicates the absence of a condition" ;
+  domain :EnvironmentalAllergen ;
+  range :Intake.
 
-:HasSymptom a owl:ObjectProperty ;
-  rdfs:label "Has Symptom" ;
-  rdfs:comment "The relationship between a patient and their asthma symptoms." ;
-  rdfs:domain :Patient ;
-  rdfs:range :AsthmaSymptom.
+:If a owl:AnnotationProperty ;
+  rdfs:label "If" ;
+  rdfs:comment "Indicates a hypothetical scenario" ;
+  domain :EnvironmentalAllergen ;
+  range :Intake.
 
-:HasMedication a owl:ObjectProperty ;
-  rdfs:label "Has Medication" ;
-  rdfs:comment "The relationship between a patient and their medication intake." ;
-  rdfs:domain :Patient ;
-  rdfs:range :Medication.
+:Then a owl:AnnotationProperty ;
+  rdfs:label "Then" ;
+  rdfs:comment "Indicates the consequence of a hypothetical scenario" ;
+  domain :EnvironmentalAllergen ;
+  range :Intake.
 
-:HasAQI a owl:ObjectProperty ;
-  rdfs:label "Has AQI" ;
-  rdfs:comment "The relationship between an environmental allergen and its AQI value." ;
-  rdfs:domain :EnvironmentalAllergen ;
-  rdfs:range xsd:integer.
+:PatientHasAllergy a owl:ObjectProperty ;
+  rdfs:label "Patient Has Allergy" ;
+  rdfs:comment "Indicates that a patient experiences an allergy" ;
+  domain :Patient ;
+  range :Allergy.
 
-:HasPollen a owl:ObjectProperty ;
-  rdfs:label "Has Pollen" ;
-  rdfs:comment "The relationship between an environmental allergen and its pollen value." ;
-  rdfs:domain :EnvironmentalAllergen ;
-  rdfs:range xsd:integer.
+:PatientExperiencesSymptom a owl:ObjectProperty ;
+  rdfs:label "Patient Experiences Symptom" ;
+  rdfs:comment "Indicates that a patient experiences a symptom" ;
+  domain :Patient ;
+  range :Symptom.
+
+:PatientTakesMedication a owl:ObjectProperty ;
+  rdfs:label "Patient Takes Medication" ;
+  rdfs:comment "Indicates that a patient takes medication" ;
+  domain :Patient ;
+  range :Medication.

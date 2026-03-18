@@ -1,74 +1,89 @@
-**Turtle Ontology Design Pattern (ODP) - Cultural Heritage Survey**
-
 ```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
   rdfs:label "Cultural Heritage Survey ODP" ;
   rdfs:comment "Models the structure of scientific survey activities on cultural heritage entities.".
 
+# Survey
 :Survey a owl:Class ;
   rdfs:label "Survey" ;
-  rdfs:comment "Represents a scientific survey activity on cultural heritage." ;
-  owl:disjointWith :EquipmentConfiguration.
+  rdfs:comment "A scientific survey activity on cultural heritage.".
 
+:hasSurveyID a owl:ObjectProperty ;
+  rdfs:domain :Survey ;
+  rdfs:range xsd:string ;
+  rdfs:label "hasSurveyID" ;
+  rdfs:comment "The unique identifier for a survey.".
+
+:hasStartDate a owl:DatatypeProperty ;
+  rdfs:domain :Survey ;
+  rdfs:range xsd:date ;
+  rdfs:label "hasStartDate" ;
+  rdfs:comment "The start date of a survey.".
+
+:hasEndDate a owl:DatatypeProperty ;
+  rdfs:domain :Survey ;
+  rdfs:range xsd:date ;
+  rdfs:label "hasEndDate" ;
+  rdfs:comment "The end date of a survey.".
+
+# Observation
 :Observation a owl:Class ;
   rdfs:label "Observation" ;
-  rdfs:comment "Represents an observation made during a survey." ;
-  owl:disjointWith :Survey ;
-  owl:disjointWith :Method ;
-  owl:disjointWith :InterpretationProcess.
+  rdfs:comment "An observation made during a survey.".
 
-:Method a owl:Class ;
-  rdfs:label "Method" ;
-  rdfs:comment "Represents a scientific method used in a survey." ;
-  owl:disjointWith :Survey ;
-  owl:disjointWith :Observation ;
-  owl:disjointWith :EquipmentConfiguration ;
-  owl:disjointWith :InterpretationProcess.
-
-:EquipmentConfiguration a owl:Class ;
-  rdfs:label "Equipment Configuration" ;
-  rdfs:comment "Represents the configuration of equipment used in a survey." ;
-  owl:disjointWith :Survey ;
-  owl:disjointWith :Observation ;
-  owl:disjointWith :Method ;
-  owl:disjointWith :InterpretationProcess.
-
-:InterpretationProcess a owl:Class ;
-  rdfs:label "Interpretation Process" ;
-  rdfs:comment "Represents the process of interpreting survey results." ;
-  owl:disjointWith :Survey ;
-  owl:disjointWith :Observation ;
-  owl:disjointWith :Method ;
-  owl:disjointWith :EquipmentConfiguration.
+:hasObservationID a owl:ObjectProperty ;
+  rdfs:domain :Observation ;
+  rdfs:range xsd:string ;
+  rdfs:label "hasObservationID" ;
+  rdfs:comment "The unique identifier for an observation.".
 
 :hasSurvey a owl:ObjectProperty ;
-  rdfs:label "has Survey" ;
-  rdfs:comment "Relates an observation, method, equipment configuration, or interpretation process to the survey it belongs to." ;
-  owl:domain :Observation ;
-  owl:domain :Method ;
-  owl:domain :EquipmentConfiguration ;
-  owl:domain :InterpretationProcess ;
-  owl:inverseOf :performedBySurvey.
+  rdfs:domain :Observation ;
+  rdfs:range :Survey ;
+  rdfs:label "hasSurvey" ;
+  rdfs:comment "The survey in which the observation was made.".
 
-:performedBySurvey a owl:ObjectProperty ;
-  rdfs:label "performed by Survey" ;
-  rdfs:comment "Relates a survey to the observations, methods, equipment configurations, or interpretation processes it performed." ;
-  owl:domain :Survey ;
-  owl:range :Observation ;
-  owl:range :Method ;
-  owl:range :EquipmentConfiguration ;
-  owl:range :InterpretationProcess.
-```
+# Method
+:Method a owl:Class ;
+  rdfs:label "Method" ;
+  rdfs:comment "A scientific method used in a survey.".
 
-**Documentation**
+:hasMethodID a owl:ObjectProperty ;
+  rdfs:domain :Method ;
+  rdfs:range xsd:string ;
+  rdfs:label "hasMethodID" ;
+  rdfs:comment "The unique identifier for a method.".
 
-- Intent: The Cultural Heritage Survey ODP models the structure of scientific survey activities performed on cultural heritage entities, including relationships between surveys, observations, methods, equipment configurations, and interpretation processes.
-- Covered requirements:
-  - Represents a scientific survey activity on cultural heritage (`:Survey` class).
-  - Represents an observation made during a survey (`:Observation` class).
-  - Represents a scientific method used in a survey (`:Method` class).
-  - Represents the configuration of equipment used in a survey (`:EquipmentConfiguration` class).
-  - Represents the process of interpreting survey results (`:InterpretationProcess` class).
-  - Relates an observation, method, equipment configuration, or interpretation process to the survey it belongs to (`:hasSurvey` property).
-  - Relates a survey to the observations, methods, equipment configurations, or interpretation processes it performed (`:performedBySurvey` property).
-- Known assumptions and exclusions: This ODP assumes that each survey, observation, method, equipment configuration, and interpretation process is unique within the ontology. It does not include concepts for cultural heritage entities themselves, as they are not explicitly mentioned in the scenario.
+:hasSurvey a owl:ObjectProperty ;
+  rdfs:domain :Method ;
+  rdfs:range :Survey ;
+  rdfs:label "hasSurvey" ;
+  rdfs:comment "The survey in which the method was used.".
+
+# Equipment Configuration
+:EquipmentConfiguration a owl:Class ;
+  rdfs:label "Equipment Configuration" ;
+  rdfs:comment "A specific arrangement of equipment used in a survey.".
+
+:hasEquipmentConfigurationID a owl:ObjectProperty ;
+  rdfs:domain :EquipmentConfiguration ;
+  rdfs:range xsd:string ;
+  rdfs:label "hasEquipmentConfigurationID" ;
+  rdfs:comment "The unique identifier for an equipment configuration.".
+
+:hasSurvey a owl:ObjectProperty ;
+  rdfs:domain :EquipmentConfiguration ;
+  rdfs:range :Survey ;
+  rdfs:label "hasSurvey" ;
+  rdfs:comment "The survey in which the equipment configuration was used.".
+
+# Interpretation Process
+:InterpretationProcess a owl:Class ;
+  rdfs:label "Interpretation Process" ;
+  rdfs:comment "The process of analyzing and inter

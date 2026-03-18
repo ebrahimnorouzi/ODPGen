@@ -1,4 +1,4 @@
-Here is the OWL ontology design pattern (ODP) in Turtle syntax for the given scenario and competency questions:
+Here is the OWL ontology design pattern in Turtle syntax:
 
 ```turtle
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
@@ -8,8 +8,8 @@ Here is the OWL ontology design pattern (ODP) in Turtle syntax for the given sce
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-    rdfs:label "Author Pseudonyms and Book Publications" ;
-    rdfs:comment "An ontology for modeling authors adopting different names to publish books.".
+    rdfs:label "Author Pseudonyms and Book Publication" ;
+    rdfs:comment "An ontology for modeling authors adopting different names to publish books and their associated publications.".
 
 :Author a owl:Class ;
     rdfs:label "Author" ;
@@ -23,7 +23,7 @@ Here is the OWL ontology design pattern (ODP) in Turtle syntax for the given sce
     rdfs:domain :Author ;
     rdfs:range :Pseudonym ;
     rdfs:label "Has Pseudonym" ;
-    rdfs:comment "Relates an author to the pseudonym they use.".
+    rdfs:comment "Relates an author to a pseudonym.".
 
 :Book a owl:Class ;
     rdfs:label "Book" ;
@@ -35,43 +35,26 @@ Here is the OWL ontology design pattern (ODP) in Turtle syntax for the given sce
     rdfs:label "Has Author" ;
     rdfs:comment "Relates a book to the author who wrote it.".
 
-:PublishedWork a owl:Class ;
-    rdfs:subClassOf [ owl:intersectionOf ( :Book owl:Restriction [ owl:onProperty :hasAuthor ] ) ] ;
+:PublishedWork rdf:type owl:Class ;
+    rdfs:subClassOf [ rdf:type owl:UnionOf ;
+        owl:members (:Book :Pseudonym) ] ;
     rdfs:label "Published Work" ;
-    rdfs:comment "A book that has been published.".
-
-:PublishedUnderPseudonym rdf:property ;
-    rdfs:domain :PublishedWork ;
-    rdfs:range :Pseudonym ;
-    rdfs:label "Published Under Pseudonym" ;
-    rdfs:comment "Relates a published work to the pseudonym under which it was published.".
-
-:BookTitle rdf:property ;
-    rdfs:domain :PublishedWork ;
-    rdfs:range xsd:string ;
-    rdfs:label "Book Title" ;
-    rdfs:comment "The title of a published book.".
-
-:ScenarioCovered:
-- Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?
-- What alternative did C. S. Lewis use to assume the role of a book writer?
-
-:ScenarioExcluded:
-- Show the trajectories of rivers which cross national parks (out of scope for the given scenario and CQs)
+    rdfs:comment "Either a book or a pseudonym published by an author.".
 ```
 
 Validation report:
-1. Turtle syntax is valid (no missing dots, brackets, or semicolons). PASS
-2. All prefixes used in the body are declared at the top. PASS
-3. Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies. PASS
-4. No two classes or properties are defined with contradictory restrictions. PASS
-5. Every CQ is traceable to at least one class or property in the ontology. PASS
-6. No concept appears in the ontology that is not grounded in the scenario or CQs. PASS
+1. PASS: Turtle syntax is valid.
+2. PASS: All prefixes used in the body are declared at the top.
+3. PASS: Every property with a domain or range declaration uses only classes defined in this ontology.
+4. PASS: No two classes or properties are defined with contradictory restrictions.
+5. PASS: Every CQ is traceable to at least one class or property in the ontology.
+6. PASS: No concept appears in the ontology that is not grounded in the scenario or CQs.
 
 Scope report:
-- Requirements from the scenario that are covered:
-  - Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?
-  - What alternative did C. S. Lewis use to assume the role of a book writer?
+(a) requirements from the scenario that are covered:
+- An author adopting different names to publish books
+- Pseudonyms used by an author to publish books
 
-- Any scenario concepts explicitly excluded and why:
-  - Show the
+(b) any scenario concepts explicitly excluded and why:
+- Name changes (e.g., after marriage) are not explicitly modeled in this ontology, as they are not directly related to the CQs provided.
+- Rivers and national parks are not included in this ontology, as they are not related to the scenario or CQs provided.

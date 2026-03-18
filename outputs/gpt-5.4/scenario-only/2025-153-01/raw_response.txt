@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -6,85 +8,88 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "Temporal Indirection via Persistent Identifier ODP" ;
-    rdfs:comment "An ontology design pattern for modeling a stable persistent identifier that resolves over time to different time-specific referents, while current attributes are attached to the current referent and exposed through the stable identifier." .
+  rdfs:label "Temporal Indirection via Persistent Identifier ODP" ;
+  rdfs:comment "An ontology design pattern for modeling a persistent identifier that remains stable over time while resolving to different time-specific referents, and for exposing attributes of the currently resolved referent through that invariant identifier." .
 
 :PersistentIdentifier a owl:Class ;
-    rdfs:label "Persistent Identifier" ;
-    rdfs:comment "A stable identifier that remains invariant over time while resolving to different referents at different times." .
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A stable identifier that persists across time while referring, at different times, to different underlying referents." .
 
-:TimeSpecificReferent a owl:Class ;
-    rdfs:label "Time-Specific Referent" ;
-    rdfs:comment "An entity that is the concrete referent of a persistent identifier during a particular time period." .
+:TemporalReferent a owl:Class ;
+  rdfs:label "Temporal Referent" ;
+  rdfs:comment "An entity that can be the time-specific referent of a persistent identifier." .
 
-:ResolutionPeriod a owl:Class ;
-    rdfs:label "Resolution Period" ;
-    rdfs:comment "A time interval during which a persistent identifier resolves to a particular time-specific referent." .
+:ResolutionInterval a owl:Class ;
+  rdfs:label "Resolution Interval" ;
+  rdfs:comment "A time interval during which a persistent identifier resolves to a particular temporal referent." .
 
 :MarketAttribute a owl:Class ;
-    rdfs:label "Market Attribute" ;
-    rdfs:comment "A real-time market attribute bound to the current contract instance and exposed through the persistent identifier." .
+  rdfs:label "Market Attribute" ;
+  rdfs:comment "A real-time market attribute associated with the currently resolved contract instance and exposed through a persistent identifier." .
 
 :LastTradePrice a owl:Class ;
-    rdfs:subClassOf :MarketAttribute ;
-    rdfs:label "Last Trade Price" ;
-    rdfs:comment "A market attribute representing the most recent trade price of the current referent." .
+  rdfs:label "Last Trade Price" ;
+  rdfs:comment "A market attribute representing the last traded price." ;
+  rdfs:subClassOf :MarketAttribute .
 
 :TradingVolume a owl:Class ;
-    rdfs:subClassOf :MarketAttribute ;
-    rdfs:label "Trading Volume" ;
-    rdfs:comment "A market attribute representing the trading volume of the current referent." .
+  rdfs:label "Trading Volume" ;
+  rdfs:comment "A market attribute representing trading volume." ;
+  rdfs:subClassOf :MarketAttribute .
 
 :SettlementValue a owl:Class ;
-    rdfs:subClassOf :MarketAttribute ;
-    rdfs:label "Settlement Value" ;
-    rdfs:comment "A market attribute representing the settlement value of the current referent." .
+  rdfs:label "Settlement Value" ;
+  rdfs:comment "A market attribute representing a settlement value." ;
+  rdfs:subClassOf :MarketAttribute .
 
-:PersistentIdentifier owl:disjointWith :TimeSpecificReferent, :ResolutionPeriod, :MarketAttribute .
-:TimeSpecificReferent owl:disjointWith :ResolutionPeriod, :MarketAttribute .
-:ResolutionPeriod owl:disjointWith :MarketAttribute .
-
-:hasResolutionPeriod a owl:ObjectProperty ;
-    rdfs:domain :PersistentIdentifier ;
-    rdfs:range :ResolutionPeriod ;
-    rdfs:label "has resolution period" ;
-    rdfs:comment "Relates a persistent identifier to a time interval during which it resolves to a particular referent." .
+:hasResolutionInterval a owl:ObjectProperty ;
+  rdfs:label "has resolution interval" ;
+  rdfs:comment "Relates a persistent identifier to an interval during which it resolves to a particular referent." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :ResolutionInterval .
 
 :forIdentifier a owl:ObjectProperty ;
-    rdfs:domain :ResolutionPeriod ;
-    rdfs:range :PersistentIdentifier ;
-    rdfs:label "for identifier" ;
-    rdfs:comment "Relates a resolution period to the persistent identifier whose resolution it specifies." ;
-    owl:inverseOf :hasResolutionPeriod .
+  rdfs:label "for identifier" ;
+  rdfs:comment "Relates a resolution interval to the persistent identifier whose resolution it specifies." ;
+  rdfs:domain :ResolutionInterval ;
+  rdfs:range :PersistentIdentifier ;
+  owl:inverseOf :hasResolutionInterval .
 
-:resolvesToReferent a owl:ObjectProperty ;
-    rdfs:domain :ResolutionPeriod ;
-    rdfs:range :TimeSpecificReferent ;
-    rdfs:label "resolves to referent" ;
-    rdfs:comment "Relates a resolution period to the time-specific referent designated by the persistent identifier during that period." .
+:resolvesTo a owl:ObjectProperty ;
+  rdfs:label "resolves to" ;
+  rdfs:comment "Relates a resolution interval to the temporal referent that the persistent identifier designates during that interval." ;
+  rdfs:domain :ResolutionInterval ;
+  rdfs:range :TemporalReferent .
 
-:isReferentInPeriod a owl:ObjectProperty ;
-    rdfs:domain :TimeSpecificReferent ;
-    rdfs:range :ResolutionPeriod ;
-    rdfs:label "is referent in period" ;
-    rdfs:comment "Relates a time-specific referent to a resolution period in which it is designated by a persistent identifier." ;
-    owl:inverseOf :resolvesToReferent .
+:isResolvedByInterval a owl:ObjectProperty ;
+  rdfs:label "is resolved by interval" ;
+  rdfs:comment "Relates a temporal referent to a resolution interval during which it is designated by a persistent identifier." ;
+  rdfs:domain :TemporalReferent ;
+  rdfs:range :ResolutionInterval ;
+  owl:inverseOf :resolvesTo .
 
-:hasCurrentAttribute a owl:ObjectProperty ;
-    rdfs:domain :TimeSpecificReferent ;
-    rdfs:range :MarketAttribute ;
-    rdfs:label "has current attribute" ;
-    rdfs:comment "Relates the current time-specific referent to a market attribute bound to it." .
+:exposesAttribute a owl:ObjectProperty ;
+  rdfs:label "exposes attribute" ;
+  rdfs:comment "Relates a persistent identifier to a market attribute exposed through the invariant identifier." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :MarketAttribute .
 
-:isAttributeOf a owl:ObjectProperty ;
-    rdfs:domain :MarketAttribute ;
-    rdfs:range :TimeSpecificReferent ;
-    rdfs:label "is attribute of" ;
-    rdfs:comment "Relates a market attribute to the time-specific referent to which it is bound." ;
-    owl:inverseOf :hasCurrentAttribute .
+:attributeOfReferent a owl:ObjectProperty ;
+  rdfs:label "attribute of referent" ;
+  rdfs:comment "Relates a market attribute to the temporal referent to which the attribute is bound." ;
+  rdfs:domain :MarketAttribute ;
+  rdfs:range :TemporalReferent .
 
-:periodStart a owl:DatatypeProperty ;
-    rdfs:domain :ResolutionPeriod ;
-    rdfs:range xsd:dateTime ;
-    rdfs:label "period start" ;
-    rdfs:
+:intervalStart a owl:DatatypeProperty ;
+  rdfs:label "interval start" ;
+  rdfs:comment "The start of a resolution interval." ;
+  rdfs:domain :ResolutionInterval ;
+  rdfs:range xsd:dateTime .
+
+:intervalEnd a owl:DatatypeProperty ;
+  rdfs:label "interval end" ;
+  rdfs:comment "The end of a resolution interval." ;
+  rdfs:domain :ResolutionInterval ;
+  rdfs:range xsd:dateTime .
+
+:attributeValue a owl:DatatypeProperty

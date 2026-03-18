@@ -1,86 +1,100 @@
-1. **Reasoning for steps 1–6**
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
 
-### Step 1. Atomic requirements
-- R1. The ontology must represent identifiable actors involved in Solid governance, including users, app/service providers, and Pod providers.
-- R2. The ontology must represent roles that actors can play in relation to governance artifacts.
-- R3. The ontology must represent policies as identifiable governance artifacts with a unique identifier.
-- R4. The ontology must represent the creator of a policy.
-- R5. The ontology must represent the issuance time of a policy.
-- R6. The ontology must represent the assignee of a policy.
-- R7. The ontology must represent an application or service used to access data.
-- R8. The ontology must represent an access request or governed access event linked to a policy.
-- R9. The ontology must represent the access mode being requested.
-- R10. The ontology must represent the personal data being accessed.
-- R11. The ontology must represent the purpose for accessing the data.
-- R12. The ontology should stay minimal and reusable, avoiding unnecessary Solid-specific infrastructure details not needed by the CQs.
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
 
-### Step 2. Candidate classes and properties
-- For R1:
-  - Classes: `:Actor`, `:Application`, `:Service`, `:PodProvider`, `:AppProvider`, `:User`
-- For R2:
-  - Class: `:Role`
-  - Property: `:hasRole`
-- For R3:
-  - Class: `:Policy`
-  - Datatype property: `:policyIdentifier`
-- For R4:
-  - Object property: `:creator`
-- For R5:
-  - Datatype property: `:issuedAt`
-- For R6:
-  - Object property: `:assignee`
-- For R7:
-  - Class: `:Application`
-  - Object property: `:usesApplication`
-- For R8:
-  - Class: `:AccessRequest`
-  - Object property: `:governsAccessRequest`
-- For R9:
-  - Class: `:AccessMode`
-  - Object property: `:requestedAccessMode`
-- For R10:
-  - Class: `:PersonalData`
-  - Object property: `:accessesPersonalData`
-- For R11:
-  - Class: `:Purpose`
-  - Object property: `:hasPurpose`
+:Ontology a owl:Ontology ;
+  rdfs:label "Policy Governance Pattern for Solid Apps" ;
+  rdfs:comment "A minimal OWL ontology design pattern for representing governance-relevant policy metadata in Solid apps, including policy identity, creator, assignee, issuance time, requested access mode, accessed personal data, purpose, and the application or service used to access data." .
 
-### Step 3. Draft axioms
-- `:Policy` as a class for governance artifacts.
-- `:AccessRequest` as a class for requests governed by a policy.
-- `:Actor` as a general class for agents.
-- `:Application` as a subclass of `:Actor` or separate class; choose separate class to avoid overcommitting that all applications are actors in the same sense.
-- `:PersonalData`, `:Purpose`, `:AccessMode`, `:Role` as classes.
-- `:policyIdentifier` domain `:Policy`, range `xsd:string`.
-- `:creator` domain `:Policy`, range `:Actor`.
-- `:issuedAt` domain `:Policy`, range `xsd:dateTime`.
-- `:assignee` domain `:Policy`, range `:Actor`.
-- `:governsAccessRequest` domain `:Policy`, range `:AccessRequest`.
-- `:usesApplication` domain `:AccessRequest`, range `:Application`.
-- `:requestedAccessMode` domain `:AccessRequest`, range `:AccessMode`.
-- `:accessesPersonalData` domain `:AccessRequest`, range `:PersonalData`.
-- `:hasPurpose` domain `:AccessRequest`, range `:Purpose`.
-- `:hasRole` domain `:Actor`, range `:Role`.
-- Cardinalities on `:Policy`:
-  - exactly 1 `:policyIdentifier`
-  - exactly 1 `:creator`
-  - exactly 1 `:issuedAt`
-  - exactly 1 `:assignee`
-- Cardinality on `:Policy`:
-  - at least 1 `:governsAccessRequest`
-- Cardinalities on `:AccessRequest`:
-  - exactly 1 `:usesApplication`
-  - exactly 1 `:requestedAccessMode`
-  - at least 1 `:accessesPersonalData`
-  - exactly 1 `:hasPurpose`
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "A governance or privacy-related policy that specifies conditions for accessing personal data." .
 
-### Step 4. CQ coverage check
-- CQ1. “What is the unique identifier of the policy?”  
-  - Covered by `:Policy` and `:policyIdentifier`.
-- CQ2. “Who is the creator of the policy?”  
-  - Covered by `:creator`.
-- CQ3. “When was the policy issued?”  
-  - Covered by `:issuedAt`.
-- CQ4. “Who is the assignee of the policy?”  
-  - Covered by `:assignee`.
-- CQ5. “What application/service is being used to access the data?”
+:Agent a owl:Class ;
+  rdfs:label "Agent" ;
+  rdfs:comment "An entity that can create, receive, or use a policy, such as a person, organization, or software-controlled actor." .
+
+:Application a owl:Class ;
+  rdfs:label "Application" ;
+  rdfs:comment "An application or service used to access data under a policy." .
+
+:AccessMode a owl:Class ;
+  rdfs:label "Access mode" ;
+  rdfs:comment "A mode of access being requested or governed by a policy, such as read, write, or append." .
+
+:PersonalData a owl:Class ;
+  rdfs:label "Personal data" ;
+  rdfs:comment "A category or item of personal data that is accessed under a policy." .
+
+:Purpose a owl:Class ;
+  rdfs:label "Purpose" ;
+  rdfs:comment "The intended purpose for accessing personal data under a policy." .
+
+:hasCreator a owl:ObjectProperty ;
+  rdfs:label "has creator" ;
+  rdfs:comment "Relates a policy to the agent that created or issued it." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Agent .
+
+:hasAssignee a owl:ObjectProperty ;
+  rdfs:label "has assignee" ;
+  rdfs:comment "Relates a policy to the agent to whom the policy is assigned or addressed." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Agent .
+
+:usesApplication a owl:ObjectProperty ;
+  rdfs:label "uses application" ;
+  rdfs:comment "Relates a policy to the application or service used to access data." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Application .
+
+:hasAccessMode a owl:ObjectProperty ;
+  rdfs:label "has access mode" ;
+  rdfs:comment "Relates a policy to the access mode being requested or governed." ;
+  rdfs:domain :Policy ;
+  rdfs:range :AccessMode .
+
+:hasPersonalData a owl:ObjectProperty ;
+  rdfs:label "has personal data" ;
+  rdfs:comment "Relates a policy to the personal data that is being accessed." ;
+  rdfs:domain :Policy ;
+  rdfs:range :PersonalData .
+
+:hasPurpose a owl:ObjectProperty ;
+  rdfs:label "has purpose" ;
+  rdfs:comment "Relates a policy to the purpose for accessing personal data." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Purpose .
+
+:issuedAt a owl:DatatypeProperty ;
+  rdfs:label "issued at" ;
+  rdfs:comment "Relates a policy to the date and time at which it was issued." ;
+  rdfs:domain :Policy ;
+  rdfs:range xsd:dateTime .
+
+:policyIdentifier a owl:DatatypeProperty ;
+  rdfs:label "policy identifier" ;
+  rdfs:comment "Relates a policy to its unique identifier." ;
+  rdfs:domain :Policy ;
+  rdfs:range xsd:string .
+
+:creatorName a owl:AnnotationProperty ;
+  rdfs:label "creator name" ;
+  rdfs:comment "An annotation property for documenting a human-readable creator name when needed in ontology documentation." .
+
+:Policy rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasCreator ;
+    owl:someValuesFrom :Agent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasAssignee ;
+    owl:someValuesFrom :Agent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :usesApplication ;

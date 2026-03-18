@@ -1,61 +1,124 @@
-**Reasoning Steps**
-
-1. **Extract atomic requirements from the scenario**
-	* Bob wants to have access to a certain video stream.
-	* Bob only needs access to minutes 4 to 9.
-	* The access is for the purposes of an academic research project.
-2. **Propose candidate classes and properties for each requirement**
-	* `:VideoStream` (class), `:hasStartTime` (property), `:hasEndTime` (property), `:hasAccessPurpose` (property)
-	* `:AcademicResearchProject` (class), `:hasVideoStream` (property)
-	* `:AccessPeriod` (class), `:hasStartTime` (property), `:hasEndTime` (property)
-3. **Draft axioms for each candidate**
-	* `:VideoStream rdfs:subClassOf owl:Thing.`
-	* `:VideoStream :hasAccessPurpose :AcademicResearchProject.`
-	* `:AccessPeriod rdfs:subClassOf owl:Thing.`
-	* `:AccessPeriod :hasStartTime xsd:dateTime.`
-	* `:AccessPeriod :hasEndTime xsd:dateTime.`
-4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
-	* CQ1: What is the current time? → Not covered
-	* CQ2: What is the location of a party? → Not covered
-	* CQ3: What assets are part of the asset collection of the policy that is being evaluated? → Not covered
-	* CQ4: Which parties are part of the party collection of the policy that is being evaluated? → Not covered
-	* CQ5: What actions were already performed or attempted? → Not covered
-	* CQ6: How many times has a rule been exercised? → Not covered
-	* CQ7: What information is available about an event that has occurred? → Not covered
-	* CQ8: How long has a rule been exercised? → Not covered
-	* CQ9: Which recipients or categories of recipients can receive the result of the rule that has been exercised? → Not covered
-	* CQ10: Has a financial payment been made? What was the amount paid? → Not covered
-5. **Add or refine axioms to cover any uncovered CQs**
-	* Introduce new classes and properties to cover the uncovered CQs:
-		+ `:Time` (class), `:hasCurrentTime` (property)
-		+ `:Location` (class), `:hasLocation` (property)
-		+ `:Asset` (class), `:hasAsset` (property)
-		+ `:Party` (class), `:hasParty` (property)
-		+ `:Action` (class), `:hasAction` (property)
-		+ `:RuleExercise` (class), `:hasExerciseCount` (property)
-		+ `:Event` (class), `:hasEventInfo` (property)
-		+ `:RuleExerciseDuration` (class), `:hasDuration` (property)
-		+ `:Recipient` (class), `:hasRecipient` (property)
-		+ `:FinancialPayment` (class), `:hasAmountPaid` (property)
-	* Refine existing axioms to cover the uncovered CQs:
-		+ `:VideoStream :hasAccessPeriod :AccessPeriod.`
-		+ `:AccessPeriod :hasStartTime :hasCurrentTime.`
-		+ `:AccessPeriod :hasEndTime :hasCurrentTime.`
-		+ `:Policy :hasAssetCollection :AssetCollection.`
-		+ `:Policy :hasPartyCollection :PartyCollection.`
-		+ `:RuleExercise :hasExerciseCount xsd:integer.`
-		+ `:Event :hasEventInfo :EventInfo.`
-		+ `:RuleExercise :hasDuration :RuleExerciseDuration.`
-		+ `:Rule :hasRecipient :Recipient.`
-		+ `:FinancialPayment :hasAmountPaid xsd:decimal.`
-6. **Remove any classes or properties not traceable to a requirement or CQ**
-	* Remove `:hasAccessPurpose` (property) as it is not directly related to any requirement or CQ.
-
-**Turtle Ontology**
-
 ```turtle
-@prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix : <http://example.org/odp#>
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "ODRL Policy Evaluation Ontology" ;
+  rdfs:comment "Knowledge representation for ODRL policy evaluation.".
+
+:Time a owl:Class ;
+  rdfs:label "Time" ;
+  rdfs:comment "Instant in time.".
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "Geographical location.".
+
+:Asset a owl:Class ;
+  rdfs:label "Asset" ;
+  rdfs:comment "Resource subject to a policy.".
+
+:Party a owl:Class ;
+  rdfs:label "Party" ;
+  rdfs:comment "Entity involved in a policy.".
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "Event resulting from a policy.".
+
+:Rule a owl:Class ;
+  rdfs:label "Rule" ;
+  rdfs:comment "Condition or action in a policy.".
+
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "Occurrence of an action.".
+
+:Recipient a owl:Class ;
+  rdfs:label "Recipient" ;
+  rdfs:comment "Entity receiving the result of a rule.".
+
+:FinancialPayment a owl:Class ;
+  rdfs:label "Financial Payment" ;
+  rdfs:comment "Transfer of funds.".
+
+:TimeInstant a owl:DatatypeProperty ;
+  rdfs:label "Time Instant" ;
+  rdfs:comment "Instant in time." ;
+  rdfs:domain :Time ;
+  rdfs:range xsd:dateTime.
+
+:LocationName a owl:DatatypeProperty ;
+  rdfs:label "Location Name" ;
+  rdfs:comment "Name of a location." ;
+  rdfs:domain :Location ;
+  rdfs:range xsd:string.
+
+:AssetName a owl:DatatypeProperty ;
+  rdfs:label "Asset Name" ;
+  rdfs:comment "Name of an asset." ;
+  rdfs:domain :Asset ;
+  rdfs:range xsd:string.
+
+:PartyName a owl:DatatypeProperty ;
+  rdfs:label "Party Name" ;
+  rdfs:comment "Name of a party." ;
+  rdfs:domain :Party ;
+  rdfs:range xsd:string.
+
+:ActionName a owl:DatatypeProperty ;
+  rdfs:label "Action Name" ;
+  rdfs:comment "Name of an action." ;
+  rdfs:domain :Action ;
+  rdfs:range xsd:string.
+
+:RuleName a owl:DatatypeProperty ;
+  rdfs:label "Rule Name" ;
+  rdfs:comment "Name of a rule." ;
+  rdfs:domain :Rule ;
+  rdfs:range xsd:string.
+
+:EventTime a owl:DatatypeProperty ;
+  rdfs:label "Event Time" ;
+  rdfs:comment "Time of an event." ;
+  rdfs:domain :Event ;
+  rdfs:range xsd:dateTime.
+
+:RecipientName a owl:DatatypeProperty ;
+  rdfs:label "Recipient Name" ;
+  rdfs:comment "Name of a recipient." ;
+  rdfs:domain :Recipient ;
+  rdfs:range xsd:string.
+
+:FinancialAmount a owl:DatatypeProperty ;
+  rdfs:label "Financial Amount" ;
+  rdfs:comment "Amount of a financial payment." ;
+  rdfs:domain :FinancialPayment ;
+  rdfs:range xsd:decimal.
+
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "Set of rules governing assets.".
+
+:PolicyAsset a owl:ObjectProperty ;
+  rdfs:label "Policy Asset" ;
+  rdfs:comment "Asset subject to a policy." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Asset.
+
+:PolicyParty a owl:ObjectProperty ;
+  rdfs:label "Policy Party" ;
+  rdfs:comment "Party involved in a policy." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Party.
+
+:PolicyRule a owl:ObjectProperty ;
+  rdfs:label "Policy Rule" ;
+  rdfs:comment "Rule in a policy." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Rule.
+
+:PolicyEvent a owl

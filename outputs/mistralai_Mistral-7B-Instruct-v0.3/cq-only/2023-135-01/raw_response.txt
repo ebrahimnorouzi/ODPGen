@@ -1,9 +1,9 @@
-**1. Turtle Ontology**
+1. Here is the Turtle ontology:
 
 ```turtle
 :Ontology a owl:Ontology ;
-  rdfs:label "Competency Questions Ontology" ;
-  rdfs:comment "An ontology designed to answer specific competency questions.".
+  rdfs:label "ODP for Competency Questions" ;
+  rdfs:comment "Ontology designed to answer the given competency questions.".
 
 :Author a owl:Class ;
   rdfs:label "Author" ;
@@ -11,46 +11,67 @@
 
 :Book a owl:Class ;
   rdfs:label "Book" ;
-  rdfs:comment "A written work consisting of pages bound together.".
+  rdfs:comment "A written work intended for publication.".
 
-:Pseudonym rdf:Property ;
-  rdfs:domain :Author ;
-  rdfs:range xsd:string ;
+:Pseudonym a owl:Class ;
   rdfs:label "Pseudonym" ;
-  rdfs:comment "The name under which an author publishes their work.".
+  rdfs:comment "A name assumed by a person for a disguise or concealment.".
 
-:Collection a owl:Class ;
-  rdfs:subClassOf [ rdf:type owl:Restriction ;
-                     owl:onProperty :contains ;
-                     owl:hasValue :poems ] ;
-  rdfs:label "Collection of poems" ;
-  rdfs:comment "A book that is a collection of poems.".
+:PublishedBy a owl:ObjectProperty ;
+  rdfs:domain :Author ;
+  rdfs:range :Book ;
+  rdfs:label "Published By" ;
+  rdfs:comment "The author who published a book.".
 
-:Contains rdf:Property ;
+:HasPseudonym a owl:ObjectProperty ;
+  rdfs:domain :Author ;
+  rdfs:range :Pseudonym ;
+  rdfs:label "Has Pseudonym" ;
+  rdfs:comment "The pseudonym used by an author.".
+
+:Title a owl:DatatypeProperty ;
   rdfs:domain :Book ;
-  rdfs:range :Poem ;
-  rdfs:label "Contains" ;
-  rdfs:comment "A book contains one or more poems.".
+  rdfs:range xsd:string ;
+  rdfs:label "Title" ;
+  rdfs:comment "The title of a book.".
 
-:Poem a owl:Class ;
-  rdfs:label "Poem" ;
-  rdfs:comment "A literary work in verse.".
+:Genre a owl:Class ;
+  rdfs:label "Genre" ;
+  rdfs:comment "A category of artistic composition, as in music or literature.".
+
+:Poetry a :Genre ;
+  rdfs:label "Poetry" ;
+  rdfs:comment "A form of literature that uses aesthetic and rhythmic qualities of language to evoke meanings in addition to, or in place of, the prosaic ostensible meaning.".
 
 :NationalPark a owl:Class ;
   rdfs:label "National Park" ;
-  rdfs:comment "A park in a country that is protected by the government.".
+  rdfs:comment "A park in use for the conservation of natural and especially scenic areas.".
 
-:Crosses rdf:Property ;
+:Crosses a owl:ObjectProperty ;
   rdfs:domain :River ;
   rdfs:range :NationalPark ;
   rdfs:label "Crosses" ;
-  rdfs:comment "A river that flows through a national park.".
+  rdfs:comment "A river that crosses a national park.".
 
 :River a owl:Class ;
   rdfs:label "River" ;
   rdfs:comment "A large, flowing body of water that empties into a sea or ocean.".
+
+:Border a owl:Class ;
+  rdfs:label "Border" ;
+  rdfs:comment "A line or boundary separating two political territories.".
+
+:CrossesBorder a owl:ObjectProperty ;
+  rdfs:domain :River ;
+  rdfs:range :Border ;
+  rdfs:label "Crosses Border" ;
+  rdfs:comment "A river that crosses a border.".
 ```
 
-**2. CQ-to-axiom mapping table**
+2. CQ-to-axiom mapping table:
 
-| CQ
+| CQ | Classes | Properties |
+| --- | --- | --- |
+| Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage? | :Author, :Pseudonym | :HasPseudonym |
+| What alternative did C. S. Lewis use to assume the role of a book writer? | :Author | - |
+| Show the trajectories of rivers which cross national parks? | :River, :NationalPark | :Crosses, :CrossesBorder |

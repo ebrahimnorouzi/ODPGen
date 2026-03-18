@@ -6,86 +6,99 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "Author names and publication names ODP" ;
-    rdfs:comment "An ontology design pattern for representing an author who may have different names over time, including name changes such as after marriage, and the names adopted to publish books." .
+  rdfs:label "Author names and publication names ODP" ;
+  rdfs:comment "An ontology design pattern for modeling an author who adopts different names for publishing books, including name changes such as those occurring after marriage." .
 
 :Author a owl:Class ;
-    rdfs:label "Author" ;
-    rdfs:comment "A person who authors books and may use different names." .
+  rdfs:label "Author" ;
+  rdfs:comment "A person who authors books and may use different names over time or for publication." .
 
 :Book a owl:Class ;
-    rdfs:label "Book" ;
-    rdfs:comment "A book published by an author under a particular name." .
+  rdfs:label "Book" ;
+  rdfs:comment "A book that is authored and published under a particular author name." .
 
 :Name a owl:Class ;
-    rdfs:label "Name" ;
-    rdfs:comment "A name used by an author, including legal or publication names." .
+  rdfs:label "Name" ;
+  rdfs:comment "A name used by an author, including legal names, changed names, or publication names." .
 
 :PublicationName a owl:Class ;
-    rdfs:label "Publication name" ;
-    rdfs:comment "A name adopted by an author for publishing books." ;
-    rdfs:subClassOf :Name .
+  rdfs:label "Publication name" ;
+  rdfs:comment "A name adopted by an author for publishing books." ;
+  rdfs:subClassOf :Name .
 
-:ChangedName a owl:Class ;
-    rdfs:label "Changed name" ;
-    rdfs:comment "A name resulting from a name change, for example after marriage." ;
-    rdfs:subClassOf :Name .
+:NameChange a owl:Class ;
+  rdfs:label "Name change" ;
+  rdfs:comment "A change from one name to another for an author, for example after marriage." .
+
+:Author owl:disjointWith :Book, :Name, :NameChange .
+:Book owl:disjointWith :Name, :NameChange .
+:Name owl:disjointWith :NameChange .
 
 :hasName a owl:ObjectProperty ;
-    rdfs:label "has name" ;
-    rdfs:comment "Relates an author to a name used by that author." ;
-    rdfs:domain :Author ;
-    rdfs:range :Name .
+  rdfs:label "has name" ;
+  rdfs:comment "Relates an author to a name used by that author." ;
+  rdfs:domain :Author ;
+  rdfs:range :Name .
 
-:publishesUnderName a owl:ObjectProperty ;
-    rdfs:label "publishes under name" ;
-    rdfs:comment "Relates an author to a publication name adopted for publishing books." ;
-    rdfs:domain :Author ;
-    rdfs:range :PublicationName ;
-    rdfs:subPropertyOf :hasName .
+:usesPublicationName a owl:ObjectProperty ;
+  rdfs:label "uses publication name" ;
+  rdfs:comment "Relates an author to a name adopted for publishing books." ;
+  rdfs:domain :Author ;
+  rdfs:range :PublicationName ;
+  rdfs:subPropertyOf :hasName .
 
-:hasChangedName a owl:ObjectProperty ;
-    rdfs:label "has changed name" ;
-    rdfs:comment "Relates an author to a name acquired through a name change, for example after marriage." ;
-    rdfs:domain :Author ;
-    rdfs:range :ChangedName ;
-    rdfs:subPropertyOf :hasName .
+:authorsBook a owl:ObjectProperty ;
+  rdfs:label "authors book" ;
+  rdfs:comment "Relates an author to a book authored by that author." ;
+  rdfs:domain :Author ;
+  rdfs:range :Book .
 
-:authoredBook a owl:ObjectProperty ;
-    rdfs:label "authored book" ;
-    rdfs:comment "Relates an author to a book authored by that author." ;
-    rdfs:domain :Author ;
-    rdfs:range :Book .
+:isPublishedUnderName a owl:ObjectProperty ;
+  rdfs:label "is published under name" ;
+  rdfs:comment "Relates a book to the publication name under which it is published." ;
+  rdfs:domain :Book ;
+  rdfs:range :PublicationName .
 
-:publishedUnderName a owl:ObjectProperty ;
-    rdfs:label "published under name" ;
-    rdfs:comment "Relates a book to the name under which it was published." ;
-    rdfs:domain :Book ;
-    rdfs:range :PublicationName .
+:hasNameChange a owl:ObjectProperty ;
+  rdfs:label "has name change" ;
+  rdfs:comment "Relates an author to a name change associated with that author." ;
+  rdfs:domain :Author ;
+  rdfs:range :NameChange .
 
-:hasNameLiteral a owl:DatatypeProperty ;
-    rdfs:label "has name literal" ;
-    rdfs:comment "Associates a name instance with its textual form." ;
-    rdfs:domain :Name ;
-    rdfs:range xsd:string .
+:fromName a owl:ObjectProperty ;
+  rdfs:label "from name" ;
+  rdfs:comment "Relates a name change to the earlier name." ;
+  rdfs:domain :NameChange ;
+  rdfs:range :Name .
 
-:Author owl:disjointWith :Book, :Name .
-:Book owl:disjointWith :Name .
+:toName a owl:ObjectProperty ;
+  rdfs:label "to name" ;
+  rdfs:comment "Relates a name change to the later name." ;
+  rdfs:domain :NameChange ;
+  rdfs:range :Name .
+
+:nameLiteral a owl:DatatypeProperty ;
+  rdfs:label "name literal" ;
+  rdfs:comment "The textual form of a name." ;
+  rdfs:domain :Name ;
+  rdfs:range xsd:string .
 ```
 
+## Documentation
+
 **Intent:**  
-Model an author who may use multiple names, including changed names and publication names, and relate books to the name under which they were published.
+Model an author who may use different names for publishing books and may undergo name changes, such as after marriage.
 
 **Covered requirements:**
 - An author can have different names.
-- An author can adopt different names to publish books.
-- Name changes are represented.
-- Example motivation such as name change after marriage is supported.
-- Books can be linked to the publication name used.
+- Some names are specifically used as publication names.
+- A book is authored by an author.
+- A book can be published under a particular publication name.
+- Name changes can be represented.
+- A name change can capture an earlier name and a later name.
+- Name changes may be associated with an author.
 
 **Known assumptions and exclusions:**
-- The pattern treats all names as instances of `:Name` rather than plain strings, with an optional string value via `:hasNameLiteral`.
-- “After marriage” is captured only as an example in comments; no explicit event or cause model is introduced.
-- No temporal validity of names is modeled.
-- No distinction is made between legal names, pen names, pseudonyms, or birth names beyond the classes explicitly required by the scenario.
-- The pattern does not model publishers, publication events, or detailed authorship attribution beyond author-book and book-name relations.
+- The pattern treats an author as a person implicitly, without introducing a separate `Person` class, to stay within scope.
+- No temporal information is modeled for when a name was used or when a name change occurred.
+- No specific reason for a name change is modeled; marriage is

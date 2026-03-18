@@ -1,88 +1,85 @@
-Reasoning steps:
+Turtle Ontology:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Extract atomic requirements from the scenario:
-* Bob needs access to a video stream for academic research purposes.
-* The video stream is divided into minutes 4 to 9.
-* Bob only needs access to minutes 4 to 9.
-* The policy being evaluated grants or denies access to the video stream based on certain conditions.
-* The policy being evaluated has an asset collection and a party collection.
-* The policy being evaluated has rules that can be exercised.
-* The policy being evaluated has a financial payment associated with it.
-2. Propose candidate classes and properties for each requirement:
-* Classes:
-	+ VideoStream
-	+ Minute
-	+ AcademicResearchProject
-	+ Policy
-	+ AssetCollection
-	+ PartyCollection
-	+ Rule
-	+ FinancialPayment
-* Properties:
-	+ hasMinutes
-	+ hasAccess
-	+ isPartOf
-	+ isGrantedAccess
-	+ hasBeenExercised
-	+ hasAvailableInformation
-	+ hasBeenPaid
-3. Draft axioms for each candidate class and property:
-* Classes:
-	+ VideoStream:
-		- rdfs:label "VideoStream"
-		- rdfs:comment "A video stream with a set of minutes."
-	+ Minute:
-		- rdfs:label "Minute"
-		- rdfs:comment "A minute of a video stream."
-	+ AcademicResearchProject:
-		- rdfs:label "AcademicResearchProject"
-		- rdfs:comment "A research project that requires access to a video stream."
-	+ Policy:
-		- rdfs:label "Policy"
-		- rdfs:comment "A policy that grants or denies access to a video stream based on certain conditions."
-	+ AssetCollection:
-		- rdfs:label "AssetCollection"
-		- rdfs:comment "A collection of assets that are part of a policy."
-	+ PartyCollection:
-		- rdfs:label "PartyCollection"
-		- rdfs:comment "A collection of parties that are part of a policy."
-	+ Rule:
-		- rdfs:label "Rule"
-		- rdfs:comment "A rule that grants or denies access to a video stream based on certain conditions."
-	+ FinancialPayment:
-		- rdfs:label "FinancialPayment"
-		- rdfs:comment "A financial payment associated with a policy."
-* Properties:
-	+ hasMinutes:
-		- rdfs:label "hasMinutes"
-		- rdfs:comment "A video stream has a set of minutes."
-	+ hasAccess:
-		- rdfs:label "hasAccess"
-		- rdfs:comment "A party has access to a video stream."
-	+ isPartOf:
-		- rdfs:label "isPartOf"
-		- rdfs:comment "A minute is part of a video stream."
-	+ isGrantedAccess:
-		- rdfs:label "isGrantedAccess"
-		- rdfs:comment "A party is granted access to a video stream."
-	+ hasBeenExercised:
-		- rdfs:label "hasBeenExercised"
-		- rdfs:comment "A rule has been exercised."
-	+ hasAvailableInformation:
-		- rdfs:label "hasAvailableInformation"
-		- rdfs:comment "A policy has available information about an event."
-	+ hasBeenPaid:
-		- rdfs:label "hasBeenPaid"
-		- rdfs:comment "A financial payment has been made."
-4. For each CQ, check which axioms enable answering it; note any CQs not yet covered.
-* CQ1: What is the current time?
-	+ Not covered.
-* CQ2: What is the location of a party?
-	+ Not covered.
-* CQ3: What assets are part of the asset collection of the policy that is being evaluated?
-	+ Covered by axiom 1 (hasMinutes).
-* CQ4: Which parties are part of the party collection of the policy that is being evaluated?
-	+ Covered by axiom 2 (isPartOf).
-* CQ5: What actions were already performed or attempted?
-	+ Not covered.
-* CQ6: How many times has
+:Ontology a owl:Ontology ;
+rdfs:label "ODRL Policy Evaluation Ontology" ;
+rdfs:comment "An ontology for representing information relevant to the evaluation of ODRL policies.".
+
+:Policy a owl:Class ;
+rdfs:label "Policy" ;
+rdfs:comment "A policy that can be evaluated.".
+
+:Asset a owl:Class ;
+rdfs:label "Asset" ;
+rdfs:comment "An asset that is part of a policy's asset collection.".
+
+:Party a owl:Class ;
+rdfs:label "Party" ;
+rdfs:comment "A party that is part of a policy's party collection.".
+
+:Action a owl:Class ;
+rdfs:label "Action" ;
+rdfs:comment "An action that has been performed or attempted.".
+
+:Event a owl:Class ;
+rdfs:label "Event" ;
+rdfs:comment "An event that has occurred.".
+
+:Rule a owl:Class ;
+rdfs:label "Rule" ;
+rdfs:comment "A rule that has been exercised.".
+
+:Recipient a owl:Class ;
+rdfs:label "Recipient" ;
+rdfs:comment "A recipient or category of recipients that can receive the result of a rule.".
+
+:Payment a owl:Class ;
+rdfs:label "Payment" ;
+rdfs:comment "A financial payment that has been made.".
+
+:Policy p:hasAsset :Asset.
+:Policy p:hasParty :Party.
+:Policy p:hasAction :Action.
+:Action p:hasEvent :Event.
+:Event p:hasRule :Rule.
+:Rule p:hasRecipient :Recipient.
+:Rule p:hasPayment :Payment.
+
+:Asset p:hasLocation :Location.
+:Party p:hasName :xsd:string.
+:Action p:hasTime :xsd:dateTime.
+:Event p:hasInformation :xsd:string.
+:Rule p:hasExerciseTime :xsd:dateTime.
+:Recipient p:hasCategory :xsd:string.
+:Payment p:hasAmount :xsd:decimal.
+```
+Reasoning Summary:
+
+* Extracted atomic requirements:
+	+ What is the current time?
+	+ What is the location of a party?
+	+ What assets are part of the asset collection of the policy that is being evaluated?
+	+ Which parties are part of the party collection of the policy that is being evaluated?
+	+ What actions were already performed or attempted?
+	+ How many times has a rule been exercised?
+	+ What information is available about an event that has occurred?
+	+ How long has a rule been exercised?
+	+ Which recipients or categories of recipients can receive the result of the rule that has been exercised?
+	+ Has a financial payment been made? What was the amount paid?
+* Proposed candidate classes and properties:
+	+ :Policy, :Asset, :Party, :Action, :Event, :Rule, :Recipient, :Payment
+	+ p:hasAsset, p:hasParty, p:hasAction, p:hasEvent, p:hasRule, p:hasRecipient, p:hasPayment
+* Draft axioms:
+	+ Class assertions:
+		- :Policy a owl:Class.
+		- :Asset a owl:Class.
+		- :Party a owl:Class.
+		- :Action a owl:Class.
+		- :Event a owl:Class.
+		- :Rule a owl:Class.
+		- :Recipient a owl:Class.

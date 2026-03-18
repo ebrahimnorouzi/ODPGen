@@ -1,6 +1,10 @@
-1. Turtle ontology:
-
 ```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
     rdfs:label "kHealth-Asthma Ontology" ;
     rdfs:comment "An ontology for the kHealth-Asthma project, modeling asthma patients, symptoms, medications, and environmental factors.".
@@ -25,59 +29,40 @@
     rdfs:label "Allergen" ;
     rdfs:comment "An outdoor environmental factor that triggers asthma symptoms.".
 
-:Pollen rdf:type :Allergen ;
+:Pollen a :Allergen ;
     rdfs:label "Pollen" ;
     rdfs:comment "Outdoor environmental allergen, such as pollen.".
 
-:AQI rdf:type :Allergen ;
+:AQI a :Allergen ;
     rdfs:label "Air Quality Index" ;
     rdfs:comment "Outdoor environmental allergen, such as air quality index.".
 
-:hasSymptom a owl:ObjectProperty ;
-    rdfs:domain :Patient ;
-    rdfs:range :Symptom ;
-    rdfs:label "Has Symptom" ;
-    rdfs:comment "Relates a patient to a symptom they are experiencing.".
+:CausalRelation a owl:ObjectProperty ;
+    rdfs:domain [ a :Patient ; owl:oneOf ( :Patient :Allergen ) ] ;
+    rdfs:range :CausalEffect ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "Represents the causal relation between a patient and an allergen.".
 
-:takesMedication a owl:ObjectProperty ;
-    rdfs:domain :Patient ;
-    rdfs:range :Medication ;
-    rdfs:label "Takes Medication" ;
-    rdfs:comment "Relates a patient to the medication they are taking.".
+:CausalEffect a owl:Class ;
+    rdfs:label "Causal Effect" ;
+    rdfs:comment "Represents the effect of an allergen on a patient.".
 
-:isInEnvironment a owl:ObjectProperty ;
-    rdfs:domain :Patient ;
-    rdfs:range :Environment ;
-    rdfs:label "Is in Environment" ;
-    rdfs:comment "Relates a patient to the environment they are in.".
+:EffectOnSymptom a owl:ObjectProperty ;
+    rdfs:domain [ a :CausalEffect ; owl:oneOf ( :Symptom :Medication ) ] ;
+    rdfs:range xsd:float ;
+    rdfs:label "Effect on Symptom" ;
+    rdfs:comment "Represents the effect of a causal effect on a symptom or medication.".
 
-:hasAllergen a owl:ObjectProperty ;
-    rdfs:domain :Environment ;
-    rdfs:range :Allergen ;
-    rdfs:label "Has Allergen" ;
-    rdfs:comment "Relates an environment to an allergen present in it.".
+:EffectOnMedication a owl:ObjectProperty ;
+    rdfs:domain [ a :CausalEffect ; owl:oneOf ( :Symptom :Medication ) ] ;
+    rdfs:range xsd:float ;
+    rdfs:label "Effect on Medication" ;
+    rdfs:comment "Represents the effect of a causal effect on medication intake.".
 
-:causesSymptom a owl:ObjectProperty ;
-    rdfs:domain :Allergen ;
-    rdfs:range :Symptom ;
-    rdfs:label "Causes Symptom" ;
-    rdfs:comment "Relates an allergen to a symptom it causes.".
+Scenario-requirement-to-axiom mapping:
+1. The presence of outdoor environmental allergen such as pollen or AQI causes the patient to experience symptoms and/or medication intake: :CausalRelation, :EffectOnSymptom, :EffectOnMedication
+2. The ontology structurally supports the scenario by defining classes and properties for patients, symptoms, medications, environments, allergens, causal relations, causal effects, and effects on symptoms and medications.
 
-:causesMedication a owl:ObjectProperty ;
-    rdfs:domain :Symptom ;
-    rdfs:range :Medication ;
-    rdfs:label "Causes Medication" ;
-    rdfs:comment "Relates a symptom to a medication it causes the patient to take.".
-
-:effectWeight a xsd:decimal ;
-    rdfs:label "Effect Weight" ;
-    rdfs:comment "The weight of the effect of an allergen on a symptom or medication.".
-```
-
-2. Scenario-requirement-to-axiom mapping:
-- `:Patient`, `:Symptom`, `:Medication`, `:Environment`, `:Allergen`, `:hasSymptom`, `:takesMedication`, `:isInEnvironment`, `:hasAllergen`, `:causesSymptom`, `:causesMedication`, `:effectWeight`
-
-3. CQ-to-axiom mapping:
-- CQ1: `:hasAllergen`, `:causesMedication`
-- CQ2: `:causesMedication`, `:effectWeight`
-- CQ3: `:hasAller
+CQ-to-axiom mapping:
+1. Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI? :CausalRelation, :EffectOnMedication
+2. How much does the presence of an asthma sympt

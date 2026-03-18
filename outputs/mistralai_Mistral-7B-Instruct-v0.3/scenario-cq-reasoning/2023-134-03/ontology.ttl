@@ -1,47 +1,87 @@
-**Reasoning Steps**
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Atomic requirements:
-   - Unknown identity of Solid actors and their roles (C1)
-   - Lack of metadata about Solid infrastructure (C2)
-   - Need for data category discovery (C3)
-   - Lack of data handling practices information (C4)
-   - Absence of user privacy policy expression (C5)
-   - Lack of logging or record-keeping (C6)
-   - Absence of legal compliance checks (C7)
+:Ontology a owl:Ontology ;
+  rdfs:label "Solid Governance Ontology" ;
+  rdfs:comment "An ontology for governing Solid apps.".
 
-2. Candidate classes and properties:
-   - `:Actor` (subclass of `owl:Thing`)
-   - `:Role` (subclass of `owl:Thing`)
-   - `:Pod` (subclass of `owl:Thing`)
-   - `:SolidInfrastructure` (subclass of `owl:Thing`)
-   - `:DataCategory` (subclass of `owl:Thing`)
-   - `:Data` (subclass of `owl:Thing`)
-   - `:DataHandlingPractice` (subclass of `owl:Thing`)
-   - `:PrivacyPolicy` (subclass of `owl:Thing`)
-   - `:DataRequest` (subclass of `owl:Thing`)
-   - `:ConsentRecord` (subclass of `owl:Thing`)
-   - `:Provenance` (subclass of `owl:Thing`)
-   - `:Registry` (subclass of `owl:Thing`)
-   - `:RegistryEntry` (subclass of `owl:Thing`)
-   - `:maintains` (property linking `:Actor` to `:Registry`)
-   - `:created` (property linking `:Registry` to `xsd:dateTime`)
-   - `:updated` (property linking `:Registry` to `xsd:dateTime`)
-   - `:provides` (property linking `:Pod` to `:Data`)
-   - `:hasCategory` (property linking `:Data` to `:DataCategory`)
-   - `:hasHandlingPractice` (property linking `:Data` to `:DataHandlingPractice`)
-   - `:hasPrivacyPolicy` (property linking `:Data` to `:PrivacyPolicy`)
-   - `:hasDataRequest` (property linking `:Data` to `:DataRequest`)
-   - `:hasConsentRecord` (property linking `:Data` to `:ConsentRecord`)
-   - `:hasProvenance` (property linking `:Data` to `:Provenance`)
+# Classes
+:Actor a owl:Class ;
+  rdfs:label "Actor" ;
+  rdfs:comment "A Solid actor, such as a user or a service.".
 
-3. Draft axioms:
-   - `:Actor rdf:type owl:Class ; rdfs:label "Actor" ; rdfs:comment "Represents a Solid actor.".`
-   - `:Role rdf:type owl:Class ; rdfs:label "Role" ; rdfs:comment "Represents a role of an actor.".`
-   - `:Pod rdf:type owl:Class ; rdfs:label "Pod" ; rdfs:comment "Represents a Solid Pod.".`
-   - `:SolidInfrastructure rdf:type owl:Class ; rdfs:label "Solid Infrastructure" ; rdfs:comment "Represents Solid infrastructure.".`
-   - `:DataCategory rdf:type owl:Class ; rdfs:label "Data Category" ; rdfs:comment "Represents a category of data.".`
-   - `:Data rdf:type owl:Class ; rdfs:label "Data" ; rdfs:comment "Represents a piece of data.".`
-   - `:DataHandlingPractice rdf:type owl:Class ; rdfs:label "Data Handling Practice" ; rdfs:comment "Represents a data handling practice.".`
-   - `:PrivacyPolicy rdf:type owl:Class ; rdfs:label "Privacy Policy" ; rdfs:comment "Represents a privacy policy.".`
-   - `:DataRequest rdf:type owl:Class ; rdfs:label "Data Request" ; rdfs:comment "Represents a data request.".`
-   - `:ConsentRecord rdf:type owl:Class ; rdfs:label "Consent Record" ; rd
+:Role a owl:Class ;
+  rdfs:label "Role" ;
+  rdfs:comment "A role played by an actor in the Solid ecosystem.".
+
+:Pod a owl:Class ;
+  rdfs:label "Pod" ;
+  rdfs:comment "A Solid Pod containing user data.".
+
+:App a owl:Class ;
+  rdfs:label "App" ;
+  rdfs:comment "A Solid app.".
+
+:DataCategory a owl:Class ;
+  rdfs:label "Data Category" ;
+  rdfs:comment "A category of data stored in a Pod.".
+
+:DataHandlingPolicy a owl:Class ;
+  rdfs:label "Data Handling Policy" ;
+  rdfs:comment "A policy governing the handling of data in a Pod or app.".
+
+:PrivacyPolicy a owl:Class ;
+  rdfs:label "Privacy Policy" ;
+  rdfs:comment "A policy expressing a user's privacy preferences.".
+
+# Object Properties
+:maintains rdf:Property ;
+  rdfs:domain :Actor ;
+  rdfs:range :Registry ;
+  rdfs:label "Maintains" ;
+  rdfs:comment "The actor responsible for maintaining the registry.".
+
+:created rdf:Property ;
+  rdfs:domain :Registry ;
+  rdfs:range xsd:dateTime ;
+  rdfs:label "Created" ;
+  rdfs:comment "The creation date of the registry.".
+
+:updated rdf:Property ;
+  rdfs:domain :Registry ;
+  rdfs:range xsd:dateTime ;
+  rdfs:label "Updated" ;
+  rdfs:comment "The last update date of the registry.".
+
+:provides rdf:Property ;
+  rdfs:domain :Pod ;
+  rdfs:range :DataCategory ;
+  rdfs:label "Provides" ;
+  rdfs:comment "The data category provided by the Pod.".
+
+:stores rdf:Property ;
+  rdfs:domain :DataCategory ;
+  rdfs:range :Pod ;
+  rdfs:label "Stores" ;
+  rdfs:comment "The Pod where a specific data category is stored.".
+
+:associatedWith rdf:Property ;
+  rdfs:domain :DataHandlingPolicy ;
+  rdfs:range :Pod ;
+  rdfs:label "Associated With" ;
+  rdfs:comment "The Pod to which a data handling policy is associated.".
+
+:associatedWith rdf:Property ;
+  rdfs:domain :DataHandlingPolicy ;
+  rdfs:range :App ;
+  rdfs:label "Associated With" ;
+  rdfs:comment "The app to which a data handling policy is associated.".
+
+:hasPrivacyPolicy rdf:Property ;
+  rdfs:domain :Actor ;
+  rdfs:range :PrivacyPolicy ;
+  rdfs:label "Has Privacy Policy" ;
+  rdfs:comment "The privacy policy of an actor.".

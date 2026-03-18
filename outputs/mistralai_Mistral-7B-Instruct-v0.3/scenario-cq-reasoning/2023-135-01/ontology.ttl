@@ -1,32 +1,71 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
-    rdfs:label "Pseudonym Ontology" ;
-    rdfs:comment "An ontology for authors adopting different names to publish books.".
+  rdfs:label "Author Name Changes Ontology" ;
+  rdfs:comment "An ontology to model authors adopting different names to publish books.".
 
-:Author rdfs:subClassOf owl:Thing.
-:Pseudonym rdfs:subClassOf owl:NamedIndividual ;
-    rdfs:label "Pseudonym" ;
-    rdfs:comment "A name adopted by an author to publish books.".
-:RealName rdfs:subClassOf owl:NamedIndividual ;
-    rdfs:label "Real Name" ;
-    rdfs:comment "The real name of an author.".
-:Book rdfs:subClassOf owl:Thing ;
-    rdfs:label "Book" ;
-    rdfs:comment "A published work.".
+# Atomic Requirements
+:Author a owl:Class ;
+  rdfs:label "Author" ;
+  rdfs:comment "A person who writes books.".
 
-:PublishedBy rdf:type owl:ObjectProperty ;
-    rdfs:domain :Book ;
-    rdfs:range :Pseudonym ;
-    rdfs:label "Published By" ;
-    rdfs:comment "The pseudonym under which a book was published.".
+:Pseudonym a owl:Class ;
+  rdfs:label "Pseudonym" ;
+  rdfs:comment "An alternative name used by an author.".
 
-:HasAuthor rdf:type owl:ObjectProperty ;
-    rdfs:domain :Book ;
-    rdfs:range :Author ;
-    rdfs:label "Has Author" ;
-    rdfs:comment "The author(s) of a book.".
+:Book a owl:Class ;
+  rdfs:label "Book" ;
+  rdfs:comment "A written work published by an author.".
 
-:IsPseudonymOf rdf:type owl:ObjectProperty ;
-    rdfs:domain :RealName ;
-    rdfs:range :Pseudonym ;
-    rdfs:label "Is Pseudonym Of" ;
-    rdfs:comment "The pseudonym associated with a real name.".
+:PublishedBy a owl:ObjectProperty ;
+  rdfs:domain :Author ;
+  rdfs:range :Book ;
+  rdfs:label "Published By" ;
+  rdfs:comment "Relates an author to the books they have published.".
+
+:UsedPseudonym a owl:ObjectProperty ;
+  rdfs:domain :Author ;
+  rdfs:range :Pseudonym ;
+  rdfs:label "Used Pseudonym" ;
+  rdfs:comment "Relates an author to the pseudonyms they have used.".
+
+# Axioms
+:Author rdfs:subClassOf [ a owl:Restriction ;
+                             owl:onProperty :hasName ;
+                             owl:hasValue "_" ;
+                             owl:cardinality "1" ].
+
+:Pseudonym rdfs:subClassOf [ a owl:Restriction ;
+                               owl:onProperty :hasName ;
+                               owl:hasValue "_" ;
+                               owl:cardinality "1" ].
+
+:Book rdfs:subClassOf [ a owl:Restriction ;
+                           owl:onProperty :hasTitle ;
+                           owl:hasValue "_" ;
+                           owl:cardinality "1" ].
+
+:Author owl:disjointWith :Pseudonym.
+
+# Competency Questions
+[ a owl:Class ;
+  rdfs:label "Collection of poems" ;
+  rdfs:comment "A type of book." ;
+  owl:equivalentClass [ a owl:Restriction ;
+                           owl:onProperty :hasTitle ;
+                           owl:hasValue "Spirit in Bondage" ] ].
+
+:CQL1 a owl:Class ;
+  rdfs:label "Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?" ;
+  rdfs:comment "A competency question asking for the pseudonym used by C. S. Lewis to publish a specific book." ;
+  owl:equivalentClass [ a owl:Restriction ;
+                           owl:onProperty :UsedPseudonym ;
+                           owl:hasValue [ a :Pseudonym ;
+                                            :hasName "C. S. Lewis" ] ;
+                           owl:onProperty :PublishedBy ;
+                           owl:hasValue [ a :Book ;
+                                            :hasTitle "Spirit in Bondage" ] ].

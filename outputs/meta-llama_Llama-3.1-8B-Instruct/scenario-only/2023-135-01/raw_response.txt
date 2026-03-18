@@ -21,61 +21,51 @@
   rdfs:label "Name Change" ;
   rdfs:comment "An event where an author changes their name.".
 
-:AuthorName a owl:Class ;
+:AuthorName a owl:ObjectProperty ;
   rdfs:label "Author Name" ;
-  rdfs:comment "The name adopted by an author at a particular time.".
-
-:usesName a owl:ObjectProperty ;
-  rdfs:label "uses name" ;
-  rdfs:comment "An author uses a particular name." ;
+  rdfs:comment "The name adopted by an author." ;
   domain :Author ;
   range :Name.
 
-:hasNameChange a owl:ObjectProperty ;
-  rdfs:label "has name change" ;
-  rdfs:comment "An author experiences a name change." ;
-  domain :Author ;
-  range :NameChange.
-
-:isNameChangeOf a owl:ObjectProperty ;
-  rdfs:label "is name change of" ;
-  rdfs:comment "A name change is associated with an author." ;
-  domain :NameChange ;
-  range :Author.
-
-:hasName a owl:ObjectProperty ;
-  rdfs:label "has name" ;
-  rdfs:comment "An author has a particular name at a particular time." ;
-  domain :Author ;
-  range :AuthorName.
-
-:hasNameChangeDate a owl:ObjectProperty ;
-  rdfs:label "has name change date" ;
-  rdfs:comment "A name change occurs on a particular date." ;
+:NameChangeDate a owl:DatatypeProperty ;
+  rdfs:label "Name Change Date" ;
+  rdfs:comment "The date when the name change occurred." ;
   domain :NameChange ;
   range xsd:date.
 
-:AuthorName rdfs:subClassOf :Name.
+:PreviousName a owl:ObjectProperty ;
+  rdfs:label "Previous Name" ;
+  rdfs:comment "The name adopted by an author before the name change." ;
+  domain :NameChange ;
+  range :Name ;
+  inverseProperty :NextName.
 
-:NameChange rdfs:subClassOf a owl:Restriction ;
-  owl:onProperty :hasNameChangeDate ;
-  owl:allValuesFrom xsd:date.
+:NextName a owl:ObjectProperty ;
+  rdfs:label "Next Name" ;
+  rdfs:comment "The name adopted by an author after the name change." ;
+  domain :NameChange ;
+  range :Name ;
+  inverseProperty :PreviousName.
 
-:AuthorName rdfs:disjoint :Name.
-
-:AuthorName rdfs:disjoint :NameChange.
+:NameChangeReason a owl:ObjectProperty ;
+  rdfs:label "Name Change Reason" ;
+  rdfs:comment "The reason for the name change." ;
+  domain :NameChange ;
+  range :xsd:string.
 ```
 
 **Documentation**
 
-### Intent
-This ontology design pattern models the relationships between authors, their names, and name changes.
+**Intent:** This ontology models the relationships between authors, their adopted names, and the events of name changes.
 
-### Covered requirements
+**Covered requirements:**
+
 * An author adopting different names to publish books
 * Name changes (e.g., after marriage)
 
-### Known assumptions and exclusions
-* This ontology assumes that an author can have multiple names at different times, and that a name change is a distinct event.
-* It does not account for the reasons behind a name change (e.g., marriage, personal preference).
-* It does not consider the possibility of an author having the same name at different times (e.g., due to a name change that is later reversed).
+**Known assumptions and exclusions:**
+
+* The ontology assumes that an author can have multiple names, and a name can be associated with multiple authors.
+* The ontology does not model the reasons for name changes in detail; it only provides a property to capture the reason.
+* The ontology does not capture the context of name changes (e.g., marriage, divorce, etc.).
+* The ontology does not provide a mechanism to track the sequence of name changes for an author.

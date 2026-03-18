@@ -7,94 +7,96 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Slippery Pavement Ontology" ;
-  rdfs:comment "An ontology for modeling slippery pavement scenarios.".
+  rdfs:comment "Modeling slippery pavement scenarios".
 
-:SlipperyPavement a rdfs:Class ;
+:SlipperyPavement a owl:Class ;
   rdfs:label "Slippery Pavement" ;
-  rdfs:comment "A pavement that is slippery.".
+  rdfs:comment "A pavement that is slippery".
 
-:SprinklerSystem a rdfs:Class ;
+:ResponsibleEvent a owl:Class ;
+  rdfs:label "Responsible Event" ;
+  rdfs:comment "An event that causes a slippery pavement".
+
+:SprinklerSystem a owl:Class ;
   rdfs:label "Sprinkler System" ;
-  rdfs:comment "A system that can make the pavement wet.".
+  rdfs:comment "A system that can make the pavement wet".
 
-:SprinklerStatus a rdfs:Class ;
+:SprinklerStatus a owl:Class ;
   rdfs:label "Sprinkler Status" ;
-  rdfs:comment "The status of the sprinkler system.".
+  rdfs:comment "The status of the sprinkler system (on/off)".
 
-:WetPavement a rdfs:Class ;
-  rdfs:label "Wet Pavement" ;
-  rdfs:comment "A pavement that is wet.".
+:PavementWetness a owl:Class ;
+  rdfs:label "Pavement Wetness" ;
+  rdfs:comment "The wetness of the pavement".
 
-:SlipperyEvent a rdfs:Class ;
-  rdfs:label "Slippery Event" ;
-  rdfs:comment "An event that causes the pavement to be slippery.".
+:CausalLink a owl:Class ;
+  rdfs:label "Causal Link" ;
+  rdfs:comment "A link between two events".
 
-:SprinklerEvent a rdfs:Class ;
-  rdfs:label "Sprinkler Event" ;
-  rdfs:comment "An event related to the sprinkler system.".
-
-:Outcome a rdfs:Class ;
+:Outcome a owl:Class ;
   rdfs:label "Outcome" ;
-  rdfs:comment "The result of an action or event.".
+  rdfs:comment "The result of an event".
 
-:StrongCausalLink a rdfs:Class ;
-  rdfs:label "Strong Causal Link" ;
-  rdfs:comment "A strong causal link between two events.".
+:SlipperyPavementOutcome a owl:Class ;
+  rdfs:label "Slippery Pavement Outcome" ;
+  rdfs:comment "The outcome of a slippery pavement".
 
-:WeakCausalLink a rdfs:Class ;
-  rdfs:label "Weak Causal Link" ;
-  rdfs:comment "A weak causal link between two events.".
-
-:hasSlipperyEvent  a owl:ObjectProperty ;
-  rdfs:label "has Slippery Event" ;
-  rdfs:comment "An event that causes the pavement to be slippery." ;
-  rdfs:domain :SlipperyPavement ;
-  rdfs:range :SlipperyEvent.
-
-:hasSprinklerEvent  a owl:ObjectProperty ;
-  rdfs:label "has Sprinkler Event" ;
-  rdfs:comment "An event related to the sprinkler system." ;
-  rdfs:domain :SprinklerEvent ;
-  rdfs:range :SprinklerEvent.
-
-:hasOutcome  a owl:ObjectProperty ;
-  rdfs:label "has Outcome" ;
-  rdfs:comment "The result of an action or event." ;
-  rdfs:domain :Outcome ;
-  rdfs:range :Outcome.
-
-:hasCausalLink  a owl:ObjectProperty ;
+:hasCausalLink a owl:ObjectProperty ;
   rdfs:label "has Causal Link" ;
-  rdfs:comment "A causal link between two events." ;
-  rdfs:domain :Outcome ;
-  rdfs:range :StrongCausalLink.
+  rdfs:comment "A causal link between two events" ;
+  owl:inverseOf :inverseHasCausalLink.
 
-:hasWeakCausalLink  a owl:ObjectProperty ;
-  rdfs:label "has Weak Causal Link" ;
-  rdfs:comment "A weak causal link between two events." ;
-  rdfs:domain :Outcome ;
-  rdfs:range :WeakCausalLink.
+:inverseHasCausalLink a owl:ObjectProperty ;
+  rdfs:label "inverse has Causal Link" ;
+  rdfs:comment "Inverse of hasCausalLink" ;
+  owl:inverseOf :hasCausalLink.
 
-:isWet a owl:ObjectProperty ;
-  rdfs:label "is Wet" ;
-  rdfs:comment "A pavement that is wet." ;
-  rdfs:domain :WetPavement ;
-  rdfs:range :WetPavement.
+:causes a owl:ObjectProperty ;
+  rdfs:label "causes" ;
+  rdfs:comment "An event that causes another event" ;
+  owl:inverseOf :isCausedBy.
 
-:isSprinklerOn a owl:ObjectProperty ;
-  rdfs:label "is Sprinkler On" ;
-  rdfs:comment "The status of the sprinkler system." ;
-  rdfs:domain :SprinklerStatus ;
-  rdfs:range :SprinklerStatus.
+:isCausedBy a owl:ObjectProperty ;
+  rdfs:label "is Caused By" ;
+  rdfs:comment "An event that is caused by another event" ;
+  owl:inverseOf :causes.
 
-:SprinklerStatus :SprinklerOn a :SprinklerStatus ;
-  rdfs:label "Sprinkler On" ;
-  rdfs:comment "The sprinkler system is on.".
+:hasOutcome a owl:ObjectProperty ;
+  rdfs:label "has Outcome" ;
+  rdfs:comment "An event that has an outcome" ;
+  owl:inverseOf :inverseHasOutcome.
 
-:SprinklerStatus :SprinklerOff a :SprinklerStatus ;
-  rdfs:label "Sprinkler Off" ;
-  rdfs:comment "The sprinkler system is off.".
+:inverseHasOutcome a owl:ObjectProperty ;
+  rdfs:label "inverse has Outcome" ;
+  rdfs:comment "Inverse of hasOutcome" ;
+  owl:inverseOf :hasOutcome.
 
-:hasSprinklerStatus a owl:ObjectProperty ;
+:hasSlipperyPavementOutcome a owl:ObjectProperty ;
+  rdfs:label "has Slippery Pavement Outcome" ;
+  rdfs:comment "A slippery pavement that has an outcome" ;
+  owl:inverseOf :inverseHasSlipperyPavementOutcome.
+
+:inverseHasSlipperyPavementOutcome a owl:ObjectProperty ;
+  rdfs:label "inverse has Slippery Pavement Outcome" ;
+  rdfs:comment "Inverse of hasSlipperyPavementOutcome" ;
+  owl:inverseOf :hasSlipperyPavementOutcome.
+
+:hasPavementWetness a owl:DatatypeProperty ;
+  rdfs:label "has Pavement Wetness" ;
+  rdfs:comment "The wetness of the pavement" ;
+  xsd:type xsd:boolean.
+
+:hasSlipperyPavement a owl:DatatypeProperty ;
+  rdfs:label "has Slippery Pavement" ;
+  rdfs:comment "A pavement that is slippery" ;
+  xsd:type xsd:boolean.
+
+:hasSprinklerStatus a owl:DatatypeProperty ;
   rdfs:label "has Sprinkler Status" ;
-  rdfs:comment "The status of the sprinkler system." ;
+  rdfs:comment "The status of the sprinkler system (on/off)" ;
+  xsd:type xsd:boolean.
+
+:hasCausalLinkStrength a owl:DatatypeProperty ;
+  rdfs:label "has Causal Link Strength" ;
+  rdfs:comment "The strength of the causal link" ;
+  xsd:type

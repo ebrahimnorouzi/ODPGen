@@ -1,82 +1,102 @@
-1. **Reasoning for steps 1–6**
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
 
-### 1. Atomic requirements
-- There is an evaluation request.
-- An evaluation request is a formal description of a requested action.
-- An evaluation request involves an assignee.
-- An evaluation request involves a target asset.
-- An evaluation request can be enriched with additional contextual information.
-- Evaluation may depend on temporal context.
-- Evaluation may depend on spatial context.
-- Evaluation may depend on role context.
-- Evaluation may depend on request-capability context.
-- The request has an issuing party.
-- The request has an issuance time.
-- Access being allowed only to employees motivates representing employee-related role context.
-- Access being allowed only on weekdays motivates representing temporal context.
-- Access being allowed only from the EU motivates representing spatial context.
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
 
-### 2. Candidate classes and properties
-- For the evaluation request:
-  - Class: `:EvaluationRequest`
-- For requested action:
-  - Class: `:Action`
-  - Property: `:requestedAction`
-- For assignee:
-  - Class: `:Agent`
-  - Property: `:hasAssignee`
-- For target asset:
-  - Class: `:Asset`
-  - Property: `:targetAsset`
-- For issuing party:
-  - Property: `:issuedBy`
-- For issuance time:
-  - Property: `:issuedAt`
-- For contextual enrichment:
-  - Class: `:ContextInformation`
-  - Property: `:hasContextInformation`
-- For temporal context:
-  - Class: `:TemporalContext`
-- For spatial context:
-  - Class: `:SpatialContext`
-- For role context:
-  - Class: `:RoleContext`
-- For request-capability context:
-  - Class: `:CapabilityContext`
-- For minimal reusable actor concept:
-  - Class: `:Party` as a superclass of `:Agent`
-- For employee-related role context:
-  - Class: `:EmployeeRoleContext`
-- For weekday-related temporal context:
-  - Class: `:WeekdayContext`
-- For EU-related spatial context:
-  - Class: `:EUContext`
+:Ontology a owl:Ontology ;
+  rdfs:label "Evaluation Request Context ODP" ;
+  rdfs:comment "An ontology design pattern for describing an evaluation request about a requested action by an assignee on a target asset, together with optional contextual constraints such as role, temporal, spatial, and capability context." .
 
-### 3. Draft axioms
-- `:EvaluationRequest rdf:type owl:Class`
-- `:Action rdf:type owl:Class`
-- `:Asset rdf:type owl:Class`
-- `:Party rdf:type owl:Class`
-- `:Agent rdf:type owl:Class ; rdfs:subClassOf :Party`
-- `:ContextInformation rdf:type owl:Class`
-- `:TemporalContext rdf:type owl:Class ; rdfs:subClassOf :ContextInformation`
-- `:SpatialContext rdf:type owl:Class ; rdfs:subClassOf :ContextInformation`
-- `:RoleContext rdf:type owl:Class ; rdfs:subClassOf :ContextInformation`
-- `:CapabilityContext rdf:type owl:Class ; rdfs:subClassOf :ContextInformation`
-- `:EmployeeRoleContext rdf:type owl:Class ; rdfs:subClassOf :RoleContext`
-- `:WeekdayContext rdf:type owl:Class ; rdfs:subClassOf :TemporalContext`
-- `:EUContext rdf:type owl:Class ; rdfs:subClassOf :SpatialContext`
-- Disjointness among top context dimensions:
-  - `:TemporalContext owl:disjointWith :SpatialContext, :RoleContext, :CapabilityContext`
-  - `:SpatialContext owl:disjointWith :RoleContext, :CapabilityContext`
-  - `:RoleContext owl:disjointWith :CapabilityContext`
-- `:requestedAction rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Action`
-- `:hasAssignee rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Agent`
-- `:targetAsset rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Asset`
-- `:issuedBy rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Party`
-- `:issuedAt rdf:type owl:DatatypeProperty ; rdfs:domain :EvaluationRequest ; rdfs:range xsd:dateTime`
-- `:hasContextInformation rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :ContextInformation`
-- Cardinalities for core request structure:
-  - `:EvaluationRequest rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :requestedAction ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :Action ]`
-  - `:EvaluationRequest rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :hasAssignee ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :Agent ]`
-  - `:EvaluationRequest rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :targetAsset ; owl:
+:EvaluationRequest a owl:Class ;
+  rdfs:label "Evaluation Request" ;
+  rdfs:comment "A formal request for evaluating whether a requested action by an assignee on a target asset is allowed under given contextual constraints." ;
+  rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :requestedAction ;
+      owl:someValuesFrom :Action
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :issuedBy ;
+      owl:someValuesFrom :Agent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :targetsAsset ;
+      owl:someValuesFrom :Asset
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :issuedAt ;
+      owl:someValuesFrom xsd:dateTime
+    ] .
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "An action whose execution is being requested and evaluated." .
+
+:Agent a owl:Class ;
+  rdfs:label "Agent" ;
+  rdfs:comment "A party that can issue an evaluation request or be the assignee of the requested action." .
+
+:Asset a owl:Class ;
+  rdfs:label "Asset" ;
+  rdfs:comment "A target resource or asset on which the requested action is to be performed." .
+
+:ContextInformation a owl:Class ;
+  rdfs:label "Context Information" ;
+  rdfs:comment "Additional contextual information included in an evaluation request to constrain or qualify the evaluation." .
+
+:TemporalContext a owl:Class ;
+  rdfs:label "Temporal Context" ;
+  rdfs:comment "Context information concerning time-related constraints relevant to the evaluation request." ;
+  rdfs:subClassOf :ContextInformation .
+
+:SpatialContext a owl:Class ;
+  rdfs:label "Spatial Context" ;
+  rdfs:comment "Context information concerning location-related constraints relevant to the evaluation request." ;
+  rdfs:subClassOf :ContextInformation .
+
+:RoleContext a owl:Class ;
+  rdfs:label "Role Context" ;
+  rdfs:comment "Context information concerning role-related constraints relevant to the evaluation request." ;
+  rdfs:subClassOf :ContextInformation .
+
+:CapabilityContext a owl:Class ;
+  rdfs:label "Capability Context" ;
+  rdfs:comment "Context information concerning request-capability or related capability constraints relevant to the evaluation request." ;
+  rdfs:subClassOf :ContextInformation .
+
+:requestedAction a owl:ObjectProperty ;
+  rdfs:label "requested action" ;
+  rdfs:comment "Relates an evaluation request to the action being requested." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Action .
+
+:issuedBy a owl:ObjectProperty ;
+  rdfs:label "issued by" ;
+  rdfs:comment "Relates an evaluation request to the party issuing the request." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Agent .
+
+:targetsAsset a owl:ObjectProperty ;
+  rdfs:label "targets asset" ;
+  rdfs:comment "Relates an evaluation request to the asset that is the target of the requested action." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Asset .
+
+:hasContextInformation a owl:ObjectProperty ;
+  rdfs:label "has context information" ;
+  rdfs:comment "Relates an evaluation request to additional contextual information used to constrain the evaluation." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :ContextInformation .
+
+:issuedAt a owl:DatatypeProperty ;
+  rdfs:label "issued at" ;
+  rdfs:comment "Relates an evaluation request to the date and time at which it was issued." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range xsd:dateTime .
+
+:Action owl:disjointWith :Agent, :Asset, :ContextInformation .
+:Agent owl:disjointWith

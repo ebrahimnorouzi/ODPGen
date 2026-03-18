@@ -1,41 +1,35 @@
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
 :Ontology a owl:Ontology ;
-  rdfs:label "Temporal Indirection Ontology" ;
-  rdfs:comment "This ontology models the concept of temporal indirection, where a persistent identifier refers to a dynamically changing entity over time.".
+  rdfs:label "Temporally Indirect Identifiers" ;
+  rdfs:comment "An ontology pattern for modeling persistent identifiers that dynamically resolve to current instances of a resource.".
 
-:PersistentIdentifier a owl:Class ;
-  rdfs:label "Persistent Identifier" ;
-  rdfs:comment "A unique identifier that remains constant while the identified entity changes over time.".
+:Resource a owl:Class ;
+  rdfs:label "Resource" ;
+  rdfs:comment "A generic resource with attributes.".
 
-:IdentifiedEntity a owl:Class ;
-  rdfs:label "Identified Entity" ;
-  rdfs:comment "The entity that is identified by a PersistentIdentifier.".
-
-:TemporalResolution a owl:ObjectProperty ;
-  rdfs:domain :PersistentIdentifier ;
-  rdfs:range :IdentifiedEntity ;
-  rdfs:label "Temporal Resolution" ;
-  rdfs:comment "The relationship between a PersistentIdentifier and the current instance of the IdentifiedEntity.".
+:Identifier a owl:Class ;
+  rdfs:subClassOf [ owl:allValuesFrom :Resource ] ;
+  rdfs:label "Identifier" ;
+  rdfs:comment "A persistent identifier for a resource.".
 
 :CurrentInstance a owl:Class ;
-  rdfs:subClassOf :IdentifiedEntity ;
-  rdfs:label "Current Instance" ;
-  rdfs:comment "The current instance of the IdentifiedEntity, bound to the PersistentIdentifier through the TemporalResolution relationship.".
+  rdfs:subClassOf [ owl:allValuesFrom :Resource ] ;
+  rdfs:label "CurrentInstance" ;
+  rdfs:comment "The current instance of a resource that the identifier refers to.".
 
-:MarketAttribute a owl:Class ;
-  rdfs:subClassOf rdf:Property ;
+:ResolvesTo a owl:ObjectProperty ;
+  rdfs:domain [ owl:allValuesFrom :Identifier ] ;
+  rdfs:range [ owl:allValuesFrom :CurrentInstance ] ;
+  rdfs:label "Resolves To" ;
+  rdfs:comment "The relationship between an identifier and its current instance.".
+
+:MarketAttribute a owl:DatatypeProperty ;
+  rdfs:domain [ owl:allValuesFrom :CurrentInstance ] ;
+  rdfs:range xsd:string ;
   rdfs:label "Market Attribute" ;
-  rdfs:comment "A property that describes an attribute of the CurrentInstance.".
-
-:BoundTo a owl:ObjectProperty ;
-  rdfs:domain :CurrentInstance ;
-  rdfs:range :MarketAttribute ;
-  rdfs:label "Bound To" ;
-  rdfs:comment "The relationship between a CurrentInstance and a MarketAttribute.".
-
-:FrontMonthContract a :IdentifiedEntity ;
-  :TemporalResolution (:PersistentIdentifier1) ;
-  :BoundTo (:LastTradePrice) ;
-  :BoundTo (:TradingVolume) ;
-  :BoundTo (:SettlementValue).
-
-:PersistentIdentifier1 a :PersistentIdentifier.
+  rdfs:comment "A datatype property for market attributes bound to the current instance.".

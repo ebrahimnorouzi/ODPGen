@@ -1,57 +1,129 @@
-**Reasoning Steps**
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. **Extract atomic requirements from the scenario**
-	* C1: Identity of Solid actors and their roles is unknown
-	* C2: No metadata about Solid infrastructure
-	* C3: Availability/Discovery of categories of data
-	* C4: Pod and app providers do not provide information on their data handling practices
-	* C5: Users cannot express their privacy policies
-	* C6: No logging or record-keeping
-	* C7: No legal compliance checks
-2. **Propose candidate classes and properties for each requirement**
-	* C1: `:Actor`, `:Role`, `:Identity`
-	* C2: `:Infrastructure`, `:Specification`, `:Functionalities`
-	* C3: `:DataCategory`, `:Pod`, `:DataStorage`
-	* C4: `:DataHandlingPractice`, `:Pod`, `:App`, `:PrivacyNotice`
-	* C5: `:PrivacyPolicy`, `:User`, `:DataRequest`, `:Decision`
-	* C6: `:Log`, `:Provenance`, `:ConsentRecord`
-	* C7: `:LegalCompliance`, `:GDPR`, `:Right`, `:Audit`
-3. **Draft axioms (subclass, domain, range, cardinality, disjointness) for each candidate**
-	* `:Actor` rdfs:subClassOf `:Entity`
-	* `:Role` rdfs:subClassOf `:Concept`
-	* `:Identity` rdfs:subClassOf `:Information`
-	* `:Infrastructure` rdfs:subClassOf `:System`
-	* `:Specification` rdfs:subClassOf `:Document`
-	* `:Functionalities` rdfs:subClassOf `:Service`
-	* `:DataCategory` rdfs:subClassOf `:Concept`
-	* `:Pod` rdfs:subClassOf `:Container`
-	* `:DataStorage` rdfs:subClassOf `:Location`
-	* `:DataHandlingPractice` rdfs:subClassOf `:Policy`
-	* `:PrivacyNotice` rdfs:subClassOf `:Document`
-	* `:App` rdfs:subClassOf `:Software`
-	* `:PrivacyPolicy` rdfs:subClassOf `:Document`
-	* `:User` rdfs:subClassOf `:Entity`
-	* `:DataRequest` rdfs:subClassOf `:Request`
-	* `:Decision` rdfs:subClassOf `:Record`
-	* `:Log` rdfs:subClassOf `:Record`
-	* `:Provenance` rdfs:subClassOf `:Information`
-	* `:ConsentRecord` rdfs:subClassOf `:Record`
-	* `:LegalCompliance` rdfs:subClassOf `:Policy`
-	* `:GDPR` rdfs:subClassOf `:Regulation`
-	* `:Right` rdfs:subClassOf `:Concept`
-	* `:Audit` rdfs:subClassOf `:Record`
-4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
-	* CQ1: What type of action is being performed on the data?
-		+ Axioms: `:Action` rdfs:subClassOf `:Concept`, `:Data` rdfs:subClassOf `:Resource`
-	* CQ2: Who is the entity interacting with the data?
-		+ Axioms: `:Entity` rdfs:subClassOf `:Actor`, `:Data` rdfs:subClassOf `:Resource`
-	* CQ3: Who is the entity publishing the log?
-		+ Axioms: `:Entity` rdfs:subClassOf `:Actor`, `:Log` rdfs:subClassOf `:Record`
-	* CQ4: When was the log issued?
-		+ Axioms: `:Log` rdfs:subClassOf `:Record`, `:Time` rdfs:subClassOf `:Value`
-	* CQ5: Where is the data being stored?
-		+ Axioms: `:Data` rdfs:subClassOf `:Resource`, `:Storage` rdfs:subClassOf `:Location`
-	* CQ6: What application/service is being used to generate the data, if any?
-		+ Axioms: `:Application` rdfs:subClassOf `:Software`, `:Data` rdfs:subClassOf `:Resource`
-	* CQs not yet covered: None
-5. **Add or refine axioms to cover any uncovered CQ
+:Ontology a owl:Ontology ;
+  rdfs:label "Governance Patterns in Solid Apps Ontology" ;
+  rdfs:comment "Ontology for governance patterns in Solid apps".
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "Type of action performed on data".
+
+:Create a :Action ;
+  rdfs:label "Create" ;
+  rdfs:comment "Action of creating data".
+
+:Update a :Action ;
+  rdfs:label "Update" ;
+  rdfs:comment "Action of updating data".
+
+:Erase a :Action ;
+  rdfs:label "Erase" ;
+  rdfs:comment "Action of erasing data".
+
+:Entity a owl:Class ;
+  rdfs:label "Entity" ;
+  rdfs:comment "Entity interacting with data".
+
+:User a :Entity ;
+  rdfs:label "User" ;
+  rdfs:comment "Entity that is a user".
+
+:Provider a :Entity ;
+  rdfs:label "Provider" ;
+  rdfs:comment "Entity that is a provider".
+
+:Log a owl:Class ;
+  rdfs:label "Log" ;
+  rdfs:comment "Record of actions performed on data".
+
+:Publish a owl:ObjectProperty ;
+  rdfs:label "Publish" ;
+  rdfs:comment "Entity publishing the log" ;
+  rdfs:domain :Log ;
+  rdfs:range :Entity.
+
+:Issue a owl:DatatypeProperty ;
+  rdfs:label "Issue" ;
+  rdfs:comment "When the log was issued" ;
+  rdfs:domain :Log ;
+  rdfs:range xsd:date.
+
+:Store a owl:ObjectProperty ;
+  rdfs:label "Store" ;
+  rdfs:comment "Where the data is being stored" ;
+  rdfs:domain :Data ;
+  rdfs:range :Location.
+
+:Application a owl:Class ;
+  rdfs:label "Application" ;
+  rdfs:comment "Application/service generating the data".
+
+:Use a owl:ObjectProperty ;
+  rdfs:label "Use" ;
+  rdfs:comment "Application/service being used to generate the data" ;
+  rdfs:domain :Data ;
+  rdfs:range :Application.
+
+:Data a owl:Class ;
+  rdfs:label "Data" ;
+  rdfs:comment "Data being stored".
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "Location where the data is being stored".
+
+:Governance a owl:Class ;
+  rdfs:label "Governance" ;
+  rdfs:comment "Governance patterns in Solid apps".
+
+:Privacy a owl:ObjectProperty ;
+  rdfs:label "Privacy" ;
+  rdfs:comment "Privacy policies and requirements" ;
+  rdfs:domain :User ;
+  rdfs:range :Governance.
+
+:Consent a owl:ObjectProperty ;
+  rdfs:label "Consent" ;
+  rdfs:comment "Consent records" ;
+  rdfs:domain :User ;
+  rdfs:range :Governance.
+
+:Access a owl:ObjectProperty ;
+  rdfs:label "Access" ;
+  rdfs:comment "Access to data" ;
+  rdfs:domain :User ;
+  rdfs:range :Governance.
+
+:Change a owl:ObjectProperty ;
+  rdfs:label "Change" ;
+  rdfs:comment "Changes to data handling policies" ;
+  rdfs:domain :Provider ;
+  rdfs:range :Governance.
+
+:Compliance a owl:Class ;
+  rdfs:label "Compliance" ;
+  rdfs:comment "Legal compliance checks".
+
+:Check a owl:ObjectProperty ;
+  rdfs:label "Check" ;
+  rdfs:comment "Performing legal compliance checks" ;
+  rdfs:domain :User ;
+  rdfs:range :Compliance.
+
+:Right a owl:Class ;
+  rdfs:label "Right" ;
+  rdfs:comment "GDPR-related rights".
+
+:Withdraw a owl:ObjectProperty ;
+  rdfs:label "Withdraw" ;
+  rdfs:comment "Withdrawing consent" ;
+  rdfs:domain :User ;
+  rdfs:range :Right.
+
+:Investigate a owl:ObjectProperty ;
+  rdfs:label "Invest

@@ -9,25 +9,26 @@
   rdfs:label "Evaluation Request Ontology" ;
   rdfs:comment "Ontology for modeling evaluation requests.".
 
-:RequestedAction a rdfs:Class ;
+:RequestedAction a owl:Class ;
   rdfs:label "Requested Action" ;
   rdfs:comment "The action being requested in the evaluation.".
 
-:Party a rdfs:Class ;
+:Party a owl:Class ;
   rdfs:label "Party" ;
   rdfs:comment "The entity issuing the evaluation request.".
 
-:TargetAsset a rdfs:Class ;
+:TargetAsset a owl:Class ;
   rdfs:label "Target Asset" ;
   rdfs:comment "The asset being evaluated.".
 
-:EvaluationRequest a rdfs:Class ;
+:EvaluationRequest a owl:Class ;
   rdfs:label "Evaluation Request" ;
   rdfs:comment "The request for an evaluation.".
 
 :issued a owl:DatatypeProperty ;
   rdfs:label "Issued Date" ;
   rdfs:comment "The date the evaluation request was issued." ;
+  rdfs:domain :EvaluationRequest ;
   rdfs:range xsd:date.
 
 :requestedAction a owl:ObjectProperty ;
@@ -52,27 +53,19 @@
   rdfs:label "Additional Context" ;
   rdfs:comment "Additional contextual information to further constrain the evaluation request." ;
   rdfs:domain :EvaluationRequest ;
-  rdfs:range rdf:Resource.
+  rdfs:range :AdditionalContext.
 
-:Party :hasName :Name ;
-  rdfs:label "Has Name" ;
-  rdfs:comment "The name of the party." ;
-  rdfs:domain :Party ;
-  rdfs:range :Name.
-
-:Name a rdfs:Class ;
-  rdfs:label "Name" ;
-  rdfs:comment "The name of a party.".
+:AdditionalContext a owl:Class ;
+  rdfs:label "Additional Context" ;
+  rdfs:comment "Additional contextual information to further constrain the evaluation request.".
 ```
 
 **CQ-to-Axiom Mapping Table**
 
-| Competency Question | Enabling Axioms |
-| --- | --- |
-| What is the requested action? | :requestedAction a owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :RequestedAction. |
-| Who is the party issuing the evaluation request? | :issuedBy a owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Party. |
-| What is the target asset of the evaluation request? | :targets a owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :TargetAsset. |
-| When was the evaluation request issued? | :issued a owl:DatatypeProperty ; rdfs:domain :EvaluationRequest ; rdfs:range xsd:date. |
-| What additional contextual information can be included in the evaluation request to further constrain it? | :additionalContext a owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range rdf:Resource. |
-
-Note: The `:hasName` property is used to link a party to its name, which is modeled as a separate class `:Name`. This is because a party can have multiple names, and we want to capture this relationship.
+| Competency Question | Enabling Classes | Enabling Properties |
+| --- | --- | --- |
+| What is the requested action? | :RequestedAction, :EvaluationRequest | :requestedAction |
+| Who is the party issuing the evaluation request? | :Party, :EvaluationRequest | :issuedBy |
+| What is the target asset of the evaluation request? | :TargetAsset, :EvaluationRequest | :targets |
+| When was the evaluation request issued? | :EvaluationRequest | :issued |
+| What additional contextual information can be included in the evaluation request to further constrain it? | :AdditionalContext, :EvaluationRequest | :additionalContext |

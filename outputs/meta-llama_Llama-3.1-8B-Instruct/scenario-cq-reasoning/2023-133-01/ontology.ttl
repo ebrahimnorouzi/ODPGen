@@ -1,53 +1,107 @@
-**Reasoning Steps**
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. **Extract atomic requirements from the scenario**
-	* It is rainy season.
-	* The sprinkler is on.
-	* It is raining.
-	* The pavement is wet.
-	* The pavement is slippery.
-	* The sprinkler being on causes the pavement to be wet.
-	* The pavement being wet causes the pavement to be slippery.
-2. **Propose candidate classes and properties for each requirement**
-	* `:Event` (class) - represents an event in the sprinkler use case
-		+ `:hasEffect` (property) - represents the effect of an event
-		+ `:hasCausalLink` (property) - represents a causal link between events
-	* `:SprinklerState` (class) - represents the state of the sprinkler
-		+ `:isOn` (property) - represents whether the sprinkler is on or off
-	* `:Weather` (class) - represents the weather conditions
-		+ `:isRainySeason` (property) - represents whether it is rainy season
-		+ `:isRaining` (property) - represents whether it is raining
-	* `:Pavement` (class) - represents the pavement
-		+ `:isWet` (property) - represents whether the pavement is wet
-		+ `:isSlippery` (property) - represents whether the pavement is slippery
-3. **Draft axioms for each candidate**
-	* `:Event` rdfs:subClassOf owl:Thing.
-	* `:SprinklerState` rdfs:subClassOf :Event.
-	* `:Weather` rdfs:subClassOf :Event.
-	* `:Pavement` rdfs:subClassOf :Event.
-	* `:hasEffect` rdfs:domain :Event ; rdfs:range xsd:float.
-	* `:hasCausalLink` rdfs:domain :Event ; rdfs:range :Event.
-	* `:isOn` rdfs:domain :SprinklerState ; rdfs:range xsd:boolean.
-	* `:isRainySeason` rdfs:domain :Weather ; rdfs:range xsd:boolean.
-	* `:isRaining` rdfs:domain :Weather ; rdfs:range xsd:boolean.
-	* `:isWet` rdfs:domain :Pavement ; rdfs:range xsd:boolean.
-	* `:isSlippery` rdfs:domain :Pavement ; rdfs:range xsd:boolean.
-	* `:SprinklerState` owl:disjointWith :Weather.
-	* `:SprinklerState` owl:disjointWith :Pavement.
-	* `:Weather` owl:disjointWith :Pavement.
-4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
-	* CQ1: What events are responsible for the pavement being slippery?
-		+ Axioms: `:hasCausalLink`, `:isWet`, `:isSlippery`
-	* CQ2: What would be the outcome of turning the sprinkler system on(off)?
-		+ Axioms: `:hasEffect`, `:isOn`, `:isWet`
-	* CQ3: How strong is the causal link between the sprinkler being on and the pavement being wet?
-		+ Axioms: `:hasCausalLink`, `:isOn`, `:isWet`
-	* CQ4: What if the pavement is not wet, how would it effect the pavement being slippery?
-		+ Axioms: `:hasCausalLink`, `:isWet`, `:isSlippery`
-	* CQ5: How strong is the causal link between the rain and slippery pavement event?
-		+ Axioms: `:hasCausalLink`, `:isRaining`, `:isWet`, `:isSlippery`
-5. **Add or refine axioms to cover any uncovered CQs**
-	* `:hasCausalLink` rdfs:domain :Event ; rdfs:range :Event ; owl:propertyChain (:isWet :isSlippery).
-	* `:hasEffect` rdfs:domain :Event ; rdfs:range xsd:float ; owl:propertyChain (:isOn :isWet).
-6. **Remove any classes or properties not traceable to a requirement or CQ**
-	* Removed `:SprinklerState`, `:Weather`, `:Pavement` as they are not directly related to the requirements or CQs.
+:Ontology a owl:Ontology ;
+  rdfs:label "Sprinkler Use Case Ontology" ;
+  rdfs:comment "Reasoning about the cause of a slippery pavement".
+
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An event in the sprinkler use case".
+
+:Cause a owl:ObjectProperty ;
+  rdfs:label "Cause" ;
+  rdfs:comment "A causal relation between two events" ;
+  rdfs:domain :Event ;
+  rdfs:range :Event.
+
+:Effect a owl:ObjectProperty ;
+  rdfs:label "Effect" ;
+  rdfs:comment "The effect of one event on another" ;
+  rdfs:domain :Event ;
+  rdfs:range :Event.
+
+:Pavement a owl:Class ;
+  rdfs:label "Pavement" ;
+  rdfs:comment "The pavement in the sprinkler use case".
+
+:SlipperyPavement a owl:Class ;
+  rdfs:label "Slippery Pavement" ;
+  rdfs:comment "The pavement is slippery" ;
+  rdfs:subClassOf :Pavement.
+
+:WetPavement a owl:Class ;
+  rdfs:label "Wet Pavement" ;
+  rdfs:comment "The pavement is wet" ;
+  rdfs:subClassOf :Pavement.
+
+:RainySeason a owl:Class ;
+  rdfs:label "Rainy Season" ;
+  rdfs:comment "It is rainy season" ;
+  rdfs:subClassOf :Event.
+
+:SprinklerOn a owl:Class ;
+  rdfs:label "Sprinkler On" ;
+  rdfs:comment "The sprinkler is on" ;
+  rdfs:subClassOf :Event.
+
+:Rain a owl:Class ;
+  rdfs:label "Rain" ;
+  rdfs:comment "It is raining" ;
+  rdfs:subClassOf :Event.
+
+:CausalLink a owl:Class ;
+  rdfs:label "Causal Link" ;
+  rdfs:comment "A causal link between two events" ;
+  rdfs:subClassOf :Event.
+
+:Weight a owl:DatatypeProperty ;
+  rdfs:label "Effect Weight" ;
+  rdfs:comment "The effect weight of a causal link" ;
+  rdfs:domain :CausalLink ;
+  rdfs:range xsd:float.
+
+:Outcome a owl:Class ;
+  rdfs:label "Outcome" ;
+  rdfs:comment "The outcome of an event" ;
+  rdfs:subClassOf :Event.
+
+:SprinklerSystem a owl:Class ;
+  rdfs:label "Sprinkler System" ;
+  rdfs:comment "The sprinkler system" ;
+  rdfs:subClassOf :Event.
+
+:TurnOn a owl:ObjectProperty ;
+  rdfs:label "Turn On" ;
+  rdfs:comment "The action of turning on the sprinkler system" ;
+  rdfs:domain :SprinklerSystem ;
+  rdfs:range :Event.
+
+:TurnOff a owl:ObjectProperty ;
+  rdfs:label "Turn Off" ;
+  rdfs:comment "The action of turning off the sprinkler system" ;
+  rdfs:domain :SprinklerSystem ;
+  rdfs:range :Event.
+
+:Mediated a owl:ObjectProperty ;
+  rdfs:label "Mediated" ;
+  rdfs:comment "The effect of one event on another is mediated by a third event" ;
+  rdfs:domain :Effect ;
+  rdfs:range :Event.
+
+:Disjoint a owl:ObjectProperty ;
+  rdfs:label "Disjoint" ;
+  rdfs:comment "Two events are disjoint" ;
+  rdfs:domain :Event ;
+  rdfs:range :Event.
+
+:SlipperyPavementDisjoint a owl:Class ;
+  rdfs:label "Slippery Pavement Disjoint" ;
+  rdfs:comment "The pavement is slippery and not wet" ;
+  rdfs:subClassOf :Disjoint ;
+  rdfs:comment "The pavement is slippery and not wet" ;
+  rdfs:comment "The pavement is slippery and not wet" ;
+  rdfs:subClassOf :SlipperyPavement :WetPavement.

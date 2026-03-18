@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -6,32 +8,26 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "MQTT Process Data ODP" ;
-  rdfs:comment "An ontology design pattern for modeling automated process data captured and transmitted via MQTT packets, including publish-subscribe transport semantics and payload format and encoding information in the context of observation and actuation process descriptions." .
-
-#################################################################
-# Classes
-#################################################################
+  rdfs:label "MQTT Process Data Ontology Design Pattern" ;
+  rdfs:comment "An ontology design pattern for modeling automated process data captured and transmitted via MQTT packets, including publish-subscribe transport semantics, observation and actuation process descriptions, and payload format and encoding characteristics." .
 
 :ProcessDescription a owl:Class ;
   rdfs:label "Process Description" ;
-  rdfs:comment "A description of an automated process whose data is captured or transmitted via MQTT." .
+  rdfs:comment "A description of an automated process whose data is captured and transmitted." .
 
 :ObservationProcessDescription a owl:Class ;
-  rdfs:subClassOf :ProcessDescription ;
   rdfs:label "Observation Process Description" ;
-  rdfs:comment "A process description concerned with observing or capturing data." .
+  rdfs:comment "A process description concerned with observation-related data communicated via MQTT." ;
+  rdfs:subClassOf :ProcessDescription .
 
 :ActuationProcessDescription a owl:Class ;
-  rdfs:subClassOf :ProcessDescription ;
   rdfs:label "Actuation Process Description" ;
-  rdfs:comment "A process description concerned with actuation or control actions." .
-
-:ObservationProcessDescription owl:disjointWith :ActuationProcessDescription .
+  rdfs:comment "A process description concerned with actuation-related data communicated via MQTT." ;
+  rdfs:subClassOf :ProcessDescription .
 
 :MQTTPacket a owl:Class ;
   rdfs:label "MQTT Packet" ;
-  rdfs:comment "A packet used to capture or transmit automated process data via the MQTT protocol." .
+  rdfs:comment "A packet used to capture and transmit automated process data in MQTT-based communication." .
 
 :Payload a owl:Class ;
   rdfs:label "Payload" ;
@@ -39,65 +35,64 @@
 
 :PayloadFormat a owl:Class ;
   rdfs:label "Payload Format" ;
-  rdfs:comment "A representation format used for an MQTT payload." .
+  rdfs:comment "A format in which a payload is structured or represented." .
+
+:PayloadEncoding a owl:Class ;
+  rdfs:label "Payload Encoding" ;
+  rdfs:comment "A character set or encoding used for representing a payload." .
 
 :PlainTextFormat a owl:Class ;
-  rdfs:subClassOf :PayloadFormat ;
   rdfs:label "Plain Text Format" ;
-  rdfs:comment "A payload format in which the content is plain text." .
+  rdfs:comment "A payload format consisting of plain text." ;
+  rdfs:subClassOf :PayloadFormat .
 
 :CSVFormat a owl:Class ;
-  rdfs:subClassOf :PayloadFormat ;
   rdfs:label "CSV Format" ;
-  rdfs:comment "A payload format in which the content is comma-separated values." .
+  rdfs:comment "A payload format consisting of comma-separated values." ;
+  rdfs:subClassOf :PayloadFormat .
 
 :JSONFormat a owl:Class ;
-  rdfs:subClassOf :PayloadFormat ;
   rdfs:label "JSON Format" ;
-  rdfs:comment "A payload format in which the content is structured JSON." .
-
-:CharacterSetEncoding a owl:Class ;
-  rdfs:label "Character Set Encoding" ;
-  rdfs:comment "A character set encoding used to encode an MQTT payload." .
+  rdfs:comment "A payload format consisting of structured JSON." ;
+  rdfs:subClassOf :PayloadFormat .
 
 :TransportSemantics a owl:Class ;
   rdfs:label "Transport Semantics" ;
-  rdfs:comment "The transport semantics associated with MQTT-based communication for a process description." .
+  rdfs:comment "The transport-related semantics associated with MQTT-based communication." .
 
 :PublishSubscribeSemantics a owl:Class ;
-  rdfs:subClassOf :TransportSemantics ;
   rdfs:label "Publish-Subscribe Semantics" ;
-  rdfs:comment "Transport semantics based on the publish-subscribe architecture of MQTT." .
+  rdfs:comment "Transport semantics based on the publish-subscribe architecture of MQTT." ;
+  rdfs:subClassOf :TransportSemantics .
 
-#################################################################
-# Object Properties
-#################################################################
+:ObservationProcessDescription owl:disjointWith :ActuationProcessDescription .
+:PlainTextFormat owl:disjointWith :CSVFormat .
+:PlainTextFormat owl:disjointWith :JSONFormat .
+:CSVFormat owl:disjointWith :JSONFormat .
 
-:hasTransportSemantics a owl:ObjectProperty ;
+:describedByPacket a owl:ObjectProperty ;
+  rdfs:label "described by packet" ;
+  rdfs:comment "Relates a process description to an MQTT packet that captures and transmits its data." ;
   rdfs:domain :ProcessDescription ;
-  rdfs:range :TransportSemantics ;
-  rdfs:label "has transport semantics" ;
-  rdfs:comment "Relates a process description to the transport semantics used for its communication." .
-
-:isAlignedWith a owl:ObjectProperty ;
-  rdfs:domain :ObservationProcessDescription ;
-  rdfs:range :ActuationProcessDescription ;
-  rdfs:label "is aligned with" ;
-  rdfs:comment "Relates an observation process description to an actuation process description with which it is aligned." .
-
-:isCapturedInPacket a owl:ObjectProperty ;
-  rdfs:domain :ProcessDescription ;
-  rdfs:range :MQTTPacket ;
-  rdfs:label "is captured in packet" ;
-  rdfs:comment "Relates a process description to an MQTT packet in which its data is captured." .
-
-:isTransmittedViaPacket a owl:ObjectProperty ;
-  rdfs:domain :ProcessDescription ;
-  rdfs:range :MQTTPacket ;
-  rdfs:label "is transmitted via packet" ;
-  rdfs:comment "Relates a process description to an MQTT packet via which its data is transmitted." .
+  rdfs:range :MQTTPacket .
 
 :hasPayload a owl:ObjectProperty ;
+  rdfs:label "has payload" ;
+  rdfs:comment "Relates an MQTT packet to the payload it carries." ;
   rdfs:domain :MQTTPacket ;
-  rdfs:range :Payload ;
-  rdfs:label "has payload"
+  rdfs:range :Payload .
+
+:hasPayloadFormat a owl:ObjectProperty ;
+  rdfs:label "has payload format" ;
+  rdfs:comment "Relates a payload to its format." ;
+  rdfs:domain :Payload ;
+  rdfs:range :PayloadFormat .
+
+:hasPayloadEncoding a owl:ObjectProperty ;
+  rdfs:label "has payload encoding" ;
+  rdfs:comment "Relates a payload to the encoding or character set used to represent it." ;
+  rdfs:domain :Payload ;
+  rdfs:range :PayloadEncoding .
+
+:hasTransportSemantics a owl:ObjectProperty ;
+  rdfs:label "has transport semantics" ;

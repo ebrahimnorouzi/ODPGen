@@ -6,48 +6,45 @@
 
 :Ontology a owl:Ontology ;
     rdfs:label "Court hierarchy and bad check regulation ODP" ;
-    rdfs:comment "An ontology design pattern for representing court hierarchies, states and districts, and bad check related check payment information including transaction type, payment time, and transaction status." .
-
-#################################################################
-# Classes
-#################################################################
+    rdfs:comment "An ontology design pattern for representing court hierarchies by state and district, and bad check related check payment information including transaction type, payment time, and transaction status." .
 
 :State a owl:Class ;
     rdfs:label "State" ;
-    rdfs:comment "A state used to locate courts and contain districts." .
+    rdfs:comment "A state administrative unit used to locate courts and contain districts." .
 
 :District a owl:Class ;
     rdfs:label "District" ;
-    rdfs:comment "A district that is part of a state." .
+    rdfs:comment "A district administrative unit that is part of a state." .
 
 :Court a owl:Class ;
     rdfs:label "Court" ;
-    rdfs:comment "A court within a court hierarchy." .
+    rdfs:comment "A court within a legal hierarchy." .
 
 :DistrictCourt a owl:Class ;
     rdfs:label "District court" ;
-    rdfs:comment "A court that is a district court." ;
+    rdfs:comment "A court at the district level." ;
     rdfs:subClassOf :Court .
+
+:CheckTransaction a owl:Class ;
+    rdfs:label "Check transaction" ;
+    rdfs:comment "A transaction involving a check." .
+
+:BadCheck a owl:Class ;
+    rdfs:label "Bad check" ;
+    rdfs:comment "A check transaction that is classified as a bad check." ;
+    rdfs:subClassOf :CheckTransaction .
 
 :CheckTransactionType a owl:Class ;
     rdfs:label "Check transaction type" ;
-    rdfs:comment "A type of check transaction associated with a bad check." .
+    rdfs:comment "A type assigned to a check transaction." .
 
 :CheckPayment a owl:Class ;
     rdfs:label "Check payment" ;
-    rdfs:comment "A payment event or record for a check." .
+    rdfs:comment "A payment event or record associated with a check transaction." .
 
 :TransactionStatus a owl:Class ;
     rdfs:label "Transaction status" ;
     rdfs:comment "The status of a check payment transaction." .
-
-:BadCheck a owl:Class ;
-    rdfs:label "Bad check" ;
-    rdfs:comment "A check involved in bad check related regulation." .
-
-#################################################################
-# Object Properties
-#################################################################
 
 :locatedInState a owl:ObjectProperty ;
     rdfs:label "located in state" ;
@@ -57,16 +54,16 @@
 
 :hasDistrict a owl:ObjectProperty ;
     rdfs:label "has district" ;
-    rdfs:comment "Relates a state to a district that is in that state." ;
+    rdfs:comment "Relates a state to a district that is part of it." ;
     rdfs:domain :State ;
-    rdfs:range :District ;
-    owl:inverseOf :districtInState .
+    rdfs:range :District .
 
-:districtInState a owl:ObjectProperty ;
-    rdfs:label "district in state" ;
-    rdfs:comment "Relates a district to the state it belongs to." ;
+:isDistrictOf a owl:ObjectProperty ;
+    rdfs:label "is district of" ;
+    rdfs:comment "Relates a district to the state of which it is part." ;
     rdfs:domain :District ;
-    rdfs:range :State .
+    rdfs:range :State ;
+    owl:inverseOf :hasDistrict .
 
 :hasAuthorityOver a owl:ObjectProperty ;
     rdfs:label "has authority over" ;
@@ -74,16 +71,16 @@
     rdfs:domain :Court ;
     rdfs:range :Court .
 
-:hasCheckTransactionType a owl:ObjectProperty ;
-    rdfs:label "has check transaction type" ;
-    rdfs:comment "Relates a bad check to its check transaction type." ;
-    rdfs:domain :BadCheck ;
+:hasTransactionType a owl:ObjectProperty ;
+    rdfs:label "has transaction type" ;
+    rdfs:comment "Relates a check transaction to its transaction type." ;
+    rdfs:domain :CheckTransaction ;
     rdfs:range :CheckTransactionType .
 
 :hasCheckPayment a owl:ObjectProperty ;
     rdfs:label "has check payment" ;
-    rdfs:comment "Relates a bad check to its check payment." ;
-    rdfs:domain :BadCheck ;
+    rdfs:comment "Relates a check transaction, including a bad check, to an associated check payment." ;
+    rdfs:domain :CheckTransaction ;
     rdfs:range :CheckPayment .
 
 :hasTransactionStatus a owl:ObjectProperty ;
@@ -92,12 +89,8 @@
     rdfs:domain :CheckPayment ;
     rdfs:range :TransactionStatus .
 
-#################################################################
-# Datatype Properties
-#################################################################
-
-:paymentDate a owl:DatatypeProperty ;
-    rdfs:label "payment date" ;
+:paymentDateTime a owl:DatatypeProperty ;
+    rdfs:label "payment date time" ;
     rdfs:comment "The date and time when a check payment occurred." ;
     rdfs:domain :CheckPayment ;
     rdfs:range xsd:dateTime .

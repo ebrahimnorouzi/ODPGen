@@ -1,87 +1,97 @@
-1. **Reasoning for steps 1–6**
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
 
-### Step 1. Atomic requirements
-- The pattern must represent a **causal Bayesian network (CBN)** as a set of nodes corresponding to events.
-- The pattern must represent **events** such as rainy season, sprinkler on, raining, pavement wet, and pavement slippery.
-- The pattern must represent **directed causal relations** between events.
-- Each causal relation must be able to carry an **effect weight**.
-- The pattern must support representing that one event’s effect on another can be **mediated by an intermediate event**.
-- The pattern must support identifying which events are **responsible for** another event.
-- The pattern must support asking about the **outcome of intervening** on an event state such as turning the sprinkler on or off.
-- The pattern must support querying the **strength of a causal link** between two events.
-- The pattern must support querying how the absence of an intermediate event affects a downstream event.
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
 
-### Step 2. Candidate classes and properties
-- For CBN as a set of nodes and edges:
-  - Classes: `:CausalBayesianNetwork`, `:Event`, `:CausalRelation`
-  - Properties: `:hasNode`, `:hasCausalRelation`
-- For directed causal relations:
-  - Properties: `:hasCause`, `:hasEffect`
-- For effect weights:
-  - Datatype property: `:effectWeight`
-- For mediation:
-  - Object property: `:mediates`
-- For responsibility / upstream causes:
-  - Object property: `:isResponsibleFor`
-- For intervention on event state:
-  - Classes: `:Intervention`
-  - Properties: `:targetsEvent`, `:setsState`
-- For event state values:
-  - Datatype property: `:hasStateValue`
-- For possible outcomes of intervention:
-  - Property candidate considered: `:hasOutcome`
-- For negative/absent conditions:
-  - Reuse event state values rather than creating separate “not wet” classes.
+:Ontology a owl:Ontology ;
+  rdfs:label "Causal Bayesian Network Event Pattern" ;
+  rdfs:comment "A minimal ontology design pattern for representing events, causal relations, mediation, and effect weights in a causal Bayesian network such as the sprinkler use case." .
 
-### Step 3. Draft axioms
-- `:CausalBayesianNetwork`, `:Event`, `:CausalRelation`, `:Intervention` are owl classes.
-- `:hasNode`
-  - Domain: `:CausalBayesianNetwork`
-  - Range: `:Event`
-- `:hasCausalRelation`
-  - Domain: `:CausalBayesianNetwork`
-  - Range: `:CausalRelation`
-- `:hasCause`
-  - Domain: `:CausalRelation`
-  - Range: `:Event`
-  - Cardinality idea: each causal relation has exactly 1 cause
-- `:hasEffect`
-  - Domain: `:CausalRelation`
-  - Range: `:Event`
-  - Cardinality idea: each causal relation has exactly 1 effect
-- `:effectWeight`
-  - Domain: `:CausalRelation`
-  - Range: `xsd:decimal`
-  - Cardinality idea: max 1
-- `:mediates`
-  - Domain: `:Event`
-  - Range: `:CausalRelation`
-  - Interpreted as an event mediating a causal relation between upstream and downstream events
-- `:isResponsibleFor`
-  - Domain: `:Event`
-  - Range: `:Event`
-- `:targetsEvent`
-  - Domain: `:Intervention`
-  - Range: `:Event`
-  - Cardinality idea: exactly 1
-- `:setsState`
-  - Domain: `:Intervention`
-  - Range: `xsd:boolean`
-  - Cardinality idea: exactly 1
-- `:hasStateValue`
-  - Domain: `:Event`
-  - Range: `xsd:boolean`
-- Disjointness:
-  - `:Event`, `:CausalRelation`, `:CausalBayesianNetwork`, `:Intervention` pairwise disjoint
-- Derived property:
-  - `:hasCause o :hasEffect^-1 -> :isResponsibleFor` is not directly expressible in Turtle without property chain using inverse path syntax; instead define `:isResponsibleFor` as a transitive superproperty for trace/query use.
-- `:isResponsibleFor` as transitive to support indirect responsibility.
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "A node in a causal Bayesian network representing a condition or occurrence of interest." .
 
-### Step 4. CQ coverage check
-- **CQ1: What events are responsible for the pavement being slippery?**
-  - Enabled by `:isResponsibleFor` and/or traversing `:hasCause/:hasEffect`.
-  - Transitivity helps include indirect causes.
-  - Mediation can be represented by a direct relation from rain to slippery being absent and instead using rain → wet and wet → slippery.
-- **CQ2: What would be the outcome of turning the sprinkler system on(off)?**
-  - Partially enabled by `:Intervention`, `:targetsEvent`, `:setsState`.
-  - Outcome is not
+:CausalRelation a owl:Class ;
+  rdfs:label "Causal relation" ;
+  rdfs:comment "A directed causal dependency from a cause event to an effect event." .
+
+:DirectCausalRelation a owl:Class ;
+  rdfs:label "Direct causal relation" ;
+  rdfs:comment "A causal relation in which the cause directly influences the effect." ;
+  rdfs:subClassOf :CausalRelation .
+
+:MediatedCausalRelation a owl:Class ;
+  rdfs:label "Mediated causal relation" ;
+  rdfs:comment "A causal relation in which the influence from cause to effect is mediated through another event." ;
+  rdfs:subClassOf :CausalRelation ,
+    [ a owl:Restriction ;
+      owl:onProperty :mediatedBy ;
+      owl:someValuesFrom :Event
+    ] .
+
+:DirectCausalRelation owl:disjointWith :MediatedCausalRelation .
+
+:RainySeasonEvent a owl:Class ;
+  rdfs:label "Rainy season event" ;
+  rdfs:comment "The event that it is rainy season." ;
+  rdfs:subClassOf :Event .
+
+:SprinklerOnEvent a owl:Class ;
+  rdfs:label "Sprinkler on event" ;
+  rdfs:comment "The event that the sprinkler is on." ;
+  rdfs:subClassOf :Event .
+
+:RainingEvent a owl:Class ;
+  rdfs:label "Raining event" ;
+  rdfs:comment "The event that it is raining." ;
+  rdfs:subClassOf :Event .
+
+:PavementWetEvent a owl:Class ;
+  rdfs:label "Pavement wet event" ;
+  rdfs:comment "The event that the pavement is wet." ;
+  rdfs:subClassOf :Event .
+
+:PavementSlipperyEvent a owl:Class ;
+  rdfs:label "Pavement slippery event" ;
+  rdfs:comment "The event that the pavement is slippery." ;
+  rdfs:subClassOf :Event .
+
+:hasCause a owl:ObjectProperty ;
+  rdfs:label "has cause" ;
+  rdfs:comment "Relates a causal relation to its cause event." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Event .
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has effect" ;
+  rdfs:comment "Relates a causal relation to its effect event." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Event .
+
+:mediatedBy a owl:ObjectProperty ;
+  rdfs:label "mediated by" ;
+  rdfs:comment "Relates a mediated causal relation to the event through which the causal influence is mediated." ;
+  rdfs:domain :MediatedCausalRelation ;
+  rdfs:range :Event .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+  rdfs:label "has effect weight" ;
+  rdfs:comment "Associates a causal relation with a numeric effect weight expressing causal strength." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal .
+
+:canLeadTo a owl:ObjectProperty ;
+  rdfs:label "can lead to" ;
+  rdfs:comment "Relates an event to another event that may occur as its direct causal effect." ;
+  owl:inverseOf :isOutcomeOf ;
+  rdfs:domain :Event ;
+  rdfs:range :Event ;
+  owl:propertyChainAxiom ( :isCauseOfRelation :hasEffect ) .
+
+:isOutcomeOf a owl:ObjectProperty ;
+  rdfs:label "is outcome of" ;
+  rdfs:comment "Relates an event to another event that may causally lead

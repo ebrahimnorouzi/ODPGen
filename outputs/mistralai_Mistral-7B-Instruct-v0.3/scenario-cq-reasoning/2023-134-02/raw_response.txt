@@ -1,52 +1,94 @@
-**Reasoning Steps**
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Atomic requirements:
-   - Unknown identity of Solid actors and their roles (C1)
-   - Lack of metadata about Solid infrastructure (C2)
-   - Need for data category discovery (C3)
-   - Lack of data handling practices information (C4)
-   - Absence of user privacy policy expression (C5)
-   - Lack of logging or record-keeping (C6)
-   - Absence of legal compliance checks (C7)
+:Ontology a owl:Ontology ;
+  rdfs:label "Solid Governance Ontology" ;
+  rdfs:comment "An ontology for governing Solid apps.".
 
-2. Candidate classes and properties:
-   - :Actor (rdfs:label "Actor"; rdfs:comment "Represents a Solid user or service")
-   - :Role (rdfs:label "Role"; rdfs:comment "Represents the function of an Actor")
-   - :Pod (rdfs:label "Pod"; rdfs:comment "Represents a Solid user's data storage")
-   - :Infrastructure (rdfs:label "Infrastructure"; rdfs:comment "Represents the Solid specification or functionalities installed within a Pod")
-   - :DataCategory (rdfs:label "Data Category"; rdfs:comment "Represents the type of data stored in a Pod")
-   - :DataHandlingPractice (rdfs:label "Data Handling Practice"; rdfs:comment "Represents the data handling practices of a Pod or app")
-   - :PrivacyPolicy (rdfs:label "Privacy Policy"; rdfs:comment "Represents a user's privacy preferences and requirements")
-   - :Log (rdfs:label "Log"; rdfs:comment "Represents an event record in a Pod")
-   - :Action (rdfs:label "Action"; rdfs:comment "Represents the type of action performed on data")
-   - :App (rdfs:label "App"; rdfs:comment "Represents a Solid application or service")
+# Atomic Requirements
 
-3. Draft axioms:
-   - :Actor rdf:type owl:Class.
-   - :Role rdf:type owl:Class.
-   - :Pod rdf:type owl:Class.
-   - :Infrastructure rdf:type owl:Class.
-   - :DataCategory rdf:type owl:Class.
-   - :DataHandlingPractice rdf:type owl:Class.
-   - :PrivacyPolicy rdf:type owl:Class.
-   - :Log rdf:type owl:Class.
-   - :Action rdf:type owl:Class.
-   - :App rdf:type owl:Class.
-   - :Actor rdfs:subClassOf [a owl:Restriction; owl:onProperty :hasIdentity; owl:hasValue xsd:string].
-   - :Actor owl:disjointWith :App.
-   - :App rdfs:subClassOf [a owl:Restriction; owl:onProperty :hasIdentity; owl:hasValue xsd:string].
-   - :Actor rdf:type owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range :Role.
-   - :Pod rdf:type owl:ObjectProperty ; rdfs:domain :Actor.
-   - :Infrastructure rdf:type owl:ObjectProperty ; rdfs:domain :Pod.
-   - :DataCategory rdf:type owl:ObjectProperty ; rdfs:domain :Pod.
-   - :DataHandlingPractice rdf:type owl:ObjectProperty ; rdfs:domain :Pod.
-   - :PrivacyPolicy rdf:type owl:ObjectProperty ; rdfs:domain :Actor.
-   - :Log rdf:type owl:ObjectProperty ; rdfs:domain :Actor.
-   - :Action rdf:type owl:ObjectProperty ; rdfs:domain :Log.
-   - :App rdf:type owl:ObjectProperty ; rdfs:domain :Pod.
+:Actor a owl:Class ;
+  rdfs:label "Actor" ;
+  rdfs:comment "A Solid actor, such as a user or an app.".
 
-4. For each CQ, check which axioms enable answering it:
-   - What type of action, e.g., create, update, erase, is being performed on the data? (CQ1) - :Action
-   - Who is the entity interacting with the data? (CQ2) - :Actor
-   - Who is the entity publishing the log? (CQ3) - :Actor
-   - When was the log issued? (CQ4) - Not covered,
+:Role a owl:Class ;
+  rdfs:label "Role" ;
+  rdfs:comment "The role of an actor in the Solid ecosystem.".
+
+:Pod a owl:Class ;
+  rdfs:label "Pod" ;
+  rdfs:comment "A Solid user's personal data store.".
+
+:Infrastructure a owl:Class ;
+  rdfs:label "Infrastructure" ;
+  rdfs:comment "The Solid specification or functionalities installed within a Pod.".
+
+:DataCategory a owl:Class ;
+  rdfs:label "Data Category" ;
+  rdfs:comment "A category of data stored in a Pod.".
+
+:DataHandlingPractice a owl:Class ;
+  rdfs:label "Data Handling Practice" ;
+  rdfs:comment "The practice followed by a Pod or app regarding data handling.".
+
+:PrivacyPolicy a owl:Class ;
+  rdfs:label "Privacy Policy" ;
+  rdfs:comment "The privacy preferences and requirements of a Solid user.".
+
+:Log a owl:Class ;
+  rdfs:label "Log" ;
+  rdfs:comment "A record of data interactions in a Pod.".
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "The type of action performed on data, e.g., create, update, erase.".
+
+:Data a owl:Class ;
+  rdfs:label "Data" ;
+  rdfs:comment "The data stored in a Pod.".
+
+:App a owl:Class ;
+  rdfs:label "App" ;
+  rdfs:comment "The application or service used to generate or interact with data.".
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "The place where data is stored or the log is issued.".
+
+:Time a owl:Class ;
+  rdfs:label "Time" ;
+  rdfs:comment "The point in time when an action was performed or a log was issued.".
+
+# Properties
+
+:hasRole a owl:ObjectProperty ;
+  domain :Actor ;
+  range :Role ;
+  rdfs:label "Has Role" ;
+  rdfs:comment "The role an actor plays in the Solid ecosystem.".
+
+:providesPod a owl:ObjectProperty ;
+  domain :Actor ;
+  range :Pod ;
+  rdfs:label "Provides Pod" ;
+  rdfs:comment "The Pod provided by an actor.".
+
+:hasInfrastructure a owl:ObjectProperty ;
+  domain :Pod ;
+  range :Infrastructure ;
+  rdfs:label "Has Infrastructure" ;
+  rdfs:comment "The Solid specification or functionalities installed within a Pod.".
+
+:hasDataCategory a owl:ObjectProperty ;
+  domain :Data ;
+  range :DataCategory ;
+  rdfs:label "Has Data Category" ;
+  rdfs:comment "The category of data stored in a Pod.".
+
+:handlesDataWith a owl:ObjectProperty ;
+  domain :Pod ;
+  range :DataHandlingPractice

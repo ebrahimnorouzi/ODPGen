@@ -6,15 +6,15 @@
 
 :Ontology a owl:Ontology ;
     rdfs:label "kHealth-Asthma Ontology" ;
-    rdfs:comment "An ontology for modeling asthma symptoms, medication intake, and outdoor environmental allergens.".
+    rdfs:comment "An ontology for modeling asthma symptoms, medication intake, and outdoor environmental allergens in the kHealth-Asthma project.".
 
-:Patient a owl:Class ;
-    rdfs:label "Patient" ;
+:AsthmaPatient a owl:Class ;
+    rdfs:label "Asthma Patient" ;
     rdfs:comment "A person suffering from asthma.".
 
 :Symptom a owl:Class ;
     rdfs:label "Symptom" ;
-    rdfs:comment "A physical manifestation of asthma.".
+    rdfs:comment "A health condition experienced by an asthma patient.".
 
 :Medication a owl:Class ;
     rdfs:label "Medication" ;
@@ -22,34 +22,30 @@
 
 :Environment a owl:Class ;
     rdfs:label "Environment" ;
-    rdfs:comment "The outdoor environment where the patient is located.".
+    rdfs:comment "The outdoor environment where the asthma patient is located.".
 
 :Allergen a owl:Class ;
     rdfs:label "Allergen" ;
-    rdfs:comment "An outdoor environmental factor that triggers asthma symptoms.".
+    rdfs:comment "A substance that triggers an asthma symptom.".
 
 :Pollen a :Allergen ;
     rdfs:label "Pollen" ;
-    rdfs:comment "Outdoor environmental allergen made of fine particles from plants.".
+    rdfs:comment "Outdoor pollen that can trigger asthma symptoms.".
 
 :AQI a :Allergen ;
     rdfs:label "Air Quality Index" ;
-    rdfs:comment "A measure of the quality of air.".
+    rdfs:comment "A measure of the quality of the air in the outdoor environment.".
 
 :CausalRelation a owl:ObjectProperty ;
-    rdfs:domain [ a :Patient ; owl:oneOf (:Patient :Environment) ] ;
-    rdfs:range :Symptom ;
-    rdfs:label "Causal Relation (Symptom)" ;
-    rdfs:comment "Relates a patient or environment to a symptom.".
+    rdfs:domain [ a :AsthmaPatient ; owl:intersectionOf ( :Symptom owl:union :Medication owl:union :Environment ) ] ;
+    rdfs:range :CausalEffect ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A relation between an asthma patient, a symptom, medication, or environment feature and a causal effect.".
 
-:EffectRelation a owl:ObjectProperty ;
-    rdfs:domain [ a :Symptom ; owl:oneOf (:Symptom :Medication) ] ;
-    rdfs:range xsd:decimal ;
-    rdfs:label "Effect Relation" ;
-    rdfs:comment "Relates a symptom or medication to a causal effect weight.".
+:CausalEffect a owl:Class ;
+    rdfs:label "Causal Effect" ;
+    rdfs:comment "The effect of a causal relation between an asthma patient, a symptom, medication, or environment feature.".
 
-:MedicationIntakeRelation a owl:ObjectProperty ;
-    rdfs:domain [ a :Patient ; owl:oneOf (:Patient :Environment) ] ;
-    rdfs:range :Medication ;
-    rdfs:label "Medication Intake Relation" ;
-    rdfs:comment "Relates a patient or environment to medication intake.".
+:EffectWeight a xsd:decimal ;
+    rdfs:label "Effect Weight" ;
+    rdfs:comment "The weight of the effect of a causal relation.".

@@ -6,87 +6,48 @@
 
 :Ontology a owl:Ontology ;
 rdfs:label "Asthma Patient Monitoring Ontology" ;
-rdfs:comment "An ontology for representing data collected about pediatric asthma patients, including their symptoms, medication intake, and outdoor environment features.".
+rdfs:comment "An ontology for representing data collected about pediatric asthma patients, including symptoms, medication intake, and outdoor environmental factors.".
 
-# Classes
 :Patient a owl:Class ;
 rdfs:label "Patient" ;
-rdfs:comment "A patient with asthma.".
+rdfs:comment "A person diagnosed with asthma.".
 
 :Symptom a owl:Class ;
 rdfs:label "Symptom" ;
-rdfs:comment "A symptom experienced by a patient.".
+rdfs:comment "A symptom experienced by a patient, such as cough, chest tightness, wheezing, or breathing patterns.".
 
 :Medication a owl:Class ;
 rdfs:label "Medication" ;
-rdfs:comment "A medication taken by a patient.".
+rdfs:comment "A medication taken by a patient to treat their asthma symptoms.".
 
 :OutdoorEnvironment a owl:Class ;
-rdfs:label "OutdoorEnvironment" ;
-rdfs:comment "The outdoor environment surrounding a patient.".
+rdfs:label "Outdoor Environment" ;
+rdfs:comment "The outdoor environment in which a patient lives, including pollen and air quality index (AQI) levels.".
 
-# Properties
-:hasSymptom a owl:ObjectProperty ;
-rdfs:label "has symptom" ;
-rdfs:comment "A patient has a symptom." ;
-domain :Patient ;
-range :Symptom.
+:CausalRelation a owl:ObjectProperty ;
+rdfs:label "Causal Relation" ;
+rdfs:comment "A relation between two entities, where the presence of one entity (the cause) affects the other entity (the effect).".
 
-:hasMedication a owl:ObjectProperty ;
-rdfs:label "has medication" ;
-rdfs:comment "A patient has taken a medication." ;
-domain :Patient ;
-range :Medication.
+:Patient hasSymptom :Symptom ;
+rdfs:label "hasSymptom" ;
+rdfs:comment "A patient experiences a symptom.".
 
-:isAffectedBy a owl:ObjectProperty ;
-rdfs:label "is affected by" ;
-rdfs:comment "An outdoor environment feature affects a patient's symptom." ;
-domain :OutdoorEnvironment ;
-range :Symptom.
+:Patient takesMedication :Medication ;
+rdfs:label "takesMedication" ;
+rdfs:comment "A patient takes a medication to treat their asthma symptoms.".
 
-:hasPollen a owl:DataProperty ;
-rdfs:label "has pollen" ;
-rdfs:comment "The outdoor environment has a certain level of pollen." ;
-domain :OutdoorEnvironment ;
-range xsd:boolean.
+:OutdoorEnvironment hasPollen xsd:boolean ;
+rdfs:label "hasPollen" ;
+rdfs:comment "The outdoor environment contains pollen.".
 
-:hasAQI a owl:DataProperty ;
-rdfs:label "has AQI" ;
-rdfs:comment "The outdoor environment has a certain Air Quality Index (AQI)." ;
-domain :OutdoorEnvironment ;
-range xsd:integer.
+:OutdoorEnvironment hasAQI xsd:integer ;
+rdfs:label "hasAQI" ;
+rdfs:comment "The outdoor environment has an air quality index (AQI) level.".
 
-# Individuals
-:Patient1 a :Patient ;
-rdfs:label "Patient 1" ;
-:hasSymptom :Symptom1, :Symptom2 ;
-:hasMedication :Medication1 ;
-:isAffectedBy :OutdoorEnvironment1.
+:CausalRelation( :Patient, :Symptom, "0.8"^^xsd:decimal ) ;
+rdfs:label "Causal Relation between Patient and Symptom" ;
+rdfs:comment "The presence of outdoor allergen: pollen/AQI causes a patient to experience a cough with a causal effect weight of 0.8.".
 
-:Patient2 a :Patient ;
-rdfs:label "Patient 2" ;
-:hasSymptom :Symptom3, :Symptom4 ;
-:hasMedication :Medication2 ;
-:isAffectedBy :OutdoorEnvironment2.
-
-:OutdoorEnvironment1 a :OutdoorEnvironment ;
-rdfs:label "Outdoor Environment 1" ;
-:hasPollen true ;
-:hasAQI 100.
-
-:OutdoorEnvironment2 a :OutdoorEnvironment ;
-rdfs:label "Outdoor Environment 2" ;
-:hasPollen false ;
-:hasAQI 50.
-
-:Symptom1 a :Symptom ;
-rdfs:label "Symptom 1" ;
-:isAffectedBy :OutdoorEnvironment1.
-
-:Symptom2 a :Symptom ;
-rdfs:label "Symptom 2" ;
-:isAffectedBy :OutdoorEnvironment1.
-
-:Symptom3 a :Symptom ;
-rdfs:label "Symptom 3" ;
-:isAffectedBy :OutdoorEnvironment2.
+:CausalRelation( :Patient, :Medication, "0.4"^^xsd:decimal ) ;
+rdfs:label "Causal Relation between Patient and Medication" ;
+rdfs:comment "The presence of outdoor allergen: pollen/AQI causes a patient to take a medication with a causal effect weight of 0.4.".

@@ -6,46 +6,47 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "MQTT Process Data Ontology" ;
-  rdfs:comment "An ontology for modeling automated process data captured and transmitted via MQTT packets in the context of the EKI project.".
+  rdfs:comment "A model for automated process data captured and transmitted via MQTT packets in the context of the EKI project.".
 
 # Top-level classes
-:Process a owl:Class ;
-  rdfs:label "Process" ;
-  rdfs:comment "A generic process description.".
+:Topic a owl:Class ;
+  rdfs:label "MQTT Topic" ;
+  rdfs:comment "A named destination that allows one-to-many communication channels between publishers and subscribers.".
 
-:ObservationProcess a owl:Class ;
-  rdfs:label "Observation Process" ;
-  rdfs:comment "A process that captures data from the environment." ;
-  owl:disjointWith :ActuationProcess.
-
-:ActuationProcess a owl:Class ;
-  rdfs:label "Actuation Process" ;
-  rdfs:comment "A process that performs actions based on received data." ;
-  owl:disjointWith :ObservationProcess.
-
-:MQTTMessage a owl:Class ;
+:Message a owl:Class ;
   rdfs:label "MQTT Message" ;
-  rdfs:comment "A message transmitted via the MQTT protocol.".
+  rdfs:comment "A unit of data transmitted between publishers and subscribers.".
 
 :Payload a owl:Class ;
-  rdfs:label "Payload" ;
+  rdfs:label "MQTT Payload" ;
   rdfs:comment "The data content of an MQTT message.".
 
-# Properties
+:Encoding a owl:Class ;
+  rdfs:label "MQTT Encoding" ;
+  rdfs:comment "The character set or format used to represent the MQTT payload.".
+
+# Object properties
+:hasTopic a owl:ObjectProperty ;
+  rdfs:domain :Message ;
+  rdfs:range :Topic ;
+  rdfs:label "Has Topic" ;
+  rdfs:comment "The MQTT topic associated with a message.".
+
 :hasPayload a owl:ObjectProperty ;
-  rdfs:label "hasPayload" ;
-  rdfs:comment "Relates an MQTT message to its payload." ;
-  owl:domain :MQTTMessage ;
-  owl:range :Payload.
+  rdfs:domain :Message ;
+  rdfs:range :Payload ;
+  rdfs:label "Has Payload" ;
+  rdfs:comment "The data content of a message.".
 
 :hasEncoding a owl:ObjectProperty ;
-  rdfs:label "hasEncoding" ;
-  rdfs:comment "Relates a payload to its encoding." ;
-  owl:domain :Payload ;
-  owl:range xsd:string.
+  rdfs:domain :Payload ;
+  rdfs:range :Encoding ;
+  rdfs:label "Has Encoding" ;
+  rdfs:comment "The character set or format used to represent the payload.".
 
-:hasFormat a owl:ObjectProperty ;
-  rdfs:label "hasFormat" ;
-  rdfs:comment "Relates a payload to its format." ;
-  owl:domain :Payload ;
-  owl:range xsd:string.
+# Data properties
+:payloadFormat a owl:DatatypeProperty ;
+  rdfs:domain :Payload ;
+  rdfs:range xsd:string ;
+  rdfs:label "Payload Format" ;
+  rdfs:comment "The format of the payload (e.g., plain text, CSV, JSON).".

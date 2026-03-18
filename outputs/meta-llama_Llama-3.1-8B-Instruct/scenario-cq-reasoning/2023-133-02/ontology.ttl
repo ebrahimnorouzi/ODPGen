@@ -1,30 +1,66 @@
-@prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix : <http://example.org/odp#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Asthma Patient Ontology" ;
-  rdfs:comment "Ontology for asthma patient data".
+  rdfs:label "kHealth-Asthma Ontology" ;
+  rdfs:comment "Ontology for kHealth-Asthma project".
 
-:Patient a owl:Class ;
-  rdfs:label "Patient" ;
-  rdfs:comment "Asthma patient" ;
-  owl:disjointWith :Symptom ;
-  owl:disjointWith :Medication ;
-  owl:disjointWith :OutdoorEnvironmentFeature.
+:AsthmaPatient a owl:Class ;
+  rdfs:label "Asthma Patient" ;
+  rdfs:comment "Patient with asthma".
 
-:Symptom a owl:Class ;
-  rdfs:label "Symptom" ;
-  rdfs:comment "Asthma symptom" ;
-  owl:disjointWith :Patient ;
-  owl:disjointWith :Medication ;
-  owl:disjointWith :OutdoorEnvironmentFeature.
+:AsthmaSymptom a owl:Class ;
+  rdfs:label "Asthma Symptom" ;
+  rdfs:comment "Symptoms of asthma".
 
 :Medication a owl:Class ;
   rdfs:label "Medication" ;
-  rdfs:comment "Medication for asthma" ;
-  owl:disjointWith :Patient ;
-  owl:disjointWith :Symptom ;
-  owl:disjointWith :OutdoorEnvironmentFeature.
+  rdfs:comment "Medications for asthma".
+
+:OutdoorAllergen a owl:Class ;
+  rdfs:label "Outdoor Allergen" ;
+  rdfs:comment "Outdoor environmental allergens".
+
+:EffectWeight a owl:DatatypeProperty ;
+  rdfs:label "Effect Weight" ;
+  rdfs:comment "Weight of effect" ;
+  rdfs:range xsd:float.
+
+:causes a owl:ObjectProperty ;
+  rdfs:label "causes" ;
+  rdfs:comment "Causal relation" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :AsthmaSymptom.
+
+:hasMedication a owl:ObjectProperty ;
+  rdfs:label "has Medication" ;
+  rdfs:comment "Intake of medication" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :Medication.
+
+:hasSymptom a owl:ObjectProperty ;
+  rdfs:label "has Symptom" ;
+  rdfs:comment "Presence of symptom" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :AsthmaSymptom.
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has Effect" ;
+  rdfs:comment "Effect of outdoor allergen" ;
+  rdfs:domain :OutdoorAllergen ;
+  rdfs:range :AsthmaSymptom.
+
+:hasEffectWeight a owl:ObjectProperty ;
+  rdfs:label "has Effect Weight" ;
+  rdfs:comment "Effect weight of outdoor allergen" ;
+  rdfs:domain :OutdoorAllergen ;
+  rdfs:range :EffectWeight.
+
+:hasMedicationEffect a owl:ObjectProperty ;
+  rdfs:label "has Medication Effect" ;
+  rdfs:comment "Effect of medication on symptom" ;
+  rdfs:domain :Medication ;
+  rdfs:range :EffectWeight.

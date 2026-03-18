@@ -1,101 +1,104 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-nf#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
   rdfs:label "ODRL policy evaluation context ODP" ;
-  rdfs:comment "A minimal ontology design pattern for representing contextual information used in evaluating ODRL policies, including parties, assets, actions, events, rule exercise information, recipients, payments, time, location, and temporal segments of assets." .
-
-:PolicyEvaluation a owl:Class ;
-  rdfs:label "Policy Evaluation" ;
-  rdfs:comment "An evaluation context for a policy in which relevant assets, parties, actions, events, time, location, and rule exercise information are considered." .
+  rdfs:comment "A minimal ontology design pattern for representing contextual information used to evaluate ODRL-like policies, including policies, rules, parties, assets, actions, events, time, location, exercise information, recipients, and payment status." .
 
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
   rdfs:comment "A policy being evaluated." .
 
+:Rule a owl:Class ;
+  rdfs:label "Rule" ;
+  rdfs:comment "A rule that is part of a policy and may be exercised." .
+
 :Party a owl:Class ;
   rdfs:label "Party" ;
-  rdfs:comment "An entity participating in or relevant to the policy evaluation." .
+  rdfs:comment "An entity that participates in a policy context." .
 
 :Asset a owl:Class ;
   rdfs:label "Asset" ;
-  rdfs:comment "A resource that is governed by the policy being evaluated." .
-
-:AssetCollection a owl:Class ;
-  rdfs:label "Asset Collection" ;
-  rdfs:comment "A collection of assets associated with a policy being evaluated." .
-
-:PartyCollection a owl:Class ;
-  rdfs:label "Party Collection" ;
-  rdfs:comment "A collection of parties associated with a policy being evaluated." .
+  rdfs:comment "An asset that is part of a policy context." .
 
 :Action a owl:Class ;
   rdfs:label "Action" ;
-  rdfs:comment "An action that was performed or attempted in relation to the policy evaluation." .
-
-:Rule a owl:Class ;
-  rdfs:label "Rule" ;
-  rdfs:comment "A rule whose exercise is relevant to policy evaluation." .
+  rdfs:comment "An action that may be performed or attempted in relation to a rule or policy." .
 
 :Event a owl:Class ;
   rdfs:label "Event" ;
-  rdfs:comment "An event that has occurred and for which information may be available in the policy evaluation context." .
+  rdfs:comment "An event that has occurred and about which information may be available for policy evaluation." .
 
 :Location a owl:Class ;
   rdfs:label "Location" ;
-  rdfs:comment "A location associated with a party in the policy evaluation context." .
+  rdfs:comment "A location associated with a party." .
 
 :Recipient a owl:Class ;
   rdfs:label "Recipient" ;
   rdfs:comment "A recipient that can receive the result of an exercised rule." .
 
 :RecipientCategory a owl:Class ;
-  rdfs:label "Recipient Category" ;
+  rdfs:label "Recipient category" ;
   rdfs:comment "A category of recipients that can receive the result of an exercised rule." .
 
 :Payment a owl:Class ;
   rdfs:label "Payment" ;
   rdfs:comment "A financial payment relevant to policy evaluation." .
 
-:TemporalSegment a owl:Class ;
-  rdfs:label "Temporal Segment" ;
-  rdfs:comment "A segment of an asset identified by a start and end time, such as minutes 4 to 9 of a video stream." .
+:hasRule a owl:ObjectProperty ;
+  rdfs:label "has rule" ;
+  rdfs:comment "Relates a policy to a rule that is part of the policy." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Rule .
 
-:hasPolicy a owl:ObjectProperty ;
-  rdfs:label "has policy" ;
-  rdfs:comment "Relates a policy evaluation context to the policy being evaluated." ;
-  rdfs:domain :PolicyEvaluation ;
-  rdfs:range :Policy .
+:hasAsset a owl:ObjectProperty ;
+  rdfs:label "has asset" ;
+  rdfs:comment "Relates a policy to an asset that is part of its asset collection." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Asset .
 
-:hasCurrentTime a owl:DatatypeProperty ;
-  rdfs:label "has current time" ;
-  rdfs:comment "Gives the current time relevant to the policy evaluation." ;
-  rdfs:domain :PolicyEvaluation ;
-  rdfs:range xsd:dateTime .
+:hasParty a owl:ObjectProperty ;
+  rdfs:label "has party" ;
+  rdfs:comment "Relates a policy to a party that is part of its party collection." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Party .
 
-:hasPartyLocation a owl:ObjectProperty ;
-  rdfs:label "has party location" ;
+:hasLocation a owl:ObjectProperty ;
+  rdfs:label "has location" ;
   rdfs:comment "Relates a party to its location." ;
   rdfs:domain :Party ;
   rdfs:range :Location .
 
-:hasAssetCollection a owl:ObjectProperty ;
-  rdfs:label "has asset collection" ;
-  rdfs:comment "Relates a policy to its asset collection." ;
-  rdfs:domain :Policy ;
-  rdfs:range :AssetCollection .
+:performedAction a owl:ObjectProperty ;
+  rdfs:label "performed action" ;
+  rdfs:comment "Relates a rule to an action that was already performed." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Action .
 
-:hasAssetMember a owl:ObjectProperty ;
-  rdfs:label "has asset member" ;
-  rdfs:comment "Relates an asset collection to an asset that is part of it." ;
-  rdfs:domain :AssetCollection ;
-  rdfs:range :Asset .
+:attemptedAction a owl:ObjectProperty ;
+  rdfs:label "attempted action" ;
+  rdfs:comment "Relates a rule to an action that was already attempted." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Action .
 
-:hasPartyCollection a owl:ObjectProperty ;
-  rdfs:label "has party collection" ;
-  rdfs:comment "Relates a policy to its party collection." ;
-  rdfs:
+:hasEvent a owl:ObjectProperty ;
+  rdfs:label "has event" ;
+  rdfs:comment "Relates a rule to an event that has occurred and is relevant to evaluation." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Event .
+
+:hasRecipient a owl:ObjectProperty ;
+  rdfs:label "has recipient" ;
+  rdfs:comment "Relates a rule to a recipient that can receive the result of the exercised rule." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Recipient .
+
+:hasRecipientCategory a owl:ObjectProperty ;
+  rdfs:label "has recipient category" ;
+  rdfs:comment "Relates a rule to a category of recipients that can receive the result

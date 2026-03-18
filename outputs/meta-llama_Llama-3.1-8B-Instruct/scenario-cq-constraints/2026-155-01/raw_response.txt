@@ -13,13 +13,17 @@
   rdfs:label "Survey" ;
   rdfs:comment "Scientific survey activity performed on a cultural property or feature of interest.".
 
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "Result of a survey or investigation activity.".
+
 :Method a owl:Class ;
   rdfs:label "Method" ;
   rdfs:comment "Investigation technique adopted in a survey or investigation activity.".
 
-:Observation a owl:Class ;
-  rdfs:label "Observation" ;
-  rdfs:comment "Result of a survey or investigation activity.".
+:EquipmentConfiguration a owl:Class ;
+  rdfs:label "Equipment Configuration" ;
+  rdfs:comment "Hardware, software, and technical configurations used to conduct a survey.".
 
 :Expert a owl:Class ;
   rdfs:label "Expert" ;
@@ -29,72 +33,79 @@
   rdfs:label "Role" ;
   rdfs:comment "Position or function of an expert in a survey or investigation activity.".
 
-:Hardware a owl:Class ;
-  rdfs:label "Hardware" ;
-  rdfs:comment "Equipment used to conduct a survey or investigation activity.".
-
-:Software a owl:Class ;
-  rdfs:label "Software" ;
-  rdfs:comment "Technical configuration used to conduct a survey or investigation activity.".
-
 :Acquisition a owl:Class ;
   rdfs:label "Acquisition" ;
-  rdfs:comment "Process of collecting data during a survey or investigation activity.".
+  rdfs:comment "Process of obtaining data or observations during a survey.".
 
 :Parameter a owl:Class ;
   rdfs:label "Parameter" ;
-  rdfs:comment "Characteristic of an acquisition process.".
+  rdfs:comment "Characteristic of an acquisition, such as exposure time or ISO.".
 
-:Output a owl:Class ;
-  rdfs:label "Output" ;
-  rdfs:comment "Result of a post-processing activity.".
+:PostProcessedOutput a owl:Class ;
+  rdfs:label "Post-Processed Output" ;
+  rdfs:comment "Result of processing observations or data from a survey.".
 
-:Survey_has_Method :Survey :Method owl:hasPart ;
-  rdfs:label "Survey has method" ;
-  rdfs:comment "Relationship between a survey and its adopted method.".
+:Claim a owl:Class ;
+  rdfs:label "Claim" ;
+  rdfs:comment "Interpretation or conclusion supported by observations from a survey.".
 
-:Survey_has_Observation :Survey :Observation owl:hasPart ;
-  rdfs:label "Survey has observation" ;
-  rdfs:comment "Relationship between a survey and its produced observations.".
+:hasMethod a owl:ObjectProperty ;
+  rdfs:label "has Method" ;
+  rdfs:comment "Relationship between a survey and the method adopted." ;
+  rdfs:domain :Survey ;
+  rdfs:range :Method.
 
-:Survey_has_Expert :Survey :Expert :Role owl:hasPart ;
-  rdfs:label "Survey has expert" ;
-  rdfs:comment "Relationship between a survey and its participating experts.".
+:hasObservation a owl:ObjectProperty ;
+  rdfs:label "has Observation" ;
+  rdfs:comment "Relationship between a survey and the observations produced." ;
+  rdfs:domain :Survey ;
+  rdfs:range :Observation.
 
-:Survey_has_Hardware :Survey :Hardware owl:hasPart ;
-  rdfs:label "Survey has hardware" ;
-  rdfs:comment "Relationship between a survey and its used equipment.".
+:hasExpert a owl:ObjectProperty ;
+  rdfs:label "has Expert" ;
+  rdfs:comment "Relationship between a survey and the experts participating." ;
+  rdfs:domain :Survey ;
+  rdfs:range :Expert.
 
-:Survey_has_Software :Survey :Software owl:hasPart ;
-  rdfs:label "Survey has software" ;
-  rdfs:comment "Relationship between a survey and its used technical configurations.".
+:hasRole a owl:ObjectProperty ;
+  rdfs:label "has Role" ;
+  rdfs:comment "Relationship between an expert and their role in a survey." ;
+  rdfs:domain :Expert ;
+  rdfs:range :Role.
 
-:Observation_has_Parameter :Observation :Parameter owl:hasPart ;
-  rdfs:label "Observation has parameter" ;
-  rdfs:comment "Relationship between an observation and its characterising parameters.".
+:hasEquipmentConfiguration a owl:ObjectProperty ;
+  rdfs:label "has Equipment Configuration" ;
+  rdfs:comment "Relationship between a survey and the equipment configurations used." ;
+  rdfs:domain :Survey ;
+  rdfs:range :EquipmentConfiguration.
 
-:Acquisition_has_Parameter :Acquisition :Parameter owl:hasPart ;
-  rdfs:label "Acquisition has parameter" ;
-  rdfs:comment "Relationship between an acquisition process and its characterising parameters.".
+:hasAcquisition a owl:ObjectProperty ;
+  rdfs:label "has Acquisition" ;
+  rdfs:comment "Relationship between a survey and the acquisition process." ;
+  rdfs:domain :Survey ;
+  rdfs:range :Acquisition.
 
-:Output_has_Acquisition :Output :Acquisition owl:hasPart ;
-  rdfs:label "Output has acquisition" ;
-  rdfs:comment "Relationship between a post-processing output and its underlying acquisition activity.".
+:hasParameter a owl:ObjectProperty ;
+  rdfs:label "has Parameter" ;
+  rdfs:comment "Relationship between an acquisition and its parameters." ;
+  rdfs:domain :Acquisition ;
+  rdfs:range :Parameter.
+
+:hasPostProcessedOutput a owl:ObjectProperty ;
+  rdfs:label "has Post-Processed Output" ;
+  rdfs:comment "Relationship between a survey and the post-processed outputs." ;
+  rdfs:domain :Survey ;
+  rdfs:range :PostProcessedOutput.
+
+:hasClaim a owl:ObjectProperty ;
+  rdfs:label "has Claim" ;
+  rdfs:comment "Relationship between a survey and the claims supported by observations." ;
+  rdfs:domain :Survey ;
+  rdfs:range :Claim.
 ```
 
 Validation report:
 
 1. Turtle syntax is valid (no missing dots, brackets, or semicolons). PASS
 2. All prefixes used in the body are declared at the top. PASS
-3. Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies. PASS
-4. No two classes or properties are defined with contradictory restrictions (e.g., disjoint yet subclass, or domain A yet also domain B inconsistently). PASS
-5. Every CQ is traceable to at least one class or property in the ontology. PASS
-6. No concept appears in the ontology that is not grounded in the scenario or CQs. PASS
-
-Scope report:
-
-(a) Requirements from the scenario that are covered:
-- The structure of scientific survey activities performed on cultural heritage entities.
-- Relationships between surveys, observations, methods, equipment configurations, and interpretation processes.
-
-(b) Any scenario concepts explicitly excluded and why
+3. Every property with a domain

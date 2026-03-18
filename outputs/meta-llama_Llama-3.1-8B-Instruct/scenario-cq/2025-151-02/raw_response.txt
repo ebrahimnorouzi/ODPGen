@@ -1,5 +1,3 @@
-### Turtle Ontology
-
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -9,106 +7,113 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "ODRL Policy Evaluation Ontology" ;
-  rdfs:comment "Ontology for representing ODRL policies and their evaluation.".
+  rdfs:comment "Ontology for representing ODRL policy evaluation information".
 
 :Time a owl:Class ;
   rdfs:label "Time" ;
-  rdfs:comment "Represents a point in time.".
+  rdfs:comment "Time point or duration".
 
 :Location a owl:Class ;
   rdfs:label "Location" ;
-  rdfs:comment "Represents a geographical location.".
+  rdfs:comment "Geographical location".
 
 :Asset a owl:Class ;
   rdfs:label "Asset" ;
-  rdfs:comment "Represents a digital or physical asset.".
+  rdfs:comment "Resource or item being evaluated".
 
 :AssetCollection a owl:Class ;
   rdfs:label "Asset Collection" ;
-  rdfs:comment "Represents a collection of assets.".
+  rdfs:comment "Set of assets being evaluated".
 
 :Party a owl:Class ;
   rdfs:label "Party" ;
-  rdfs:comment "Represents an individual or organization.".
+  rdfs:comment "Individual or organization involved in policy evaluation".
 
 :PartyCollection a owl:Class ;
   rdfs:label "Party Collection" ;
-  rdfs:comment "Represents a collection of parties.".
+  rdfs:comment "Set of parties involved in policy evaluation".
 
 :Action a owl:Class ;
   rdfs:label "Action" ;
-  rdfs:comment "Represents an action performed or attempted.".
+  rdfs:comment "Event or activity being evaluated".
 
 :RuleExercise a owl:Class ;
   rdfs:label "Rule Exercise" ;
-  rdfs:comment "Represents the exercise of a rule.".
+  rdfs:comment "Instance of a rule being applied".
 
 :Event a owl:Class ;
   rdfs:label "Event" ;
-  rdfs:comment "Represents an occurrence or event.".
+  rdfs:comment "Occurrence or situation being evaluated".
+
+:Recipient a owl:Class ;
+  rdfs:label "Recipient" ;
+  rdfs:comment "Individual or group receiving the result of a rule".
 
 :FinancialPayment a owl:Class ;
   rdfs:label "Financial Payment" ;
-  rdfs:comment "Represents a financial payment.".
+  rdfs:comment "Transaction involving monetary exchange".
 
-:hasTime rdf:type owl:DatatypeProperty ;
+:hasTime  a owl:DatatypeProperty ;
   rdfs:label "has Time" ;
-  rdfs:comment "Associates an asset or event with a point in time." ;
-  rdfs:domain :Asset ;
+  rdfs:comment "Time point or duration associated with an event" ;
   rdfs:domain :Event ;
   rdfs:range xsd:dateTime.
 
-:hasLocation rdf:type owl:DatatypeProperty ;
+:hasLocation  a owl:ObjectProperty ;
   rdfs:label "has Location" ;
-  rdfs:comment "Associates a party or asset with a geographical location." ;
-  rdfs:domain :Party ;
-  rdfs:domain :Asset ;
+  rdfs:comment "Geographical location associated with an event" ;
+  rdfs:domain :Event ;
   rdfs:range :Location.
 
-:hasAsset rdf:type owl:ObjectProperty ;
+:hasAsset  a owl:ObjectProperty ;
   rdfs:label "has Asset" ;
-  rdfs:comment "Associates an asset collection with its assets." ;
+  rdfs:comment "Asset being evaluated" ;
   rdfs:domain :AssetCollection ;
   rdfs:range :Asset.
 
-:hasParty rdf:type owl:ObjectProperty ;
+:hasParty  a owl:ObjectProperty ;
   rdfs:label "has Party" ;
-  rdfs:comment "Associates a party collection with its parties." ;
+  rdfs:comment "Party involved in policy evaluation" ;
   rdfs:domain :PartyCollection ;
   rdfs:range :Party.
 
-:performedBy rdf:type owl:ObjectProperty ;
-  rdfs:label "performedBy" ;
-  rdfs:comment "Associates an action with the party that performed it." ;
-  rdfs:domain :Action ;
-  rdfs:range :Party.
+:hasAction  a owl:ObjectProperty ;
+  rdfs:label "has Action" ;
+  rdfs:comment "Action being evaluated" ;
+  rdfs:domain :Event ;
+  rdfs:range :Action.
 
-:exerciseCount rdf:type owl:DatatypeProperty ;
-  rdfs:label "exerciseCount" ;
-  rdfs:comment "Counts the number of times a rule has been exercised." ;
-  rdfs:domain :RuleExercise ;
-  rdfs:range xsd:integer.
+:hasRuleExercise  a owl:ObjectProperty ;
+  rdfs:label "has Rule Exercise" ;
+  rdfs:comment "Instance of a rule being applied" ;
+  rdfs:domain :Event ;
+  rdfs:range :RuleExercise.
 
-:hasEvent rdf:type owl:ObjectProperty ;
-  rdfs:label "has Event" ;
-  rdfs:comment "Associates an asset or party with an event." ;
-  rdfs:domain :Asset ;
-  rdfs:domain :Party ;
-  rdfs:range :Event.
+:hasRecipient  a owl:ObjectProperty ;
+  rdfs:label "has Recipient" ;
+  rdfs:comment "Recipient of the result of a rule" ;
+  rdfs:domain :Event ;
+  rdfs:range :Recipient.
 
-:hasDuration rdf:type owl:DatatypeProperty ;
+:hasFinancialPayment  a owl:ObjectProperty ;
+  rdfs:label "has Financial Payment" ;
+  rdfs:comment "Transaction involving monetary exchange" ;
+  rdfs:domain :Event ;
+  rdfs:range :FinancialPayment.
+
+:hasDuration  a owl:DatatypeProperty ;
   rdfs:label "has Duration" ;
-  rdfs:comment "Associates a rule exercise with its duration." ;
-  rdfs:domain :RuleExercise ;
+  rdfs:comment "Time period associated with an event" ;
+  rdfs:domain :Event ;
   rdfs:range xsd:duration.
 
-:receivesResult rdf:type owl:ObjectProperty ;
-  rdfs:label "receivesResult" ;
-  rdfs:comment "Associates a recipient with the result of a rule exercise." ;
-  rdfs:domain :RuleExercise ;
-  rdfs:range :Party.
+:hasAmountPaid  a owl:DatatypeProperty ;
+  rdfs:label "has Amount Paid" ;
+  rdfs:comment "Monetary amount associated with a financial transaction" ;
+  rdfs:domain :FinancialPayment ;
+  rdfs:range xsd:decimal.
+```
 
-:hasFinancialPayment rdf:type owl:ObjectProperty ;
-  rdfs:label "has Financial Payment" ;
-  rdfs:comment "Associates a party with a financial payment." ;
-  rdfs:domain
+**Scenario-requirement-to-axiom mapping:**
+
+1. Bob wants to have access to a certain video stream, but only needs access to

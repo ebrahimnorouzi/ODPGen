@@ -5,53 +5,70 @@
 @prefix : <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "kHealth-Asthma ODP" ;
-  rdfs:comment "An ontology for modeling asthma patients, their symptoms, medication intake, and outdoor environmental factors in the kHealth-Asthma project.".
+  rdfs:label "kHealth-Asthma Ontology" ;
+  rdfs:comment "An ontology for modeling asthma patients, their symptoms, medication intake, and outdoor environment features, with causal relations and effect weights.".
+
+# Classes
+:Person a owl:Class ;
+  rdfs:label "Person" ;
+  rdfs:comment "A person participating in the kHealth-Asthma project.".
 
 :AsthmaPatient a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     rdf:property :age ;
+                     xsd:minInclusive "0" ] ;
   rdfs:label "Asthma Patient" ;
-  rdfs:comment "Represents a pediatric asthma patient.".
+  rdfs:comment "A pediatric asthma patient participating in the kHealth-Asthma project.".
 
 :Symptom a owl:Class ;
   rdfs:label "Symptom" ;
-  rdfs:comment "Represents a symptom experienced by an asthma patient.".
+  rdfs:comment "A symptom experienced by an asthma patient.".
 
 :Medication a owl:Class ;
   rdfs:label "Medication" ;
-  rdfs:comment "Represents a medication taken by an asthma patient.".
+  rdfs:comment "A medication taken by an asthma patient.".
 
-:OutdoorEnvironmentFactor a owl:Class ;
-  rdfs:label "Outdoor Environment Factor" ;
-  rdfs:comment "Represents an outdoor environmental factor affecting an asthma patient.".
+:EnvironmentFeature a owl:Class ;
+  rdfs:label "Environment Feature" ;
+  rdfs:comment "An outdoor environmental factor affecting an asthma patient.".
+
+:OutdoorAllergen a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     rdf:property :type ;
+                     rdf:datatype xsd:string ;
+                     owl:hasValue "allergen" ] ;
+  rdfs:label "Outdoor Allergen" ;
+  rdfs:comment "An outdoor allergen affecting an asthma patient.".
+
+:AirQualityIndex a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     rdf:property :type ;
+                     rdf:datatype xsd:string ;
+                     owl:hasValue "AQI" ] ;
+  rdfs:label "Air Quality Index" ;
+  rdfs:comment "The air quality index affecting an asthma patient.".
+
+# Properties
+:hasAge a owl:ObjectProperty ;
+  rdfs:domain :Person ;
+  rdfs:range xsd:integer ;
+  rdfs:label "Age" ;
+  rdfs:comment "The age of a person.".
 
 :hasSymptom a owl:ObjectProperty ;
   rdfs:domain :AsthmaPatient ;
   rdfs:range :Symptom ;
   rdfs:label "Has Symptom" ;
-  rdfs:comment "Indicates that an asthma patient has a specific symptom.".
+  rdfs:comment "The symptom experienced by an asthma patient.".
 
 :takesMedication a owl:ObjectProperty ;
   rdfs:domain :AsthmaPatient ;
   rdfs:range :Medication ;
   rdfs:label "Takes Medication" ;
-  rdfs:comment "Indicates that an asthma patient takes a specific medication.".
+  rdfs:comment "The medication taken by an asthma patient.".
 
-:isOutdoorEnvironmentFactor a owl:ObjectProperty ;
+:hasEnvironmentFeature a owl:ObjectProperty ;
   rdfs:domain :AsthmaPatient ;
-  rdfs:range :OutdoorEnvironmentFactor ;
-  rdfs:label "Is Outdoor Environment Factor" ;
-  rdfs:comment "Indicates that an outdoor environmental factor affects an asthma patient.".
-
-:hasCausalEffectWeight a owl:ObjectProperty ;
-  rdfs:domain [ a :OutdoorEnvironmentFactor ; owl:oneOf (:Pollen ; :AQI) ] ;
-  rdfs:range xsd:decimal ;
-  rdfs:label "Has Causal Effect Weight" ;
-  rdfs:comment "Indicates the causal effect weight of an outdoor environmental factor on a symptom.".
-
-:Pollen a :OutdoorEnvironmentFactor ;
-  rdfs:label "Pollen" ;
-  rdfs:comment "Represents pollen in the outdoor environment.".
-
-:AQI a :OutdoorEnvironmentFactor ;
-  rdfs:label "Air Quality Index (AQI)" ;
-  rdfs:comment "Represents the air quality index in the outdoor environment.".
+  rdfs:range :EnvironmentFeature ;
+  rdfs:label "Has Environment Feature" ;
+  rdfs:comment "The environmental feature affecting an asthma patient.".

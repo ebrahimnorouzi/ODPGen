@@ -9,94 +9,86 @@
   rdfs:label "Pseudonym and Authorship Ontology" ;
   rdfs:comment "An ontology for modeling pseudonyms and authorship roles.".
 
-:Author a rdfs:Class ;
+:Author a owl:Class ;
   rdfs:label "Author" ;
   rdfs:comment "An individual who writes books.".
 
-:Book a rdfs:Class ;
+:Book a owl:Class ;
   rdfs:label "Book" ;
   rdfs:comment "A written work.".
 
-:Pseudonym a rdfs:Class ;
+:Pseudonym a owl:Class ;
   rdfs:label "Pseudonym" ;
   rdfs:comment "A name used by an author to conceal their identity.".
 
-:AssumesRole a rdfs:Class ;
-  rdfs:label "Assumes Role" ;
-  rdfs:comment "An action where an individual takes on a new role.".
-
-:UsesPseudonym a rdf:Property ;
+:UsesPseudonym a owl:ObjectProperty ;
   rdfs:label "Uses Pseudonym" ;
-  rdfs:comment "The pseudonym used by an author." ;
+  rdfs:comment "An author uses a pseudonym to publish a book." ;
   rdfs:domain :Author ;
   rdfs:range :Pseudonym.
 
-:PublishesBook a rdf:Property ;
-  rdfs:label "Publishes Book" ;
-  rdfs:comment "The book published by an author." ;
+:Publishes a owl:ObjectProperty ;
+  rdfs:label "Publishes" ;
+  rdfs:comment "An author publishes a book." ;
   rdfs:domain :Author ;
   rdfs:range :Book.
 
-:AuthorshipRole a rdf:Property ;
-  rdfs:label "Authorship Role" ;
-  rdfs:comment "The role assumed by an author." ;
+:AssumesRole a owl:ObjectProperty ;
+  rdfs:label "Assumes Role" ;
+  rdfs:comment "An individual assumes a role to perform an action." ;
   rdfs:domain :Author ;
-  rdfs:range :AssumesRole.
+  rdfs:range :BookWriter.
 
-:NationalPark a rdfs:Class ;
-  rdfs:label "National Park" ;
-  rdfs:comment "A protected area of land.".
+:BookWriter a owl:Class ;
+  rdfs:label "Book Writer" ;
+  rdfs:comment "An individual who writes books.".
 
-:River a rdfs:Class ;
+:Trajectory a owl:Class ;
+  rdfs:label "Trajectory" ;
+  rdfs:comment "A path followed by a moving object.".
+
+:Follows a owl:ObjectProperty ;
+  rdfs:label "Follows" ;
+  rdfs:comment "A trajectory follows a geographical feature." ;
+  rdfs:domain :Trajectory ;
+  rdfs:range :GeographicalFeature.
+
+:GeographicalFeature a owl:Class ;
+  rdfs:label "Geographical Feature" ;
+  rdfs:comment "A natural or man-made feature on the Earth's surface.".
+
+:Crosses a owl:ObjectProperty ;
+  rdfs:label "Crosses" ;
+  rdfs:comment "A river crosses a geographical feature." ;
+  rdfs:domain :River ;
+  rdfs:range :GeographicalFeature.
+
+:River a owl:Class ;
   rdfs:label "River" ;
   rdfs:comment "A natural flowing body of water.".
 
-:Crosses a rdf:Property ;
-  rdfs:label "Crosses" ;
-  rdfs:comment "The river that crosses a national park." ;
-  rdfs:domain :River ;
-  rdfs:range :NationalPark.
+:NationalPark a owl:Class ;
+  rdfs:label "National Park" ;
+  rdfs:comment "A protected area of land.".
 
-:HasTrajectory a rdf:Property ;
-  rdfs:label "Has Trajectory" ;
-  rdfs:comment "The trajectory of a river." ;
-  rdfs:domain :River ;
-  rdfs:range : :RiverTrajectory.
+:LocatedIn a owl:ObjectProperty ;
+  rdfs:label "Located In" ;
+  rdfs:comment "A geographical feature is located in a region." ;
+  rdfs:domain :GeographicalFeature ;
+  rdfs:range :Region.
 
-:RiverTrajectory a rdfs:Class ;
-  rdfs:label "River Trajectory" ;
-  rdfs:comment "The path followed by a river.".
+:Region a owl:Class ;
+  rdfs:label "Region" ;
+  rdfs:comment "A defined area of land.".
 
-:C.S.Lewis a :Author ;
-  :UsesPseudonym :PseudonymLewis ;
-  :PublishesBook :SpiritInBondage.
-
-:PseudonymLewis a :Pseudonym ;
-  rdfs:label "Pseudonym Lewis" ;
-  rdfs:comment "The pseudonym used by C.S. Lewis.".
-
-:AssumesRoleAsWriter a :AssumesRole ;
-  rdfs:label "Assumes Role as Writer" ;
-  rdfs:comment "The role assumed by C.S. Lewis as a writer.".
-
-:CrossesNationalPark a :River ;
-  :Crosses :YellowstonePark.
-
-:YellowstonePark a :NationalPark ;
-  rdfs:label "Yellowstone National Park" ;
-  rdfs:comment "A national park in the United States.".
-
-:HasTrajectoryOfYellowstone a :RiverTrajectory ;
-  :HasTrajectory :YellowstoneRiver.
-
-:YellowstoneRiver a :River ;
-  rdfs:label "Yellowstone River" ;
-  rdfs:comment "A river in the United States.".
 ```
 
-**CQ-to-Axiom Mapping Table**
+CQ-to-axiom mapping table:
 
-| Competency Question | Enabling Axioms |
-| --- | --- |
-| Under what pseudonym did the author C. S. Lewis publish a collection of poems, Spirit in Bondage? | `:C.S.Lewis :PublishesBook :SpiritInBondage.`<br>`:C.S.Lewis :UsesPseudonym :PseudonymLewis.`<br>``:PseudonymLewis a :Pseudonym ;` |
-| What alternative did C. S. Lewis use to assume the role of a book writer? | `:C.S.Lewis :AuthorshipRole :AssumesRoleAsWriter.`<br>`:AssumesRoleAsWriter a :Ass
+| CQ | Enabling Classes | Enabling Properties |
+| --- | --- | --- |
+| Under what pseudonym did the author C. S. Lewis publish a collection of poems, Spirit in Bondage? | :Author, :Pseudonym | :UsesPseudonym |
+| What alternative did C. S. Lewis use to assume the role of a book writer? | :Author, :BookWriter | :AssumesRole |
+| Show the trajectories of rivers which cross national parks? | :River, :Trajectory, :NationalPark | :Crosses, :Follows, :LocatedIn |
+
+Note: The classes and properties listed in the table are the minimum required to answer each competency question. Additional classes and properties may be useful in a real-world application, but are not necessary to answer the given CQs.

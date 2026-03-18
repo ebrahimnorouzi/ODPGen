@@ -1,4 +1,4 @@
-Here is an OWL ontology design pattern (ODP) in Turtle syntax that models the scenario you provided:
+Turtle Ontology:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -7,91 +7,85 @@ Here is an OWL ontology design pattern (ODP) in Turtle syntax that models the sc
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-rdfs:label "Formal description of a requested action by an assignee on a target asset" ;
-rdfs:comment "Models a requested action by an assignee on a target asset, enriched with contextual information.".
+rdfs:label "Request Ontology" ;
+rdfs:comment "Formal description of a requested action by an assignee on a target asset, which can be enriched with further contextual information.".
 
-; Classes
+:Request a owl:Class ;
+rdfs:label "Request" ;
+rdfs:comment "A request made by an assignee on a target asset.".
 
 :Assignee a owl:Class ;
 rdfs:label "Assignee" ;
-rdfs:comment "An individual or organization assigned to perform a task.".
+rdfs:comment "An individual who made a request.".
 
 :TargetAsset a owl:Class ;
 rdfs:label "Target Asset" ;
-rdfs:comment "The asset on which the action is performed.".
-
-:Action a owl:Class ;
-rdfs:label "Action" ;
-rdfs:comment "The action performed by the assignee on the target asset.".
+rdfs:comment "The asset on which the request is made.".
 
 :Context a owl:Class ;
 rdfs:label "Context" ;
-rdfs:comment "Additional information about the action, including temporal, spatial, role, and request-capability context.".
+rdfs:comment "Additional information about the request.".
 
-; Properties
+:TemporalContext a owl:SubClassOf :Context ;
+rdfs:label "Temporal Context" ;
+rdfs:comment "Context related to time.".
 
-:assignee a owl:ObjectProperty ;
-rdfs:label "assignee" ;
-rdfs:comment "The assignee who performs the action." ;
-domain :Action ;
-range :Assignee.
+:SpatialContext a owl:SubClassOf :Context ;
+rdfs:label "Spatial Context" ;
+rdfs:comment "Context related to location.".
 
-:targetAsset a owl:ObjectProperty ;
-rdfs:label "targetAsset" ;
-rdfs:comment "The target asset on which the action is performed." ;
-domain :Action ;
-range :TargetAsset.
+:RoleContext a owl:SubClassOf :Context ;
+rdfs:label "Role Context" ;
+rdfs:comment "Context related to the role of the assignee.".
 
-:context a owl:ObjectProperty ;
-rdfs:label "context" ;
-rdfs:comment "The context in which the action is performed." ;
-domain :Action ;
-range :Context.
+:RequestCapabilityContext a owl:SubClassOf :Context ;
+rdfs:label "Request Capability Context" ;
+rdfs:comment "Context related to the capabilities of the assignee.".
 
-:temporalContext a owl:ObjectProperty ;
-rdfs:label "temporalContext" ;
-rdfs:comment "The temporal context in which the action is performed, e.g. date, time." ;
-domain :Context ;
-range :xsd:dateTime.
+:Allowed a owl:ObjectProperty ;
+rdfs:label "Allowed" ;
+rdfs:comment "Indicates whether the request is allowed.".
 
-:spatialContext a owl:ObjectProperty ;
-rdfs:label "spatialContext" ;
-rdfs:comment "The spatial context in which the action is performed, e.g. location." ;
-domain :Context ;
-range :xsd:string.
+:Denied a owl:ObjectProperty ;
+rdfs:label "Denied" ;
+rdfs:comment "Indicates whether the request is denied.".
 
-:roleContext a owl:ObjectProperty ;
-rdfs:label "roleContext" ;
-rdfs:comment "The role context in which the action is performed, e.g. employee, manager." ;
-domain :Context ;
-range :xsd:string.
+:Evaluation a owl:Class ;
+rdfs:label "Evaluation" ;
+rdfs:comment "The result of evaluating a request.".
 
-:requestCapabilityContext a owl:ObjectProperty ;
-rdfs:label "requestCapabilityContext" ;
-rdfs:comment "The request capability context in which the action is performed, e.g. requester, approver." ;
-domain :Context ;
-range :xsd:string.
+:Evaluation a owl:SubClassOf :Request.
 
-; Axioms
+:Allowed a owl:ObjectProperty ;
+rdfs:domain :Evaluation ;
+rdfs:range :Boolean.
 
-:Assignee subclassOf :Person.
-:TargetAsset subclassOf :Asset.
-:Action subclassOf :Event.
-:Context subclassOf :Information.
+:Denied a owl:ObjectProperty ;
+rdfs:domain :Evaluation ;
+rdfs:range :Boolean.
 
-:assignee domain :Action range :Assignee.
-:targetAsset domain :Action range :TargetAsset.
-:context domain :Action range :Context.
+:Context a owl:ObjectProperty ;
+rdfs:domain :Request ;
+rdfs:range :Context.
 
-:temporalContext domain :Context range :xsd:dateTime.
-:spatialContext domain :Context range :xsd:string.
-:roleContext domain :Context range :xsd:string.
-:requestCapabilityContext domain :Context range :xsd:string.
-
-:Action disjointWith :xsd:dateTime.
-:Context disjointWith :xsd:string.
+:Evaluation a owl:ObjectProperty ;
+rdfs:domain :Request ;
+rdfs:range :Evaluation.
 ```
-Intent:
-The ODP models a requested action by an assignee on a target asset, enriched with contextual information, including temporal, spatial, role, and request-capability context.
+Documentation:
 
-Covered requirements
+Intent:
+The ontology models a formal description of a requested action by an assignee on a target asset, which can be enriched with further contextual information. Access is allowed only to employees, only on weekdays, and only from the EU; evaluation therefore needs temporal, spatial, role, and request-capability context.
+
+Covered Requirements:
+
+* Formal description of a requested action by an assignee on a target asset
+* Enrichment with further contextual information
+* Access control based on employee status, weekdays, and EU location
+* Evaluation of requests based on temporal, spatial, role, and request-capability context
+
+Known Assumptions and Exclusions:
+
+* The ontology assumes that the request is made by an employee, and that the assignee has a role that can be evaluated.
+* The ontology does not include any information about the actual asset or the request itself, other than its existence and the context in which it is made.
+* The ontology does not include any information about the evaluation process or the

@@ -6,67 +6,41 @@
 
 :Ontology a owl:Ontology ;
 rdfs:label "Sprinkler Use Case Ontology" ;
-rdfs:comment "An ontology for representing the causal relations between events in the sprinkler use case scenario".
+rdfs:comment "An ontology for representing the causal relations between events in the sprinkler use case.".
 
-# Scenario-requirement-to-axiom mapping
+:Event a owl:Class ;
+rdfs:label "Event" ;
+rdfs:comment "A class representing an event in the sprinkler use case.".
 
-# 1. It is rainy season.
-:RainySeason a owl:Class ;
+:RainySeason a :Event ;
 rdfs:label "Rainy Season" ;
-rdfs:comment "A class representing the event of it being rainy season".
+rdfs:comment "An event representing the rainy season.".
 
-# 2. The sprinkler is on.
-:SprinklerOn a owl:Class ;
+:SprinklerOn a :Event ;
 rdfs:label "Sprinkler On" ;
-rdfs:comment "A class representing the event of the sprinkler being on".
+rdfs:comment "An event representing the sprinkler being on.".
 
-# 3. It is raining.
-:Raining a owl:Class ;
+:Raining a :Event ;
 rdfs:label "Raining" ;
-rdfs:comment "A class representing the event of it raining".
+rdfs:comment "An event representing rainfall.".
 
-# 4. The pavement is wet.
-:PavementWet a owl:Class ;
+:PavementWet a :Event ;
 rdfs:label "Pavement Wet" ;
-rdfs:comment "A class representing the event of the pavement being wet".
+rdfs:comment "An event representing the pavement being wet.".
 
-# 5. The pavement is slippery.
-:PavementSlippery a owl:Class ;
+:PavementSlippery a :Event ;
 rdfs:label "Pavement Slippery" ;
-rdfs:comment "A class representing the event of the pavement being slippery".
+rdfs:comment "An event representing the pavement being slippery.".
 
-# Competency Questions-to-axiom mapping
+:CausalRelation a owl:ObjectProperty ;
+rdfs:label "Causal Relation" ;
+rdfs:comment "A property representing a causal relation between two events.".
 
-# 1. What events are responsible for the pavement being slippery?
-:PavementSlippery a owl:Class ;
-rdfs:label "Pavement Slippery" ;
-rdfs:comment "A class representing the event of the pavement being slippery".
+:EffectWeight a xsd:Decimal ;
+rdfs:label "Effect Weight" ;
+rdfs:comment "A property representing the effect weight of a causal relation.".
 
-:SlipperyPavement a owl:ObjectProperty ;
-rdfs:label "Slippery Pavement" ;
-rdfs:comment "An object property representing the relation between the pavement being slippery and the events that cause it".
-
-:RainySeason :SlipperyPavement :PavementWet.
-:SprinklerOn :SlipperyPavement :PavementWet.
-:Raining :SlipperyPavement :PavementWet.
-
-# 2. What would be the outcome of turning the sprinkler system on(off)?
-:SprinklerOn a owl:Class ;
-rdfs:label "Sprinkler On" ;
-rdfs:comment "A class representing the event of the sprinkler being on".
-
-:SprinklerOff a owl:Class ;
-rdfs:label "Sprinkler Off" ;
-rdfs:comment "A class representing the event of the sprinkler being off".
-
-:SprinklerState a owl:ObjectProperty ;
-rdfs:label "Sprinkler State" ;
-rdfs:comment "An object property representing the relation between the sprinkler and its state".
-
-:SprinklerOn :SprinklerState :On.
-:SprinklerOff :SprinklerState :Off.
-
-# 3. How strong is the causal link between the sprinkler being on and the pavement being wet?
-:CausalLink a owl:ObjectProperty ;
-rdfs:label "Causal Link" ;
-rdfs:comment "An object property representing the causal relation between two events".
+:RainySeason :CausalRelation :SprinklerOn :EffectWeight 0.6.
+:SprinklerOn :CausalRelation :Raining :EffectWeight 0.8.
+:Raining :CausalRelation :PavementWet :EffectWeight 0.9.
+:PavementWet :CausalRelation :PavementSlippery :EffectWeight 0.7.

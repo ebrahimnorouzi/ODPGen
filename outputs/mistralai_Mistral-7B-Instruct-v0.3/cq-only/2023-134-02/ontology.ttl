@@ -5,78 +5,75 @@
 @prefix : <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Data Interaction Log Ontology" ;
-  rdfs:comment "An ontology for modeling data interaction logs.".
+  rdfs:label "Data Log Ontology" ;
+  rdfs:comment "An ontology for modeling data logs with competency questions about actions, entities, timestamps, locations, and applications.".
 
-# Action
-:Action rdf:Type owl:Class ;
+# Classes
+:Action a owl:Class ;
   rdfs:label "Action" ;
-  rdfs:comment "The type of action performed on the data.".
+  rdfs:comment "The type of action being performed on the data.".
 
-:Create a :Action ;
-  rdfs:label "Create" ;
-  rdfs:comment "The action of creating data.".
+:Entity a owl:Class ;
+  rdfs:label "Entity" ;
+  rdfs:comment "The entity interacting with the data or publishing the log.".
 
-:Update a :Action ;
-  rdfs:label "Update" ;
-  rdfs:comment "The action of updating data.".
-
-:Erase a :Action ;
-  rdfs:label "Erase" ;
-  rdfs:comment "The action of erasing data.".
-
-# Interactor
-:Interactor rdf:Type owl:Class ;
-  rdfs:label "Interactor" ;
-  rdfs:comment "The entity interacting with the data.".
-
-# Publisher
-:Publisher rdf:Type owl:Class ;
+:Publisher a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                    owl:onProperty :publisher ;
+                    owl:hasValue :Entity. ] ;
   rdfs:label "Publisher" ;
   rdfs:comment "The entity publishing the log.".
 
-# Timestamp
-:Timestamp rdf:Type owl:Class ;
+:Timestamp a owl:Class ;
   rdfs:label "Timestamp" ;
   rdfs:comment "The time when the log was issued.".
 
-:Year xsd:dateTime "0000-01-01T00:00:00"^^xsd:dateTime ;
-  rdfs:label "Year" ;
-  rdfs:comment "The year part of the timestamp.".
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "The place where the data is being stored.".
 
-:Month xsd:gYearMonth "0001-01"^^xsd:gYearMonth ;
-  rdfs:label "Month" ;
-  rdfs:comment "The month part of the timestamp.".
-
-:Day xsd:gDay "01"^^xsd:gDay ;
-  rdfs:label "Day" ;
-  rdfs:comment "The day part of the timestamp.".
-
-:Hour xsd:gYearMonthDayTime "00:00:00"^^xsd:gYearMonthDayTime ;
-  rdfs:label "Hour" ;
-  rdfs:comment "The hour part of the timestamp.".
-
-:Minute xsd:gYearMonthDayTime "00:00"^^xsd:gYearMonthDayTime ;
-  rdfs:label "Minute" ;
-  rdfs:comment "The minute part of the timestamp.".
-
-:Second xsd:gYearMonthDayTime "00"^^xsd:gYearMonthDayTime ;
-  rdfs:label "Second" ;
-  rdfs:comment "The second part of the timestamp.".
-
-# Storage
-:Storage rdf:Type owl:Class ;
-  rdfs:label "Storage" ;
-  rdfs:comment "Where the data is being stored.".
-
-# Application/Service
-:Application rdf:Type owl:Class ;
-  rdfs:label "Application/Service" ;
-  rdfs:comment "The application or service generating the data.".
+:Application a owl:Class ;
+  rdfs:label "Application" ;
+  rdfs:comment "The application or service being used to generate the data.".
 
 # Object Properties
-:performs :Action rdf:Type owl:ObjectProperty ;
-  rdfs:domain :Interactor ;
-  rdfs:range :Action ;
-  rdfs:label "performs" ;
-  rdfs:comment "The action performed by the interactor.".
+:performedBy a owl:ObjectProperty ;
+  rdfs:domain :Action ;
+  rdfs:range :Entity ;
+  rdfs:label "performedBy" ;
+  rdfs:comment "The entity that performed the action.".
+
+:publishedBy a owl:ObjectProperty ;
+  rdfs:domain :Log ;
+  rdfs:range :Publisher ;
+  rdfs:label "publishedBy" ;
+  rdfs:comment "The entity that published the log.".
+
+:hasTimestamp a owl:ObjectProperty ;
+  rdfs:domain :Log ;
+  rdfs:range :Timestamp ;
+  rdfs:label "hasTimestamp" ;
+  rdfs:comment "The timestamp of the log.".
+
+:isStoredAt a owl:ObjectProperty ;
+  rdfs:domain :Location ;
+  rdfs:range rdf:Resource ;
+  rdfs:label "isStoredAt" ;
+  rdfs:comment "The location where the data is being stored.".
+
+:generatedBy a owl:ObjectProperty ;
+  rdfs:domain :Data ;
+  rdfs:range :Application ;
+  rdfs:label "generatedBy" ;
+  rdfs:comment "The application or service that generated the data.".
+
+# Data Types
+:Timestamp rdfs:subClassOf [ a xsd:dateTime ].
+
+# Axioms
+:Log a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                    owl:onProperty :hasTimestamp ;
+                    owl:hasValue ""^^xsd:dateTime. ] ;
+  rdfs:label "Log" ;
+  rdfs:comment "A log entry containing information about an action, the entity, the timestamp, the location, and the application.".

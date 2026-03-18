@@ -1,70 +1,114 @@
-**Reasoning Steps**
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
 
-1. **Extract atomic requirements from the scenario**
-	* A formalized and extensible conceptual model for representing ships and their properties in a machine-interpretable way.
-	* Unified semantic structure for heterogeneous data sources.
-	* Machine-readable descriptions of vessel characteristics.
-	* Fast semantic querying of relevant vessel trajectory data.
-	* Common semantic layer across disparate data systems.
-	* Structural backbone for building digital twins of vessels.
-2. **Propose candidate classes and properties for each requirement**
-	* Ship: class
-		+ Properties: name, dimensions, location, owner, speed, draught, route, trajectory, propulsion system, engine, fuel, propeller, sail, wind assistance.
-	* Vessel Characteristic: class
-		+ Properties: dimension, speed, draught.
-	* Trajectory: class
-		+ Properties: location, time, speed.
-	* Propulsion System: class
-		+ Properties: type, engine, fuel, propeller, sail, wind assistance.
-	* Engine: class
-		+ Properties: type, power, fuel.
-	* Propeller: class
-		+ Properties: type, diameter, number of blades.
-	* Sail: class
-		+ Properties: type, size.
-	* Wind Assistance: class
-		+ Properties: type, speed.
-3. **Draft axioms (subclass, domain, range, cardinality, disjointness) for each candidate**
-	* Ship ⊑ Vessel Characteristic
-	* Vessel Characteristic ⊑ hasDimension (Ship, xsd:double)
-	* Vessel Characteristic ⊑ hasSpeed (Ship, xsd:double)
-	* Vessel Characteristic ⊑ hasDraught (Ship, xsd:double)
-	* Trajectory ⊑ hasLocation (Ship, xsd:double)
-	* Trajectory ⊑ hasTime (Ship, xsd:dateTime)
-	* Trajectory ⊑ hasSpeed (Ship, xsd:double)
-	* Propulsion System ⊑ hasEngine (Ship, Engine)
-	* Propulsion System ⊑ hasFuel (Ship, xsd:string)
-	* Propulsion System ⊑ hasPropeller (Ship, Propeller)
-	* Propulsion System ⊑ hasSail (Ship, Sail)
-	* Propulsion System ⊑ hasWindAssistance (Ship, WindAssistance)
-	* Engine ⊑ hasPower (xsd:double)
-	* Engine ⊑ hasFuel (xsd:string)
-	* Propeller ⊑ hasDiameter (xsd:double)
-	* Propeller ⊑ hasNumberOfBlades (xsd:integer)
-	* Sail ⊑ hasSize (xsd:double)
-	* WindAssistance ⊑ hasSpeed (xsd:double)
-4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
-	* CQ1: How are ships clearly identified?
-		+ Axioms: Ship ⊑ hasName (xsd:string)
-	* CQ2: How are a ship's dimensions described?
-		+ Axioms: Vessel Characteristic ⊑ hasDimension (Ship, xsd:double)
-	* CQ3: What information can be provided about the typical location of a ship?
-		+ Axioms: Trajectory ⊑ hasLocation (Ship, xsd:double)
-	* CQ4: Who can be the owner of a ship?
-		+ Axioms: Ship ⊑ hasOwner (xsd:string)
-	* CQ5: How is a ship's average speed over ground specified?
-		+ Axioms: Vessel Characteristic ⊑ hasSpeed (Ship, xsd:double)
-	* CQ6: How many container ships are registered under the German flag?
-		+ Axioms: Ship ⊑ hasFlag (xsd:string)
-	* CQ7: How is the GPS antenna placed relatively to the ship's structure (bow, stern, port, starboard)?
-		+ Axioms: Ship ⊑ hasGPSAntennaPosition (xsd:string)
-	* CQ8: Which organization owns the most ships?
-		+ Axioms: Ship ⊑ hasOwner (xsd:string)
-	* CQ9: What information can be provided about a ship route?
-		+ Axioms: Trajectory ⊑ hasRoute (Ship, xsd:string)
-	* CQ10: What information is known about a single trajectory part?
-		+ Axioms: Trajectory ⊑ hasLocation (Ship, xsd:double)
-	* CQ11: What types of trajectories are distinguished?
-		+ Axioms: Trajectory ⊑ hasType (xsd:string)
-	* CQ12: What unit does the draught of a ship have?
-		+ Axioms: Vessel Characteristic ⊑ hasDraught (Ship,
+:Ontology a owl:Ontology ;
+  rdfs:label "Maritime Domain Ontology" ;
+  rdfs:comment "Formalized conceptual model for representing ships and their properties.".
+
+:Ship a owl:Class ;
+  rdfs:label "Ship" ;
+  rdfs:comment "A vessel used for transportation or other purposes.".
+
+:ShipID a owl:Class ;
+  rdfs:label "Ship ID" ;
+  rdfs:comment "Unique identifier for a ship.".
+
+:Dimensions a owl:Class ;
+  rdfs:label "Dimensions" ;
+  rdfs:comment "Measurements of a ship's size.".
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "Geographical position of a ship.".
+
+:Owner a owl:Class ;
+  rdfs:label "Owner" ;
+  rdfs:comment "Entity responsible for a ship's operation.".
+
+:Speed a owl:Class ;
+  rdfs:label "Speed" ;
+  rdfs:comment "Rate of a ship's movement.".
+
+:ContainerShip a owl:Class ;
+  rdfs:label "Container Ship" ;
+  rdfs:comment "Ship designed for transporting containers.".
+
+:GermanFlag a owl:Class ;
+  rdfs:label "German Flag" ;
+  rdfs:comment "National flag of Germany.".
+
+:GPSAntenna a owl:Class ;
+  rdfs:label "GPS Antenna" ;
+  rdfs:comment "Device used for GPS signal reception.".
+
+:ShipRoute a owl:Class ;
+  rdfs:label "Ship Route" ;
+  rdfs:comment "Path followed by a ship.".
+
+:Trajectory a owl:Class ;
+  rdfs:label "Trajectory" ;
+  rdfs:comment "Series of positions in space and time.".
+
+:PropulsionSystem a owl:Class ;
+  rdfs:label "Propulsion System" ;
+  rdfs:comment "Mechanism used to generate thrust.".
+
+:Engine a owl:Class ;
+  rdfs:label "Engine" ;
+  rdfs:comment "Machine used to generate power.".
+
+:PowerSource a owl:Class ;
+  rdfs:label "Power Source" ;
+  rdfs:comment "Entity providing energy for a propulsion system.".
+
+:Propeller a owl:Class ;
+  rdfs:label "Propeller" ;
+  rdfs:comment "Device used to generate thrust.".
+
+:BladedPropulsor a owl:Class ;
+  rdfs:label "Bladed Propulsor" ;
+  rdfs:comment "Propulsor using blades to generate thrust.".
+
+:JetPropulsor a owl:Class ;
+  rdfs:label "Jet Propulsor" ;
+  rdfs:comment "Propulsor using jets to generate thrust.".
+
+:ScrewPropeller a owl:Class ;
+  rdfs:label "Screw Propeller" ;
+  rdfs:comment "Propeller using a screw-like design.".
+
+:WindAssistedPropulsion a owl:Class ;
+  rdfs:label "Wind Assisted Propulsion" ;
+  rdfs:comment "Propulsion system assisted by wind.".
+
+:ShipEngine a owl:ObjectProperty ;
+  rdfs:label "Ship Engine" ;
+  rdfs:comment "Relationship between a ship and its engine." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Engine.
+
+:ShipPropulsionSystem a owl:ObjectProperty ;
+  rdfs:label "Ship Propulsion System" ;
+  rdfs:comment "Relationship between a ship and its propulsion system." ;
+  rdfs:domain :Ship ;
+  rdfs:range :PropulsionSystem.
+
+:PropulsionSystemPowerSource a owl:ObjectProperty ;
+  rdfs:label "Propulsion System Power Source" ;
+  rdfs:comment "Relationship between a propulsion system and its power source." ;
+  rdfs:domain :PropulsionSystem ;
+  rdfs:range :PowerSource.
+
+:ShipRouteTrajectory a owl:ObjectProperty ;
+  rdfs:label "Ship Route Trajectory" ;
+  rdfs:comment "Relationship between a ship route and its trajectory." ;
+  rdfs:domain :ShipRoute ;
+  rdfs:range :Trajectory.
+
+:ShipDimensions a owl:ObjectProperty ;
+  rdfs:label "Ship Dimensions" ;
+  rdfs:comment "Relationship between a ship and its dimensions." ;

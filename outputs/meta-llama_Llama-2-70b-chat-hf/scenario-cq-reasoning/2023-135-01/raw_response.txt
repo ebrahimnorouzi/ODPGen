@@ -1,63 +1,4 @@
-Reasoning:
-
-1. Extract atomic requirements from the scenario:
-* Author adopts different names to publish books.
-* Name changes (e.g. after marriage).
-2. Propose candidate classes and properties for each requirement:
-* Author:
-	+ hasName (range: String)
-	+ hasPseudonym (range: String)
-	+ hasWrittenWork (range: Work)
-* Work:
-	+ hasTitle (range: String)
-	+ hasAuthor (range: Author)
-	+ hasPublicationDate (range: Date)
-* Pseudonym:
-	+ hasName (range: String)
-	+ hasAuthor (range: Author)
-3. Draft axioms for each candidate class and property:
-* Author:
-	+ subclass (Author owl:Thing)
-	+ domain (hasName rdfs:String)
-	+ range (hasWrittenWork rdfs:Work)
-	+ cardinality (hasWrittenWork 1..*)
-* Work:
-	+ subclass (Work owl:Thing)
-	+ domain (hasTitle rdfs:String)
-	+ range (hasAuthor rdfs:Author)
-	+ cardinality (hasAuthor 1..*)
-	+ domain (hasPublicationDate rdfs:Date)
-* Pseudonym:
-	+ subclass (Pseudonym owl:Thing)
-	+ domain (hasName rdfs:String)
-	+ range (hasAuthor rdfs:Author)
-	+ cardinality (hasAuthor 1..*)
-4. For each CQ, check which axioms enable answering it; note any CQs not yet covered:
-* CQ 1: Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?
-	+ Axioms: hasPseudonym, hasWrittenWork
-* CQ 2: What alternative did C. S. Lewis used to assume the role of a book writer?
-	+ Axioms: hasName, hasPseudonym
-* CQ 3: Show the trajectories of rivers which cross national parks?
-	+ Not covered by the current ontology.
-5. Add or refine axioms to cover any uncovered CQs:
-* Add a new class and property for River and its trajectory:
-	+ River:
-		- subclass (River owl:Thing)
-		- domain (hasTrajectory rdfs:Trajectory)
-		- range (hasRiver rdfs:River)
-		- cardinality (hasRiver 1..*)
-	+ Trajectory:
-		- subclass (Trajectory owl:Thing)
-		- domain (hasStartPoint rdfs:Point)
-		- range (hasEndPoint rdfs:Point)
-		- cardinality (hasStartPoint 1..1)
-		- cardinality (hasEndPoint 1..1)
-* Add a new axiom for the hasTrajectory property to relate River and Trajectory:
-	+ hasTrajectory (range: Trajectory)
-6. Remove any classes or properties not traceable to a requirement or CQ:
-* Remove the Pseudonym class and its properties, as it is not necessary to answer any of the CQs.
-
-Final ontology:
+Turtle Ontology:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -66,15 +7,90 @@ Final ontology:
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-rdfs:label "Author and Work Ontology" ;
-rdfs:comment "An ontology for representing authors, their works, and their pseudonyms.".
+rdfs:label "Author Pseudonym Ontology" ;
+rdfs:comment "An ontology for representing authors, their pseudonyms, and their published works.".
 
-Author a owl:Thing ;
+:Author a owl:Class ;
 rdfs:label "Author" ;
-rdfs:comment "An author who has written works.".
+rdfs:comment "A person who has written a book or other written work.".
 
-hasName a rdfs:String ;
-rdfs:label "name" ;
-rdfs:comment "The name of the author.".
+:Pseudonym a owl:Class ;
+rdfs:label "Pseudonym" ;
+rdfs:comment "A fictional name used by an author to conceal their real identity.".
 
-hasPseudonym
+:Book a owl:Class ;
+rdfs:label "Book" ;
+rdfs:comment "A written or printed work consisting of pages glued or sewn together along one side and bound in covers.".
+
+:Write a owl:ObjectProperty ;
+rdfs:label "write" ;
+rdfs:comment "The act of creating a written work." ;
+domain :Author ;
+range :Book.
+
+:Use a owl:ObjectProperty ;
+rdfs:label "use" ;
+rdfs:comment "The act of using a pseudonym." ;
+domain :Author ;
+range :Pseudonym.
+
+:HasPseudonym a owl:ObjectProperty ;
+rdfs:label "has pseudonym" ;
+rdfs:comment "The relationship between an author and their pseudonym." ;
+domain :Author ;
+range :Pseudonym.
+
+:HasBook a owl:ObjectProperty ;
+rdfs:label "has book" ;
+rdfs:comment "The relationship between an author and their published book." ;
+domain :Author ;
+range :Book.
+
+:SpiritInBondage a :Book ;
+rdfs:label "Spirit in Bondage" ;
+rdfs:comment "A collection of poems written by C. S. Lewis.".
+
+:C SLewis a :Author ;
+rdfs:label "C. S. Lewis" ;
+rdfs:comment "A famous author who used the pseudonym Clive Hamilton.".
+
+:CliveHamilton a :Pseudonym ;
+rdfs:label "Clive Hamilton" ;
+rdfs:comment "A pseudonym used by C. S. Lewis.".
+
+:UsePseudonym a owl:ObjectProperty ;
+rdfs:label "use pseudonym" ;
+rdfs:comment "The act of using a pseudonym." ;
+domain :Author ;
+range :Pseudonym.
+
+:HasTrajectory a owl:ObjectProperty ;
+rdfs:label "has trajectory" ;
+rdfs:comment "The relationship between a river and its trajectory." ;
+domain :River ;
+range :Trajectory.
+
+:Trajectory a owl:Class ;
+rdfs:label "Trajectory" ;
+rdfs:comment "A path or course along which something moves or extends.".
+
+:River a owl:Class ;
+rdfs:label "River" ;
+rdfs:comment "A natural flowing body of water.".
+
+:NationalPark a owl:Class ;
+rdfs:label "National Park" ;
+rdfs:comment "A protected area of outstanding natural beauty or historical significance.".
+
+:Crosses a owl:ObjectProperty ;
+rdfs:label "crosses" ;
+rdfs:comment "The relationship between a river and a national park." ;
+domain :River ;
+range :NationalPark.
+```
+Reasoning Summary:
+
+* Extracted atomic requirements:
+	+ Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?
+	+ What alternative did C. S. Lewis used to assume the role of a book writer?
+	+ Show the trajectories of rivers which

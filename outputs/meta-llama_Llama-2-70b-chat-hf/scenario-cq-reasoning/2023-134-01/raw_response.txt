@@ -1,57 +1,98 @@
-Reasoning:
+Turtle Ontology:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Extract atomic requirements from the scenario:
-* C1: Identity of Solid actors and their roles is unknown
-* C2: No metadata about Solid infrastructure
-* C3: Availability/Discovery of categories of data
-* C4: Pod and app providers do not provide information on their data handling practices
-* C5: Users cannot express their privacy policies
-* C6: No logging or record-keeping
-* C7: No legal compliance checks
-2. Propose candidate classes and properties for each requirement:
-* C1: Actor, Role
-* C2: Infrastructure, Metadata
-* C3: DataCategory, Availability, Discovery
-* C4: Pod, App, DataHandlingPractices
-* C5: User, PrivacyPolicy
-* C6: Log, RecordKeeping
-* C7: LegalCompliance, Auditing
-3. Draft axioms for each candidate:
-* C1:
-	+ Actor: rdfs:label "Actor" ; rdfs:comment "An actor in the Solid ecosystem".
-	+ Role: rdfs:label "Role" ; rdfs:comment "A role played by an actor in the Solid ecosystem".
-* C2:
-	+ Infrastructure: rdfs:label "Infrastructure" ; rdfs:comment "The Solid infrastructure".
-	+ Metadata: rdfs:label "Metadata" ; rdfs:comment "Metadata about the Solid infrastructure".
-* C3:
-	+ DataCategory: rdfs:label "DataCategory" ; rdfs:comment "A category of data in the Solid ecosystem".
-	+ Availability: rdfs:label "Availability" ; rdfs:comment "The availability of data in the Solid ecosystem".
-	+ Discovery: rdfs:label "Discovery" ; rdfs:comment "The discovery of data in the Solid ecosystem".
-* C4:
-	+ Pod: rdfs:label "Pod" ; rdfs:comment "A Pod in the Solid ecosystem".
-	+ App: rdfs:label "App" ; rdfs:comment "An app in the Solid ecosystem".
-	+ DataHandlingPractices: rdfs:label "DataHandlingPractices" ; rdfs:comment "The data handling practices of a Pod or app".
-* C5:
-	+ User: rdfs:label "User" ; rdfs:comment "A user of the Solid ecosystem".
-	+ PrivacyPolicy: rdfs:label "PrivacyPolicy" ; rdfs:comment "A privacy policy of a user in the Solid ecosystem".
-* C6:
-	+ Log: rdfs:label "Log" ; rdfs:comment "A log of events in the Solid ecosystem".
-	+ RecordKeeping: rdfs:label "RecordKeeping" ; rdfs:comment "The keeping of records in the Solid ecosystem".
-* C7:
-	+ LegalCompliance: rdfs:label "LegalCompliance" ; rdfs:comment "Compliance with legal requirements in the Solid ecosystem".
-	+ Auditing: rdfs:label "Auditing" ; rdfs:comment "The auditing of compliance in the Solid ecosystem".
-4. For each CQ, check which axioms enable answering it; note any CQs not yet covered.
-* CQ1: What is the unique identifier of the policy?
-	+ Covered by: PrivacyPolicy, rdfs:label, rdfs:comment
-* CQ2: Who is the creator of the policy?
-	+ Covered by: PrivacyPolicy, rdfs:creator
-* CQ3: When was the policy issued?
-	+ Covered by: PrivacyPolicy, dct:issued
-* CQ4: Who is the assignee of the policy?
-	+ Covered by: PrivacyPolicy, rdfs:assignee
-* CQ5: What application/service is being used to access the data?
-	+ Covered by: App, rdfs:label
-* CQ6: What access mode is being requested?
-	+ Covered by: App, rdfs:accessMode
-* CQ7: What personal data is being accessed?
-	+ Covered by: App, rdfs:accessedData
+:Ontology a owl:Ontology ;
+rdfs:label "Solid Governance Ontology" ;
+rdfs:comment "An ontology for governing Solid applications".
+
+; Classes
+:SolidActor a owl:Class ;
+rdfs:label "Solid Actor" ;
+rdfs:comment "A Solid actor is an entity that provides a Pod or uses a Solid app".
+
+:Pod a owl:Class ;
+rdfs:label "Pod" ;
+rdfs:comment "A Pod is a container for data and apps in a Solid ecosystem".
+
+:App a owl:Class ;
+rdfs:label "App" ;
+rdfs:comment "An app is a software application that runs on a Solid Pod".
+
+:DataCategory a owl:Class ;
+rdfs:label "Data Category" ;
+rdfs:comment "A category of data stored in a Pod".
+
+:PrivacyPolicy a owl:Class ;
+rdfs:label "Privacy Policy" ;
+rdfs:comment "A privacy policy defines how data is handled in a Solid ecosystem".
+
+:ConsentRecord a owl:Class ;
+rdfs:label "Consent Record" ;
+rdfs:comment "A record of consent for data access".
+
+:ProvenanceMetadata a owl:Class ;
+rdfs:label "Provenance Metadata" ;
+rdfs:comment "Metadata about the origin and history of data".
+
+; Properties
+:hasActor a owl:ObjectProperty ;
+rdfs:label "has actor" ;
+rdfs:comment "An actor that provides a Pod or uses an app".
+
+:hasPod a owl:ObjectProperty ;
+rdfs:label "has pod" ;
+rdfs:comment "A Pod that contains data and apps".
+
+:hasApp a owl:ObjectProperty ;
+rdfs:label "has app" ;
+rdfs:comment "An app that runs on a Pod".
+
+:hasDataCategory a owl:ObjectProperty ;
+rdfs:label "has data category" ;
+rdfs:comment "A data category stored in a Pod".
+
+:hasPrivacyPolicy a owl:ObjectProperty ;
+rdfs:label "has privacy policy" ;
+rdfs:comment "A privacy policy that defines data handling practices".
+
+:hasConsentRecord a owl:ObjectProperty ;
+rdfs:label "has consent record" ;
+rdfs:comment "A record of consent for data access".
+
+:hasProvenanceMetadata a owl:ObjectProperty ;
+rdfs:label "has provenance metadata" ;
+rdfs:comment "Metadata about the origin and history of data".
+
+; Axioms
+:SolidActor subClassOf owl:Agent.
+:Pod subClassOf owl:Resource.
+:App subClassOf owl:Resource.
+:DataCategory subClassOf owl:Class.
+:PrivacyPolicy subClassOf owl:Policy.
+:ConsentRecord subClassOf owl:Policy.
+:ProvenanceMetadata subClassOf owl:Metadata.
+
+:hasActor domain :SolidActor.
+:hasActor range :SolidActor.
+
+:hasPod domain :SolidActor.
+:hasPod range :Pod.
+
+:hasApp domain :SolidActor.
+:hasApp range :App.
+
+:hasDataCategory domain :Pod.
+:hasDataCategory range :DataCategory.
+
+:hasPrivacyPolicy domain :Pod.
+:hasPrivacyPolicy range :PrivacyPolicy.
+
+:hasConsentRecord domain :Pod.
+:hasConsentRecord range :ConsentRecord.
+
+:hasProvenanceMetadata domain

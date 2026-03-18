@@ -1,66 +1,104 @@
-Reasoning:
-
-1. Extract atomic requirements from the scenario:
-* Persistent identifiers (e.g., 'CL1') refer to changing referents over time.
-* Referents are front-month crude oil futures contracts.
-* Contracts rollover monthly.
-* Real-time market attributes are bound to the current contract instance.
-* Invariant identifier is used for continuity across contract rollovers.
-2. Propose candidate classes and properties:
-* Classes:
-	+ PersistentIdentifier
-	+ FrontMonthCrudeOilFuturesContract
-	+ ContractRollover
-	+ RealTimeMarketAttribute
-* Properties:
-	+ persistentIdentifier (domain: FrontMonthCrudeOilFuturesContract, range: String)
-	+ referent (domain: PersistentIdentifier, range: FrontMonthCrudeOilFuturesContract)
-	+ rollover (domain: ContractRollover, range: TimeInterval)
-	+ attribute (domain: RealTimeMarketAttribute, range: String)
-3. Draft axioms:
-* Subclass:
-	+ PersistentIdentifier ⊑ Object
-	+ FrontMonthCrudeOilFuturesContract ⊑ Object
-	+ ContractRollover ⊑ Object
-	+ RealTimeMarketAttribute ⊑ Object
-* Domain and range:
-	+ persistentIdentifier (domain: FrontMonthCrudeOilFuturesContract, range: String)
-	+ referent (domain: PersistentIdentifier, range: FrontMonthCrudeOilFuturesContract)
-	+ rollover (domain: ContractRollover, range: TimeInterval)
-	+ attribute (domain: RealTimeMarketAttribute, range: String)
-* Cardinality and disjointness:
-	+ cardinality(PersistentIdentifier, 1)
-	+ cardinality(FrontMonthCrudeOilFuturesContract, 1)
-	+ disjointness(PersistentIdentifier, FrontMonthCrudeOilFuturesContract)
-	+ disjointness(ContractRollover, RealTimeMarketAttribute)
-4. Check which axioms enable answering each Competency Question (CQ):
-| CQ | Axioms Enabling Answer |
-| --- | --- |
-| 1. Which entity does a persistent identifier currently reference? | persistentIdentifier(X, Y) |
-| 2. Which entity was referenced at a past timestamp? | referent(X, Y) |
-| 3. When did referent transitions occur? | rollover(X, Y) |
-| 4. What observations are associated with specific referents? | attribute(X, Y) |
-| 5. What is the full sequence of referents over time? | sequence(X, Y) |
-| 6. Which rules triggered specific transitions? | not directly answerable |
-| 7. Are there gaps or overlaps in temporal bindings? | not directly answerable |
-| 8. Can complete context be rebuilt for any time point? | not directly answerable |
-5. Add or refine axioms to cover any uncovered CQs:
-* Add axioms for temporal reasoning:
-	+ temporalSequence(X, Y, Z) ⟺ sequence(X, Y) ∧ sequence(Y, Z)
-	+ temporalPrecedence(X, Y) ⟺ sequence(X, Y) ∧ (Y ≠ X)
-	+ temporalSuccessor(X, Y) ⟺ temporalPrecedence(X, Y) ∧ (Y ≠ X)
-	+ temporalInterval(X, Y, Z) ⟺ temporalSequence(X, Y, Z) ∧ (Y ≠ X ∧ Z ≠ Y)
-* Refine axioms for clarity and consistency:
-	+ rename(persistentIdentifier, identifier)
-	+ rename(referent, referentContract)
-	+ rename(rollover, contractRollover)
-	+ rename(attribute, marketAttribute)
-6. Remove any classes or properties not traceable to a requirement or CQ:
-* Remove unused classes and properties:
-	+ Remove class: RealTimeMarketAttribute
-	+ Remove property: attribute
-
-Final ontology:
+Turtle Ontology:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
-@prefix rdf:  <http
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Persistent Identifier Ontology" ;
+rdfs:comment "An ontology for modeling persistent identifiers and their referents.".
+
+:PersistentIdentifier a owl:Class ;
+rdfs:label "Persistent Identifier" ;
+rdfs:comment "A unique identifier that remains constant over time, even as the entity it references changes.".
+
+:Referent a owl:Class ;
+rdfs:label "Referent" ;
+rdfs:comment "The entity that a persistent identifier references.".
+
+:Reference a owl:ObjectProperty ;
+rdfs:label "Reference" ;
+rdfs:comment "The relationship between a persistent identifier and its referent." ;
+domain :PersistentIdentifier ;
+range :Referent.
+
+:Transition a owl:Class ;
+rdfs:label "Transition" ;
+rdfs:comment "A change in the referent of a persistent identifier.".
+
+:TransitionTime a owl:DatatypeProperty ;
+rdfs:label "Transition Time" ;
+rdfs:comment "The time at which a transition occurred." ;
+domain :Transition.
+
+:Observation a owl:Class ;
+rdfs:label "Observation" ;
+rdfs:comment "An attribute associated with a specific referent.".
+
+:ObservationTime a owl:DatatypeProperty ;
+rdfs:label "Observation Time" ;
+rdfs:comment "The time at which an observation was made." ;
+domain :Observation.
+
+:Rule a owl:Class ;
+rdfs:label "Rule" ;
+rdfs:comment "A set of criteria that trigger a transition.".
+
+:RuleTrigger a owl:ObjectProperty ;
+rdfs:label "Rule Trigger" ;
+rdfs:comment "The relationship between a rule and the transition it triggers." ;
+domain :Rule ;
+range :Transition.
+
+:Gap a owl:Class ;
+rdfs:label "Gap" ;
+rdfs:comment "A gap in the temporal binding of a persistent identifier.".
+
+:Overlap a owl:Class ;
+rdfs:label "Overlap" ;
+rdfs:comment "An overlap in the temporal binding of a persistent identifier.".
+
+:Context a owl:Class ;
+rdfs:label "Context" ;
+rdfs:comment "A set of observations associated with a specific referent and time.".
+
+:ContextTime a owl:DatatypeProperty ;
+rdfs:label "Context Time" ;
+rdfs:comment "The time at which a context was observed." ;
+domain :Context.
+```
+Reasoning Summary:
+
+* Extracted atomic requirements:
+	+ Persistent identifier
+	+ Referent
+	+ Transition
+	+ Observation
+	+ Rule
+	+ Gap
+	+ Overlap
+	+ Context
+* Proposed candidate classes and properties:
+	+ :PersistentIdentifier
+	+ :Referent
+	+ :Reference
+	+ :Transition
+	+ :TransitionTime
+	+ :Observation
+	+ :ObservationTime
+	+ :Rule
+	+ :RuleTrigger
+	+ :Gap
+	+ :Overlap
+	+ :Context
+	+ :ContextTime
+* Draft axioms:
+	+ :PersistentIdentifier subClassOf owl:ObjectProperty.
+	+ :Referent subClassOf owl:Thing.
+	+ :Reference subClassOf owl:ObjectProperty.
+	+ :Transition subClassOf owl:Event.
+	+ :TransitionTime subClassOf xsd:dateTime.
+	+ :Observation subClassOf owl:ObjectProperty.
+	+ :ObservationTime subClassOf xsd:dateTime

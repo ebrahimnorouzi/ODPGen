@@ -1,4 +1,4 @@
-Here is an OWL ontology design pattern (ODP) in Turtle syntax that supports the given competency questions:
+Turtle Ontology:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -7,79 +7,64 @@ Here is an OWL ontology design pattern (ODP) in Turtle syntax that supports the 
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-rdfs:label "Asthma Ontology" ;
-rdfs:comment "An ontology for representing and reasoning about asthma-related information.".
+rdfs:label "Allergy Ontology" ;
+rdfs:comment "An ontology for representing knowledge about allergies and their effects.".
 
 :Patient a owl:Class ;
 rdfs:label "Patient" ;
-rdfs:comment "An individual suffering from asthma.".
-
-:Medication a owl:Class ;
-rdfs:label "Medication" ;
-rdfs:comment "A substance used to treat or prevent asthma symptoms.".
-
-:Intake a owl:Class ;
-rdfs:label "Intake" ;
-rdfs:comment "The act of consuming medication.".
+rdfs:comment "A person who has an allergy or is experiencing symptoms.".
 
 :Allergen a owl:Class ;
 rdfs:label "Allergen" ;
-rdfs:comment "A substance that can cause an allergic reaction in some individuals.".
+rdfs:comment "A substance that can cause an allergic reaction.".
 
 :Pollen a owl:Class ;
 rdfs:label "Pollen" ;
-rdfs:comment "A type of allergen found in plants.".
+rdfs:comment "Pollen from plants, a common allergen." ;
+:Allergen rdfs:subClassOf :Pollen.
 
 :AQI a owl:Class ;
 rdfs:label "Air Quality Index" ;
-rdfs:comment "A measure of the quality of the air in a given area.".
+rdfs:comment "A measure of the quality of the air, which can affect allergies." ;
+:Allergen rdfs:subClassOf :AQI.
+
+:Medication a owl:Class ;
+rdfs:label "Medication" ;
+rdfs:comment "A substance used to treat allergies or symptoms.".
+
+:Intake a owl:ObjectProperty ;
+rdfs:label "intake" ;
+rdfs:comment "The act of taking a medication or allergen." ;
+:Patient rdfs:domainOf :Intake.
+
+:Symptom a owl:Class ;
+rdfs:label "Symptom" ;
+rdfs:comment "A physical or mental reaction to an allergen or medication.".
 
 :Cough a owl:Class ;
 rdfs:label "Cough" ;
-rdfs:comment "A symptom of asthma.".
+rdfs:comment "A common symptom of respiratory issues." ;
+:Symptom rdfs:subClassOf :Cough.
 
-:ProbableCause a owl:Class ;
-rdfs:label "Probable Cause" ;
-rdfs:comment "A possible reason for the occurrence of a symptom.".
+:ProbableCause a owl:ObjectProperty ;
+rdfs:label "probableCause" ;
+rdfs:comment "The likely cause of a symptom." ;
+:Symptom rdfs:domainOf :ProbableCause.
 
-:Effect a owl:Class ;
-rdfs:label "Effect" ;
-rdfs:comment "A change in a patient's symptoms or condition.".
+:Environment a owl:Class ;
+rdfs:label "Environment" ;
+rdfs:comment "The external world that can affect allergies and symptoms.".
 
-:MedicationIntake a owl:Class ;
-rdfs:label "Medication Intake" ;
-rdfs:comment "The act of consuming medication to treat or prevent asthma symptoms.".
+:Outdoor a owl:Class ;
+rdfs:label "Outdoor" ;
+rdfs:comment "The environment outside of a building or enclosed space." ;
+:Environment rdfs:subClassOf :Outdoor.
+```
+CQ-to-axiom mapping table:
 
-:PatientHasSymptom a owl:ObjectProperty ;
-rdfs:label "has symptom" ;
-rdfs:comment "A patient experiencing a symptom.".
-
-:PatientTakesMedication a owl:ObjectProperty ;
-rdfs:label "takes medication" ;
-rdfs:comment "A patient consuming medication to treat or prevent asthma symptoms.".
-
-:MedicationIsTakenFor a owl:ObjectProperty ;
-rdfs:label "is taken for" ;
-rdfs:comment "The reason why a patient consumes medication.".
-
-:AllergenIsPresentIn a owl:ObjectProperty ;
-rdfs:label "is present in" ;
-rdfs:comment "The location where an allergen is found.".
-
-:AQIIsHigh a owl:ObjectProperty ;
-rdfs:label "is high" ;
-rdfs:comment "The level of air pollution in a given area.".
-
-:CoughIsPresent a owl:ObjectProperty ;
-rdfs:label "is present" ;
-rdfs:comment "The existence of a cough in a patient.".
-
-:ProbableCauseOfCough a owl:ObjectProperty ;
-rdfs:label "probable cause of cough" ;
-rdfs:comment "The likely reason for the presence of a cough in a patient.".
-
-:EffectOfMedicationOnCough a owl:ObjectProperty ;
-rdfs:label "effect of medication on cough" ;
-rdfs:comment "The impact of medication on the severity or presence of a cough in a patient.".
-
-:Medication
+| Competency Question | Classes | Properties |
+| --- | --- | --- |
+| Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI? | :Patient, :Allergen, :Intake | :Intake rdfs:domainOf :Patient, :Allergen rdfs:subClassOf :Pollen or :AQI |
+| How much does the presence of an asthma symptom effect the intake of medication? | :Patient, :Symptom, :Medication | :Symptom rdfs:domainOf :Patient, :Medication rdfs:domainOf :Patient |
+| How does an outdoor environmental allergen affect the patient? | :Patient, :Allergen, :Environment | :Allergen rdfs:subClassOf :Environment, :Environment rdfs:subClassOf :Outdoor |
+| What is the probable cause of the cough experienced by the patient? | :Patient, :Symptom, :ProbableCause | :Symptom rdfs:domainOf :Patient, :ProbableCause rdfs:domain

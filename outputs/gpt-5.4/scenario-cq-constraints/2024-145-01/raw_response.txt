@@ -1,3 +1,5 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -7,11 +9,11 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Court hierarchy and bad check regulation ODP" ;
-  rdfs:comment "A minimal ontology design pattern for representing court hierarchies in Indian states and districts, and bad check payment information including transaction type, payment time, and transaction status." .
+  rdfs:comment "A minimal ontology design pattern for representing court hierarchies, states and districts, and bad check payment information including transaction type, payment date, and transaction status." .
 
 :State a owl:Class ;
   rdfs:label "State" ;
-  rdfs:comment "A state of India used to locate courts and count districts." .
+  rdfs:comment "A state of India used to locate district courts and to contain districts." .
 
 :District a owl:Class ;
   rdfs:label "District" ;
@@ -19,7 +21,7 @@
 
 :Court a owl:Class ;
   rdfs:label "Court" ;
-  rdfs:comment "A court in the legal hierarchy." .
+  rdfs:comment "A court in a legal hierarchy." .
 
 :DistrictCourt a owl:Class ;
   rdfs:label "District court" ;
@@ -28,19 +30,19 @@
 
 :BadCheck a owl:Class ;
   rdfs:label "Bad check" ;
-  rdfs:comment "A check involved in a bad check case or regulation context." .
+  rdfs:comment "A check associated with bad check crime related regulation." .
 
 :CheckPayment a owl:Class ;
   rdfs:label "Check payment" ;
-  rdfs:comment "A payment event involving a check." .
+  rdfs:comment "A payment event or record associated with a check." .
 
 :TransactionType a owl:Class ;
   rdfs:label "Transaction type" ;
-  rdfs:comment "A type assigned to a check transaction." .
+  rdfs:comment "A type of check transaction." .
 
 :TransactionStatus a owl:Class ;
   rdfs:label "Transaction status" ;
-  rdfs:comment "A status assigned to a check payment transaction." .
+  rdfs:comment "The status of a check payment transaction." .
 
 :locatedInState a owl:ObjectProperty ;
   rdfs:label "located in state" ;
@@ -68,7 +70,7 @@
 
 :hasCheckPayment a owl:ObjectProperty ;
   rdfs:label "has check payment" ;
-  rdfs:comment "Relates a bad check to its check payment." ;
+  rdfs:comment "Relates a bad check to its associated check payment." ;
   rdfs:domain :BadCheck ;
   rdfs:range :CheckPayment .
 
@@ -80,18 +82,15 @@
 
 :paymentDate a owl:DatatypeProperty ;
   rdfs:label "payment date" ;
-  rdfs:comment "The date and time when a check payment occurred." ;
+  rdfs:comment "The date of a check payment." ;
   rdfs:domain :CheckPayment ;
-  rdfs:range xsd:dateTime .
+  rdfs:range xsd:date .
 ```
 
-Validation report:
-1. PASS — Turtle syntax is well-formed with declared triples terminated properly.
-2. PASS — All prefixes used in the ontology body are declared at the top.
-3. PASS — All domains and ranges refer only to classes defined in this ontology or xsd datatypes.
-4. PASS — No contradictory subclass, disjointness, or incompatible domain/range restrictions are present.
-5. PASS — Each CQ maps to at least one class/property: district courts/state via :DistrictCourt and :locatedInState, district counting via :hasDistrict, court authority via :hasAuthorityOver, bad check transaction type via :hasCheckTransactionType, check payment time via :hasCheckPayment and :paymentDate, and transaction status via :hasTransactionStatus.
-6. PASS — All concepts included are grounded in the scenario or directly required by the competency questions.
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
 
-Scope report:
-(a) Covered requirements from
+1. PASS — Turtle syntax is well-formed with declared prefixes, terminated triples, and valid class/property declarations.
+2. PASS — All prefixes used in the ontology body (owl, rdf, rdfs, xsd, :) are declared at the top.
+3. PASS — All domains and ranges refer only to classes defined in this ontology or the standard datatype xsd:date.
+4. PASS — No contradictory axioms were introduced; there are no disjointness or incompatible subclass/domain/range assertions.
+5. PASS — Each CQ maps to at least one class/property: district courts in states (:DistrictCourt, :locatedInState), districts in states (:State, :hasDistrict), court authority (:hasAuthorityOver), bad check

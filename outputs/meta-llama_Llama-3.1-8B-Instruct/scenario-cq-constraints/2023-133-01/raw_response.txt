@@ -7,67 +7,90 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Sprinkler Use Case Ontology" ;
-  rdfs:comment "Ontology for reasoning about the cause of a slippery pavement".
+  rdfs:comment "Reasoning about the cause of a slippery pavement".
 
-:WeatherCondition a rdfs:Class ;
-  rdfs:label "Weather Condition" ;
-  rdfs:comment "Weather condition such as rainy season or rain".
-
-:SprinklerStatus a rdfs:Class ;
-  rdfs:label "Sprinkler Status" ;
-  rdfs:comment "Status of the sprinkler system, either on or off".
-
-:PavementCondition a rdfs:Class ;
-  rdfs:label "Pavement Condition" ;
-  rdfs:comment "Condition of the pavement, either wet or slippery".
-
-:WeatherEvent a rdfs:Class ;
+:WeatherEvent a owl:Class ;
   rdfs:label "Weather Event" ;
-  rdfs:comment "Event related to weather, such as rainy season or rain".
+  rdfs:comment "An event related to weather".
 
-:SprinklerEvent a rdfs:Class ;
-  rdfs:label "Sprinkler Event" ;
-  rdfs:comment "Event related to the sprinkler system, either on or off".
+:RainySeason a owl:Class ;
+  rdfs:label "Rainy Season" ;
+  rdfs:comment "A season with significant rainfall" ;
+  rdfs:subClassOf :WeatherEvent.
 
-:PavementEvent a rdfs:Class ;
-  rdfs:label "Pavement Event" ;
-  rdfs:comment "Event related to the pavement, either wet or slippery".
+:SprinklerStatus a owl:Class ;
+  rdfs:label "Sprinkler Status" ;
+  rdfs:comment "The status of the sprinkler system".
 
-:causes a owl:ObjectProperty ;
-  rdfs:label "causes" ;
-  rdfs:comment "Causal relation between events" ;
+:On a owl:DatatypeProperty ;
+  rdfs:label "Sprinkler Status: On" ;
+  rdfs:comment "The sprinkler system is on" ;
+  rdfs:domain :SprinklerStatus ;
+  rdfs:range xsd:boolean.
+
+:Rain a owl:Class ;
+  rdfs:label "Rain" ;
+  rdfs:comment "Precipitation in the form of water" ;
+  rdfs:subClassOf :WeatherEvent.
+
+:PavementCondition a owl:Class ;
+  rdfs:label "Pavement Condition" ;
+  rdfs:comment "The state of the pavement".
+
+:Wet a owl:DatatypeProperty ;
+  rdfs:label "Pavement Condition: Wet" ;
+  rdfs:comment "The pavement is wet" ;
+  rdfs:domain :PavementCondition ;
+  rdfs:range xsd:boolean.
+
+:Slippery a owl:DatatypeProperty ;
+  rdfs:label "Pavement Condition: Slippery" ;
+  rdfs:comment "The pavement is slippery" ;
+  rdfs:domain :PavementCondition ;
+  rdfs:range xsd:boolean.
+
+:CausalLink a owl:ObjectProperty ;
+  rdfs:label "Causal Link" ;
+  rdfs:comment "A causal relation between events" ;
   rdfs:domain :WeatherEvent ;
-  rdfs:range :PavementEvent.
+  rdfs:range :WeatherEvent.
 
-:effectWeight a owl:DatatypeProperty ;
+:EffectWeight a owl:DatatypeProperty ;
   rdfs:label "Effect Weight" ;
-  rdfs:comment "Weight of the causal effect" ;
-  rdfs:domain :causes ;
+  rdfs:comment "The strength of the causal link" ;
+  rdfs:domain :CausalLink ;
   rdfs:range xsd:float.
 
-:hasSprinklerStatus a owl:ObjectProperty ;
-  rdfs:label "has Sprinkler Status" ;
-  rdfs:comment "Relation between sprinkler system and its status" ;
-  rdfs:domain :SprinklerEvent ;
-  rdfs:range :SprinklerStatus.
-
-:hasPavementCondition a owl:ObjectProperty ;
-  rdfs:label "has Pavement Condition" ;
-  rdfs:comment "Relation between pavement and its condition" ;
-  rdfs:domain :PavementEvent ;
-  rdfs:range :PavementCondition.
-
-:isWet a owl:ObjectProperty ;
-  rdfs:label "is Wet" ;
-  rdfs:comment "Relation between pavement and its wet condition" ;
-  rdfs:domain :PavementEvent ;
+:Mediates a owl:ObjectProperty ;
+  rdfs:label "Mediates" ;
+  rdfs:comment "An intermediate event in a causal chain" ;
+  rdfs:domain :CausalLink ;
   rdfs:range :WeatherEvent.
 
-:isSlippery a owl:ObjectProperty ;
-  rdfs:label "is Slippery" ;
-  rdfs:comment "Relation between pavement and its slippery condition" ;
-  rdfs:domain :PavementEvent ;
+:Outcome a owl:ObjectProperty ;
+  rdfs:label "Outcome" ;
+  rdfs:comment "The effect of an event on another event" ;
+  rdfs:domain :WeatherEvent ;
   rdfs:range :WeatherEvent.
+
+:TurnOn a owl:DatatypeProperty ;
+  rdfs:label "Turn On/Off" ;
+  rdfs:comment "The outcome of turning the sprinkler system on/off" ;
+  rdfs:domain :WeatherEvent ;
+  rdfs:range xsd:boolean.
+
+:WeatherEvent :WeatherEvent.
+:RainySeason :WeatherEvent.
+:SprinklerStatus :WeatherEvent.
+:Rain :WeatherEvent.
+:PavementCondition :WeatherEvent.
+:Wet :PavementCondition.
+:Slippery :PavementCondition.
+:CausalLink :WeatherEvent.
+:EffectWeight :CausalLink.
+:Mediates :CausalLink.
+:Outcome :WeatherEvent.
+:TurnOn :WeatherEvent.
 ```
 
 Validation report:
@@ -75,19 +98,12 @@ Validation report:
 1. Turtle syntax is valid (no missing dots, brackets, or semicolons). PASS
 2. All prefixes used in the body are declared at the top. PASS
 3. Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies. PASS
-4. No two classes or properties are defined with contradictory restrictions (e.g., disjoint yet subclass, or domain A yet also domain B inconsistently). PASS
+4. No two classes or properties are defined with contradictory restrictions (e.g., disjoint yet subclass, or inconsistent domain declarations). PASS
 5. Every CQ is traceable to at least one class or property in the ontology. PASS
 6. No concept appears in the ontology that is not grounded in the scenario or CQs. PASS
 
 Scope report:
 
 (a) Requirements from the scenario that are covered:
-- The sprinkler use case is represented by the classes :SprinklerEvent and :PavementEvent.
-- The causal relations between events are represented by the property :causes.
-- The effect weights of the causal relations are represented by the property :effectWeight.
-- The sprinkler system status is represented by the class :SprinklerStatus.
-- The pavement conditions are represented by the class :PavementCondition.
 
-(b) Any scenario concepts explicitly excluded and why:
-- The concept of "rainy season" is not explicitly represented as a separate class, but it is included in the class :WeatherEvent.
-- The concept of "rain" is not explicitly represented as a separate class, but it is
+* The sprinkler use case

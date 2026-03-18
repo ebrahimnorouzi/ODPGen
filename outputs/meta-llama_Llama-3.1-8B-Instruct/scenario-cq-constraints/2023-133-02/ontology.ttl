@@ -6,56 +6,57 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "kHealth-Asthma Ontology" ;
-  rdfs:comment "Ontology for modeling asthma patient data and causal relations.".
+  rdfs:comment "Ontology for kHealth-Asthma project".
 
 :AsthmaPatient a owl:Class ;
   rdfs:label "Asthma Patient" ;
-  rdfs:comment "A patient with asthma.".
+  rdfs:comment "Patient with asthma".
 
 :AsthmaSymptom a owl:Class ;
   rdfs:label "Asthma Symptom" ;
-  rdfs:comment "A symptom of asthma, such as cough or wheezing.".
+  rdfs:comment "Symptoms of asthma".
 
 :Medication a owl:Class ;
   rdfs:label "Medication" ;
-  rdfs:comment "A medication taken by the patient.".
+  rdfs:comment "Medications for asthma".
 
 :OutdoorAllergen a owl:Class ;
   rdfs:label "Outdoor Allergen" ;
-  rdfs:comment "An outdoor allergen, such as pollen or AQI.".
+  rdfs:comment "Outdoor environmental allergens".
 
-:hasSymptom a owl:ObjectProperty ;
-  rdfs:label "has Symptom" ;
-  rdfs:comment "The patient has a symptom." ;
-  rdfs:domain :AsthmaPatient ;
-  rdfs:range :AsthmaSymptom.
-
-:hasMedication a owl:ObjectProperty ;
-  rdfs:label "has Medication" ;
-  rdfs:comment "The patient takes a medication." ;
-  rdfs:domain :AsthmaPatient ;
-  rdfs:range :Medication.
+:EffectWeight a owl:DatatypeProperty ;
+  rdfs:label "Effect Weight" ;
+  rdfs:comment "Weight of effect" ;
+  rdfs:range xsd:float.
 
 :causes a owl:ObjectProperty ;
   rdfs:label "causes" ;
-  rdfs:comment "The presence of an allergen causes a symptom or medication intake." ;
-  rdfs:domain :OutdoorAllergen ;
+  rdfs:comment "Causal relation" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :AsthmaSymptom ;
+  owl:inverseOf :isCausedBy.
+
+:isCausedBy a owl:ObjectProperty ;
+  rdfs:label "is Caused By" ;
+  rdfs:comment "Inverse of causes" ;
+  rdfs:domain :AsthmaSymptom ;
+  rdfs:range :AsthmaPatient ;
+  owl:inverseOf :causes.
+
+:hasMedication a owl:ObjectProperty ;
+  rdfs:label "has Medication" ;
+  rdfs:comment "Medication intake" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :Medication.
+
+:hasSymptom a owl:ObjectProperty ;
+  rdfs:label "has Symptom" ;
+  rdfs:comment "Asthma symptom" ;
+  rdfs:domain :AsthmaPatient ;
   rdfs:range :AsthmaSymptom.
 
-:hasEffectWeight a owl:ObjectProperty ;
-  rdfs:label "has Effect Weight" ;
-  rdfs:comment "The effect weight of a causal relation." ;
-  rdfs:domain :causes ;
-  rdfs:range xsd:float.
-
-:hasCausalEffect a owl:ObjectProperty ;
-  rdfs:label "has Causal Effect" ;
-  rdfs:comment "The causal effect of a symptom or medication intake." ;
-  rdfs:domain :AsthmaSymptom ;
-  rdfs:range xsd:float.
-
-:hasProbableCause a owl:ObjectProperty ;
-  rdfs:label "has Probable Cause" ;
-  rdfs:comment "The probable cause of a symptom." ;
-  rdfs:domain :AsthmaSymptom ;
+:hasAllergen a owl:ObjectProperty ;
+  rdfs:label "has Allergen" ;
+  rdfs:comment "Outdoor environmental allergen" ;
+  rdfs:domain :AsthmaPatient ;
   rdfs:range :OutdoorAllergen.

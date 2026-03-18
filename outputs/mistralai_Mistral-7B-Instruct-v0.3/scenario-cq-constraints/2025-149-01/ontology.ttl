@@ -1,84 +1,94 @@
-@prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
-@prefix :     <http://example.org/odp#>.
-
 :Ontology a owl:Ontology ;
-    rdfs:label "Database Access Policy Ontology" ;
-    rdfs:comment "An ontology for representing database access policies, tables, columns, and actions.".
+  rdfs:label "Database Access Control Ontology" ;
+  rdfs:comment "An ontology for representing and reasoning about access control policies for relational databases.".
 
-# Database
 :Database a owl:Class ;
-    rdfs:label "Relational Database" ;
-    rdfs:comment "A first-class schema entity representing a relational database.".
+  rdfs:label "Relational Database" ;
+  rdfs:comment "A first-class schema entity representing a relational database.".
 
-# Table
 :Table a owl:Class ;
-    rdfs:label "Table" ;
-    rdfs:comment "A table belonging to a database." ;
-    owl:disjointWith :Column ;
-    owl:subClassOf [ a owl:Restriction ;
-                      owl:onProperty :hasTable ;
-                      owl:allValuesFrom :Database ].
+  rdfs:label "Table" ;
+  rdfs:comment "A schema entity representing a table in a database.".
 
-:hasTable a owl:ObjectProperty ;
-    rdfs:label "Has Table" ;
-    rdfs:comment "Relates a table to its parent database.".
-
-# Column
 :Column a owl:Class ;
-    rdfs:label "Column" ;
-    rdfs:comment "A column belonging to a table." ;
-    owl:disjointWith :Table ;
-    owl:subClassOf [ a owl:Restriction ;
-                      owl:onProperty :hasColumn ;
-                      owl:allValuesFrom :Table ].
+  rdfs:label "Column" ;
+  rdfs:comment "A schema entity representing a column in a table.".
 
-:hasColumn a owl:ObjectProperty ;
-    rdfs:label "Has Column" ;
-    rdfs:comment "Relates a column to its parent table.".
+:PrimaryKey a owl:ObjectProperty ;
+  rdfs:label "Primary Key" ;
+  rdfs:comment "Relates a table to its primary key.".
+  domain :Table ;
+  range :Column.
 
-# Primary Key
-:PrimaryKey a owl:Class ;
-    rdfs:label "Primary Key" ;
-    rdfs:comment "Represents the primary key relationship in the schema.".
+:ForeignKey a owl:ObjectProperty ;
+  rdfs:label "Foreign Key" ;
+  rdfs:comment "Relates a table to a foreign key.".
+  domain :Table ;
+  range :Column.
 
-:hasPrimaryKey a owl:ObjectProperty ;
-    rdfs:label "Has Primary Key" ;
-    rdfs:comment "Relates a table to its primary key.".
-
-# Foreign Key
-:ForeignKey a owl:Class ;
-    rdfs:label "Foreign Key" ;
-    rdfs:comment "Represents the foreign key relationship in the schema.".
-
-:hasForeignKey a owl:ObjectProperty ;
-    rdfs:label "Has Foreign Key" ;
-    rdfs:comment "Relates a table to its foreign key.".
-
-# Policy
 :Policy a owl:Class ;
-    rdfs:label "Policy" ;
-    rdfs:comment "Defines a policy for a specific agent.".
-
-# Action
-:Action a owl:Class ;
-    rdfs:label "Action" ;
-    rdfs:comment "Represents a high-level ReadAction, ModifyAction, or ViewActionScope for read operations.".
+  rdfs:label "Policy" ;
+  rdfs:comment "A high-level access control policy.".
 
 :ReadAction a owl:Class ;
-    rdfs:label "Read Action" ;
-    rdfs:comment "Represents a high-level read action.".
+  rdfs:label "Read Action" ;
+  rdfs:comment "A high-level read action.".
 
 :ModifyAction a owl:Class ;
-    rdfs:label "Modify Action" ;
-    rdfs:comment "Represents a high-level modify action.".
+  rdfs:label "Modify Action" ;
+  rdfs:comment "A high-level modify action.".
 
 :ViewActionScope a owl:Class ;
-    rdfs:label "View Action Scope" ;
-    rdfs:comment "Represents the view action scope for read operations.".
+  rdfs:label "View Action Scope" ;
+  rdfs:comment "A scope for read operations.".
 
 :ProcessActionScope a owl:Class ;
-    rdfs:label "Process Action Scope" ;
-    rdfs:comment "Represents the process action scope for read operations.".
+  rdfs:label "Process Action Scope" ;
+  rdfs:comment "A scope for read operations.".
+
+:TableLevelPolicy a owl:Class ;
+  rdfs:label "Table Level Policy" ;
+  rdfs:comment "A policy defined at table level.".
+  subClassOf :Policy.
+
+:ColumnLevelPolicy a owl:Class ;
+  rdfs:label "Column Level Policy" ;
+  rdfs:comment "A policy defined at column level.".
+  subClassOf :Policy.
+
+:RowLevelPolicy a owl:Class ;
+  rdfs:label "Row Level Policy" ;
+  rdfs:comment "A policy defined at row level using conditions.".
+  subClassOf :Policy.
+
+:ProhibitedModifyAction a owl:Class ;
+  rdfs:label "Prohibited Modify Action" ;
+  rdfs:comment "A prohibited modify action on a table.".
+  subClassOf :ModifyAction.
+
+:ReadProhibitionForProcessing a owl:Class ;
+  rdfs:label "Table-level read prohibition for processing" ;
+  rdfs:comment "A table-level read prohibition for processing.".
+  subClassOf :TableLevelPolicy.
+
+:ReadProhibitionForViewing a owl:Class ;
+  rdfs:label "Table-level read prohibition for viewing" ;
+  rdfs:comment "A table-level read prohibition for viewing.".
+  subClassOf :TableLevelPolicy.
+
+:ConditionalRowLevelReadRestriction a owl:Class ;
+  rdfs:label "Conditional row-level read restriction" ;
+  rdfs:comment "A conditional row-level read restriction for later enforcement.".
+  subClassOf :RowLevelPolicy.
+
+:SQLQuery a owl:Class ;
+  rdfs:label "SQL Query" ;
+  rdfs:comment "A SQL query as an AST-based semantic graph.".
+
+:SelectStatement a owl:Class ;
+  rdfs:label "Select Statement" ;
+  rdfs:comment "A SQL statement such as SelectStatement.".
+
+:UpdateStatement a owl:Class ;
+  rdfs:label "Update Statement" ;
+  rdfs:comment "A SQL statement such as UpdateStatement.".

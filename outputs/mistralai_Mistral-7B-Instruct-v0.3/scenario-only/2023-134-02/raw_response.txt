@@ -1,5 +1,3 @@
-**Turtle Ontology Design Pattern (ODP)**
-
 ```turtle
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -8,82 +6,72 @@
 @prefix : <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Solid Governance ODP" ;
-  rdfs:comment "This ontology addresses the governance challenges in Solid apps.".
+  rdfs:label "Solid Governance Patterns" ;
+  rdfs:comment "This ontology models the governance patterns for Solid apps to address identified challenges.".
 
 # Identity and Roles
 :SolidActor a owl:Class ;
   rdfs:label "Solid Actor" ;
-  rdfs:comment "Represents a Solid user or provider.".
+  rdfs:comment "Represents any entity providing Pods or apps in the Solid ecosystem.".
 
 :Role a owl:Class ;
   rdfs:label "Role" ;
   rdfs:comment "Represents the function or position of a SolidActor.".
 
 :Provides a owl:ObjectProperty ;
-  rdfs:domain :SolidActor ;
-  rdfs:range :Pod ;
-  rdfs:label "Provides" ;
-  rdfs:comment "Indicates that a SolidActor provides a Pod.".
-
-:Uses a owl:ObjectProperty ;
-  rdfs:domain :SolidActor ;
-  rdfs:range :App ;
-  rdfs:label "Uses" ;
-  rdfs:comment "Indicates that a SolidActor uses an App.".
+  rdfs:domain [ a owl:Class ; rdfs:label "SolidActor" ] ;
+  rdfs:range [ a owl:Class ; rdfs:label "Pod" ; rdfs:label "App" ] ;
+  rdfs:label "Provides".
 
 # Solid Infrastructure
 :Pod a owl:Class ;
   rdfs:label "Pod" ;
-  rdfs:comment "Represents a Solid Pod.".
+  rdfs:comment "Represents a Solid user's data storage container.".
 
 :Specification a owl:Class ;
   rdfs:label "Specification" ;
-  rdfs:comment "Represents a Solid specification.".
+  rdfs:comment "Represents the version or standard of Solid specification a Pod is running.".
 
-:Runs a owl:ObjectProperty ;
-  rdfs:domain :Pod ;
-  rdfs:range :Specification ;
-  rdfs:label "Runs" ;
-  rdfs:comment "Indicates that a Pod runs a specific Solid specification.".
+:InstalledFunctionality a owl:Class ;
+  rdfs:label "Installed Functionality" ;
+  rdfs:comment "Represents the functionalities installed within a Pod.".
 
-# Data Categories and Access
+# Data Categories
 :DataCategory a owl:Class ;
   rdfs:label "Data Category" ;
-  rdfs:comment "Represents a category of data in a Pod.".
+  rdfs:comment "Represents a category of data stored in a Pod.".
 
-:ExistsIn a owl:ObjectProperty ;
-  rdfs:domain :DataCategory ;
-  rdfs:range :Pod ;
-  rdfs:label "Exists In" ;
-  rdfs:comment "Indicates that a DataCategory exists in a Pod.".
+:DataExists a owl:ObjectProperty ;
+  rdfs:domain [ a owl:Class ; rdfs:label "DataCategory" ] ;
+  rdfs:range [ a owl:Class ; rdfs:label "Pod" ] ;
+  rdfs:label "Data Exists".
 
 # Data Handling Practices
 :DataHandlingPractice a owl:Class ;
   rdfs:label "Data Handling Practice" ;
-  rdfs:comment "Represents the practices of a Pod or App regarding data handling.".
+  rdfs:comment "Represents the data handling practices of a Pod or app.".
 
-:Declares a owl:ObjectProperty ;
-  rdfs:domain :Pod ;
-  rdfs:range :DataHandlingPractice ;
-  rdfs:label "Declares" ;
-  rdfs:comment "Indicates that a Pod declares its data handling practices.".
-
-# Privacy Policies and Preferences
+# User Privacy Policies
 :PrivacyPolicy a owl:Class ;
   rdfs:label "Privacy Policy" ;
-  rdfs:comment "Represents the privacy policy of a SolidActor.".
+  rdfs:comment "Represents the privacy preferences and requirements of a Solid user.".
 
-:Expresses a owl:ObjectProperty ;
-  rdfs:domain :SolidActor ;
-  rdfs:range :PrivacyPolicy ;
-  rdfs:label "Expresses" ;
-  rdfs:comment "Indicates that a SolidActor expresses its privacy policy.".
+# Provenance Metadata
+:ConsentRecord a owl:Class ;
+  rdfs:label "Consent Record" ;
+  rdfs:comment "Represents the record of user consent for data access or handling.".
 
-# Provenance and Accountability
-:Provenance a owl:Class ;
-  rdfs:label "Provenance" ;
-  rdfs:comment "Represents the provenance metadata for accountability.".
+:DataAccess a owl:ObjectProperty ;
+  rdfs:domain [ a owl:Class ; rdfs:label "Pod" ] ;
+  rdfs:range [ a owl:Class ; rdfs:label "DataAccessEvent" ] ;
+  rdfs:label "Data Access".
 
-:Records a owl:ObjectProperty ;
-  rdfs:domain :Provenance
+:DataHandling a owl:ObjectProperty ;
+  rdfs:domain [ a owl:Class ; rdfs:label "Pod" ] ;
+  rdfs:range [ a owl:Class ; rdfs:label "DataHandlingEvent" ] ;
+  rdfs:label "Data Handling".
+
+# Legal Compliance
+:WithdrawConsent a owl:ObjectProperty ;
+  rdfs:domain [ a owl:Class ; rdfs:label "User" ] ;
+  rdfs:range [ a owl:Class ; rdfs:label "

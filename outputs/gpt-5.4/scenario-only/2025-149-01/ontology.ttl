@@ -1,53 +1,53 @@
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ndf-syntax-ns#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-nf#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "RDB SQL Access Security ODP" ;
-    rdfs:comment "An ontology design pattern for modeling the securing of access to a relational database that is queried via Structured Query Language (SQL)." .
+  rdfs:label "RDB SQL Access Security ODP" ;
+  rdfs:comment "An ontology design pattern for modeling the securing of access to a relational database that is queried via Structured Query Language." .
 
 :RelationalDatabase a owl:Class ;
-    rdfs:label "Relational Database" ;
-    rdfs:comment "A database organized according to the relational model." .
+  rdfs:label "Relational Database" ;
+  rdfs:comment "A database organized according to the relational model." .
 
 :SQLQuery a owl:Class ;
-    rdfs:label "SQL Query" ;
-    rdfs:comment "A query expressed in Structured Query Language (SQL)." .
+  rdfs:label "SQL Query" ;
+  rdfs:comment "A query expressed in Structured Query Language and used to query a relational database." .
 
-:DatabaseAccess a owl:Class ;
-    rdfs:label "Database Access" ;
-    rdfs:comment "An access event or interaction involving a relational database." .
+:Access a owl:Class ;
+  rdfs:label "Access" ;
+  rdfs:comment "An access to a relational database performed through a query." .
 
-:AccessSecurity a owl:Class ;
-    rdfs:label "Access Security" ;
-    rdfs:comment "A security measure or security aspect applied to database access." .
-
-:queriesDatabase a owl:ObjectProperty ;
-    rdfs:label "queries database" ;
-    rdfs:comment "Relates an SQL query to the relational database it queries." ;
-    rdfs:domain :SQLQuery ;
-    rdfs:range :RelationalDatabase .
-
-:accessesDatabase a owl:ObjectProperty ;
-    rdfs:label "accesses database" ;
-    rdfs:comment "Relates a database access to the relational database being accessed." ;
-    rdfs:domain :DatabaseAccess ;
-    rdfs:range :RelationalDatabase .
-
-:usesQuery a owl:ObjectProperty ;
-    rdfs:label "uses query" ;
-    rdfs:comment "Relates a database access to the SQL query used in that access." ;
-    rdfs:domain :DatabaseAccess ;
-    rdfs:range :SQLQuery .
+:SecurityControl a owl:Class ;
+  rdfs:label "Security Control" ;
+  rdfs:comment "A control used to secure access to a relational database." .
 
 :securedBy a owl:ObjectProperty ;
-    rdfs:label "secured by" ;
-    rdfs:comment "Relates a database access to the security applied to it." ;
-    rdfs:domain :DatabaseAccess ;
-    rdfs:range :AccessSecurity .
+  rdfs:label "secured by" ;
+  rdfs:comment "Relates an access to the security control that secures it." ;
+  rdfs:domain :Access ;
+  rdfs:range :SecurityControl .
 
-:RelationalDatabase owl:disjointWith :SQLQuery, :DatabaseAccess, :AccessSecurity .
-:SQLQuery owl:disjointWith :DatabaseAccess, :AccessSecurity .
-:DatabaseAccess owl:disjointWith :AccessSecurity .
+:accessesDatabase a owl:ObjectProperty ;
+  rdfs:label "accesses database" ;
+  rdfs:comment "Relates an access to the relational database being accessed." ;
+  rdfs:domain :Access ;
+  rdfs:range :RelationalDatabase .
+
+:usesSQLQuery a owl:ObjectProperty ;
+  rdfs:label "uses SQL query" ;
+  rdfs:comment "Relates an access to the SQL query used to perform it." ;
+  rdfs:domain :Access ;
+  rdfs:range :SQLQuery .
+
+:queriesDatabase a owl:ObjectProperty ;
+  rdfs:label "queries database" ;
+  rdfs:comment "Relates an SQL query to the relational database that it queries." ;
+  rdfs:domain :SQLQuery ;
+  rdfs:range :RelationalDatabase .
+
+:RelationalDatabase owl:disjointWith :SQLQuery, :Access, :SecurityControl .
+:SQLQuery owl:disjointWith :Access, :SecurityControl .
+:Access owl:disjointWith :SecurityControl .

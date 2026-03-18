@@ -1,12 +1,10 @@
-@prefix owl:  <http://www.w3.org/2002/07/owl#>.
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
-@prefix :     <http://example.org/odp#>.
-
 :Ontology a owl:Ontology ;
   rdfs:label "MQTT Ontology" ;
   rdfs:comment "Modeling MQTT message protocol for IoT and industrial settings".
+
+:MQTT a owl:Class ;
+  rdfs:label "Message Queuing Telemetry Transport" ;
+  rdfs:comment "MQTT message protocol for IoT and industrial settings".
 
 :MQTTClient a owl:Class ;
   rdfs:label "MQTT Client" ;
@@ -20,34 +18,29 @@
   rdfs:label "MQTT Network Connection" ;
   rdfs:comment "Connection between an MQTT Client and an MQTT Broker".
 
-:MQTTParticipant a owl:Class ;
-  rdfs:label "MQTT Participant" ;
-  rdfs:comment "Entity that uses an MQTT NetworkConnection".
+:MQTTNetworkConnectionInitiatedBy a owl:ObjectProperty ;
+  rdfs:label "Initiated by" ;
+  rdfs:comment "Property indicating who initiated the connection" ;
+  rdfs:domain :MQTTNetworkConnection ;
+  rdfs:range :MQTTClient.
+
+:MQTTNetworkConnectionAcceptedBy a owl:ObjectProperty ;
+  rdfs:label "Accepted by" ;
+  rdfs:comment "Property indicating who accepted the connection" ;
+  rdfs:domain :MQTTNetworkConnection ;
+  rdfs:range :MQTTBroker.
+
+:MQTTNetworkConnectionTLS a owl:DatatypeProperty ;
+  rdfs:label "TLS-secured" ;
+  rdfs:comment "Property indicating whether the connection is TLS-secured" ;
+  rdfs:domain :MQTTNetworkConnection ;
+  rdfs:range xsd:boolean.
 
 :MQTTClientID a owl:DatatypeProperty ;
-  rdfs:label "MQTT Client ID" ;
-  rdfs:comment "Unique identifier for an MQTT Client" ;
+  rdfs:label "Client ID" ;
+  rdfs:comment "Property indicating the client ID of an MQTT Client" ;
+  rdfs:domain :MQTTClient ;
   rdfs:range xsd:string.
-
-:MQTTClientPlatform a owl:Class ;
-  rdfs:label "MQTT Client Platform" ;
-  rdfs:comment "Platform on which an MQTT Client runs".
-
-:SOSAPlatform a owl:Class ;
-  rdfs:label "SOSA Platform" ;
-  rdfs:comment "Platform that hosts SOSA systems".
-
-:SOSASystem a owl:Class ;
-  rdfs:label "SOSA System" ;
-  rdfs:comment "System that uses an SOSA platform".
-
-:SOSAFeatureOfInterest a owl:Class ;
-  rdfs:label "SOSA Feature Of Interest" ;
-  rdfs:comment "Feature of interest in an SOSA system".
-
-:SOSAProperty a owl:Class ;
-  rdfs:label "SOSA Property" ;
-  rdfs:comment "Property in an SOSA system".
 
 :MQTTTopic a owl:Class ;
   rdfs:label "MQTT Topic" ;
@@ -55,45 +48,58 @@
 
 :MQTTTopicFilter a owl:Class ;
   rdfs:label "MQTT Topic Filter" ;
-  rdfs:comment "Filter applied to an MQTT topic".
+  rdfs:comment "Filter applied to an MQTT Topic".
+
+:MQTTTopicFilterPattern a owl:Class ;
+  rdfs:label "MQTT Topic Filter Pattern" ;
+  rdfs:comment "Pattern used in an MQTT Topic Filter".
 
 :MQTTControlPacket a owl:Class ;
   rdfs:label "MQTT Control Packet" ;
-  rdfs:comment "Packet used to control an MQTT connection".
+  rdfs:comment "Control packet in an MQTT message".
 
 :MQTTPublishPacket a owl:Class ;
   rdfs:label "MQTT Publish Packet" ;
-  rdfs:comment "Packet used to publish an MQTT message".
+  rdfs:comment "Publish packet in an MQTT message".
 
 :MQTTSUBSCRIBEPacket a owl:Class ;
   rdfs:label "MQTT SUBSCRIBE Packet" ;
-  rdfs:comment "Packet used to subscribe to an MQTT topic".
+  rdfs:comment "SUBSCRIBE packet in an MQTT message".
 
 :MQTTUnsubscribePacket a owl:Class ;
   rdfs:label "MQTT UNSUBSCRIBE Packet" ;
-  rdfs:comment "Packet used to unsubscribe from an MQTT topic".
+  rdfs:comment "UNSUBSCRIBE packet in an MQTT message".
 
-:MQTTBrokerConfig a owl:Class ;
-  rdfs:label "MQTT Broker Configuration" ;
-  rdfs:comment "Configuration of an MQTT Broker".
+:MQTTFixedHeader a owl:Class ;
+  rdfs:label "MQTT Fixed Header" ;
+  rdfs:comment "Fixed header in an MQTT message".
 
-:MQTTBrokerHost a owl:DatatypeProperty ;
-  rdfs:label "MQTT Broker Host" ;
-  rdfs:comment "Host of an MQTT Broker" ;
-  rdfs:range xsd:string.
+:MQTTVariableHeader a owl:Class ;
+  rdfs:label "MQTT Variable Header" ;
+  rdfs:comment "Variable header in an MQTT message".
 
-:MQTTBrokerPort a owl:DatatypeProperty ;
-  rdfs:label "MQTT Broker Port" ;
-  rdfs:comment "Port of an MQTT Broker" ;
+:MQTTPayload a owl:Class ;
+  rdfs:label "MQTT Payload" ;
+  rdfs:comment "Payload in an MQTT message".
+
+:MQTTQoS a owl:Class ;
+  rdfs:label "MQTT QoS" ;
+  rdfs:comment "Quality of Service in an MQTT message".
+
+:MQTTPacketIdentifier a owl:DatatypeProperty ;
+  rdfs:label "Packet Identifier" ;
+  rdfs:comment "Property indicating the packet identifier of an MQTT Control Packet" ;
+  rdfs:domain :MQTTControlPacket ;
   rdfs:range xsd:integer.
 
-:MQTTNetworkConnectionTLS a owl:DatatypeProperty ;
-  rdfs:label "MQTT Network Connection TLS" ;
-  rdfs:comment "TLS security of an MQTT Network Connection" ;
+:MQTTRETAIN a owl:DatatypeProperty ;
+  rdfs:label "RETAIN flag" ;
+  rdfs:comment "Property indicating whether the RETAIN flag is set" ;
+  rdfs:domain :MQTTPublishPacket ;
   rdfs:range xsd:boolean.
 
-:MQTTNetworkConnectionInitiatedBy a owl:ObjectProperty ;
-  rdfs:label "MQTT Network Connection Initiated By" ;
-  rdfs:comment "Entity that initiated an MQTT Network Connection" ;
-  rdfs:domain :MQTTNetworkConnection ;
-  rdfs:range :MQTTParticipant.
+:MQTTDUP a owl:DatatypeProperty ;
+  rdfs:label "DUP flag" ;
+  rdfs:comment "Property indicating whether the DUP flag is set" ;
+  rdfs:domain :MQTTPublishPacket ;
+  rdfs:range xsd:boolean.

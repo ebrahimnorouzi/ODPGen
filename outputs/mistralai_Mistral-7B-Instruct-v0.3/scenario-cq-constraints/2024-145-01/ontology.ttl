@@ -6,50 +6,60 @@
 
 :Ontology a owl:Ontology ;
     rdfs:label "Legal Tasks Ontology" ;
-    rdfs:comment "An ontology for managing legal tasks, court hierarchies, and bad check crime related regulations.".
-
-:Court a owl:Class ;
-    rdfs:label "Court" ;
-    rdfs:comment "Represents a court instance.".
-
-:DistrictCourt a owl:Class ;
-    rdfs:subClassOf [ owl:Restriction [ owl:onProperty :hasAuthority ; owl:allValuesFrom :Court ] ] ;
-    rdfs:label "District Court" ;
-    rdfs:comment "Represents a district court instance.".
+    rdfs:comment "An ontology for managing legal tasks, court hierarchies, and bad check crime regulations.".
 
 :State a owl:Class ;
     rdfs:label "State" ;
-    rdfs:comment "Represents a state in which courts are located.".
+    rdfs:comment "A geographical administrative division of a country.".
+
+:DistrictCourt a owl:Class ;
+    rdfs:label "District Court" ;
+    rdfs:comment "A court of law having jurisdiction over a district.".
 
 :hasLocation rdf:Property ;
-    rdfs:domain :Court ;
+    rdfs:domain :DistrictCourt ;
     rdfs:range :State ;
     rdfs:label "hasLocation" ;
-    rdfs:comment "Indicates the state in which a court is located.".
+    rdfs:comment "The state where the district court is located.".
 
-:hasAuthority rdf:Property ;
-    rdfs:domain :Court ;
-    rdfs:range :Court ;
-    rdfs:label "hasAuthority" ;
-    rdfs:comment "Indicates the court that has authority over another court.".
+:hasSubordinate rdf:Property ;
+    rdfs:domain :DistrictCourt ;
+    rdfs:range :DistrictCourt ;
+    rdfs:label "hasSubordinate" ;
+    rdfs:comment "The court that has authority over this court.".
 
 :BadCheck a owl:Class ;
     rdfs:label "Bad Check" ;
-    rdfs:comment "Represents a bad check transaction.".
+    rdfs:comment "A check that is not honored by the bank due to insufficient funds.".
+
+:CheckTransaction a owl:Class ;
+    rdfs:label "Check Transaction" ;
+    rdfs:comment "A financial transaction involving a check.".
+
+:CheckTransactionType rdf:Property ;
+    rdfs:domain :CheckTransaction ;
+    rdfs:range xsd:string ;
+    rdfs:label "CheckTransactionType" ;
+    rdfs:comment "The type of the check transaction.".
 
 :CheckPayment a owl:Class ;
-    rdfs:subClassOf [ owl:Restriction [ owl:onProperty :hasTransactionType ; owl:allValuesFrom :BadCheck ] ] ;
     rdfs:label "Check Payment" ;
-    rdfs:comment "Represents a check payment transaction.".
+    rdfs:comment "A check transaction that represents a payment.".
 
-:hasTransactionType rdf:Property ;
-    rdfs:domain :BadCheck ;
-    rdfs:range xsd:string ;
-    rdfs:label "hasTransactionType" ;
-    rdfs:comment "Indicates the transaction type of a bad check.".
-
-:hasTransactionStatus rdf:Property ;
+:CheckPaymentStatus rdf:Property ;
     rdfs:domain :CheckPayment ;
     rdfs:range xsd:string ;
-    rdfs:label "hasTransactionStatus" ;
-    rdfs:comment "Indicates the transaction status of a check payment.".
+    rdfs:label "CheckPaymentStatus" ;
+    rdfs:comment "The status of the check payment.".
+
+:BadCheckTransactionType rdf:Property ;
+    rdfs:domain :BadCheck ;
+    rdfs:range xsd:string ;
+    rdfs:label "BadCheckTransactionType" ;
+    rdfs:comment "The type of the bad check transaction.".
+
+:BadCheckPaymentStatus rdf:Property ;
+    rdfs:domain :BadCheckPayment ;
+    rdfs:range xsd:string ;
+    rdfs:label "BadCheckPaymentStatus" ;
+    rdfs:comment "The status of the bad check payment.".

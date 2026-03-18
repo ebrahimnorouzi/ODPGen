@@ -1,43 +1,3 @@
-**Reasoning Steps**
-
-1. **Extract atomic requirements from the scenario**
-	* Legal tasks require managing complex information that is primarily unstructured in nature.
-	* It captures the court hierarchies and bad check crime related regulations.
-2. **Propose candidate classes and properties for each requirement**
-	* Legal tasks: `:LegalTask`, `:manages`, `:information`
-	* Court hierarchies: `:CourtHierarchy`, `:hasCourt`, `:court`
-	* Bad check crime related regulations: `:BadCheckRegulation`, `:hasRegulation`, `:regulation`
-3. **Draft axioms (subclass, domain, range, cardinality, disjointness) for each candidate**
-	* `:LegalTask rdfs:subClassOf owl:Thing.`
-	* `:CourtHierarchy rdfs:subClassOf owl:Thing.`
-	* `:BadCheckRegulation rdfs:subClassOf owl:Thing.`
-	* `:manages rdfs:domain :LegalTask ; rdfs:range xsd:string.`
-	* `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
-	* `:hasRegulation rdfs:domain :BadCheckRegulation ; rdfs:range :Regulation.`
-4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
-	* CQ1: List all district courts in a given state.
-		+ Axioms enabling answer: `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
-	* CQ2: In which state is a given district court instance located?
-		+ Axioms enabling answer: `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
-	* CQ3: How many districts are in a given state of India?
-		+ Axioms enabling answer: `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
-	* CQ4: Which court has authority over a given court?
-		+ Axioms enabling answer: `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
-	* CQ5: What is the check transaction type for a bad check?
-		+ Axioms enabling answer: `:hasRegulation rdfs:domain :BadCheckRegulation ; rdfs:range :Regulation.`
-	* CQ6: When is a check payment of a bad check?
-		+ Axioms enabling answer: None
-	* CQ7: What is the transaction status of a given check payment?
-		+ Axioms enabling answer: None
-5. **Add or refine axioms to cover any uncovered CQs**
-	* `:CheckPayment a owl:Class.`
-	* `:hasPaymentDate rdfs:domain :CheckPayment ; rdfs:range xsd:date.`
-	* `:hasTransactionStatus rdfs:domain :CheckPayment ; rdfs:range :TransactionStatus.`
-6. **Remove any classes or properties not traceable to a requirement or CQ**
-	* Removed `:information`, `:regulation`
-
-**Turtle Ontology**
-
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -46,25 +6,112 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Court Hierarchy and Bad Check Regulation Ontology" ;
-  rdfs:comment "Ontology for court hierarchies and bad check crime related regulations".
+  rdfs:label "Legal Task Ontology" ;
+  rdfs:comment "Captures court hierarchies and bad check regulations".
 
-:LegalTask rdfs:subClassOf owl:Thing ;
+:LegalTask a owl:Class ;
   rdfs:label "Legal Task" ;
-  rdfs:comment "A legal task that requires managing complex information".
+  rdfs:comment "Represents a legal task".
 
-:manages rdfs:domain :LegalTask ;
-  rdfs:range xsd:string ;
-  rdfs:label "Manages" ;
-  rdfs:comment "Manages complex information".
+:Task a owl:Class ;
+  rdfs:label "Task" ;
+  rdfs:comment "Represents a task".
 
-:CourtHierarchy rdfs:subClassOf owl:Thing ;
-  rdfs:label "Court Hierarchy" ;
-  rdfs:comment "A court hierarchy that captures court relationships".
+:hasSubtask a owl:ObjectProperty ;
+  rdfs:label "has subtask" ;
+  rdfs:comment "A task has subtasks" ;
+  owl:inverseOf :subtaskOf.
 
-:hasCourt rdfs:domain :CourtHierarchy ;
-  rdfs:range :Court ;
-  rdfs:label "Has Court" ;
-  rdfs:comment "Has a court in the hierarchy".
+:subtaskOf a owl:ObjectProperty ;
+  rdfs:label "subtask of" ;
+  rdfs:comment "A subtask is part of a task" ;
+  owl:inverseOf :hasSubtask.
 
-:BadCheckRegulation rdfs:subClass
+:hasCourt a owl:ObjectProperty ;
+  rdfs:label "has court" ;
+  rdfs:comment "A task is associated with a court" ;
+  owl:inverseOf :courtOf.
+
+:courtOf a owl:ObjectProperty ;
+  rdfs:label "court of" ;
+  rdfs:comment "A court is associated with a task" ;
+  owl:inverseOf :hasCourt.
+
+:hasDistrict a owl:ObjectProperty ;
+  rdfs:label "has district" ;
+  rdfs:comment "A court is associated with a district" ;
+  owl:inverseOf :districtOf.
+
+:districtOf a owl:ObjectProperty ;
+  rdfs:label "district of" ;
+  rdfs:comment "A district is associated with a court" ;
+  owl:inverseOf :hasDistrict.
+
+:hasState a owl:ObjectProperty ;
+  rdfs:label "has state" ;
+  rdfs:comment "A district is associated with a state" ;
+  owl:inverseOf :stateOf.
+
+:stateOf a owl:ObjectProperty ;
+  rdfs:label "state of" ;
+  rdfs:comment "A state is associated with a district" ;
+  owl:inverseOf :hasState.
+
+:hasCheck a owl:ObjectProperty ;
+  rdfs:label "has check" ;
+  rdfs:comment "A task is associated with a check" ;
+  owl:inverseOf :checkOf.
+
+:checkOf a owl:ObjectProperty ;
+  rdfs:label "check of" ;
+  rdfs:comment "A check is associated with a task" ;
+  owl:inverseOf :hasCheck.
+
+:hasTransaction a owl:ObjectProperty ;
+  rdfs:label "has transaction" ;
+  rdfs:comment "A check is associated with a transaction" ;
+  owl:inverseOf :transactionOf.
+
+:transactionOf a owl:ObjectProperty ;
+  rdfs:label "transaction of" ;
+  rdfs:comment "A transaction is associated with a check" ;
+  owl:inverseOf :hasTransaction.
+
+:hasType a owl:ObjectProperty ;
+  rdfs:label "has type" ;
+  rdfs:comment "A transaction has a type" ;
+  owl:inverseOf :typeOf.
+
+:typeOf a owl:ObjectProperty ;
+  rdfs:label "type of" ;
+  rdfs:comment "A type is associated with a transaction" ;
+  owl:inverseOf :hasType.
+
+:hasStatus a owl:ObjectProperty ;
+  rdfs:label "has status" ;
+  rdfs:comment "A transaction has a status" ;
+  owl:inverseOf :statusOf.
+
+:statusOf a owl:ObjectProperty ;
+  rdfs:label "status of" ;
+  rdfs:comment "A status is associated with a transaction" ;
+  owl:inverseOf :hasStatus.
+
+:hasPayment a owl:ObjectProperty ;
+  rdfs:label "has payment" ;
+  rdfs:comment "A transaction has a payment" ;
+  owl:inverseOf :paymentOf.
+
+:paymentOf a owl:ObjectProperty ;
+  rdfs:label "payment of" ;
+  rdfs:comment "A payment is associated with a transaction" ;
+  owl:inverseOf :hasPayment.
+
+:hasDate a owl:DatatypeProperty ;
+  rdfs:label "has date" ;
+  rdfs:comment "A payment has a date" ;
+  owl:inverseOf :dateOf.
+
+:dateOf a owl:DatatypeProperty ;
+  rdfs:label "date of" ;
+  r

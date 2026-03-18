@@ -5,83 +5,56 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-rdfs:label "Author Name Ontology" ;
-rdfs:comment "An ontology for modeling author names and name changes.".
+rdfs:label "Author Name Change Ontology" ;
+rdfs:comment "An ontology for modeling author name changes, including adoption of different names for book publication and name changes due to marriage or other reasons.".
 
 :Author a owl:Class ;
 rdfs:label "Author" ;
-rdfs:comment "An author who writes books.".
-
-:Name a owl:Class ;
-rdfs:label "Name" ;
-rdfs:comment "A name adopted by an author.".
-
-:AdoptedName a owl:Class ;
-rdfs:label "Adopted Name" ;
-rdfs:comment "A name adopted by an author for a specific book.".
+rdfs:comment "An individual who has written a book or other written work.".
 
 :Book a owl:Class ;
 rdfs:label "Book" ;
-rdfs:comment "A book written by an author.".
+rdfs:comment "A written work published by an author.".
 
-:AuthorName a owl:Class ;
-rdfs:label "Author Name" ;
-rdfs:comment "A name used by an author for a specific book.".
+:Pseudonym a owl:Class ;
+rdfs:label "Pseudonym" ;
+rdfs:comment "A name adopted by an author for publication purposes.".
 
-:nameChange a owl:Class ;
-rdfs:label "Name Change" ;
-rdfs:comment "A change of name adopted by an author.".
+:NameChange a owl:Class ;
+rdfs:label "NameChange" ;
+rdfs:comment "A change of name by an author, such as due to marriage or other reasons.".
 
-:marriage a owl:Class ;
-rdfs:label "Marriage" ;
-rdfs:comment "A marriage that results in a name change for an author.".
+:AuthorName a owl:ObjectProperty ;
+rdfs:label "author name" ;
+rdfs:comment "The name of an author.".
 
-:Author rdfs:subClassOf :Person.
-:Person a owl:Class ;
-rdfs:label "Person" ;
-rdfs:comment "A person who may adopt different names.".
+:BookTitle a owl:ObjectProperty ;
+rdfs:label "book title" ;
+rdfs:comment "The title of a book.".
 
-:Name rdfs:subClassOf :String.
-:AdoptedName rdfs:subClassOf :Name.
-:AuthorName rdfs:subClassOf :Name.
-:Book rdfs:subClassOf :Publication.
-:Publication a owl:Class ;
-rdfs:label "Publication" ;
-rdfs:comment "A publication written by an author.".
+:PseudonymOf a owl:ObjectProperty ;
+rdfs:label "pseudonym of" ;
+rdfs:comment "The pseudonym adopted by an author.".
 
-:nameChange rdfs:subClassOf :Change.
-:Change a owl:Class ;
-rdfs:label "Change" ;
-rdfs:comment "A change of name or other attribute.".
+:NameChangeDate a owl:DatatypeProperty ;
+rdfs:label "name change date" ;
+rdfs:comment "The date of a name change by an author.".
 
-:marriage rdfs:subClassOf :NameChange.
+:Author subClassOf :Person.
+:Book subClassOf :WrittenWork.
+:Pseudonym subClassOf :Name.
+:NameChange subClassOf :Event.
 
-:Author rdfs:hasName :Name.
-:Author rdfs:hasAdoptedName :AdoptedName.
-:AdoptedName rdfs:hasAuthor :Author.
-:Book rdfs:hasAuthor :Author.
-:Author rdfs:hasBook :Book.
-:Name rdfs:hasAuthor :Author.
-:AuthorName rdfs:hasAuthor :Author.
-:Author rdfs:hasNameChange :NameChange.
-:NameChange rdfs:hasOldName :Name.
-:NameChange rdfs:hasNewName :Name.
-:marriage rdfs:hasNameChange :NameChange.
+:AuthorName domain :Author.
+:AuthorName range :String.
 
-Intent:
-This ontology models the relationship between an author and their adopted names, including name changes due to marriage.
+:BookTitle domain :Book.
+:BookTitle range :String.
 
-Covered requirements:
+:PseudonymOf domain :Author.
+:PseudonymOf range :Pseudonym.
 
-* An author can adopt different names for different books.
-* An author can change their name due to marriage.
-* A book can have only one author.
-* An author can have multiple books.
-* A name can be adopted by only one author.
-* A name change can be due to marriage.
+:NameChangeDate domain :NameChange.
+:NameChangeDate range :Date.
 
-Known assumptions and exclusions:
-
-* This ontology assumes that an author's name is a string.
-* This ontology does not model the relationship between an author and their books beyond the fact that an author can have multiple books.
-* This ontology does not model the relationship between an author and their personal information beyond their name and marriage status.
+:Author, :Book, :Pseudonym, :NameChange rdfs:disjointWith :Person.

@@ -6,38 +6,38 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "Court Hierarchy and Bad Check Regulation ODP" ;
-    rdfs:comment "An ontology design pattern for representing legal information about court hierarchies and regulations related to bad check crime, including unstructured legal information resources." .
-
-:LegalInformation a owl:Class ;
-    rdfs:label "Legal Information" ;
-    rdfs:comment "Information used in legal tasks." .
-
-:UnstructuredLegalInformation a owl:Class ;
-    rdfs:label "Unstructured Legal Information" ;
-    rdfs:comment "Legal information that is primarily unstructured in nature." ;
-    rdfs:subClassOf :LegalInformation .
+    rdfs:label "Court Hierarchies and Bad Check Crime Regulations ODP" ;
+    rdfs:comment "An ontology design pattern for representing court hierarchies and regulations related to bad check crime in support of legal tasks involving primarily unstructured information." .
 
 :Court a owl:Class ;
     rdfs:label "Court" ;
-    rdfs:comment "A court within a court hierarchy." .
+    rdfs:comment "A judicial body that participates in a court hierarchy." .
 
 :CourtHierarchy a owl:Class ;
     rdfs:label "Court Hierarchy" ;
-    rdfs:comment "A hierarchical organization of courts." .
+    rdfs:comment "A hierarchical structure organizing courts." .
 
 :Regulation a owl:Class ;
     rdfs:label "Regulation" ;
-    rdfs:comment "A legal regulation." .
+    rdfs:comment "A legal regulation relevant to the domain." .
 
 :BadCheckCrimeRegulation a owl:Class ;
     rdfs:label "Bad Check Crime Regulation" ;
-    rdfs:comment "A regulation related to bad check crime." ;
+    rdfs:comment "A regulation specifically related to bad check crime." ;
     rdfs:subClassOf :Regulation .
 
-:BadCheckCrime a owl:Class ;
-    rdfs:label "Bad Check Crime" ;
-    rdfs:comment "The crime concerning bad checks." .
+:InformationResource a owl:Class ;
+    rdfs:label "Information Resource" ;
+    rdfs:comment "A resource containing information used in legal tasks, primarily unstructured in nature." .
+
+:UnstructuredInformation a owl:Class ;
+    rdfs:label "Unstructured Information" ;
+    rdfs:comment "Information that is primarily unstructured in nature." ;
+    rdfs:subClassOf :InformationResource .
+
+:Court owl:disjointWith :Regulation, :InformationResource .
+:Regulation owl:disjointWith :InformationResource .
+:CourtHierarchy owl:disjointWith :Regulation, :InformationResource .
 
 :hasCourt a owl:ObjectProperty ;
     rdfs:label "has court" ;
@@ -51,46 +51,48 @@
     rdfs:domain :Court ;
     rdfs:range :Court .
 
+:hasLowerCourt a owl:ObjectProperty ;
+    rdfs:label "has lower court" ;
+    rdfs:comment "Relates a court to another court that is lower in the hierarchy." ;
+    rdfs:domain :Court ;
+    rdfs:range :Court ;
+    owl:inverseOf :hasHigherCourt .
+
 :capturesCourtHierarchy a owl:ObjectProperty ;
     rdfs:label "captures court hierarchy" ;
-    rdfs:comment "Relates legal information to a court hierarchy it captures." ;
-    rdfs:domain :LegalInformation ;
+    rdfs:comment "Relates an information resource to a court hierarchy it captures." ;
+    rdfs:domain :InformationResource ;
     rdfs:range :CourtHierarchy .
 
 :capturesRegulation a owl:ObjectProperty ;
     rdfs:label "captures regulation" ;
-    rdfs:comment "Relates legal information to a regulation it captures." ;
-    rdfs:domain :LegalInformation ;
+    rdfs:comment "Relates an information resource to a regulation it captures." ;
+    rdfs:domain :InformationResource ;
     rdfs:range :Regulation .
 
-:regulatesCrime a owl:ObjectProperty ;
-    rdfs:label "regulates crime" ;
-    rdfs:comment "Relates a regulation to the crime it regulates." ;
-    rdfs:domain :Regulation ;
-    rdfs:range :BadCheckCrime .
-
-:Court owl:disjointWith :Regulation, :LegalInformation, :CourtHierarchy, :BadCheckCrime .
-:Regulation owl:disjointWith :LegalInformation, :CourtHierarchy, :BadCheckCrime .
-:LegalInformation owl:disjointWith :CourtHierarchy, :BadCheckCrime .
-:CourtHierarchy owl:disjointWith :BadCheckCrime .
+:regulatesCrimeType a owl:DatatypeProperty ;
+    rdfs:label "regulates crime type" ;
+    rdfs:comment "Specifies the crime type addressed by a regulation." ;
+    rdfs:domain :BadCheckCrimeRegulation ;
+    rdfs:range xsd:string .
 ```
 
+## Documentation
+
 **Intent:**  
-Model legal information resources that capture court hierarchies and regulations concerning bad check crime, with emphasis on primarily unstructured legal information.
+This pattern models court hierarchies and regulations concerning bad check crime, along with the unstructured information resources that capture them for legal tasks.
 
 **Covered requirements:**
-- Represent legal tasks as involving legal information.
-- Represent that the information is primarily unstructured in nature.
+- Represent legal-task-relevant information that is primarily unstructured.
 - Represent court hierarchies.
-- Represent courts as members of a hierarchy.
+- Represent regulations.
+- Specialize regulations for bad check crime.
+- Link unstructured information resources to the court hierarchies and regulations they capture.
 - Represent hierarchical relations among courts.
-- Represent regulations related to bad check crime.
-- Represent the relation between regulations and the bad check crime they concern.
-- Represent that legal information captures both court hierarchies and relevant regulations.
 
 **Known assumptions and exclusions:**
-- “Legal tasks” are not modeled as a separate class because the scenario only states a context, not explicit task entities or relations.
-- “Bad check crime” is modeled as a single crime concept without further criminal law detail.
-- No procedural, jurisdictional, temporal, documentary, or textual structure is added for the unstructured information.
-- No specific court levels, named courts, or specific regulations are introduced.
-- Disjointness is only asserted among the clearly distinct high-level categories used in the pattern.
+- “Primarily unstructured in nature” is modeled as a class of information resource rather than a quantitative measure.
+- The scenario does not specify statutes, jurisdictions, cases, persons, organizations, penalties, or procedural details, so they are excluded.
+- No individuals are created, per instruction.
+- Only minimal hierarchy relations are included for courts; no transitivity or cardinality constraints are asserted.
+- Bad check crime is represented through a specialized regulation class and an optional text crime-type property, without introducing a separate crime class.

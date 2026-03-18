@@ -1,60 +1,93 @@
-**1. Turtle Ontology**
+Here is the Turtle ontology design pattern (ODP) that supports the given competency questions:
 
 ```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
-    rdfs:label "Data Access Policy Ontology" ;
-    rdfs:comment "An ontology for modeling data access policies.".
+  rdfs:label "Data Access Policy Ontology" ;
+  rdfs:comment "An ontology for modeling data access policies.".
 
+# Classes
 :Policy a owl:Class ;
-    rdfs:label "Policy" ;
-    rdfs:comment "A data access policy.".
+  rdfs:label "Policy" ;
+  rdfs:comment "A data access policy.".
 
-:hasID a owl:ObjectProperty ;
-    rdfs:domain :Policy ;
-    rdfs:range xsd:string ;
-    rdfs:label "hasID" ;
-    rdfs:comment "The unique identifier of the policy.".
+:Creator a owl:Class ;
+  rdfs:label "Creator" ;
+  rdfs:comment "The creator of the policy.".
 
-:creator a owl:Class ;
-    rdfs:label "Creator" ;
-    rdfs:comment "The creator of the policy.".
+:IssueDate a owl:DatatypeProperty ;
+  rdfs:label "Issue Date" ;
+  rdfs:comment "The date when the policy was issued.".
 
-:issuedOn a owl:ObjectProperty ;
-    rdfs:domain :Policy ;
-    rdfs:range xsd:date ;
-    rdfs:label "issuedOn" ;
-    rdfs:comment "The date when the policy was issued.".
+:Assignee a owl:Class ;
+  rdfs:label "Assignee" ;
+  rdfs:comment "The assignee of the policy.".
 
-:assignee a owl:Class ;
-    rdfs:label "Assignee" ;
-    rdfs:comment "The assignee of the policy.".
+:Application a owl:Class ;
+  rdfs:label "Application" ;
+  rdfs:comment "The application/service being used to access the data.".
 
-:application a owl:Class ;
-    rdfs:label "Application" ;
-    rdfs:comment "The application/service being used to access the data.".
+:AccessMode a owl:EnumeredClass ;
+  rdfs:label "Access Mode" ;
+  rdfs:comment "The access mode being requested." ;
+  owl:oneOf ( :Read ; :Write ).
 
-:accessMode a owl:Class ;
-    rdfs:label "Access Mode" ;
-    rdfs:comment "The access mode being requested.".
+:PersonalData a owl:Class ;
+  rdfs:label "Personal Data" ;
+  rdfs:comment "The personal data being accessed.".
 
-:personalData a owl:Class ;
-    rdfs:label "Personal Data" ;
-    rdfs:comment "The personal data being accessed.".
+:Purpose a owl:DatatypeProperty ;
+  rdfs:label "Purpose" ;
+  rdfs:comment "The purpose for accessing the data.".
 
-:purpose a owl:Class ;
-    rdfs:label "Purpose" ;
-    rdfs:comment "The purpose for accessing the data.".
-```
+# Object Properties
+:hasPolicyID rdf:Property ;
+  rdfs:domain :Policy ;
+  rdfs:range xsd:string ;
+  rdfs:label "Policy ID" ;
+  rdfs:comment "The unique identifier of the policy.".
 
-**2. CQ-to-axiom mapping table**
+:hasCreator rdf:Property ;
+  rdfs:domain :Policy ;
+  rdfs:range :Creator ;
+  rdfs:label "Creator" ;
+  rdfs:comment "The creator of the policy.".
 
-| CQ                                                                     | Classes                                                                 | Properties                                                                 |
-|------------------------------------------------------------------------|-------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| What is the unique identifier of the policy?                           | Policy                                                                  | hasID                                                                      |
-| Who is the creator of the policy?                                      | Policy, Creator                                                         | rdf:type                                                                   |
-| When was the policy issued?                                             | Policy                                                                  | issuedOn                                                                    |
-| Who is the assignee of the policy?                                     | Policy, Assignee                                                        | rdf:type                                                                   |
-| What application/service is being used to access the data?              | Policy                                                                  | application                                                                |
-| What access mode is being requested?                                    | Policy, Access Mode                                                     | rdf:type                                                                   |
-| What personal data is being accessed?                                   | Policy, Personal Data                                                   | rdf:type                                                                   |
-| What is the purpose for accessing the data?                            | Policy, Purpose                                                         | rdf:type                                                                   |
+:hasIssueDate rdf:Property ;
+  rdfs:domain :Policy ;
+  rdfs:range xsd:date ;
+  rdfs:label "Issue Date" ;
+  rdfs:comment "The date when the policy was issued.".
+
+:hasAssignee rdf:Property ;
+  rdfs:domain :Policy ;
+  rdfs:range :Assignee ;
+  rdfs:label "Assignee" ;
+  rdfs:comment "The assignee of the policy.".
+
+:usesApplication rdf:Property ;
+  rdfs:domain :Policy ;
+  rdfs:range :Application ;
+  rdfs:label "Application" ;
+  rdfs:comment "The application/service being used to access the data.".
+
+:requestsAccessMode rdf:Property ;
+  rdfs:domain :Policy ;
+  rdfs:range :AccessMode ;
+  rdfs:label "Access Mode" ;
+  rdfs:comment "The access mode being requested.".
+
+:accessesPersonalData rdf:Property ;
+  rdfs:domain :Policy ;
+  rdfs:range :PersonalData ;
+  rdfs:label "Personal Data" ;
+  rdfs:comment "The personal data being accessed.".
+
+:hasPurpose rdf:Property ;
+  rdfs:domain :Policy ;
+  rdfs:range x

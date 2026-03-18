@@ -5,83 +5,63 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Temporal Referent Ontology" ;
-  rdfs:comment "Modeling temporal referents and their transitions.".
+  rdfs:label "Temporal Identifier Ontology" ;
+  rdfs:comment "Modeling temporal indirection in financial information systems".
+
+:TemporalIdentifier a owl:Class ;
+  rdfs:label "Temporal Identifier" ;
+  rdfs:comment "Persistent identifier for dynamic referents".
 
 :Referent a owl:Class ;
-  rdfs:label "Temporal Referent" ;
-  rdfs:comment "A referent that can change over time.".
-
-:ReferentTransition a owl:Class ;
-  rdfs:label "Referent Transition" ;
-  rdfs:comment "An event where a referent changes.".
+  rdfs:label "Referent" ;
+  rdfs:comment "Entity referenced by a temporal identifier".
 
 :Timestamp a owl:Class ;
   rdfs:label "Timestamp" ;
-  rdfs:comment "A point in time.".
+  rdfs:comment "Instant in time".
+
+:Transition a owl:Class ;
+  rdfs:label "Transition" ;
+  rdfs:comment "Change in referent over time".
 
 :Observation a owl:Class ;
   rdfs:label "Observation" ;
-  rdfs:comment "A measurement or event associated with a referent.".
-
-:TransitionRule a owl:Class ;
-  rdfs:label "Transition Rule" ;
-  rdfs:comment "A rule governing referent transitions.".
+  rdfs:comment "Real-time market attribute associated with a referent".
 
 :TemporalBinding a owl:Class ;
   rdfs:label "Temporal Binding" ;
-  rdfs:comment "A mapping of a referent to a specific timestamp.".
+  rdfs:comment "Association between a temporal identifier and a referent at a timestamp".
 
-:hasReferent a owl:ObjectProperty ;
-  rdfs:label "has Referent" ;
-  rdfs:comment "The referent associated with a temporal binding." ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range :Referent.
+:TransitionRule a owl:Class ;
+  rdfs:label "Transition Rule" ;
+  rdfs:comment "Rule triggering a referent transition".
 
-:hasTimestamp a owl:ObjectProperty ;
-  rdfs:label "has Timestamp" ;
-  rdfs:comment "The timestamp associated with a temporal binding." ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range :Timestamp.
+:TemporalIdentifierReference a owl:ObjectProperty ;
+  rdfs:label "References" ;
+  rdfs:comment "Temporal identifier referencing a referent" ;
+  domain :TemporalIdentifier ;
+  range :Referent.
 
-:hasObservation a owl:ObjectProperty ;
-  rdfs:label "has Observation" ;
-  rdfs:comment "The observation associated with a temporal binding." ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range :Observation.
+:TemporalBindingTimestamp a owl:ObjectProperty ;
+  rdfs:label "At Timestamp" ;
+  rdfs:comment "Temporal binding associated with a timestamp" ;
+  domain :TemporalBinding ;
+  range :Timestamp.
 
-:hasTransitionRule a owl:ObjectProperty ;
-  rdfs:label "has Transition Rule" ;
-  rdfs:comment "The transition rule associated with a referent transition." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :TransitionRule.
+:TemporalBindingTransition a owl:ObjectProperty ;
+  rdfs:label "Transition" ;
+  rdfs:comment "Temporal binding associated with a transition" ;
+  domain :TemporalBinding ;
+  range :Transition.
 
-:hasPreviousReferent a owl:ObjectProperty ;
-  rdfs:label "has Previous Referent" ;
-  rdfs:comment "The previous referent associated with a referent transition." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :Referent.
+:ObservationReferent a owl:ObjectProperty ;
+  rdfs:label "Associated with" ;
+  rdfs:comment "Observation associated with a referent" ;
+  domain :Observation ;
+  range :Referent.
 
-:hasNextReferent a owl:ObjectProperty ;
-  rdfs:label "has Next Referent" ;
-  rdfs:comment "The next referent associated with a referent transition." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :Referent.
-
-:hasTransitionTime a owl:ObjectProperty ;
-  rdfs:label "has Transition Time" ;
-  rdfs:comment "The time at which a referent transition occurred." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :Timestamp.
-
-:hasTransitionGap a owl:ObjectProperty ;
-  rdfs:label "has Transition Gap" ;
-  rdfs:comment "The gap between two consecutive referent transitions." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range xsd:dateTime.
-
-:hasTransitionOverlap a owl:ObjectProperty ;
-  rdfs:label "has Transition Overlap" ;
-  rdfs:comment "The overlap between two consecutive referent transitions." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range xsd:dateTime.
+:TransitionRuleTriggered a owl:ObjectProperty ;
+  rdfs:label "Triggered by" ;
+  rdfs:comment "Transition rule triggered by a temporal binding" ;
+  domain :TransitionRule ;
+  range :TemporalBinding.

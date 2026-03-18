@@ -1,88 +1,100 @@
-**Step 1 — Atomic requirements**
-- The pattern must represent survey or investigation activities.
-- A survey activity may be performed on a cultural property.
-- A survey activity may be performed on a specific feature of interest.
-- A survey activity uses a method or investigation technique.
-- A survey activity produces observations.
-- Experts participate in a survey activity.
-- Expert participation in a survey activity is qualified by a role.
-- A survey activity uses hardware.
-- A survey activity uses software.
-- A survey activity uses a technical configuration.
-- Observations can support interpretations or claims.
-- Post-processed outputs are related to underlying acquisition or observation activities.
-- A photographic acquisition cycle is a kind of activity within a survey context.
-- A photographic acquisition cycle is characterised by acquisition parameters.
-- Acquisition parameters include values such as exposure time, ISO, and aperture.
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
 
-**Step 2 — Candidate classes and properties**
-- Classes:
-  - `:SurveyActivity`
-  - `:CulturalProperty`
-  - `:FeatureOfInterest`
-  - `:Method`
-  - `:Observation`
-  - `:Expert`
-  - `:Participation`
-  - `:Role`
-  - `:Hardware`
-  - `:Software`
-  - `:TechnicalConfiguration`
-  - `:Interpretation`
-  - `:PostProcessedOutput`
-  - `:AcquisitionActivity`
-  - `:PhotographicAcquisitionCycle`
-  - `:AcquisitionParameter`
-- Object properties:
-  - `:isAboutCulturalProperty`
-  - `:isAboutFeature`
-  - `:usedMethod`
-  - `:producedObservation`
-  - `:hasParticipation`
-  - `:participant`
-  - `:hasRole`
-  - `:usedHardware`
-  - `:usedSoftware`
-  - `:usedTechnicalConfiguration`
-  - `:supportsInterpretation`
-  - `:derivedFromActivity`
-  - `:derivedFromObservation`
-  - `:hasAcquisitionParameter`
-- Datatype properties:
-  - `:parameterName`
-  - `:parameterValue`
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
 
-**Step 3 — Draft axioms**
-- Class hierarchy:
-  - `:PhotographicAcquisitionCycle rdfs:subClassOf :AcquisitionActivity`
-- Domains and ranges:
-  - `:isAboutCulturalProperty` domain `:SurveyActivity`, range `:CulturalProperty`
-  - `:isAboutFeature` domain `:SurveyActivity`, range `:FeatureOfInterest`
-  - `:usedMethod` domain `:SurveyActivity`, range `:Method`
-  - `:producedObservation` domain `:SurveyActivity`, range `:Observation`
-  - `:hasParticipation` domain `:SurveyActivity`, range `:Participation`
-  - `:participant` domain `:Participation`, range `:Expert`
-  - `:hasRole` domain `:Participation`, range `:Role`
-  - `:usedHardware` domain `:SurveyActivity`, range `:Hardware`
-  - `:usedSoftware` domain `:SurveyActivity`, range `:Software`
-  - `:usedTechnicalConfiguration` domain `:SurveyActivity`, range `:TechnicalConfiguration`
-  - `:supportsInterpretation` domain `:Observation`, range `:Interpretation`
-  - `:derivedFromActivity` domain `:PostProcessedOutput`, range `:AcquisitionActivity`
-  - `:derivedFromObservation` domain `:PostProcessedOutput`, range `:Observation`
-  - `:hasAcquisitionParameter` domain `:PhotographicAcquisitionCycle`, range `:AcquisitionParameter`
-  - `:parameterName` domain `:AcquisitionParameter`, range `xsd:string`
-  - `:parameterValue` domain `:AcquisitionParameter`, range `xsd:string`
-- Cardinality/minimal constraints:
-  - `:Participation rdfs:subClassOf` exactly 1 `:participant`
-  - `:Participation rdfs:subClassOf` exactly 1 `:hasRole`
-  - `:AcquisitionParameter rdfs:subClassOf` exactly 1 `:parameterName`
-  - `:AcquisitionParameter rdfs:subClassOf` min 1 `:parameterValue`
-- Disjointness:
-  - `:CulturalProperty`, `:FeatureOfInterest`, `:Method`, `:Observation`, `:Expert`, `:Participation`, `:Role`, `:Hardware`, `:Software`, `:TechnicalConfiguration`, `:Interpretation`, `:PostProcessedOutput`, `:AcquisitionParameter` are pairwise not all needed; keep only selected disjointness where useful.
-  - Useful minimal disjointness:
-    - `:Expert` disjoint with `:Role`
-    - `:Observation` disjoint with `:Interpretation`
-    - `:Hardware` disjoint with `:Software`
-    - `:Participation` disjoint with `:SurveyActivity`
+:Ontology a owl:Ontology ;
+  rdfs:label "Cultural Heritage Survey ODP" ;
+  rdfs:comment "An ontology design pattern for modeling cultural heritage survey activities, their targets, methods, observations, participants, equipment configurations, interpretations, post-processed outputs, and photographic acquisition parameters." .
 
-**Step 4 —
+### Classes
+
+:SurveyActivity a owl:Class ;
+  rdfs:label "Survey activity" ;
+  rdfs:comment "A scientific survey or investigation activity carried out on a cultural heritage entity or one of its features." .
+
+:CulturalProperty a owl:Class ;
+  rdfs:label "Cultural property" ;
+  rdfs:comment "A cultural heritage entity that can be the target of a survey activity." .
+
+:FeatureOfInterest a owl:Class ;
+  rdfs:label "Feature of interest" ;
+  rdfs:comment "A specific feature, part, or aspect of a cultural property that can be targeted by a survey activity." .
+
+:Method a owl:Class ;
+  rdfs:label "Method" ;
+  rdfs:comment "A survey method or investigation technique adopted in a survey activity." .
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "An observation produced during a survey activity." .
+
+:Expert a owl:Class ;
+  rdfs:label "Expert" ;
+  rdfs:comment "A person or agent participating in a survey activity as an expert." .
+
+:ParticipationRole a owl:Class ;
+  rdfs:label "Participation role" ;
+  rdfs:comment "A role played by an expert in the context of a survey activity." .
+
+:Participation a owl:Class ;
+  rdfs:label "Participation" ;
+  rdfs:comment "A reified participation relation connecting an expert, a survey activity, and a role." .
+
+:EquipmentConfiguration a owl:Class ;
+  rdfs:label "Equipment configuration" ;
+  rdfs:comment "A technical configuration used to conduct a survey activity." .
+
+:Hardware a owl:Class ;
+  rdfs:label "Hardware" ;
+  rdfs:comment "A hardware component used within an equipment configuration." .
+
+:Software a owl:Class ;
+  rdfs:label "Software" ;
+  rdfs:comment "A software component used within an equipment configuration." .
+
+:Interpretation a owl:Class ;
+  rdfs:label "Interpretation" ;
+  rdfs:comment "An interpretation or claim supported by one or more observations." .
+
+:PostProcessedOutput a owl:Class ;
+  rdfs:label "Post-processed output" ;
+  rdfs:comment "An output generated by post-processing and related to an underlying acquisition or observation activity." .
+
+:PhotographicAcquisitionCycle a owl:Class ;
+  rdfs:label "Photographic acquisition cycle" ;
+  rdfs:comment "A photographic acquisition cycle occurring within a survey activity and characterized by acquisition parameters." ;
+  rdfs:subClassOf :SurveyActivity .
+
+:AcquisitionParameterSet a owl:Class ;
+  rdfs:label "Acquisition parameter set" ;
+  rdfs:comment "A set of acquisition parameters characterizing a photographic acquisition cycle." .
+
+### Object Properties
+
+:targetsProperty a owl:ObjectProperty ;
+  rdfs:label "targets property" ;
+  rdfs:comment "Relates a survey activity to the cultural property it investigates." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :CulturalProperty .
+
+:targetsFeature a owl:ObjectProperty ;
+  rdfs:label "targets feature" ;
+  rdfs:comment "Relates a survey activity to a specific feature of interest it investigates." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :FeatureOfInterest .
+
+:featureOfProperty a owl:ObjectProperty ;
+  rdfs:label "feature of property" ;
+  rdfs:comment "Relates a feature of interest to the cultural property of which it is a feature." ;
+  rdfs:domain :FeatureOfInterest ;
+  rdfs:range :CulturalProperty .
+
+:adoptsMethod a owl:ObjectProperty ;
+  rdfs:label "adopts method" ;
+  rdfs:comment "Relates a survey activity to a method or investigation technique it adopts." ;
+  rdfs:domain :SurveyActivity

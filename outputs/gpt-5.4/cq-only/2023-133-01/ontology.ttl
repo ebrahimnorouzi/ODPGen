@@ -5,85 +5,85 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "Causal influence pattern for pavement, wetness, slipperiness, and sprinkler state" ;
-    rdfs:comment "An ontology design pattern for representing events, state changes, causal influences, outcomes of interventions, and causal link strength needed to answer competency questions about sprinkler state, pavement wetness, and pavement slipperiness." .
-
-### Classes
+  rdfs:label "Causal event and state pattern for sprinkler, wet pavement, and slippery pavement" ;
+  rdfs:comment "An ontology design pattern for representing events, states, causal relations, intervention outcomes, and causal strength needed to answer competency questions about sprinkler operation, wet pavement, and slippery pavement." .
 
 :Event a owl:Class ;
-    rdfs:label "Event" ;
-    rdfs:comment "Something that happens and may cause or influence a state or another event." .
+  rdfs:label "Event" ;
+  rdfs:comment "Something that happens and may cause a state or another event." .
 
 :State a owl:Class ;
-    rdfs:label "State" ;
-    rdfs:comment "A condition that can hold or not hold, such as pavement being wet or slippery, or sprinkler being on." .
+  rdfs:label "State" ;
+  rdfs:comment "A condition or situation that may hold, such as pavement being wet or slippery." .
 
 :Intervention a owl:Class ;
-    rdfs:label "Intervention" ;
-    rdfs:comment "An action that sets or changes a state in order to examine its outcome." .
+  rdfs:label "Intervention" ;
+  rdfs:comment "An action that sets or changes a state in order to assess its outcome." .
 
 :CausalLink a owl:Class ;
-    rdfs:label "Causal link" ;
-    rdfs:comment "A reified relation representing that one event, state, or intervention causally influences a state or event, possibly with a strength value." .
+  rdfs:label "Causal link" ;
+  rdfs:comment "A reified causal relation connecting a cause to an effect and allowing the strength of the causal relation to be described." .
 
 :Outcome a owl:Class ;
-    rdfs:label "Outcome" ;
-    rdfs:comment "A resulting event or state produced by an intervention." .
+  rdfs:label "Outcome" ;
+  rdfs:comment "A resulting state or event produced by an intervention." .
 
-### Object Properties
+:causes a owl:ObjectProperty ;
+  rdfs:label "causes" ;
+  rdfs:comment "Relates an event or state to a state or event that it causes." ;
+  rdfs:domain owl:Thing ;
+  rdfs:range owl:Thing .
 
 :hasCause a owl:ObjectProperty ;
-    rdfs:label "has cause" ;
-    rdfs:comment "Relates an event or state to an event or state that is responsible for it." ;
-    rdfs:domain owl:Thing ;
-    rdfs:range owl:Thing .
+  rdfs:label "has cause" ;
+  rdfs:comment "Relates a causal link to its cause, which may be an event or a state." ;
+  rdfs:domain :CausalLink ;
+  rdfs:range owl:Thing .
 
 :hasEffect a owl:ObjectProperty ;
-    rdfs:label "has effect" ;
-    rdfs:comment "Relates an event, state, or intervention to the event or state that it brings about or influences." ;
-    rdfs:domain owl:Thing ;
-    rdfs:range owl:Thing .
+  rdfs:label "has effect" ;
+  rdfs:comment "Relates a causal link to its effect, which may be an event or a state." ;
+  rdfs:domain :CausalLink ;
+  rdfs:range owl:Thing .
 
-:hasSource a owl:ObjectProperty ;
-    rdfs:label "has source" ;
-    rdfs:comment "Relates a causal link to the source event, state, or intervention from which the causal influence originates." ;
-    rdfs:domain :CausalLink ;
-    rdfs:range owl:Thing .
+:hasCausalLink a owl:ObjectProperty ;
+  rdfs:label "has causal link" ;
+  rdfs:comment "Relates a cause to a reified causal link in which it participates." ;
+  rdfs:domain owl:Thing ;
+  rdfs:range :CausalLink .
 
-:hasTarget a owl:ObjectProperty ;
-    rdfs:label "has target" ;
-    rdfs:comment "Relates a causal link to the target event or state that is causally influenced." ;
-    rdfs:domain :CausalLink ;
-    rdfs:range owl:Thing .
+:hasInterventionTarget a owl:ObjectProperty ;
+  rdfs:label "has intervention target" ;
+  rdfs:comment "Relates an intervention to the state that the intervention sets or changes." ;
+  rdfs:domain :Intervention ;
+  rdfs:range :State .
 
 :hasOutcome a owl:ObjectProperty ;
-    rdfs:label "has outcome" ;
-    rdfs:comment "Relates an intervention to its resulting outcome." ;
-    rdfs:domain :Intervention ;
-    rdfs:range :Outcome .
+  rdfs:label "has outcome" ;
+  rdfs:comment "Relates an intervention to its outcome." ;
+  rdfs:domain :Intervention ;
+  rdfs:range :Outcome .
 
-:aboutState a owl:ObjectProperty ;
-    rdfs:label "about state" ;
-    rdfs:comment "Relates an intervention or outcome to the state that it sets, changes, or concerns." ;
-    rdfs:domain owl:Thing ;
-    rdfs:range :State .
+:resultsIn a owl:ObjectProperty ;
+  rdfs:label "results in" ;
+  rdfs:comment "Relates an outcome to the resulting state or event." ;
+  rdfs:domain :Outcome ;
+  rdfs:range owl:Thing .
 
-:influences a owl:ObjectProperty ;
-    rdfs:label "influences" ;
-    rdfs:comment "Relates a state, event, or intervention to another state or event that it affects causally." ;
-    rdfs:domain owl:Thing ;
-    rdfs:range owl:Thing .
-
-### Datatype Properties
+:intervenesOn a owl:ObjectProperty ;
+  rdfs:label "intervenes on" ;
+  rdfs:comment "Relates an intervention to a causal link whose effect is being assessed under the intervention." ;
+  rdfs:domain :Intervention ;
+  rdfs:range :CausalLink .
 
 :hasTruthValue a owl:DatatypeProperty ;
-    rdfs:label "has truth value" ;
-    rdfs:comment "Indicates whether a state holds or does not hold in a given description, for example wet versus not wet or on versus off." ;
-    rdfs:domain :State ;
-    rdfs:range xsd:boolean .
+  rdfs:label "has truth value" ;
+  rdfs:comment "Indicates whether a state is asserted to hold or not hold in a scenario or intervention." ;
+  rdfs:domain :State ;
+  rdfs:range xsd:boolean .
 
-:hasStrengthValue a owl:DatatypeProperty ;
-    rdfs:label "has strength value" ;
-    rdfs:comment "Gives a numeric value for the strength of a causal link." ;
-    rdfs:domain :CausalLink ;
-    rdfs:range xsd:decimal .
+:hasCausalStrength a owl:DatatypeProperty ;
+  rdfs:label "has causal strength" ;
+  rdfs:comment "Gives a numeric measure of the strength of a causal link." ;
+  rdfs:domain :CausalLink ;
+  rdfs:range xsd:decimal .

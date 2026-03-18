@@ -1,78 +1,87 @@
-Reasoning steps:
-
-1. Extract atomic requirements from the scenario:
-* Legal tasks require managing complex information that is primarily unstructured in nature.
-* Capture court hierarchies and bad check crime related regulations.
-2. Propose candidate classes and properties for each requirement:
-* Court
-	+ rdfs:label "Court"
-	+ rdfs:comment "A court of law"
-* DistrictCourt
-	+ rdfs:label "DistrictCourt"
-	+ rdfs:comment "A district court"
-* State
-	+ rdfs:label "State"
-	+ rdfs:comment "A state in a country"
-* BadCheck
-	+ rdfs:label "BadCheck"
-	+ rdfs:comment "A check that has bounced"
-* CheckTransaction
-	+ rdfs:label "CheckTransaction"
-	+ rdfs:comment "A transaction involving a check"
-* Payment
-	+ rdfs:label "Payment"
-	+ rdfs:comment "A payment made by a check"
-3. Draft axioms for each candidate:
-* Court:
-	+ subclass: owl:Thing
-	+ owl:hasClass rdfs:Resource
-	+ owl:hasClass DistrictCourt
-* DistrictCourt:
-	+ subclass: owl:Thing
-	+ owl:hasClass rdfs:Resource
-	+ owl:hasClass Court
-	+ owl:hasProperty: location rdfs:Resource
-* State:
-	+ subclass: owl:Thing
-	+ owl:hasClass rdfs:Resource
-	+ owl:hasProperty: containsDistrictCourt rdfs:Resource
-* BadCheck:
-	+ subclass: owl:Thing
-	+ owl:hasClass rdfs:Resource
-	+ owl:hasProperty: transactionType rdfs:Resource
-* CheckTransaction:
-	+ subclass: owl:Thing
-	+ owl:hasClass rdfs:Resource
-	+ owl:hasProperty: check rdfs:Resource
-	+ owl:hasProperty: payment rdfs:Resource
-* Payment:
-	+ subclass: owl:Thing
-	+ owl:hasClass rdfs:Resource
-	+ owl:hasProperty: amount rdfs:Decimal
-	+ owl:hasProperty: transactionStatus rdfs:Resource
-4. For each CQ, check which axioms enable answering it; note any CQs not yet covered:
-* CQ1: List all district courts in a given state.
-	+ Axioms: owl:hasClass DistrictCourt, owl:hasProperty: location
-* CQ2: In which state is a given district court instance located?
-	+ Axioms: owl:hasClass DistrictCourt, owl:hasProperty: location
-* CQ3: How many districts are in a given state of India?
-	+ Axioms: owl:hasClass State, owl:hasProperty: containsDistrictCourt
-* CQ4: Which court has authority over a given court?
-	+ Axioms: owl:hasClass Court, owl:hasProperty: hasAuthority
-* CQ5: What is the check transaction type for a bad check?
-	+ Axioms: owl:hasClass BadCheck, owl:hasProperty: transactionType
-* CQ6: When is a check payment of a bad check?
-	+ Axioms: owl:hasClass CheckTransaction, owl:hasProperty: payment
-* CQ7: What is the transaction status of a given check payment?
-	+ Axioms: owl:hasClass Payment, owl:hasProperty: transactionStatus
-5. Add or refine axioms to cover any uncovered CQs:
-* CQ7: What is the transaction status of a given check payment?
-	+ Axioms: owl:hasClass Payment, owl:hasProperty: transactionStatus
-	+ Add axiom: owl:hasClass Payment, owl:hasProperty: transactionStatus rdfs:Resource
-6. Remove any classes or properties not traceable to a requirement or CQ:
-* Remove class: Payment
-* Remove property: transactionStatus
-7. Output the final ontology:
+Turtle Ontology:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
-@prefix rdf:  <http://www.w3.org/1999/0
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Legal Tasks Ontology" ;
+rdfs:comment "An ontology for managing legal tasks and court hierarchies".
+
+:Court a owl:Class ;
+rdfs:label "Court" ;
+rdfs:comment "A court of law".
+
+:DistrictCourt a owl:SubClassOf :Court ;
+rdfs:label "District Court" ;
+rdfs:comment "A district court".
+
+:State a owl:Class ;
+rdfs:label "State" ;
+rdfs:comment "A state in a country".
+
+:District a owl:Class ;
+rdfs:label "District" ;
+rdfs:comment "A district in a state".
+
+:CourtHierarchy a owl:ObjectProperty ;
+rdfs:label "Court Hierarchy" ;
+rdfs:comment "A relationship between courts".
+
+:Authority a owl:ObjectProperty ;
+rdfs:label "Authority" ;
+rdfs:comment "A relationship between courts".
+
+:CheckTransaction a owl:Class ;
+rdfs:label "Check Transaction" ;
+rdfs:comment "A transaction involving a check".
+
+:CheckPayment a owl:SubClassOf :CheckTransaction ;
+rdfs:label "Check Payment" ;
+rdfs:comment "A payment made by check".
+
+:TransactionStatus a owl:ObjectProperty ;
+rdfs:label "Transaction Status" ;
+rdfs:comment "The status of a transaction".
+
+:BadCheck a owl:Class ;
+rdfs:label "Bad Check" ;
+rdfs:comment "A check that has bounced".
+
+:CheckTransactionType a owl:ObjectProperty ;
+rdfs:label "Check Transaction Type" ;
+rdfs:comment "The type of a check transaction".
+
+:When a owl:ObjectProperty ;
+rdfs:label "When" ;
+rdfs:comment "The time at which a check payment is made".
+```
+Reasoning Summary:
+
+* Extracted atomic requirements:
+	+ List all district courts in a given state.
+	+ In which state is a given district court instance located?
+	+ How many districts are in a given state of India?
+	+ Which court has authority over a given court?
+	+ What is the check transaction type for a bad check?
+	+ When is a check payment of a bad check?
+	+ What is the transaction status of a given check payment?
+* Proposed candidate classes and properties:
+	+ :Court, :DistrictCourt, :State, :District, :CourtHierarchy, :Authority, :CheckTransaction, :CheckPayment, :TransactionStatus, :BadCheck, :CheckTransactionType, :When
+* Draft axioms:
+	+ :CourtHierarchy subClassOf :ObjectProperty.
+	+ :Authority subClassOf :ObjectProperty.
+	+ :CheckTransaction subClassOf :Class.
+	+ :CheckPayment subClassOf :CheckTransaction.
+	+ :TransactionStatus subClassOf :ObjectProperty.
+	+ :BadCheck subClassOf :CheckTransaction.
+	+ :CheckTransactionType subClassOf :ObjectProperty.
+	+ :When subClassOf :ObjectProperty.
+* Verified axioms for each Competency Question (CQ):
+	+ CQ1: List all district courts in a given state.
+		- Axiom: :DistrictCourt subClassOf :Court.
+		- Axiom: :State a owl:Class.
+		- Axiom: :District a owl:Class.
+	+ CQ2: In which state is a

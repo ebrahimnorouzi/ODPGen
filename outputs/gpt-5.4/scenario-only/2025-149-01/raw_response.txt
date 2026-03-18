@@ -1,71 +1,75 @@
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ndf-syntax-ns#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-nf#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "RDB SQL Access Security ODP" ;
-    rdfs:comment "An ontology design pattern for modeling the securing of access to a relational database that is queried via Structured Query Language (SQL)." .
+  rdfs:label "RDB SQL Access Security ODP" ;
+  rdfs:comment "An ontology design pattern for modeling the securing of access to a relational database that is queried via Structured Query Language." .
 
 :RelationalDatabase a owl:Class ;
-    rdfs:label "Relational Database" ;
-    rdfs:comment "A database organized according to the relational model." .
+  rdfs:label "Relational Database" ;
+  rdfs:comment "A database organized according to the relational model." .
 
 :SQLQuery a owl:Class ;
-    rdfs:label "SQL Query" ;
-    rdfs:comment "A query expressed in Structured Query Language (SQL)." .
+  rdfs:label "SQL Query" ;
+  rdfs:comment "A query expressed in Structured Query Language and used to query a relational database." .
 
-:DatabaseAccess a owl:Class ;
-    rdfs:label "Database Access" ;
-    rdfs:comment "An access event or interaction involving a relational database." .
+:Access a owl:Class ;
+  rdfs:label "Access" ;
+  rdfs:comment "An access to a relational database performed through a query." .
 
-:AccessSecurity a owl:Class ;
-    rdfs:label "Access Security" ;
-    rdfs:comment "A security measure or security aspect applied to database access." .
-
-:queriesDatabase a owl:ObjectProperty ;
-    rdfs:label "queries database" ;
-    rdfs:comment "Relates an SQL query to the relational database it queries." ;
-    rdfs:domain :SQLQuery ;
-    rdfs:range :RelationalDatabase .
-
-:accessesDatabase a owl:ObjectProperty ;
-    rdfs:label "accesses database" ;
-    rdfs:comment "Relates a database access to the relational database being accessed." ;
-    rdfs:domain :DatabaseAccess ;
-    rdfs:range :RelationalDatabase .
-
-:usesQuery a owl:ObjectProperty ;
-    rdfs:label "uses query" ;
-    rdfs:comment "Relates a database access to the SQL query used in that access." ;
-    rdfs:domain :DatabaseAccess ;
-    rdfs:range :SQLQuery .
+:SecurityControl a owl:Class ;
+  rdfs:label "Security Control" ;
+  rdfs:comment "A control used to secure access to a relational database." .
 
 :securedBy a owl:ObjectProperty ;
-    rdfs:label "secured by" ;
-    rdfs:comment "Relates a database access to the security applied to it." ;
-    rdfs:domain :DatabaseAccess ;
-    rdfs:range :AccessSecurity .
+  rdfs:label "secured by" ;
+  rdfs:comment "Relates an access to the security control that secures it." ;
+  rdfs:domain :Access ;
+  rdfs:range :SecurityControl .
 
-:RelationalDatabase owl:disjointWith :SQLQuery, :DatabaseAccess, :AccessSecurity .
-:SQLQuery owl:disjointWith :DatabaseAccess, :AccessSecurity .
-:DatabaseAccess owl:disjointWith :AccessSecurity .
+:accessesDatabase a owl:ObjectProperty ;
+  rdfs:label "accesses database" ;
+  rdfs:comment "Relates an access to the relational database being accessed." ;
+  rdfs:domain :Access ;
+  rdfs:range :RelationalDatabase .
+
+:usesSQLQuery a owl:ObjectProperty ;
+  rdfs:label "uses SQL query" ;
+  rdfs:comment "Relates an access to the SQL query used to perform it." ;
+  rdfs:domain :Access ;
+  rdfs:range :SQLQuery .
+
+:queriesDatabase a owl:ObjectProperty ;
+  rdfs:label "queries database" ;
+  rdfs:comment "Relates an SQL query to the relational database that it queries." ;
+  rdfs:domain :SQLQuery ;
+  rdfs:range :RelationalDatabase .
+
+:RelationalDatabase owl:disjointWith :SQLQuery, :Access, :SecurityControl .
+:SQLQuery owl:disjointWith :Access, :SecurityControl .
+:Access owl:disjointWith :SecurityControl .
 ```
 
-**Intent:**  
-Model the securing of access to a relational database where the access uses SQL queries.
+## Documentation
 
-**Covered requirements:**
-- Models a relational database (RDB).
-- Models SQL queries against that database.
-- Models database access as the thing being secured.
-- Models security applied to database access.
-- Connects SQL queries to the relational database they query.
-- Connects database access to both the database and the SQL query used.
+- **Intent:** This pattern models secured access to a relational database where the access is carried out using an SQL query.
 
-**Known assumptions and exclusions:**
-- “Securing access” is represented generically as `AccessSecurity` without specifying authentication, authorization, encryption, or other concrete mechanisms.
-- The pattern does not model users, roles, sessions, credentials, permissions, tables, schemas, or query results, since these are not explicitly required by the scenario.
-- SQL is modeled only through `SQLQuery`; no SQL dialects or query structure are represented.
+- **Covered requirements:**
+  - Models a relational database.
+  - Models SQL queries used to query the database.
+  - Models access to the database.
+  - Models security controls that secure such access.
+  - Connects access to the database being accessed.
+  - Connects access to the SQL query used.
+  - Connects SQL queries to the relational database they query.
+  - Connects access to the security control securing it.
+
+- **Known assumptions and exclusions:**
+  - The scenario does not specify users, roles, permissions, authentication methods, or authorization policies, so they are excluded.
+  - The pattern treats “securing access” generically via `SecurityControl` without distinguishing control types.
+  - No individuals or operational details of SQL syntax, database schema, sessions, or network infrastructure are modeled.
+  - Disjointness is asserted only among the four core classes because they represent clearly different kinds of things in this scenario.

@@ -1,10 +1,10 @@
 Turtle Ontology:
 ```turtle
-@prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix : <http://example.org/odp#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
 rdfs:label "Sprinkler Use Case Ontology" ;
@@ -38,13 +38,14 @@ rdfs:comment "An event representing the pavement being slippery.".
 rdfs:label "Causal Link" ;
 rdfs:comment "A property representing a causal relation between two events.".
 
-:RainySeason :CausalLink :Raining.
-:Raining :CausalLink :PavementWet.
-:PavementWet :CausalLink :PavementSlippery.
-:SprinklerOn :CausalLink :PavementWet.
+:EffectWeight a xsd:Decimal ;
+rdfs:label "Effect Weight" ;
+rdfs:comment "A property representing the effect weight of a causal link.".
 
-:PavementSlippery :hasCausalLink :RainySeason.
-:PavementSlippery :hasCausalLink :SprinklerOn.
+:RainySeason :CausalLink :SprinklerOn :EffectWeight "0.6".
+:SprinklerOn :CausalLink :Raining :EffectWeight "0.8".
+:Raining :CausalLink :PavementWet :EffectWeight "0.9".
+:PavementWet :CausalLink :PavementSlippery :EffectWeight "0.7".
 ```
 Validation Report:
 
@@ -61,9 +62,10 @@ Requirements from the scenario that are covered:
 
 * The ontology includes classes for events in the sprinkler use case, such as :RainySeason, :SprinklerOn, :Raining, :PavementWet, and :PavementSlippery.
 * The ontology includes a property :CausalLink to represent the causal relations between events.
-* The ontology includes instances of the :CausalLink property to represent the causal relations between events, such as :RainySeason :CausalLink :Raining and :PavementWet :CausalLink :PavementSlippery.
+* The ontology includes a property :EffectWeight to represent the effect weight of a causal link.
+* The ontology includes instances of the events and their causal links, such as :RainySeason :CausalLink :SprinklerOn :EffectWeight "0.6".
 
 Scenario concepts explicitly excluded and why:
 
-* The ontology does not include classes for objects or entities that are not relevant to the sprinkler use case, such as :Sprinkler or :Pavement. This is because the scenario only involves events and their causal relations, and not the objects or entities that are affected by those events.
-* The ontology does not include properties for temporal or spatial relations between events, such as :Before or :Near. This is because the scenario only involves causal relations between events, and not their temporal
+* The ontology does not include classes for objects or entities that are not relevant to the sprinkler use case, such as :Sprinkler or :Pavement. This is because the scenario only deals with events and their causal relations, and not with the objects or entities involved in those events.
+* The ontology

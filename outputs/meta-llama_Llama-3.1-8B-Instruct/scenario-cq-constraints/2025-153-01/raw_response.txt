@@ -6,86 +6,66 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Temporal Referent Ontology" ;
-  rdfs:comment "Modeling temporal referents and their transitions.".
+  rdfs:label "Temporal Identifier Ontology" ;
+  rdfs:comment "Modeling temporal indirection in financial information systems".
+
+:TemporalIdentifier a owl:Class ;
+  rdfs:label "Temporal Identifier" ;
+  rdfs:comment "Persistent identifier for dynamic referents".
 
 :Referent a owl:Class ;
-  rdfs:label "Temporal Referent" ;
-  rdfs:comment "A referent that can change over time.".
-
-:ReferentTransition a owl:Class ;
-  rdfs:label "Referent Transition" ;
-  rdfs:comment "An event where a referent changes.".
+  rdfs:label "Referent" ;
+  rdfs:comment "Entity referenced by a temporal identifier".
 
 :Timestamp a owl:Class ;
   rdfs:label "Timestamp" ;
-  rdfs:comment "A point in time.".
+  rdfs:comment "Instant in time".
+
+:Transition a owl:Class ;
+  rdfs:label "Transition" ;
+  rdfs:comment "Change in referent over time".
 
 :Observation a owl:Class ;
   rdfs:label "Observation" ;
-  rdfs:comment "A measurement or event associated with a referent.".
-
-:TransitionRule a owl:Class ;
-  rdfs:label "Transition Rule" ;
-  rdfs:comment "A rule governing referent transitions.".
+  rdfs:comment "Real-time market attribute associated with a referent".
 
 :TemporalBinding a owl:Class ;
   rdfs:label "Temporal Binding" ;
-  rdfs:comment "A mapping of a referent to a specific timestamp.".
+  rdfs:comment "Association between a temporal identifier and a referent at a timestamp".
 
-:hasReferent a owl:ObjectProperty ;
-  rdfs:label "has Referent" ;
-  rdfs:comment "The referent associated with a temporal binding." ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range :Referent.
+:TransitionRule a owl:Class ;
+  rdfs:label "Transition Rule" ;
+  rdfs:comment "Rule triggering a referent transition".
 
-:hasTimestamp a owl:ObjectProperty ;
-  rdfs:label "has Timestamp" ;
-  rdfs:comment "The timestamp associated with a temporal binding." ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range :Timestamp.
+:TemporalIdentifierReference a owl:ObjectProperty ;
+  rdfs:label "References" ;
+  rdfs:comment "Temporal identifier referencing a referent" ;
+  domain :TemporalIdentifier ;
+  range :Referent.
 
-:hasObservation a owl:ObjectProperty ;
-  rdfs:label "has Observation" ;
-  rdfs:comment "The observation associated with a temporal binding." ;
-  rdfs:domain :TemporalBinding ;
-  rdfs:range :Observation.
+:TemporalBindingTimestamp a owl:ObjectProperty ;
+  rdfs:label "At Timestamp" ;
+  rdfs:comment "Temporal binding associated with a timestamp" ;
+  domain :TemporalBinding ;
+  range :Timestamp.
 
-:hasTransitionRule a owl:ObjectProperty ;
-  rdfs:label "has Transition Rule" ;
-  rdfs:comment "The transition rule associated with a referent transition." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :TransitionRule.
+:TemporalBindingTransition a owl:ObjectProperty ;
+  rdfs:label "Transition" ;
+  rdfs:comment "Temporal binding associated with a transition" ;
+  domain :TemporalBinding ;
+  range :Transition.
 
-:hasPreviousReferent a owl:ObjectProperty ;
-  rdfs:label "has Previous Referent" ;
-  rdfs:comment "The previous referent associated with a referent transition." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :Referent.
+:ObservationReferent a owl:ObjectProperty ;
+  rdfs:label "Associated with" ;
+  rdfs:comment "Observation associated with a referent" ;
+  domain :Observation ;
+  range :Referent.
 
-:hasNextReferent a owl:ObjectProperty ;
-  rdfs:label "has Next Referent" ;
-  rdfs:comment "The next referent associated with a referent transition." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :Referent.
-
-:hasTransitionTime a owl:ObjectProperty ;
-  rdfs:label "has Transition Time" ;
-  rdfs:comment "The time at which a referent transition occurred." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :Timestamp.
-
-:hasTransitionGap a owl:ObjectProperty ;
-  rdfs:label "has Transition Gap" ;
-  rdfs:comment "The gap between two consecutive referent transitions." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :xsd:dateTime.
-
-:hasTransitionOverlap a owl:ObjectProperty ;
-  rdfs:label "has Transition Overlap" ;
-  rdfs:comment "The overlap between two consecutive referent transitions." ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :xsd:dateTime.
+:TransitionRuleTriggered a owl:ObjectProperty ;
+  rdfs:label "Triggered by" ;
+  rdfs:comment "Transition rule triggered by a temporal binding" ;
+  domain :TransitionRule ;
+  range :TemporalBinding.
 ```
 
 Validation report:
@@ -93,16 +73,22 @@ Validation report:
 1. Turtle syntax is valid (no missing dots, brackets, or semicolons). PASS
 2. All prefixes used in the body are declared at the top. PASS
 3. Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies. PASS
-4. No two classes or properties are defined with contradictory restrictions (e.g., disjoint yet subclass, or domain A yet also domain B inconsistently). PASS
+4. No two classes or properties are defined with contradictory restrictions (e.g., disjoint yet subclass, or inconsistent domain declarations). PASS
 5. Every CQ is traceable to at least one class or property in the ontology. PASS
 6. No concept appears in the ontology that is not grounded in the scenario or CQs. PASS
 
 Scope report:
 
 (a) Requirements from the scenario that are covered:
+- Temporal indirection in financial information systems
+- Persistent identifiers for dynamic referents
+- Real-time market attributes associated with referents
+- Referent transitions over time
+- Transition rules triggering referent changes
 
-* Persistent identifiers for temporal referents
-* Referent transitions
-* Timestamps
-* Observations
-*
+(b) Any scenario concepts explicitly excluded and why:
+- 'CL1' as a specific identifier (not modeled as a class or property, but rather as an example instance)
+- 'January 2025' as a specific timestamp (not modeled as a class or property, but rather as an example instance)
+- 'February 2025 contract' as a specific referent (not modeled as a class or property, but rather as an example instance)
+
+Note: The ontology design focuses on the general concepts and relationships described in the scenario, rather than specific instances or examples.

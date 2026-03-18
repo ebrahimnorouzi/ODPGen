@@ -1,5 +1,111 @@
-@prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix : <http://example.org/odp#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Temporal Identifier Ontology" ;
+  rdfs:comment "Modeling persistent identifiers with temporal indirection.".
+
+:PersistentIdentifier a owl:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A stable referent for dynamic entities.".
+
+:Entity a owl:Class ;
+  rdfs:label "Entity" ;
+  rdfs:comment "Dynamic entities referenced by persistent identifiers.".
+
+:Timestamp a owl:Class ;
+  rdfs:label "Timestamp" ;
+  rdfs:comment "Instant in time when an entity is referenced.".
+
+:Transition a owl:Class ;
+  rdfs:label "Transition" ;
+  rdfs:comment "Event marking a change in the referenced entity.".
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "Market attributes bound to the current entity instance.".
+
+:Referent a owl:Class ;
+  rdfs:label "Referent" ;
+  rdfs:comment "Entity currently referenced by a persistent identifier.".
+
+:PastReferent a owl:Class ;
+  rdfs:label "Past Referent" ;
+  rdfs:comment "Entity referenced at a past timestamp.".
+
+:TransitionRule a owl:Class ;
+  rdfs:label "Transition Rule" ;
+  rdfs:comment "Rule triggering a referent transition.".
+
+:TemporalBinding a owl:Class ;
+  rdfs:label "Temporal Binding" ;
+  rdfs:comment "Association between a timestamp and a referenced entity.".
+
+:hasReferent a owl:ObjectProperty ;
+  rdfs:label "has Referent" ;
+  rdfs:comment "Entity currently referenced by a persistent identifier." ;
+  domain :PersistentIdentifier ;
+  range :Referent.
+
+:hasPastReferent a owl:ObjectProperty ;
+  rdfs:label "has Past Referent" ;
+  rdfs:comment "Entity referenced at a past timestamp." ;
+  domain :PersistentIdentifier ;
+  range :PastReferent.
+
+:hasTimestamp a owl:ObjectProperty ;
+  rdfs:label "has Timestamp" ;
+  rdfs:comment "Instant in time when an entity is referenced." ;
+  domain :TemporalBinding ;
+  range :Timestamp.
+
+:hasTransition a owl:ObjectProperty ;
+  rdfs:label "has Transition" ;
+  rdfs:comment "Event marking a change in the referenced entity." ;
+  domain :TemporalBinding ;
+  range :Transition.
+
+:hasObservation a owl:ObjectProperty ;
+  rdfs:label "has Observation" ;
+  rdfs:comment "Market attributes bound to the current entity instance." ;
+  domain :TemporalBinding ;
+  range :Observation.
+
+:hasTransitionRule a owl:ObjectProperty ;
+  rdfs:label "has Transition Rule" ;
+  rdfs:comment "Rule triggering a referent transition." ;
+  domain :Transition ;
+  range :TransitionRule.
+
+:hasTemporalBinding a owl:ObjectProperty ;
+  rdfs:label "has Temporal Binding" ;
+  rdfs:comment "Association between a timestamp and a referenced entity." ;
+  domain :PersistentIdentifier ;
+  range :TemporalBinding.
+
+:hasSequence a owl:ObjectProperty ;
+  rdfs:label "has Sequence" ;
+  rdfs:comment "Full sequence of referents over time." ;
+  domain :PersistentIdentifier ;
+  range :Referent.
+
+:hasGap a owl:ObjectProperty ;
+  rdfs:label "has Gap" ;
+  rdfs:comment "Gaps or overlaps in temporal bindings." ;
+  domain :TemporalBinding ;
+  range xsd:boolean.
+
+:hasOverlap a owl:ObjectProperty ;
+  rdfs:label "has Overlap" ;
+  rdfs:comment "Overlaps in temporal bindings." ;
+  domain :TemporalBinding ;
+  range xsd:boolean.
+
+:hasCompleteContext a owl:ObjectProperty ;
+  rdfs:label "has Complete Context" ;
+  rdfs:comment "Complete context can be rebuilt for any time point." ;
+  domain :TemporalBinding ;
+  range xsd:boolean.

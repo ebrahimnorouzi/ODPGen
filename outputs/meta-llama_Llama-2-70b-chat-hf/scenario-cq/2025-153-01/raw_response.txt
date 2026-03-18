@@ -1,4 +1,4 @@
-Here is an OWL ontology design pattern (ODP) in Turtle syntax that addresses the scenario and competency questions:
+Turtle Ontology:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -7,71 +7,76 @@ Here is an OWL ontology design pattern (ODP) in Turtle syntax that addresses the
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-rdfs:label "Temporal Indirection Ontology" ;
-rdfs:comment "An ontology for modeling temporal indirection in various domains.".
+rdfs:label "Persistent Identifier Ontology" ;
+rdfs:comment "An ontology for modeling persistent identifiers and their referents.".
 
-; Scenario-requirement-to-axiom mapping
-
-; 1. Persistent identifier is a stable referent
 :PersistentIdentifier a owl:Class ;
 rdfs:label "Persistent Identifier" ;
-rdfs:comment "A class representing a persistent identifier, which is a stable referent.".
+rdfs:comment "A unique identifier that remains constant over time, even as the entity it references changes.".
 
-; 2. Referent is a dynamic concept
 :Referent a owl:Class ;
 rdfs:label "Referent" ;
-rdfs:comment "A class representing the referent of a persistent identifier, which can change over time.".
+rdfs:comment "The entity that a persistent identifier references.".
 
-; 3. Temporal binding is a relationship between a persistent identifier and a referent
-:TemporalBinding a owl:Class ;
-rdfs:label "Temporal Binding" ;
-rdfs:comment "A class representing the relationship between a persistent identifier and a referent, which binds the identifier to the referent at a specific time.".
+:Reference a owl:ObjectProperty ;
+rdfs:label "Reference" ;
+rdfs:comment "The relationship between a persistent identifier and its referent." ;
+:PersistentIdentifier :Reference :Referent.
 
-; 4. Referent transition occurs when a persistent identifier references a new referent
-:ReferentTransition a owl:Class ;
-rdfs:label "Referent Transition" ;
-rdfs:comment "A class representing a referent transition, which occurs when a persistent identifier references a new referent.".
+:Transition a owl:Class ;
+rdfs:label "Transition" ;
+rdfs:comment "A change in the referent of a persistent identifier.".
 
-; 5. Observations are associated with specific referents
+:TransitionTime a owl:DatatypeProperty ;
+rdfs:label "Transition Time" ;
+rdfs:comment "The time at which a transition occurred." ;
+:Transition :TransitionTime :xsd:dateTime.
+
 :Observation a owl:Class ;
 rdfs:label "Observation" ;
-rdfs:comment "A class representing an observation, which is associated with a specific referent.".
+rdfs:comment "A piece of data associated with a specific referent.".
 
-; 6. Sequence of referents over time can be reconstructed
-:ReferentSequence a owl:Class ;
-rdfs:label "Referent Sequence" ;
-rdfs:comment "A class representing a sequence of referents over time, which can be reconstructed from temporal bindings.".
+:ObservationTime a owl:DatatypeProperty ;
+rdfs:label "Observation Time" ;
+rdfs:comment "The time at which an observation was made." ;
+:Observation :ObservationTime :xsd:dateTime.
 
-; 7. Rules triggered specific transitions
-:TransitionRule a owl:Class ;
-rdfs:label "Transition Rule" ;
-rdfs:comment "A class representing a rule that triggered a specific transition.".
+:Rule a owl:Class ;
+rdfs:label "Rule" ;
+rdfs:comment "A set of instructions that determines when a transition occurs.".
 
-; 8. Gaps or overlaps in temporal bindings can be detected
-:TemporalGap a owl:Class ;
-rdfs:label "Temporal Gap" ;
-rdfs:comment "A class representing a gap in temporal bindings, which can be detected by comparing referent transitions.".
+:RuleTrigger a owl:ObjectProperty ;
+rdfs:label "Rule Trigger" ;
+rdfs:comment "The condition that triggers a transition." ;
+:Rule :RuleTrigger :Transition.
 
-; 9. Complete context can be rebuilt for any time point
-:RebuildContext a owl:Class ;
-rdfs:label "Rebuild Context" ;
-rdfs:comment "A class representing the ability to rebuild complete context for any time point, using temporal bindings and referent transitions.".
+:Gap a owl:Class ;
+rdfs:label "Gap" ;
+rdfs:comment "A period of time during which a persistent identifier was not associated with any referent.".
 
-; CQ-to-axiom mapping
+:Overlap a owl:Class ;
+rdfs:label "Overlap" ;
+rdfs:comment "A period of time during which a persistent identifier was associated with multiple referents.".
 
-; 1. Which entity does a persistent identifier currently reference?
-:CQ1 a owl:Class ;
-rdfs:label "Current Referent" ;
-rdfs:comment "A class representing the current referent of a persistent identifier.".
+:Context a owl:Class ;
+rdfs:label "Context" ;
+rdfs:comment "A set of information associated with a specific time point.".
 
-; 2. Which entity was referenced at a past timestamp?
-:CQ2 a owl:Class ;
-rdfs:label "Past Referent" ;
-rdfs:comment "A class representing the referent of a persistent identifier at a past timestamp.".
+:ContextTime a owl:DatatypeProperty ;
+rdfs:label "Context Time" ;
+rdfs:comment "The time at which a context was valid." ;
+:Context :ContextTime :xsd:dateTime.
+```
+Scenario-requirement-to-axiom mapping:
 
-; 3. When did referent transitions occur?
-:CQ3 a owl:Class ;
-rdfs:label "Transition Timestamps" ;
-rdfs:comment "A class representing the timestamps of referent transitions.".
-
-; 4
+1. "A persistent identifier (CL1) serves as a stable referent while dynamically resolving to the front-month crude oil futures contract."
+	* Axiom: :PersistentIdentifier :Reference :Referent.
+2. "Real-time market attributes—such as last trade price, trading volume, and settlement values—are bound to the current contract instance but exposed through the invariant identifier."
+	* Axiom: :Observation :ObservationTime :xsd:dateTime.
+3. "When did referent transitions occur?"
+	* Axiom: :Transition :TransitionTime :xsd:dateTime.
+4. "What observations are associated with specific referents?"
+	* Axiom: :Observation :ObservationTime :xsd:dateTime.
+5. "What is the full sequence of referents over time?"
+	* Axiom: :PersistentIdentifier :Reference :Referent.
+6. "Wh

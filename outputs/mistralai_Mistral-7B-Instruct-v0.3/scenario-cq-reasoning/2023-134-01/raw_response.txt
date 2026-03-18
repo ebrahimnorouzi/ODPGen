@@ -1,54 +1,90 @@
-**Reasoning Steps:**
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Atomic Requirements:
-   - R1: Identify Solid actors and their roles
-   - R2: Describe Solid infrastructure
-   - R3: Discover data categories in Pods
-   - R4: Document data handling practices
-   - R5: Enable users to express privacy policies
-   - R6: Record provenance metadata
-   - R7: Ensure legal compliance
+:Ontology a owl:Ontology ;
+  rdfs:label "Solid Governance Patterns" ;
+  rdfs:comment "An ontology for addressing governance challenges in Solid apps.".
 
-2. Candidate Classes and Properties:
-   - Classes: Actor, Role, Infrastructure, Pod, DataCategory, DataHandlingPractice, PrivacyPolicy, User, Application, AccessMode, PersonalData, Purpose
-   - Properties: hasIdentifier, hasRole, providesInfrastructure, hasPod, hasDataCategory, handlesData, creates, issues, assignee, uses, requestsAccessMode, accesses, forPurpose
+# Classes
+:Actor a owl:Class ;
+  rdfs:label "Actor" ;
+  rdfs:comment "A person or entity involved in Solid.".
 
-3. Draft Axioms:
-   - (Not showing all axioms for brevity)
-   - :Actor rdfs:subClassOf [rdfs:subClassOf owl:Class].
-   - :Role rdfs:subClassOf owl:Class.
-   - :Infrastructure rdfs:subClassOf owl:Class.
-   - :Pod rdfs:subClassOf owl:Class.
-   - :DataCategory rdfs:subClassOf owl:Class.
-   - :DataHandlingPractice rdfs:subClassOf owl:Class.
-   - :PrivacyPolicy rdfs:subClassOf owl:Class.
-   - :User rdfs:subClassOf :Actor.
-   - :Application rdfs:subClassOf :Actor.
-   - :AccessMode rdfs:subClassOf owl:Class.
-   - :PersonalData rdfs:subClassOf owl:Class.
-   - :Purpose rdfs:subClassOf owl:Class.
-   - :hasIdentifier rdf:type owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range xsd:string.
-   - :hasRole rdf:type owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range :Role.
-   - :providesInfrastructure rdf:type owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range :Infrastructure.
-   - :hasPod rdf:type owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range :Pod.
-   - :hasDataCategory rdf:type owl:ObjectProperty ; rdfs:domain :Pod ; rdfs:range :DataCategory.
-   - :handlesData rdf:type owl:ObjectProperty ; rdfs:domain :Pod ; rdfs:range :DataHandlingPractice.
-   - :creates rdf:type owl:ObjectProperty ; rdfs:domain :PrivacyPolicy ; rdfs:range :User.
-   - :issues rdf:type owl:ObjectProperty ; rdfs:domain :PrivacyPolicy ; rdfs:range xsd:dateTime.
-   - :assignee rdf:type owl:ObjectProperty ; rdfs:domain :PrivacyPolicy ; rdfs:range :User.
-   - :uses rdf:type owl:ObjectProperty ; rdfs:domain :Application ; rdfs:range :Pod.
-   - :requestsAccessMode rdf:type owl:ObjectProperty ; rdfs:domain :Application ; rdfs:range :AccessMode.
-   - :accesses rdf:type owl:ObjectProperty ; rdfs:domain :Application ; rdfs:range :PersonalData.
-   - :forPurpose rdf:type owl:ObjectProperty ; rdfs:domain :Application ; rdfs:range :Purpose.
+:Role a owl:Class ;
+  rdfs:label "Role" ;
+  rdfs:comment "A function or position within Solid.".
 
-4. For each CQ, check which axioms enable answering it:
-   - C1: :hasIdentifier, :providesInfrastructure, :hasRole
-   - C2: :hasIdentifier, :providesInfrastructure
-   - C3: :hasDataCategory
-   - C4: :handlesData
-   - C5: :creates, :issues, :assignee
-   - C6: Not covered (requires additional properties)
-   - C7: Not covered (requires additional properties)
+:Pod a owl:Class ;
+  rdfs:label "Pod" ;
+  rdfs:comment "A Solid user's personal data store.".
 
-5. Add or refine axioms to cover any uncovered CQs:
-   - :
+:App a owl:Class ;
+  rdfs:label "App" ;
+  rdfs:comment "A Solid application.".
+
+:DataCategory a owl:Class ;
+  rdfs:label "Data Category" ;
+  rdfs:comment "A classification of data in a Pod.".
+
+:DataHandlingPractice a owl:Class ;
+  rdfs:label "Data Handling Practice" ;
+  rdfs:comment "A method or policy for handling data in a Pod or app.".
+
+:PrivacyPolicy a owl:Class ;
+  rdfs:label "Privacy Policy" ;
+  rdfs:comment "A user's privacy preferences and requirements.".
+
+:AccessMode a owl:Class ;
+  rdfs:label "Access Mode" ;
+  rdfs:comment "The method used to access data in a Pod.".
+
+:PersonalData a owl:Class ;
+  rdfs:label "Personal Data" ;
+  rdfs:comment "Data related to an individual.".
+
+:Purpose a owl:Class ;
+  rdfs:label "Purpose" ;
+  rdfs:comment "The reason for accessing personal data.".
+
+# Object Properties
+:hasIdentifier a owl:ObjectProperty ;
+  rdfs:domain :PrivacyPolicy ;
+  rdfs:range xsd:string ;
+  rdfs:label "Has Identifier" ;
+  rdfs:comment "The unique identifier of a privacy policy.".
+
+:hasCreator a owl:ObjectProperty ;
+  rdfs:domain :PrivacyPolicy ;
+  rdfs:range :Actor ;
+  rdfs:label "Has Creator" ;
+  rdfs:comment "The actor who created the privacy policy.".
+
+:hasIssueDate a owl:ObjectProperty ;
+  rdfs:domain :PrivacyPolicy ;
+  rdfs:range xsd:date ;
+  rdfs:label "Has Issue Date" ;
+  rdfs:comment "The date the privacy policy was issued.".
+
+:hasAssignee a owl:ObjectProperty ;
+  rdfs:domain :PrivacyPolicy ;
+  rdfs:range :Actor ;
+  rdfs:label "Has Assignee" ;
+  rdfs:comment "The actor to whom the privacy policy applies.".
+
+:usesApp a owl:ObjectProperty ;
+  rdfs:domain :AccessRequest ;
+  rdfs:range :App ;
+  rdfs:label "Uses App" ;
+  rdfs:comment "The app being used to access the data.".
+
+:requestsAccessMode a owl:ObjectProperty ;
+  rdfs:domain :AccessRequest ;
+  rdfs:range :AccessMode ;
+  rdfs:label "Requests Access Mode" ;
+  rdfs:comment "The access mode being requested.".
+
+:accessesPersonalData a owl:Object

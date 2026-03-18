@@ -1,5 +1,3 @@
-### Ontology Design Pattern (ODP) in Turtle Syntax
-
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -13,89 +11,89 @@
 
 :Author a owl:Class ;
   rdfs:label "Author" ;
-  rdfs:comment "An individual who creates literary works.".
-
-:Name a owl:Class ;
-  rdfs:label "Name" ;
-  rdfs:comment "A label or identifier used to refer to an individual.".
-
-:Pseudonym a owl:Class ;
-  rdfs:label "Pseudonym" ;
-  rdfs:comment "A name used by an author to conceal their identity.".
+  rdfs:comment "An individual who writes books.".
 
 :Book a owl:Class ;
   rdfs:label "Book" ;
-  rdfs:comment "A written or printed work consisting of pages glued or sewn together.".
+  rdfs:comment "A written work.".
 
-:Published a owl:ObjectProperty ;
-  rdfs:label "Published" ;
-  rdfs:comment "The act of making a book available to the public." ;
-  rdfs:domain :Author ;
-  rdfs:range :Book.
+:Pseudonym a owl:Class ;
+  rdfs:label "Pseudonym" ;
+  rdfs:comment "A name used by an author to publish books.".
 
-:Uses a owl:ObjectProperty ;
-  rdfs:label "Uses" ;
-  rdfs:comment "The act of adopting a pseudonym." ;
+:NameChange a owl:Class ;
+  rdfs:label "Name Change" ;
+  rdfs:comment "An event where an author changes their name.".
+
+:hasPseudonym a owl:ObjectProperty ;
+  rdfs:label "has Pseudonym" ;
+  rdfs:comment "The relationship between an author and their pseudonym." ;
   rdfs:domain :Author ;
   rdfs:range :Pseudonym.
 
-:HasName a owl:ObjectProperty ;
-  rdfs:label "Has Name" ;
-  rdfs:comment "The relationship between an individual and their name." ;
-  rdfs:domain :Author ;
-  rdfs:range :Name.
-
-:Authorship a owl:Class ;
-  rdfs:label "Authorship" ;
-  rdfs:comment "The act of creating a literary work.".
-
-:BookTitle a owl:Class ;
-  rdfs:label "Book Title" ;
-  rdfs:comment "The title of a book.".
-
-:Title a owl:ObjectProperty ;
-  rdfs:label "Title" ;
-  rdfs:comment "The name given to a book." ;
-  rdfs:domain :Book ;
-  rdfs:range :BookTitle.
-
-:AuthorshipOf a owl:ObjectProperty ;
-  rdfs:label "Authorship Of" ;
-  rdfs:comment "The relationship between an author and their literary work." ;
+:published a owl:ObjectProperty ;
+  rdfs:label "published" ;
+  rdfs:comment "The relationship between an author and a book they published." ;
   rdfs:domain :Author ;
   rdfs:range :Book.
 
-:C. S. Lewis a owl:NamedIndividual ;
-  rdfs:label "C. S. Lewis" ;
-  rdfs:comment "A renowned author.".
+:uses a owl:ObjectProperty ;
+  rdfs:label "uses" ;
+  rdfs:comment "The relationship between an author and a pseudonym they use." ;
+  rdfs:domain :Author ;
+  rdfs:range :Pseudonym.
 
-:Spirit in Bondage a owl:NamedIndividual ;
-  rdfs:label "Spirit in Bondage" ;
-  rdfs:comment "A collection of poems.".
+:assumes a owl:ObjectProperty ;
+  rdfs:label "assumes" ;
+  rdfs:comment "The relationship between an author and a role they assume." ;
+  rdfs:domain :Author ;
+  rdfs:range :Pseudonym.
 
-:PublishedBy a owl:ObjectProperty ;
-  rdfs:label "Published By" ;
-  rdfs:comment "The act of publishing a book." ;
+:hasNameChange a owl:ObjectProperty ;
+  rdfs:label "has Name Change" ;
+  rdfs:comment "The relationship between an author and a name change event." ;
+  rdfs:domain :Author ;
+  rdfs:range :NameChange.
+
+:crosses a owl:ObjectProperty ;
+  rdfs:label "crosses" ;
+  rdfs:comment "The relationship between a river and a national park it crosses." ;
+  rdfs:domain :River ;
+  rdfs:range :NationalPark.
+
+:River a owl:Class ;
+  rdfs:label "River" ;
+  rdfs:comment "A natural flowing body of water.".
+
+:NationalPark a owl:Class ;
+  rdfs:label "National Park" ;
+  rdfs:comment "A protected area of land.".
+
+:hasBook a owl:ObjectProperty ;
+  rdfs:label "has Book" ;
+  rdfs:comment "The relationship between a book and its author." ;
   rdfs:domain :Book ;
   rdfs:range :Author.
 
-:C. S. Lewis :Uses :Pseudonym1.
-:Spirit in Bondage :PublishedBy :C. S. Lewis.
-:Spirit in Bondage :Title "Spirit in Bondage".
+:hasRiver a owl:ObjectProperty ;
+  rdfs:label "has River" ;
+  rdfs:comment "The relationship between a national park and a river it contains." ;
+  rdfs:domain :NationalPark ;
+  rdfs:range :River.
 ```
 
-### Scenario-requirement-to-axiom mapping
+2. Scenario-requirement-to-axiom mapping:
 
-1. An author adopting different names to publish books, Name changes (e.g. - after marriage)
-   - Axioms: `:HasName a owl:ObjectProperty ;`, `:Author a owl:Class ;`, `:Name a owl:Class ;`
-2. Competency Questions:
-   - Under what pseudonym did the author C. S. Lewis publish a collection of poems, Spirit in Bondage?
-     - Axioms: `:Uses a owl:ObjectProperty ;`, `:C. S. Lewis a owl:NamedIndividual ;`, `:Pseudonym a owl:Class ;`
-   - What alternative did C. S. Lewis use to assume the role of a book writer?
-     - Axioms: `:Uses a owl:ObjectProperty ;`, `:C. S. Lewis a owl:NamedIndividual ;`, `:Pseudonym a owl:Class ;`
-   - Show the trajectories of rivers which cross national parks?
-     - Axioms: None (this CQ is not relevant to the scenario)
+- "An author adopting different names to publish books, Name changes (e.g. - after marriage)" 
+  - Axioms: `:Author a owl:Class ;`, `:Pseudonym a owl:Class ;`, `:hasPseudonym a owl:ObjectProperty ;`, `:NameChange a owl:Class ;`, `:hasNameChange a owl:ObjectProperty ;`
+- "C. S. Lewis published a collection of poems, Spirit in Bondage" 
+  - Axioms: `:Author a owl:Class ;`, `:Book a owl:Class ;`, `:published a owl:ObjectProperty ;`
+- "Name changes (e.g. - after marriage)" 
+  - Axioms: `:NameChange a owl:Class ;`, `:hasNameChange a owl:ObjectProperty ;`
 
-### CQ-to-axiom mapping
+3. CQ-to-axiom mapping:
 
-1. Under what pseudonym did the author C.
+- "Under what pseudonym did the author C. S. Lewis publish a collection of poems, Spirit in Bondage?"
+  - Classes: `:Author`, `:Book`, `:Pseudonym`
+  - Properties: `:hasPseudonym`, `:published`
+- "What alternative

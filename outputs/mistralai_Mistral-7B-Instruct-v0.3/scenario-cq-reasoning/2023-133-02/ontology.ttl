@@ -1,24 +1,71 @@
-**Reasoning Steps:**
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. Atomic Requirements:
-   - R1: Asthma symptoms exist for a patient.
-   - R2: Medication intake by the patient exists.
-   - R3: Outdoor environmental allergens (pollen, AQI) exist.
-   - R4: There is a causal relationship between outdoor allergens and asthma symptoms.
-   - R5: There is a causal relationship between outdoor allergens and medication intake.
-   - R6: There is a causal relationship between asthma symptoms and medication intake.
+:Ontology a owl:Ontology ;
+    rdfs:label "kHealth-Asthma Ontology" ;
+    rdfs:comment "An ontology for modeling asthma patients, symptoms, medications, and environmental factors.".
 
-2. Candidate Classes and Properties:
-   - Classes: Patient, AsthmaSymptom, Medication, OutdoorAllergen (Pollen, AQI), CausalRelation
-   - Properties: hasSymptom, takesMedication, existsInEnvironment, hasCausalEffect
+# Atomic Requirements
+:AsthmaPatient a owl:Class ;
+    rdfs:label "Asthma Patient" ;
+    rdfs:comment "A person suffering from asthma.".
 
-3. Draft Axioms:
-   - :Patient rdf:type owl:Class ; rdfs:label "Patient" ; rdfs:comment "Represents a patient.".
-   - :AsthmaSymptom rdf:type owl:Class ; rdfs:label "AsthmaSymptom" ; rdfs:comment "Represents an asthma symptom.".
-   - :Medication rdf:type owl:Class ; rdfs:label "Medication" ; rdfs:comment "Represents a medication.".
-   - :OutdoorAllergen rdf:type owl:Class ; rdfs:label "OutdoorAllergen" ; rdfs:comment "Represents an outdoor allergen.".
-   - :CausalRelation rdf:type owl:Class ; rdfs:label "CausalRelation" ; rdfs:comment "Represents a causal relationship.".
-   - :hasSymptom rdf:type owl:ObjectProperty ; domain :Patient ; range :AsthmaSymptom ; rdfs:label "Has Asthma Symptom" ; rdfs:comment "Indicates the patient has a specific asthma symptom.".
-   - :takesMedication rdf:type owl:ObjectProperty ; domain :Patient ; range :Medication ; rdfs:label "Takes Medication" ; rdfs:comment "Indicates the patient is taking a specific medication.".
-   - :existsInEnvironment rdf:type owl:ObjectProperty ; domain :OutdoorAllergen ; range rdf:Resource ; rdfs:label "Exists in Environment" ; rdfs:comment "Indicates the allergen exists in the outdoor environment.".
-   - :hasCausalEffect rdf:type owl:ObjectProperty ; domain :OutdoorAllergen ; range :CausalRelation ; rdfs:label "Has Causal Effect" ; rdfs:comment "Indicates the causal effect of an allergen.".
+:Symptom a owl:Class ;
+    rdfs:label "Symptom" ;
+    rdfs:comment "A health condition experienced by an asthma patient.".
+
+:Medication a owl:Class ;
+    rdfs:label "Medication" ;
+    rdfs:comment "A drug used to treat asthma symptoms.".
+
+:EnvironmentalFactor a owl:Class ;
+    rdfs:label "Environmental Factor" ;
+    rdfs:comment "An outdoor condition affecting an asthma patient.".
+
+:OutdoorAllergen a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+                      owl:onProperty :hasAllergen ;
+                      owl:allValuesFrom :EnvironmentalFactor ] ;
+    rdfs:label "Outdoor Allergen" ;
+    rdfs:comment "An environmental factor that is an allergen.".
+
+:AQI a owl:DatatypeProperty ;
+    rdfs:domain :EnvironmentalFactor ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "Air Quality Index" ;
+    rdfs:comment "The air quality index of an environmental factor.".
+
+:Pollen a owl:DatatypeProperty ;
+    rdfs:domain :EnvironmentalFactor ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "Pollen Count" ;
+    rdfs:comment "The pollen count of an environmental factor.".
+
+:hasAllergen an owl:ObjectProperty ;
+    rdfs:domain :EnvironmentalFactor ;
+    rdfs:range :OutdoorAllergen ;
+    rdfs:label "Has Allergen" ;
+    rdfs:comment "Indicates whether an environmental factor is an allergen.".
+
+:hasSymptom an owl:ObjectProperty ;
+    rdfs:domain :AsthmaPatient ;
+    rdfs:range :Symptom ;
+    rdfs:label "Has Symptom" ;
+    rdfs:comment "Indicates the symptoms experienced by an asthma patient.".
+
+:takesMedication an owl:ObjectProperty ;
+    rdfs:domain :AsthmaPatient ;
+    rdfs:range :Medication ;
+    rdfs:label "Takes Medication" ;
+    rdfs:comment "Indicates the medications taken by an asthma patient.".
+
+:causalEffectWeight an owl:DatatypeProperty ;
+    rdfs:domain [ a owl:Restriction ;
+                  owl:onProperty (:hasAllergen | :hasSymptom | :takesMedication) ;
+                  owl:someValuesFrom xsd:decimal ] ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "Causal Effect Weight" ;
+    rdfs:comment "The weight of the causal effect between an allergen, symptom, or medication.".

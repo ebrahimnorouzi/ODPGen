@@ -6,105 +6,91 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "Causal Bayesian Network sprinkler pattern" ;
-    rdfs:comment "An ontology design pattern for representing a small causal Bayesian network about rainy season, sprinkler use, rain, wet pavement, and slippery pavement, including causal relations, effect weights, and mediation." .
-
-#################################################################
-# Classes
-#################################################################
+  rdfs:label "Causal Bayesian Network sprinkler pattern ontology" ;
+  rdfs:comment "An ontology design pattern for representing a causal Bayesian network use case about rainy season, sprinkler, rain, wet pavement, slippery pavement, causal relations, effect weights, and mediation." .
 
 :CausalBayesianNetwork a owl:Class ;
-    rdfs:label "Causal Bayesian Network" ;
-    rdfs:comment "A causal Bayesian network consisting of nodes for events and directed causal relations between them." .
+  rdfs:label "Causal Bayesian Network" ;
+  rdfs:comment "A causal Bayesian network consisting of nodes and directed causal relations between them." .
 
-:EventNode a owl:Class ;
-    rdfs:label "Event node" ;
-    rdfs:comment "A node in the causal Bayesian network representing an event." .
+:Node a owl:Class ;
+  rdfs:label "Node" ;
+  rdfs:comment "A node in a causal Bayesian network representing an event." .
+
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An event represented by a node in the causal Bayesian network." .
 
 :CausalRelation a owl:Class ;
-    rdfs:label "Causal relation" ;
-    rdfs:comment "A directed causal relation from one event node to another, possibly annotated with an effect weight." .
+  rdfs:label "Causal Relation" ;
+  rdfs:comment "A directed causal relation between two nodes in the causal Bayesian network." .
+
+:MediatedCausalRelation a owl:Class ;
+  rdfs:label "Mediated Causal Relation" ;
+  rdfs:comment "A causal relation whose effect on a target event is mediated by another event rather than being direct." ;
+  rdfs:subClassOf :CausalRelation .
+
+:DirectCausalRelation a owl:Class ;
+  rdfs:label "Direct Causal Relation" ;
+  rdfs:comment "A causal relation in which the source directly causes the target." ;
+  rdfs:subClassOf :CausalRelation ;
+  owl:disjointWith :MediatedCausalRelation .
 
 :RainySeasonEvent a owl:Class ;
-    rdfs:label "Rainy season event" ;
-    rdfs:comment "An event node representing that it is rainy season." ;
-    rdfs:subClassOf :EventNode .
+  rdfs:label "Rainy Season Event" ;
+  rdfs:comment "The event that it is rainy season." ;
+  rdfs:subClassOf :Event .
 
 :SprinklerOnEvent a owl:Class ;
-    rdfs:label "Sprinkler on event" ;
-    rdfs:comment "An event node representing that the sprinkler is on." ;
-    rdfs:subClassOf :EventNode .
+  rdfs:label "Sprinkler On Event" ;
+  rdfs:comment "The event that the sprinkler is on." ;
+  rdfs:subClassOf :Event .
 
 :RainingEvent a owl:Class ;
-    rdfs:label "Raining event" ;
-    rdfs:comment "An event node representing that it is raining." ;
-    rdfs:subClassOf :EventNode .
+  rdfs:label "Raining Event" ;
+  rdfs:comment "The event that it is raining." ;
+  rdfs:subClassOf :Event .
 
-:WetPavementEvent a owl:Class ;
-    rdfs:label "Wet pavement event" ;
-    rdfs:comment "An event node representing that the pavement is wet." ;
-    rdfs:subClassOf :EventNode .
+:PavementWetEvent a owl:Class ;
+  rdfs:label "Pavement Wet Event" ;
+  rdfs:comment "The event that the pavement is wet." ;
+  rdfs:subClassOf :Event .
 
-:SlipperyPavementEvent a owl:Class ;
-    rdfs:label "Slippery pavement event" ;
-    rdfs:comment "An event node representing that the pavement is slippery." ;
-    rdfs:subClassOf :EventNode .
-
-#################################################################
-# Object Properties
-#################################################################
+:PavementSlipperyEvent a owl:Class ;
+  rdfs:label "Pavement Slippery Event" ;
+  rdfs:comment "The event that the pavement is slippery." ;
+  rdfs:subClassOf :Event .
 
 :hasNode a owl:ObjectProperty ;
-    rdfs:label "has node" ;
-    rdfs:comment "Relates a causal Bayesian network to an event node that is part of the network." ;
-    rdfs:domain :CausalBayesianNetwork ;
-    rdfs:range :EventNode .
+  rdfs:label "has node" ;
+  rdfs:comment "Relates a causal Bayesian network to a node that it contains." ;
+  rdfs:domain :CausalBayesianNetwork ;
+  rdfs:range :Node .
+
+:representsEvent a owl:ObjectProperty ;
+  rdfs:label "represents event" ;
+  rdfs:comment "Relates a node to the event it represents." ;
+  rdfs:domain :Node ;
+  rdfs:range :Event .
 
 :hasCausalRelation a owl:ObjectProperty ;
-    rdfs:label "has causal relation" ;
-    rdfs:comment "Relates a causal Bayesian network to a causal relation that belongs to the network." ;
-    rdfs:domain :CausalBayesianNetwork ;
-    rdfs:range :CausalRelation .
+  rdfs:label "has causal relation" ;
+  rdfs:comment "Relates a causal Bayesian network to a causal relation that belongs to it." ;
+  rdfs:domain :CausalBayesianNetwork ;
+  rdfs:range :CausalRelation .
 
-:hasCause a owl:ObjectProperty ;
-    rdfs:label "has cause" ;
-    rdfs:comment "Relates a causal relation to the event node that acts as its cause." ;
-    rdfs:domain :CausalRelation ;
-    rdfs:range :EventNode .
+:hasCauseNode a owl:ObjectProperty ;
+  rdfs:label "has cause node" ;
+  rdfs:comment "Relates a causal relation to its source node." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Node .
 
-:hasEffect a owl:ObjectProperty ;
-    rdfs:label "has effect" ;
-    rdfs:comment "Relates a causal relation to the event node that acts as its effect." ;
-    rdfs:domain :CausalRelation ;
-    rdfs:range :EventNode .
+:hasEffectNode a owl:ObjectProperty ;
+  rdfs:label "has effect node" ;
+  rdfs:comment "Relates a causal relation to its target node." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Node .
 
-:isMediatedBy a owl:ObjectProperty ;
-    rdfs:label "is mediated by" ;
-    rdfs:comment "Relates a causal relation to an event node that mediates the effect between cause and effect." ;
-    rdfs:domain :CausalRelation ;
-    rdfs:range :EventNode .
-
-#################################################################
-# Datatype Properties
-#################################################################
-
-:hasEffectWeight a owl:DatatypeProperty ;
-    rdfs:label "has effect weight" ;
-    rdfs:comment "Associates a causal relation with a numeric effect weight." ;
-    rdfs:domain :CausalRelation ;
-    rdfs:range xsd:decimal .
-
-#################################################################
-# Disjointness
-#################################################################
-
-:CausalBayesianNetwork owl:disjointWith :EventNode, :CausalRelation .
-
-:EventNode owl:disjointWith :CausalRelation .
-
-#################################################################
-# Example pattern individuals for the scenario
-#################################################################
-
-:SprinklerUseCaseNetwork a :CausalBayesianNetwork ;
-    rdfs:label
+:hasMediatorNode a owl:ObjectProperty ;
+  rdfs:label "has mediator node" ;
+  rdfs:comment "Relates a mediated causal relation to the node through which the causal effect is

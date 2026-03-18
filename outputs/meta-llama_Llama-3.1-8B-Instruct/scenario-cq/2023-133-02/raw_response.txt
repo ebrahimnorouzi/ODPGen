@@ -1,5 +1,3 @@
-### Turtle Ontology
-
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -19,13 +17,37 @@
   rdfs:label "Asthma Symptom" ;
   rdfs:comment "A symptom of asthma".
 
+:Cough a owl:Class ;
+  rdfs:label "Cough" ;
+  rdfs:comment "A symptom of asthma, cough".
+
+:ChestTightness a owl:Class ;
+  rdfs:label "Chest Tightness" ;
+  rdfs:comment "A symptom of asthma, chest tightness".
+
+:Wheezing a owl:Class ;
+  rdfs:label "Wheezing" ;
+  rdfs:comment "A symptom of asthma, wheezing".
+
+:BreathingPattern a owl:Class ;
+  rdfs:label "Breathing Pattern" ;
+  rdfs:comment "A symptom of asthma, breathing pattern".
+
 :Medication a owl:Class ;
   rdfs:label "Medication" ;
   rdfs:comment "A medication for asthma".
 
-:OutdoorEnvironmentalAllergen a owl:Class ;
-  rdfs:label "Outdoor Environmental Allergen" ;
-  rdfs:comment "An allergen in the outdoor environment".
+:OutdoorAllergen a owl:Class ;
+  rdfs:label "Outdoor Allergen" ;
+  rdfs:comment "An outdoor allergen, such as pollen or AQI".
+
+:Pollen a owl:Class ;
+  rdfs:label "Pollen" ;
+  rdfs:comment "An outdoor allergen, pollen".
+
+:AQI a owl:Class ;
+  rdfs:label "Air Quality Index" ;
+  rdfs:comment "An outdoor allergen, air quality index".
 
 :hasSymptom a owl:ObjectProperty ;
   rdfs:label "has Symptom" ;
@@ -39,59 +61,37 @@
   rdfs:domain :AsthmaPatient ;
   rdfs:range :Medication.
 
-:hasAllergen a owl:ObjectProperty ;
-  rdfs:label "has Allergen" ;
-  rdfs:comment "A patient is exposed to an allergen" ;
+:hasOutdoorAllergen a owl:ObjectProperty ;
+  rdfs:label "has Outdoor Allergen" ;
+  rdfs:comment "A patient is exposed to an outdoor allergen" ;
   rdfs:domain :AsthmaPatient ;
-  rdfs:range :OutdoorEnvironmentalAllergen.
+  rdfs:range :OutdoorAllergen.
 
 :causes a owl:ObjectProperty ;
   rdfs:label "causes" ;
   rdfs:comment "One thing causes another" ;
-  rdfs:domain :OutdoorEnvironmentalAllergen ;
-  rdfs:range :AsthmaSymptom.
+  rdfs:domain :AsthmaSymptom ;
+  rdfs:range :AsthmaPatient.
 
-:effectWeight a owl:DatatypeProperty ;
-  rdfs:label "Effect Weight" ;
-  rdfs:comment "The weight of the effect of one thing on another" ;
+:hasEffectWeight a owl:DatatypeProperty ;
+  rdfs:label "has Effect Weight" ;
+  rdfs:comment "The effect weight of a causal relation" ;
   rdfs:domain :causes ;
   rdfs:range xsd:float.
 
-:hasMedicationIntake a owl:ObjectProperty ;
-  rdfs:label "has Medication Intake" ;
-  rdfs:comment "A patient has a medication intake" ;
-  rdfs:domain :AsthmaPatient ;
-  rdfs:range :Medication.
-
-:hasSymptomEffect a owl:ObjectProperty ;
-  rdfs:label "has Symptom Effect" ;
-  rdfs:comment "A symptom has an effect on medication intake" ;
-  rdfs:domain :AsthmaSymptom ;
-  rdfs:range :xsd:float.
+:hasCausalEffect a owl:ObjectProperty ;
+  rdfs:label "has Causal Effect" ;
+  rdfs:comment "A causal effect of a relation" ;
+  rdfs:domain :causes ;
+  rdfs:range :AsthmaSymptom.
 ```
 
-### Scenario-requirement-to-axiom mapping
+**Scenario-requirement-to-axiom mapping:**
 
-1. "Asthma is a complex disease with multiple factors affecting a patient's condition."
-   - Axiom: `:AsthmaPatient a owl:Class ;`
-   - This axiom represents the concept of an asthma patient, which is a key entity in the scenario.
+1. Asthma is a complex disease with multiple factors affecting a patient's condition.
+   - Axioms: `:AsthmaPatient a owl:Class ; rdfs:comment "A patient with asthma"` and `:AsthmaSymptom a owl:Class ; rdfs:comment "A symptom of asthma"`.
 
-2. "The data collected about asthma patients include their (1) symptoms, such as cough, chest tightness, wheezing, and breathing patterns, (2) intake of medications, and (3) outdoor environment features, such as pollen and air quality index (AQI)."
-   - Axioms:
-     - `:AsthmaSymptom a owl:Class ;`
-     - `:Medication a owl:Class ;`
-     - `:OutdoorEnvironmentalAllergen a owl:Class ;`
-   - These axioms represent the concepts of asthma symptoms, medications, and outdoor environmental allergens, which are essential entities in the scenario.
+2. kHealth-Asthma is a continuous self-monitoring project involving pediatric asthma patients and aiming to understand the effects of outdoor environmental allergens on the patient's symptoms and their medication intake.
+   - Axioms: `:AsthmaPatient a owl:Class ; rdfs:comment "A patient with asthma"` and `:Medication a owl:Class ; rdfs:comment "A medication for asthma"`.
 
-3. "The edges represent the causal relations with effect weights."
-   - Axioms:
-     - `:causes a owl:ObjectProperty ;`
-     - `:effectWeight a owl:DatatypeProperty ;`
-   - These axioms represent the causal relations between outdoor environmental allergens and asthma symptoms, along with the effect weights.
-
-### CQ-to-axiom mapping
-
-1. "Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI?"
-   - Axioms:
-     - `:hasAllergen a owl:ObjectProperty ;`
-     -
+3. The data collected about asthma patients include their (1) symptoms, such as cough,

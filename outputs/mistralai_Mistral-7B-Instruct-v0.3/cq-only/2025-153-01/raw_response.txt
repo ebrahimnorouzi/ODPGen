@@ -1,4 +1,4 @@
-Here is the Turtle ontology design pattern (ODP) for the given competency questions:
+Here is the Turtle ontology design pattern (ODP) that supports the given competency questions:
 
 ```turtle
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
@@ -8,80 +8,79 @@ Here is the Turtle ontology design pattern (ODP) for the given competency questi
 @prefix : <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Persistent Identifier Ontology" ;
-  rdfs:comment "An ontology to model entities, their persistent identifiers, observations, and transitions.".
+  rdfs:label "ODP for Persistent Identifiers" ;
+  rdfs:comment "An ontology to support competency questions about persistent identifiers.".
 
+# Classes
 :Entity a owl:Class ;
   rdfs:label "Entity" ;
-  rdfs:comment "A real-world object or concept.".
+  rdfs:comment "A generic class for any entity that can be referenced.".
 
-:PersistentIdentifier a owl:Class ;
-  rdfs:label "PersistentIdentifier" ;
-  rdfs:comment "A unique identifier for an entity.".
-
-:hasPersistentIdentifier a owl:ObjectProperty ;
-  rdfs:domain :Entity ;
-  rdfs:range :PersistentIdentifier ;
-  rdfs:label "hasPersistentIdentifier" ;
-  rdfs:comment "Relates an entity to its persistent identifier.".
+:Referent a owl:Class ;
+  rdfs:subClassOf [ owl:onProperty :hasReferent ] ;
+  rdfs:label "Referent" ;
+  rdfs:comment "A specific entity that is referenced by a persistent identifier.".
 
 :Observation a owl:Class ;
+  rdfs:subClassOf [ owl:onProperty :hasObservation ] ;
   rdfs:label "Observation" ;
-  rdfs:comment "A fact or measurement about an entity.".
-
-:hasObservation a owl:ObjectProperty ;
-  rdfs:domain :Entity ;
-  rdfs:range :Observation ;
-  rdfs:label "hasObservation" ;
-  rdfs:comment "Relates an entity to an observation.".
-
-:Timestamp a owl:Class ;
-  rdfs:label "Timestamp" ;
-  rdfs:comment "A point in time.".
-
-:hasTimestamp a owl:ObjectProperty ;
-  rdfs:domain :Observation ;
-  rdfs:range :Timestamp ;
-  rdfs:label "hasTimestamp" ;
-  rdfs:comment "Relates an observation to a timestamp.".
+  rdfs:comment "An event or fact associated with a referent.".
 
 :Transition a owl:Class ;
   rdfs:label "Transition" ;
   rdfs:comment "A change in the referent of a persistent identifier.".
 
-:hasReferent a owl:ObjectProperty ;
-  rdfs:domain :Transition ;
-  rdfs:range :Entity ;
-  rdfs:label "hasReferent" ;
-  rdfs:comment "Relates a transition to the entity it refers to.".
-
-:hasPreviousReferent a owl:ObjectProperty ;
-  rdfs:domain :Transition ;
-  rdfs:range :Entity ;
-  rdfs:label "hasPreviousReferent" ;
-  rdfs:comment "Relates a transition to its previous referent.".
-
-:hasNextReferent a owl:ObjectProperty ;
-  rdfs:domain :Entity ;
-  rdfs:range :Entity ;
-  rdfs:label "hasNextReferent" ;
-  rdfs:comment "Relates an entity to its next referent in the sequence.".
-
 :Rule a owl:Class ;
   rdfs:label "Rule" ;
   rdfs:comment "A set of conditions that trigger a transition.".
 
-:triggeredBy a owl:ObjectProperty ;
+# Properties
+:hasReferent a owl:ObjectProperty ;
+  rdfs:domain :Entity ;
+  rdfs:range :Referent ;
+  rdfs:label "hasReferent" ;
+  rdfs:comment "Relates an entity to the referent it currently references.".
+
+:hasObservation a owl:ObjectProperty ;
+  rdfs:domain :Referent ;
+  rdfs:range :Observation ;
+  rdfs:label "hasObservation" ;
+  rdfs:comment "Relates a referent to an observation associated with it.".
+
+:hasTransition a owl:ObjectProperty ;
+  rdfs:domain :Referent ;
+  rdfs:range :Transition ;
+  rdfs:label "hasTransition" ;
+  rdfs:comment "Relates a referent to a transition that occurred.".
+
+:hasRule a owl:ObjectProperty ;
   rdfs:domain :Transition ;
   rdfs:range :Rule ;
-  rdfs:label "triggeredBy" ;
+  rdfs:label "hasRule" ;
   rdfs:comment "Relates a transition to the rule that triggered it.".
 
-:hasGap a owl:ObjectProperty ;
-  rdfs:domain :Entity ;
-  rdfs:range xsd:boolean ;
-  rdfs:label "hasGap" ;
-  rdfs:comment "Indicates whether there is a gap in the sequence of referents for an entity.".
+:hasTimestamp a owl:DatatypeProperty ;
+  rdfs:domain [ owl:onClass :Transition ; owl:onClass :Observation ] ;
+  rdfs:range xsd:dateTime ;
+  rdfs:label "hasTimestamp" ;
+  rdfs:comment "Relates a transition or observation to the timestamp when it occurred.".
 
-:hasOverlap a owl:ObjectProperty ;
-  rdfs:domain :Entity ;
+# Axioms
+:Referent rdfs:subClass [ a owl:Restriction ;
+                             owl:onProperty :hasReferent ;
+                             owl:allValuesFrom :Entity ].
+
+:Observation rdfs:subClass [ a owl:Restriction ;
+                              owl:onProperty :hasObservation ;
+                              owl:allValuesFrom :Referent ].
+
+:Transition rdfs:subClass [ a owl:Restriction ;
+                              owl:onProperty :hasTransition ;
+                              owl:allValuesFrom :Referent ].
+```
+
+CQ-to-axiom mapping table:
+
+| Competency Question | Classes | Properties |
+|---------------------|---------|------------|
+|

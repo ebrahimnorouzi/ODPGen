@@ -1,87 +1,84 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Database Schema and Access Policy Ontology" ;
-  rdfs:comment "An ontology to represent relational databases, tables, columns, and access policies.".
+  rdfs:label "Database Schema and Policy Ontology" ;
+  rdfs:comment "An ontology for representing database schemas and policies.".
 
 # Database
 :Database a owl:Class ;
   rdfs:label "Database" ;
   rdfs:comment "A first-class schema entity representing a relational database.".
 
-:hasTable rdf:Property ;
+:hasTable a owl:ObjectProperty ;
   rdfs:domain :Database ;
   rdfs:range :Table ;
   rdfs:label "hasTable" ;
-  rdfs:comment "Relates a database to its tables.".
+  rdfs:comment "Relates a database to a table.".
 
 # Table
 :Table a owl:Class ;
   rdfs:label "Table" ;
   rdfs:comment "Represents a table in a database.".
 
-:hasColumn rdf:Property ;
+:hasColumn a owl:ObjectProperty ;
   rdfs:domain :Table ;
   rdfs:range :Column ;
   rdfs:label "hasColumn" ;
-  rdfs:comment "Relates a table to its columns.".
+  rdfs:comment "Relates a table to a column.".
 
-:hasPrimaryKey rdf:Property ;
-  rdfs:domain :Table ;
-  rdfs:range :Column ;
-  rdfs:label "hasPrimaryKey" ;
-  rdfs:comment "Relates a table to its primary key column(s).".
+:isPrimaryKey a owl:ObjectProperty ;
+  rdfs:domain :Column ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "isPrimaryKey" ;
+  rdfs:comment "Indicates whether a column is a primary key.".
 
-:hasForeignKey rdf:Property ;
-  rdfs:domain :Table ;
+:hasForeignKey a owl:ObjectProperty ;
+  rdfs:domain :Column ;
   rdfs:range :ForeignKey ;
   rdfs:label "hasForeignKey" ;
-  rdfs:comment "Relates a table to its foreign key(s).".
+  rdfs:comment "Relates a column to a foreign key.".
 
 :ForeignKey a owl:Class ;
   rdfs:label "ForeignKey" ;
-  rdfs:comment "Represents a foreign key relationship between tables.".
+  rdfs:comment "Represents a foreign key relationship.".
 
-:hasReferencedTable rdf:Property ;
-  rdfs:domain :ForeignKey ;
-  rdfs:range :Table ;
-  rdfs:label "hasReferencedTable" ;
-  rdfs:comment "Relates a foreign key to the table it references.".
-
-:hasReferencedColumn rdf:Property ;
+:refersTo a owl:ObjectProperty ;
   rdfs:domain :ForeignKey ;
   rdfs:range :Column ;
-  rdfs:label "hasReferencedColumn" ;
-  rdfs:comment "Relates a foreign key to the column it references.".
+  rdfs:label "refersTo" ;
+  rdfs:comment "Relates a foreign key to the referenced column.".
+
+:hasReferencedBy a owl:ObjectProperty ;
+  rdfs:domain :Column ;
+  rdfs:range :ForeignKey ;
+  rdfs:label "hasReferencedBy" ;
+  rdfs:comment "Relates a column to the foreign keys that refer to it.".
 
 # Policy
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
-  rdfs:comment "Represents an access policy.".
+  rdfs:comment "Represents a policy for a specific agent.".
 
-:hasAgent rdf:Property ;
+:appliesTo a owl:ObjectProperty ;
   rdfs:domain :Policy ;
-  rdfs:range :Agent ;
-  rdfs:label "hasAgent" ;
-  rdfs:comment "Relates a policy to the executing agent.".
+  rdfs:range :Table ;
+  rdfs:label "appliesTo" ;
+  rdfs:comment "Relates a policy to the table it applies to.".
 
-:hasAction rdf:Property ;
+:hasAction a owl:ObjectProperty ;
   rdfs:domain :Policy ;
   rdfs:range :Action ;
   rdfs:label "hasAction" ;
   rdfs:comment "Relates a policy to the action it specifies.".
 
-:hasScope rdf:Property ;
-  rdfs:domain :Policy ;
-  rdfs:range :Scope ;
-  rdfs:label "hasScope" ;
-  rdfs:comment "Relates a policy to its operational scope.".
-
-# Action
 :Action a owl:Class ;
   rdfs:label "Action" ;
-  rdfs:comment "Represents a high-level action type.".
+  rdfs:comment "Represents a high-level action (ReadAction, ModifyAction).".
+
+:ReadAction a owl:Class ;
+  rdfs:label "ReadAction" ;
+  rdfs:comment "Represents a high-level read action.".

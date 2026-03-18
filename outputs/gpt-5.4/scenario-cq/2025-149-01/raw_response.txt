@@ -6,103 +6,103 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "RDB access control and SQL query semantic graph ODP" ;
-  rdfs:comment "An ontology design pattern for representing relational database schema elements, access-control policies for agents, and SQL query AST-based semantic graphs used to determine whether referenced schema elements are prohibited or row-restricted under matching policy, action, and scope." .
+  rdfs:label "RDB SQL Access Control ODP" ;
+  rdfs:comment "An ontology design pattern for representing relational database schema elements, SQL query AST references, and access-control policies over read and modify actions with view/process scopes and row-level conditions." .
 
 #################################################################
 # Classes
 #################################################################
 
-:Agent a owl:Class ;
-  rdfs:label "Agent" ;
-  rdfs:comment "An actor for whom a policy can be defined and who can execute a SQL query statement." .
-
 :RelationalDatabase a owl:Class ;
-  rdfs:label "Relational database" ;
-  rdfs:comment "A relational database represented as a first-class schema entity." .
+  rdfs:label "Relational Database" ;
+  rdfs:comment "A relational database treated as a first-class schema entity." .
 
 :Table a owl:Class ;
   rdfs:label "Table" ;
-  rdfs:comment "A table belonging to a relational database." .
+  rdfs:comment "A relational table belonging to a relational database." .
 
 :Column a owl:Class ;
   rdfs:label "Column" ;
-  rdfs:comment "A column belonging to a table." .
+  rdfs:comment "A column belonging to a relational table." .
 
 :PrimaryKey a owl:Class ;
-  rdfs:label "Primary key" ;
-  rdfs:comment "A primary-key relationship or constraint in the schema." .
+  rdfs:label "Primary Key" ;
+  rdfs:comment "A primary-key schema construct associated with a table and its key column or columns." .
 
 :ForeignKey a owl:Class ;
-  rdfs:label "Foreign key" ;
-  rdfs:comment "A foreign-key relationship or constraint in the schema." .
+  rdfs:label "Foreign Key" ;
+  rdfs:comment "A foreign-key schema construct linking source column or columns to referenced target column or columns." .
+
+:Agent a owl:Class ;
+  rdfs:label "Agent" ;
+  rdfs:comment "An agent for whom a policy can be defined and who can execute a SQL statement." .
 
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
-  rdfs:comment "A policy defined for a specific agent over schema resources." .
-
-:Condition a owl:Class ;
-  rdfs:label "Condition" ;
-  rdfs:comment "A condition used to define row-level policy restrictions for later enforcement." .
+  rdfs:comment "An access-control policy defined for a specific agent." .
 
 :Action a owl:Class ;
   rdfs:label "Action" ;
-  rdfs:comment "A high-level action type used by policies and SQL statements." .
+  rdfs:comment "A high-level semantic action governed by policy." .
 
 :ReadAction a owl:Class ;
-  rdfs:subClassOf :Action ;
-  rdfs:label "Read action" ;
-  rdfs:comment "A high-level read action." .
+  rdfs:label "Read Action" ;
+  rdfs:comment "A high-level action representing reading data." ;
+  rdfs:subClassOf :Action .
 
 :ModifyAction a owl:Class ;
-  rdfs:subClassOf :Action ;
-  rdfs:label "Modify action" ;
-  rdfs:comment "A high-level modify action." .
+  rdfs:label "Modify Action" ;
+  rdfs:comment "A high-level action representing modification of data." ;
+  rdfs:subClassOf :Action .
 
 :ActionScope a owl:Class ;
-  rdfs:label "Action scope" ;
-  rdfs:comment "An operational scope associated with an action, especially for read operations." .
+  rdfs:label "Action Scope" ;
+  rdfs:comment "An operational scope associated with an action, such as viewing or processing." .
 
 :ViewActionScope a owl:Class ;
-  rdfs:subClassOf :ActionScope ;
-  rdfs:label "View action scope" ;
-  rdfs:comment "An action scope indicating read for viewing." .
+  rdfs:label "View Action Scope" ;
+  rdfs:comment "An action scope for read operations intended for viewing." ;
+  rdfs:subClassOf :ActionScope .
 
 :ProcessActionScope a owl:Class ;
-  rdfs:subClassOf :ActionScope ;
-  rdfs:label "Process action scope" ;
-  rdfs:comment "An action scope indicating read for processing." .
+  rdfs:label "Process Action Scope" ;
+  rdfs:comment "An action scope for read operations intended for processing." ;
+  rdfs:subClassOf :ActionScope .
 
-:SQLNode a owl:Class ;
-  rdfs:label "SQL node" ;
-  rdfs:comment "A node in an AST-based semantic graph for a SQL query." .
+:PolicyTarget a owl:Class ;
+  rdfs:label "Policy Target" ;
+  rdfs:comment "A target resource to which a policy applies." .
+
+:TableTarget a owl:Class ;
+  rdfs:label "Table Target" ;
+  rdfs:comment "A policy target that refers to a table." ;
+  rdfs:subClassOf :PolicyTarget .
+
+:ColumnTarget a owl:Class ;
+  rdfs:label "Column Target" ;
+  rdfs:comment "A policy target that refers to a column." ;
+  rdfs:subClassOf :PolicyTarget .
+
+:RowTarget a owl:Class ;
+  rdfs:label "Row Target" ;
+  rdfs:comment "A policy target that refers to rows of a table through a condition." ;
+  rdfs:subClassOf :PolicyTarget .
+
+:Condition a owl:Class ;
+  rdfs:label "Condition" ;
+  rdfs:comment "A condition used to define row-level policy applicability for later enforcement." .
+
+:Effect a owl:Class ;
+  rdfs:label "Effect" ;
+  rdfs:comment "The effect of a policy, such as prohibition." .
+
+:Prohibition a owl:Class ;
+  rdfs:label "Prohibition" ;
+  rdfs:comment "A policy effect indicating that the governed action is prohibited." ;
+  rdfs:subClassOf :Effect .
 
 :SQLStatement a owl:Class ;
-  rdfs:subClassOf :SQLNode ;
-  rdfs:label "SQL statement" ;
-  rdfs:comment "A SQL statement represented in the semantic graph." .
+  rdfs:label "SQL Statement" ;
+  rdfs:comment "A SQL query or update statement represented as an AST-based semantic graph root." .
 
-:SelectStatement a owl:Class ;
-  rdfs:subClassOf :SQLStatement ;
-  rdfs:label "Select statement" ;
-  rdfs:comment "A SQL SELECT statement." .
-
-:UpdateStatement a owl:Class ;
-  rdfs:subClassOf :SQLStatement ;
-  rdfs:label "Update statement" ;
-  rdfs:comment "A SQL UPDATE statement." .
-
-:SQLClause a owl:Class ;
-  rdfs:subClassOf :SQLNode ;
-  rdfs:label "SQL clause" ;
-  rdfs:comment "A clause within a SQL statement that can be assigned an operational scope." .
-
-:TableRef a owl:Class ;
-  rdfs:subClassOf :SQLNode ;
-  rdfs:label "Table reference" ;
-  rdfs:comment "A query reference node that refers to a schema table." .
-
-:ColumnRef a owl:Class ;
-  rdfs:subClassOf :SQLNode ;
-  rdfs:label "Column reference" ;
-  rdfs:comment "A
+:

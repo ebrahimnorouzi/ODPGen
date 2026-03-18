@@ -1,5 +1,3 @@
-**Turtle Ontology Design Pattern (ODP)**
-
 ```turtle
 @prefix :     <http://example.org/odp#>.
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
@@ -8,77 +6,80 @@
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "ActionRequestOntology" ;
-  rdfs:comment "This ontology models a formal description of an action request by an assignee on a target asset, enriched with contextual information.".
+  rdfs:label "Action Request Ontology" ;
+  rdfs:comment "This ontology models formal descriptions of action requests by an assignee on a target asset, enriched with contextual information.".
 
 # Classes
+:ActionRequest a owl:Class ;
+  rdfs:label "Action Request" ;
+  rdfs:comment "A formal description of an action request by an assignee on a target asset.".
+
 :Assignee a owl:Class ;
   rdfs:label "Assignee" ;
-  rdfs:comment "An employee who is assigned to perform an action.".
-
-:Employee rdf:type owl:Class ;
-  rdfs:subClassOf :Assignee ;
-  rdfs:label "Employee" ;
-  rdfs:comment "An employee of the organization.".
+  rdfs:comment "An employee who is making an action request.".
 
 :TargetAsset a owl:Class ;
-  rdfs:label "TargetAsset" ;
-  rdfs:comment "The asset on which the action is to be performed.".
+  rdfs:label "Target Asset" ;
+  rdfs:comment "The asset on which the action is requested.".
+
+:Employee a owl:Class ;
+  rdfs:label "Employee" ;
+  rdfs:comment "A person who is an employee of the organization.".
 
 :Weekday a owl:Class ;
-  rdfs:subClassOf xsd:string ;
-  owl:unionOf ( ( xsd:string "Monday" ) ( xsd:string "Tuesday" ) ( xsd:string "Wednesday" ) ( xsd:string "Thursday" ) ( xsd:string "Friday" ) ) ;
   rdfs:label "Weekday" ;
-  rdfs:comment "A day of the week.".
+  rdfs:comment "A day of the week (Monday to Friday).".
 
 :EULocation a owl:Class ;
-  rdfs:label "EULocation" ;
+  rdfs:label "EU Location" ;
   rdfs:comment "A location within the European Union.".
 
-:Action a owl:Class ;
-  rdfs:label "Action" ;
-  rdfs:comment "The action to be performed on the target asset.".
+:RequestCapability a owl:Class ;
+  rdfs:label "Request Capability" ;
+  rdfs:comment "The ability to perform a specific action on the target asset.".
 
-:ActionRequest a owl:Class ;
-  rdf:type owl:FunctionalClass ;
-  owl:hasProperty :assignee ;
-  owl:hasProperty :targetAsset ;
-  owl:hasProperty :action ;
-  owl:hasProperty :requestTime ;
-  owl:hasProperty :requestLocation ;
-  rdfs:label "ActionRequest" ;
-  rdfs:comment "A formal request for an action to be performed.".
-
-# Properties
-:assignee a owl:ObjectProperty ;
+# Object Properties
+:hasAssignee a owl:ObjectProperty ;
   rdfs:domain :ActionRequest ;
   rdfs:range :Assignee ;
-  rdfs:label "Assignee" ;
-  rdfs:comment "The assignee who is responsible for performing the action.".
+  rdfs:label "Has Assignee" ;
+  rdfs:comment "The employee making the action request.".
 
-:targetAsset a owl:ObjectProperty ;
+:onTargetAsset a owl:ObjectProperty ;
   rdfs:domain :ActionRequest ;
   rdfs:range :TargetAsset ;
-  rdfs:label "TargetAsset" ;
-  rdfs:comment "The target asset on which the action is to be performed.".
+  rdfs:label "On Target Asset" ;
+  rdfs:comment "The asset on which the action is requested.".
 
-:action a owl:ObjectProperty ;
+:isEmployee a owl:ObjectProperty ;
+  rdfs:domain :Assignee ;
+  rdfs:range :Employee ;
+  rdfs:label "Is Employee" ;
+  rdfs:comment "Indicates whether the assignee is an employee.".
+
+:isWeekday a owl:ObjectProperty ;
   rdfs:domain :ActionRequest ;
-  rdfs:range :Action ;
-  rdfs:label "Action" ;
-  rdfs:comment "The action to be performed on the target asset.".
+  rdfs:range :Weekday ;
+  rdfs:label "Is Weekday" ;
+  rdfs:comment "Indicates the day of the week when the action request was made.".
 
-:requestTime a owl:ObjectProperty ;
-  rdfs:domain :ActionRequest ;
-  rdfs:range xsd:dateTime ;
-  rdfs:label "RequestTime" ;
-  rdfs:comment "The time when the action request was made.".
-
-:requestLocation a owl:ObjectProperty ;
+:isEULocation a owl:ObjectProperty ;
   rdfs:domain :ActionRequest ;
   rdfs:range :EULocation ;
-  rdfs:label "RequestLocation" ;
-  rdfs:comment "The location from where the action request was made.".
+  rdfs:label "Is EU Location" ;
+  rdfs:comment "Indicates the location from where the action request was made.".
 
-# Axioms
-:Em
+:hasRequestCapability a owl:ObjectProperty ;
+  rdfs:domain :ActionRequest ;
+  rdfs:range :RequestCapability ;
+  rdfs:label "Has Request Capability" ;
+  rdfs:comment "The ability to perform the action on the target asset.".
+
+# Disjointness
+:Employee owl:disjointWith :TargetAsset.
+:Employee owl:disjointWith :Weekday.
+:Employee owl:disjointWith :EULocation.
+:Employee owl:disjointWith :RequestCapability.
+
+# Data Properties
+:hasLocation a owl:DatatypeProperty

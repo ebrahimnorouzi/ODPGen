@@ -1,3 +1,4 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -6,88 +7,69 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Author name usage for publication ODP" ;
-  rdfs:comment "A minimal ontology design pattern for representing an author using alternative names, including pseudonyms and name changes, in relation to published books." .
+  rdfs:label "Author naming and publication role ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing an author using alternative names, including pseudonyms and name changes, when publishing books." .
 
 :Author a owl:Class ;
   rdfs:label "Author" ;
-  rdfs:comment "A person who writes or publishes books under one or more names." .
-
-:Book a owl:Class ;
-  rdfs:label "Book" ;
-  rdfs:comment "A published book or literary work." .
+  rdfs:comment "A person in the role of writing books or other authored works." .
 
 :NameUsage a owl:Class ;
   rdfs:label "Name usage" ;
-  rdfs:comment "A contextual use of a name by an author for publishing or authorship." .
+  rdfs:comment "A contextual use of a name by an author, such as a pseudonym or a changed name used for publication." .
 
-:Name a owl:Class ;
-  rdfs:label "Name" ;
-  rdfs:comment "A name used by an author, such as a legal name, changed name, or pseudonym." .
-
-:Pseudonym a owl:Class ;
-  rdfs:label "Pseudonym" ;
-  rdfs:comment "A name adopted by an author for publication that is not the author's primary personal name." ;
-  rdfs:subClassOf :Name .
-
-:ChangedName a owl:Class ;
-  rdfs:label "Changed name" ;
-  rdfs:comment "A name used by an author after a name change, for example after marriage." ;
-  rdfs:subClassOf :Name .
-
-:usesName a owl:ObjectProperty ;
-  rdfs:label "uses name" ;
-  rdfs:comment "Relates an author to a name that the author uses or has used." ;
-  rdfs:domain :Author ;
-  rdfs:range :Name .
+:Book a owl:Class ;
+  rdfs:label "Book" ;
+  rdfs:comment "A published book or book-like written work." .
 
 :hasNameUsage a owl:ObjectProperty ;
   rdfs:label "has name usage" ;
-  rdfs:comment "Relates an author to a contextual usage of one of their names." ;
+  rdfs:comment "Relates an author to a name usage adopted by that author." ;
   rdfs:domain :Author ;
   rdfs:range :NameUsage .
 
-:usedName a owl:ObjectProperty ;
-  rdfs:label "used name" ;
-  rdfs:comment "Relates a name usage event or context to the name used in that context." ;
-  rdfs:domain :NameUsage ;
-  rdfs:range :Name .
-
-:forBook a owl:ObjectProperty ;
-  rdfs:label "for book" ;
-  rdfs:comment "Relates a name usage to the book for which that name was used." ;
+:usedForPublication a owl:ObjectProperty ;
+  rdfs:label "used for publication" ;
+  rdfs:comment "Relates a name usage to a book published under that name." ;
   rdfs:domain :NameUsage ;
   rdfs:range :Book .
 
-:assumedBy a owl:ObjectProperty ;
-  rdfs:label "assumed by" ;
-  rdfs:comment "Relates a name to the author who assumed or used it." ;
-  rdfs:domain :Name ;
-  rdfs:range :Author ;
-  owl:inverseOf :usesName .
+:legalNameOf a owl:ObjectProperty ;
+  rdfs:label "legal name of" ;
+  rdfs:comment "Relates a name usage to the author whose legal or personal naming history it belongs to." ;
+  rdfs:domain :NameUsage ;
+  rdfs:range :Author .
 
-:publishesAs a owl:ObjectProperty ;
-  rdfs:label "publishes as" ;
-  rdfs:comment "Relates a book to the name under which it was published." ;
+:nameString a owl:DatatypeProperty ;
+  rdfs:label "name string" ;
+  rdfs:comment "The literal textual form of a name usage." ;
+  rdfs:domain :NameUsage ;
+  rdfs:range xsd:string .
+
+:bookTitle a owl:DatatypeProperty ;
+  rdfs:label "book title" ;
+  rdfs:comment "The literal title of a book." ;
   rdfs:domain :Book ;
-  rdfs:range :Name .
-
-:usedForPublication a owl:ObjectProperty ;
-  rdfs:label "used for publication" ;
-  rdfs:comment "Relates a name to a book published under that name." ;
-  rdfs:domain :Name ;
-  rdfs:range :Book ;
-  owl:inverseOf :publishesAs .
+  rdfs:range xsd:string .
 ```
 
-Validation report:
-1. PASS — Turtle syntax is well-formed with declared triples terminated properly.
-2. PASS — All prefixes used in the ontology body are declared at the top.
-3. PASS — All domains and ranges refer only to classes defined in this ontology.
-4. PASS — No contradictory subclass, disjointness, or incompatible domain/range restrictions are present.
-5. PASS — CQ1 and CQ2 are covered by Author, Book, Name, Pseudonym, NameUsage, usesName, usedName, forBook, and publishesAs; CQ3 is not grounded in the scenario and is therefore not modeled as part of the intended domain, but it is still traceable as excluded scope.
-6. PASS — All modeled concepts are grounded in the scenario and the author/name/book-related CQs; no river or park concepts were added.
+2. Validation report:
+- 1. PASS — Turtle syntax is well-formed with declared prefixes, terminated triples, and valid property/class declarations.
+- 2. PASS — All prefixes used in the ontology body (owl, rdf, rdfs, xsd, :) are declared at the top.
+- 3. PASS — All domains and ranges refer only to classes defined in this ontology or xsd:string as a standard external datatype.
+- 4. PASS — No contradictory axioms such as disjointness/subclass conflicts or incompatible restrictions are present.
+- 5. FAIL — The first two CQs are covered, but the river/national park trajectory CQ is not traceable to any class or property in the ontology.
+- 6. PASS — All modeled concepts are grounded in the scenario or the author-related CQs; no unrelated concept was added.
 
-Scope report:
-(a) Covered requirements from the scenario:
-- An author adopting
+3. Scope report:
+- (a) Covered requirements from the scenario:
+  - An author can adopt different names.
+  - Alternative names can be represented as contextual name usages.
+  - Name changes are supported through the same name usage pattern.
+  - Books can be linked to the name under which they were published.
+  - The pattern supports asking which pseudonym or alternative name was used for a given book.
+
+- (b) Explicitly excluded concepts and why:
+  - River, national park, and trajectory concepts are excluded because they are not grounded in the scenario about author names and publication; they appear only in one unrelated CQ and would violate the minimal, reusable scope constraint.
+  - Specific subtypes such as “Pseudonym” or “MarriedName” are excluded to keep the pattern minimal; the scenario supports alternative names and name changes, which can be represented generically as NameUsage.
+  - Temporal details of when a name was adopted or used are excluded because no CQ requires dates or time intervals.

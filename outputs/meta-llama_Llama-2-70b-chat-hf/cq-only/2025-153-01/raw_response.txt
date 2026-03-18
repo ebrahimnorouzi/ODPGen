@@ -1,4 +1,4 @@
-Here is an OWL ontology design pattern (ODP) in Turtle syntax that supports the given competency questions:
+Here is the Turtle ontology for the given competency questions:
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -8,40 +8,56 @@ Here is an OWL ontology design pattern (ODP) in Turtle syntax that supports the 
 
 :Ontology a owl:Ontology ; rdfs:label "Referent Tracking Ontology" ; rdfs:comment "An ontology for tracking referents and their associations over time.".
 
-; Classes
-
 :Referent a owl:Class ; rdfs:label "Referent" ; rdfs:comment "A entity that can be referenced by a persistent identifier.".
-:Observation a owl:Class ; rdfs:label "Observation" ; rdfs:comment "A observation associated with a specific referent.".
-:Transition a owl:Class ; rdfs:label "Transition" ; rdfs:comment "A transition between two referents.".
-:Rule a owl:Class ; rdfs:label "Rule" ; rdfs:comment "A rule that triggered a specific transition.".
+:PersistentIdentifier a owl:Class ; rdfs:label "Persistent Identifier" ; rdfs:comment "A unique identifier that references a referent.".
+:Reference a owl:ObjectProperty ; rdfs:label "Reference" ; rdfs:comment "A relationship between a persistent identifier and a referent.".
+:TimeStamp a owl:Class ; rdfs:label "Time Stamp" ; rdfs:comment "A point in time.".
+:ReferentTransition a owl:Class ; rdfs:label "Referent Transition" ; rdfs:comment "A change in the referent associated with a persistent identifier.".
+:Observation a owl:Class ; rdfs:label "Observation" ; rdfs:comment "A piece of data associated with a referent and a time stamp.".
+:FullSequence a owl:Class ; rdfs:label "Full Sequence" ; rdfs:comment "A sequence of referents over time.".
+:Rule a owl:Class ; rdfs:label "Rule" ; rdfs:comment "A set of conditions and actions that trigger a referent transition.".
+:Gap a owl:Class ; rdfs:label "Gap" ; rdfs:comment "A gap in the temporal binding of a persistent identifier.".
+:Overlap a owl:Class ; rdfs:label "Overlap" ; rdfs:comment "An overlap in the temporal binding of a persistent identifier.".
+:Rebuild a owl:Class ; rdfs:label "Rebuild" ; rdfs:comment "The ability to rebuild a complete context for a given time point.".
 
-; Properties
+:ReferentTransition
+  a owl:ObjectProperty ;
+  rdfs:label "Transition" ;
+  rdfs:comment "A relationship between a persistent identifier and a new referent.".
 
-:hasReferent a owl:ObjectProperty ; rdfs:label "has referent" ; rdfs:comment "A referent that is associated with a persistent identifier.".
-:wasReferencedAt a owl:ObjectProperty ; rdfs:label "was referenced at" ; rdfs:comment "A timestamp at which a referent was referenced.".
-:referentTransition a owl:ObjectProperty ; rdfs:label "referent transition" ; rdfs:comment "A transition between two referents.".
-:observationAssociatedWith a owl:ObjectProperty ; rdfs:label "observation associated with" ; rdfs:comment "An observation that is associated with a specific referent.".
-:transitionTriggeredBy a owl:ObjectProperty ; rdfs:label "transition triggered by" ; rdfs:comment "A rule that triggered a specific transition.".
-:temporalBinding a owl:ObjectProperty ; rdfs:label "temporal binding" ; rdfs:comment "A temporal binding between a referent and a timestamp.".
+:Observation
+  a owl:ObjectProperty ;
+  rdfs:label "Observe" ;
+  rdfs:comment "A relationship between a referent and a time stamp.".
 
-; Individuals
+:FullSequence
+  a owl:ObjectProperty ;
+  rdfs:label "Sequence" ;
+  rdfs:comment "A relationship between a referent and a sequence of referents over time.".
 
-:Referent1 a :Referent ; rdfs:label "Referent 1".
-:Referent2 a :Referent ; rdfs:label "Referent 2".
-:Observation1 a :Observation ; rdfs:label "Observation 1" ; :hasReferent :Referent1.
-:Observation2 a :Observation ; rdfs:label "Observation 2" ; :hasReferent :Referent2.
-:Transition1 a :Transition ; rdfs:label "Transition 1" ; :referentTransition :Referent1 :Referent2.
-:Transition2 a :Transition ; rdfs:label "Transition 2" ; :referentTransition :Referent2 :Referent1.
-:Rule1 a :Rule ; rdfs:label "Rule 1" ; :transitionTriggeredBy :Transition1.
-:Rule2 a :Rule ; rdfs:label "Rule 2" ; :transitionTriggeredBy :Transition2.
+:Rule
+  a owl:ObjectProperty ;
+  rdfs:label "Trigger" ;
+  rdfs:comment "A relationship between a rule and a referent transition.".
 
-; CQ-to-axiom mapping table
+:Gap
+  a owl:ObjectProperty ;
+  rdfs:label "Gap" ;
+  rdfs:comment "A relationship between a persistent identifier and a gap in its temporal binding.".
 
-| CQ | Classes | Properties |
-| --- | --- | --- |
-| Which entity does a persistent identifier currently reference? | :Referent | :hasReferent |
-| Which entity was referenced at a past timestamp? | :Referent | :wasReferencedAt |
-| When did referent transitions occur? | :Transition | :referentTransition |
-| What observations are associated with specific referents? | :Observation | :observationAssociatedWith |
-| What is the full sequence of referents over time? | :Referent | :temporalBinding |
-| Which rules triggered specific transitions? | :Rule | :transition
+:Overlap
+  a owl:ObjectProperty ;
+  rdfs:label "Overlap" ;
+  rdfs:comment "A relationship between a persistent identifier and an overlap in its temporal binding.".
+
+:Rebuild
+  a owl:ObjectProperty ;
+  rdfs:label "Rebuild" ;
+  rdfs:comment "A relationship between a referent and the ability to rebuild a complete context for a given time point.".
+```
+CQ-to-axiom mapping table:
+
+| Competency Question | Classes and Properties |
+| --- | --- |
+| Which entity does a persistent identifier currently reference? | :Referent, :Reference |
+| Which entity was referenced at a past timestamp? | :Referent, :

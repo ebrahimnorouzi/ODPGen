@@ -1,79 +1,94 @@
-1. Turtle ontology:
-
 ```turtle
 :Ontology a owl:Ontology ;
-    rdfs:label "Evaluation Request Ontology" ;
-    rdfs:comment "An ontology for modeling evaluation requests on assets, with temporal, spatial, role, and request-capability context.".
+  rdfs:label "Evaluation Request Ontology" ;
+  rdfs:comment "An ontology for modeling evaluation requests on assets, with temporal, spatial, role, and request-capability context.".
 
-:Request a subClassOf owl:NamedIndividual ;
-    rdfs:label "Evaluation Request" ;
-    rdfs:comment "A formal description of a requested action on a target asset.".
+:Request a owl:Class ;
+  rdfs:label "Evaluation Request" ;
+  rdfs:comment "A formal description of a requested action on a target asset.".
 
-:Action rdf:type owl:ObjectProperty ;
-    rdfs:domain :Request ;
-    rdfs:range xsd:string ;
-    rdfs:label "requestedAction" ;
-    rdfs:comment "The action requested on the target asset.".
+:Action a owl:Class ;
+  rdfs:label "Requested Action" ;
+  rdfs:comment "The action that is being requested on the target asset.".
 
-:Party rdf:type owl:Class ;
-    rdfs:label "Party" ;
-    rdfs:comment "The party issuing the evaluation request.".
+:Party a owl:Class ;
+  rdfs:label "Request Issuer" ;
+  rdfs:comment "The party issuing the evaluation request.".
 
-:Employee subClassOf :Party ;
-    rdfs:label "Employee" ;
-    rdfs:comment "An employee of the organization.".
+:Employee a owl:Class ;
+  rdfs:label "Employee" ;
+  rdfs:comment "A member of the organization who is authorized to issue evaluation requests.".
 
-:TargetAsset rdf:type owl:ObjectProperty ;
-    rdfs:domain :Request ;
-    rdfs:range owl:Class ;
-    rdfs:label "targetAsset" ;
-    rdfs:comment "The target asset of the evaluation request.".
+:Asset a owl:Class ;
+  rdfs:label "Target Asset" ;
+  rdfs:comment "The asset that is the target of the evaluation request.".
 
-:Weekday subClassOf xsd:string ;
-    rdfs:label "Weekday" ;
-    rdfs:comment "A day of the week.".
+:Time a owl:Class ;
+  rdfs:label "Request Time" ;
+  rdfs:comment "The time when the evaluation request was issued.".
 
-:Time rdf:type owl:DatatypeProperty ;
-    rdfs:domain :Request ;
-    rdfs:range xsd:dateTime ;
-    rdfs:label "time" ;
-    rdfs:comment "The time the evaluation request was issued.".
+:Weekday a owl:Class ;
+  rdfs:label "Weekday" ;
+  rdfs:comment "A day of the week.".
 
-:Location rdf:type owl:ObjectProperty ;
-    rdfs:domain :Request ;
-    rdfs:range xsd:string ;
-    rdfs:label "location" ;
-    rdfs:comment "The location from which the evaluation request was issued.".
+:Location a owl:Class ;
+  rdfs:label "Request Location" ;
+  rdfs:comment "The location from which the evaluation request was issued.".
 
-:EU rdf:type owl:Class ;
-    rdfs:label "EU" ;
-    rdfs:comment "The European Union.".
+:EU a owl:Class ;
+  rdfs:label "European Union" ;
+  rdfs:comment "The geographical region where the request originates.".
 
-:FromEU rdf:type owl:ObjectProperty ;
-    rdfs:domain :Location ;
-    rdfs:range :EU ;
-    rdfs:label "fromEU" ;
-    rdfs:comment "Indicates whether the location is within the EU.".
+:RequestCapability a owl:Class ;
+  rdfs:label "Request Capability" ;
+  rdfs:comment "Additional contextual information that can be included in the evaluation request to further constrain it.".
 
-:AdditionalContext rdf:type owl:ObjectProperty ;
-    rdfs:domain :Request ;
-    rdfs:range owl:Class ;
-    rdfs:label "additionalContext" ;
-    rdfs:comment "Additional contextual information included in the evaluation request.".
-```
+:hasAction a owl:ObjectProperty ;
+  rdfs:domain :Request ;
+  rdfs:range :Action ;
+  rdfs:label "Has Requested Action" ;
+  rdfs:comment "The action that is being requested.".
 
-2. Scenario-requirement-to-axiom mapping:
-   - Prioritizing semantic faithfulness to the scenario:
-     - `:Request a subClassOf owl:NamedIndividual`: Represents the formal description of a requested action on a target asset.
-     - `:Action rdf:type owl:ObjectProperty`: Describes the action requested on the target asset.
-     - `:Party rdf:type owl:Class`: Represents the party issuing the evaluation request.
-     - `:Employee subClassOf :Party`: Restricts the party to employees.
-     - `:TargetAsset rdf:type owl:ObjectProperty`: Represents the target asset of the evaluation request.
-     - `:Weekday subClassOf xsd:string`: Represents a day of the week.
-     - `:Time rdf:type owl:DatatypeProperty`: Represents the time the evaluation request was issued.
-     - `:Location rdf:type owl:ObjectProperty`: Represents the location from which the evaluation request was issued.
-     - `:EU rdf:type owl:Class`: Represents the European Union.
-     - `:FromEU rdf:type owl:ObjectProperty`: Indicates whether the location is within the EU.
+:hasIssuer a owl:ObjectProperty ;
+  rdfs:domain :Request ;
+  rdfs:range :Party ;
+  rdfs:label "Has Request Issuer" ;
+  rdfs:comment "The party issuing the evaluation request.".
 
-3. CQ-to-axiom mapping:
-   - What is the requested action? (Answered by
+:hasTarget a owl:ObjectProperty ;
+  rdfs:domain :Request ;
+  rdfs:range :Asset ;
+  rdfs:label "Has Target Asset" ;
+  rdfs:comment "The target asset of the evaluation request.".
+
+:hasTime a owl:ObjectProperty ;
+  rdfs:domain :Request ;
+  rdfs:range :Time ;
+  rdfs:label "Has Request Time" ;
+  rdfs:comment "The time when the evaluation request was issued.".
+
+:hasWeekday a owl:ObjectProperty ;
+  rdfs:domain :Time ;
+  rdfs:range :Weekday ;
+  rdfs:label "Has Weekday" ;
+  rdfs:comment "The day of the week when the evaluation request was issued.".
+
+:hasLocation a owl:ObjectProperty ;
+  rdfs:domain :Request ;
+  rdfs:range :Location ;
+  rdfs:label "Has Request Location" ;
+  rdfs:comment "The location from which the evaluation request was issued.".
+
+:hasEU a owl:ObjectProperty ;
+  rdfs:domain :Location ;
+  rdfs:range :EU ;
+  rdfs:label "Has EU Origin" ;
+  rdfs:comment "Indicates whether the location is within the European Union.".
+
+:hasCapability a owl:ObjectProperty ;
+  rdfs:domain :Request ;
+  rdfs:range :RequestCapability ;
+  rdfs:label "Has Request Capability" ;
+  rdfs:comment "Additional contextual information that can be included in the evaluation request.".
+
+Scenario

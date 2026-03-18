@@ -6,109 +6,90 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Action Log Ontology" ;
-  rdfs:comment "Ontology for modeling action logs.".
+  rdfs:label "Log Data Ontology" ;
+  rdfs:comment "Ontology for modeling log data".
 
-:ActionType a rdfs:Class ;
-  rdfs:label "Action Type" ;
-  rdfs:comment "Type of action being performed.".
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "Type of action performed on the data".
 
-:CreateAction a :ActionType ;
-  rdfs:label "Create Action" ;
-  rdfs:comment "Action of creating data.".
+:Create a owl:Class ;
+  rdfs:label "Create" ;
+  rdfs:comment "Action of creating data" ;
+  rdfs:subClassOf :Action.
 
-:UpdateAction a :ActionType ;
-  rdfs:label "Update Action" ;
-  rdfs:comment "Action of updating data.".
+:Update a owl:Class ;
+  rdfs:label "Update" ;
+  rdfs:comment "Action of updating data" ;
+  rdfs:subClassOf :Action.
 
-:EraseAction a :ActionType ;
-  rdfs:label "Erase Action" ;
-  rdfs:comment "Action of erasing data.".
+:Erase a owl:Class ;
+  rdfs:label "Erase" ;
+  rdfs:comment "Action of erasing data" ;
+  rdfs:subClassOf :Action.
 
-:Entity a rdfs:Class ;
+:Entity a owl:Class ;
   rdfs:label "Entity" ;
-  rdfs:comment "Entity interacting with the data.".
+  rdfs:comment "Entity interacting with the data".
 
-:User a :Entity ;
-  rdfs:label "User" ;
-  rdfs:comment "Human entity interacting with the data.".
+:Person a owl:Class ;
+  rdfs:label "Person" ;
+  rdfs:comment "Human entity" ;
+  rdfs:subClassOf :Entity.
 
-:Application a :Entity ;
-  rdfs:label "Application" ;
-  rdfs:comment "Software entity interacting with the data.".
+:Organization a owl:Class ;
+  rdfs:label "Organization" ;
+  rdfs:comment "Organizational entity" ;
+  rdfs:subClassOf :Entity.
 
-:LogPublisher a :Entity ;
+:LogPublisher a owl:Class ;
   rdfs:label "Log Publisher" ;
-  rdfs:comment "Entity publishing the log.".
+  rdfs:comment "Entity publishing the log" ;
+  rdfs:subClassOf :Entity.
 
-:LogIssueDate a rdf:Property ;
+:LogIssueDate a owl:DatatypeProperty ;
   rdfs:label "Log Issue Date" ;
-  rdfs:comment "Date when the log was issued." ;
+  rdfs:comment "Date when the log was issued" ;
   rdfs:domain :Log ;
   rdfs:range xsd:date.
 
-:Log a rdfs:Class ;
+:Log a owl:Class ;
   rdfs:label "Log" ;
-  rdfs:comment "Log of actions.".
+  rdfs:comment "Log entry" ;
+  rdfs:subClassOf :Statement.
 
-:DataStorageLocation a rdfs:Class ;
-  rdfs:label "Data Storage Location" ;
-  rdfs:comment "Location where the data is being stored.".
+:Statement a owl:Class ;
+  rdfs:label "Statement" ;
+  rdfs:comment "Statement about the data" ;
+  rdfs:subClassOf :Log.
 
-:StorageServer a :DataStorageLocation ;
-  rdfs:label "Storage Server" ;
-  rdfs:comment "Server where the data is being stored.".
-
-:ApplicationService a rdfs:Class ;
-  rdfs:label "Application Service" ;
-  rdfs:comment "Service used to generate the data.".
-
-:Log a owl:intersectionOf (:Log :LogPublisher :LogIssueDate) ;
-  rdfs:label "Log" ;
-  rdfs:comment "Log of actions.".
-
-:Log :hasActionType :ActionType ;
-  rdfs:label "has Action Type" ;
-  rdfs:comment "Action type of the log." ;
+:DataLocation a owl:DatatypeProperty ;
+  rdfs:label "Data Location" ;
+  rdfs:comment "Location where the data is being stored" ;
   rdfs:domain :Log ;
-  rdfs:range :ActionType.
+  rdfs:range xsd:string.
 
-:Log :hasEntity :Entity ;
-  rdfs:label "has Entity" ;
-  rdfs:comment "Entity interacting with the data." ;
-  rdfs:domain :Log ;
-  rdfs:range :Entity.
+:Application a owl:Class ;
+  rdfs:label "Application" ;
+  rdfs:comment "Application/service generating the data".
 
-:Log :hasLogPublisher :LogPublisher ;
-  rdfs:label "has Log Publisher" ;
-  rdfs:comment "Entity publishing the log." ;
+:Uses a owl:ObjectProperty ;
+  rdfs:label "Uses" ;
+  rdfs:comment "Application/service used to generate the data" ;
   rdfs:domain :Log ;
-  rdfs:range :LogPublisher.
+  rdfs:range :Application.
 
-:Log :hasLogIssueDate :LogIssueDate ;
-  rdfs:label "has Log Issue Date" ;
-  rdfs:comment "Date when the log was issued." ;
-  rdfs:domain :Log ;
-  rdfs:range xsd:date.
-
-:Log :hasDataStorageLocation :DataStorageLocation ;
-  rdfs:label "has Data Storage Location" ;
-  rdfs:comment "Location where the data is being stored." ;
-  rdfs:domain :Log ;
-  rdfs:range :DataStorageLocation.
-
-:Log :hasApplicationService :ApplicationService ;
-  rdfs:label "has Application Service" ;
-  rdfs:comment "Service used to generate the data." ;
-  rdfs:domain :Log ;
-  rdfs:range :ApplicationService.
 ```
 
 **CQ-to-Axiom Mapping Table**
 
-| Competency Question | Enabling Axioms |
+| Competency Question | Enabling Classes and Properties |
 | --- | --- |
-| What type of action, e.g., create, update, erase, is being performed on the data? | `:Log :hasActionType :ActionType` |
-| Who is the entity interacting with the data? | `:Log :hasEntity :Entity` |
-| Who is the entity publishing the log? | `:Log :hasLogPublisher :LogPublisher` |
-|
+| What type of action, e.g., create, update, erase, is being performed on the data? | :Action, :Create, :Update, :Erase |
+| Who is the entity interacting with the data? | :Entity, :Person, :Organization |
+| Who is the entity publishing the log? | :LogPublisher, :Entity |
+| When was the log issued? | :LogIssueDate, :Log |
+| Where is the data being stored? | :DataLocation, :Log |
+| What application/service is being used to generate the data, if any? | :Application, :Uses, :Log |
+
+Note: The classes and properties listed in the table are the ones that enable answering the corresponding competency questions. The ontology design pattern (ODP) includes additional classes and properties to provide a more comprehensive model of log data.

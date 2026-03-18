@@ -5,95 +5,83 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Temporal Indirection Ontology" ;
-  rdfs:comment "Ontology for persistent identifiers and temporal indirection".
+  rdfs:label "Temporal Identifier Ontology" ;
+  rdfs:comment "Ontology for temporal identifiers and their referents.".
+
+:TemporalIdentifier a owl:Class ;
+  rdfs:label "Temporal Identifier" ;
+  rdfs:comment "A persistent identifier that resolves to a referent over time.".
 
 :Referent a owl:Class ;
   rdfs:label "Referent" ;
-  rdfs:comment "Entity referenced by a persistent identifier".
-
-:PersistentIdentifier a owl:Class ;
-  rdfs:label "Persistent Identifier" ;
-  rdfs:comment "Stable identifier for a referent".
+  rdfs:comment "An entity referenced by a temporal identifier.".
 
 :ReferentTransition a owl:Class ;
   rdfs:label "Referent Transition" ;
-  rdfs:comment "Event marking a change in the referenced entity".
+  rdfs:comment "An event where a temporal identifier transitions to a new referent.".
 
 :Observation a owl:Class ;
   rdfs:label "Observation" ;
-  rdfs:comment "Market attribute associated with a referent".
-
-:Timestamp a owl:DatatypeProperty ;
-  rdfs:label "Timestamp" ;
-  rdfs:comment "Instant in time" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range xsd:dateTime.
-
-:ReferentTransitionTrigger a owl:Class ;
-  rdfs:label "Referent Transition Trigger" ;
-  rdfs:comment "Rule or event causing a referent transition".
+  rdfs:comment "A measurement or event associated with a referent.".
 
 :TemporalBinding a owl:Class ;
   rdfs:label "Temporal Binding" ;
-  rdfs:comment "Association between a referent and a time interval".
+  rdfs:comment "A mapping of a temporal identifier to a referent at a specific timestamp.".
 
-:TemporalBindingGap a owl:Class ;
+:Timestamp a owl:DatatypeProperty ;
+  rdfs:label "Timestamp" ;
+  rdfs:comment "A point in time when a temporal binding is valid." ;
+  rdfs:range xsd:dateTime.
+
+:ReferentTransitionTimestamp a owl:DatatypeProperty ;
+  rdfs:label "Referent Transition Timestamp" ;
+  rdfs:comment "A point in time when a referent transition occurs." ;
+  rdfs:range xsd:dateTime.
+
+:TemporalIdentifier a owl:ObjectProperty ;
+  rdfs:label "Temporal Identifier" ;
+  rdfs:comment "A temporal identifier that resolves to a referent." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :Referent.
+
+:ReferentTransition a owl:ObjectProperty ;
+  rdfs:label "Referent Transition" ;
+  rdfs:comment "A referent transition that occurs at a specific timestamp." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :ReferentTransition.
+
+:Observation a owl:ObjectProperty ;
+  rdfs:label "Observation" ;
+  rdfs:comment "An observation associated with a referent." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :Observation.
+
+:TemporalBindingSequence a owl:ObjectProperty ;
+  rdfs:label "Temporal Binding Sequence" ;
+  rdfs:comment "A sequence of temporal bindings that resolve to a referent over time." ;
+  rdfs:domain :TemporalIdentifier ;
+  rdfs:range :TemporalBinding.
+
+:Rules a owl:ObjectProperty ;
+  rdfs:label "Rules" ;
+  rdfs:comment "Rules that trigger referent transitions." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :Rules.
+
+:TemporalBindingGap a owl:ObjectProperty ;
   rdfs:label "Temporal Binding Gap" ;
-  rdfs:comment "Interval without a valid temporal binding".
+  rdfs:comment "A gap in temporal bindings that may indicate missing data." ;
+  rdfs:domain :TemporalIdentifier ;
+  rdfs:range :TemporalBinding.
 
-:TemporalBindingOverlap a owl:Class ;
+:TemporalBindingOverlap a owl:ObjectProperty ;
   rdfs:label "Temporal Binding Overlap" ;
-  rdfs:comment "Interval with multiple valid temporal bindings".
+  rdfs:comment "An overlap in temporal bindings that may indicate conflicting data." ;
+  rdfs:domain :TemporalIdentifier ;
+  rdfs:range :TemporalBinding.
 
-:RebuildContext a owl:Class ;
-  rdfs:label "Rebuild Context" ;
-  rdfs:comment "Process to rebuild the complete context for a time point".
-
-:ReferentTransitionTriggered a owl:Property ;
-  rdfs:label "Triggered By" ;
-  rdfs:comment "Triggering event or rule for a referent transition" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :ReferentTransitionTrigger.
-
-:ReferentTransitionTriggeredBy a owl:Property ;
-  rdfs:label "Triggered By" ;
-  rdfs:comment "Triggering event or rule for a referent transition" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :ReferentTransitionTrigger.
-
-:ReferentTransitionTrigger a owl:Property ;
-  rdfs:label "Trigger" ;
-  rdfs:comment "Triggering event or rule for a referent transition" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :ReferentTransitionTrigger.
-
-:ReferentTransitionTriggered a owl:Property ;
-  rdfs:label "Triggered By" ;
-  rdfs:comment "Triggering event or rule for a referent transition" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :ReferentTransitionTrigger.
-
-:ReferentTransitionTriggeredBy a owl:Property ;
-  rdfs:label "Triggered By" ;
-  rdfs:comment "Triggering event or rule for a referent transition" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :ReferentTransitionTrigger.
-
-:ReferentTransitionTrigger a owl:Property ;
-  rdfs:label "Trigger" ;
-  rdfs:comment "Triggering event or rule for a referent transition" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :ReferentTransitionTrigger.
-
-:ReferentTransitionTriggered a owl:Property ;
-  rdfs:label "Triggered By" ;
-  rdfs:comment "Triggering event or rule for a referent transition" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :ReferentTransitionTrigger.
-
-:ReferentTransitionTrigger a owl:Property ;
-  rdfs:label "Trigger" ;
-  rdfs:comment "Triggering event or rule for a referent transition" ;
-  rdfs:domain :ReferentTransition ;
-  rdfs:range :ReferentTransitionTrigger.
+:CompleteContext a owl:ObjectProperty ;
+  rdfs:label "Complete Context" ;
+  rdfs:comment "A complete context that can be rebuilt for any time point." ;
+  rdfs:domain :TemporalIdentifier ;
+  rdfs:range :TemporalBinding.

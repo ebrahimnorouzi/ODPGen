@@ -6,98 +6,88 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Solid governance logging ODP" ;
-  rdfs:comment "An ontology design pattern for representing governance-relevant logs in Solid settings, including actors, roles, infrastructure elements, data categories and locations, applications/services, data handling declarations, privacy policies, provenance records, and compliance-relevant events." .
-
-#################################################################
-# Classes
-#################################################################
-
-:SolidActor a owl:Class ;
-  rdfs:label "Solid actor" ;
-  rdfs:comment "An entity participating in the Solid ecosystem, such as a user, provider, app provider, or authority." .
-
-:Role a owl:Class ;
-  rdfs:label "Role" ;
-  rdfs:comment "A role played by a Solid actor in relation to Solid infrastructure, applications, governance, or data handling." .
-
-:Pod a owl:Class ;
-  rdfs:label "Pod" ;
-  rdfs:comment "A Solid Pod that stores data and may expose metadata about its specification, installed functionalities, and stored data categories." .
-
-:ApplicationService a owl:Class ;
-  rdfs:label "Application or service" ;
-  rdfs:comment "An application or service used in the Solid ecosystem, including apps that generate or access data." .
-
-:SolidSpecification a owl:Class ;
-  rdfs:label "Solid specification" ;
-  rdfs:comment "A Solid specification version or profile that a Pod is running." .
-
-:Functionality a owl:Class ;
-  rdfs:label "Functionality" ;
-  rdfs:comment "A functionality installed within a Pod." .
-
-:DataCategory a owl:Class ;
-  rdfs:label "Data category" ;
-  rdfs:comment "A category of data used to support granular discovery, storage, access, and governance." .
-
-:DataResource a owl:Class ;
-  rdfs:label "Data resource" ;
-  rdfs:comment "A data item or collection of data stored in a Pod and associated with a data category." .
-
-:StorageLocation a owl:Class ;
-  rdfs:label "Storage location" ;
-  rdfs:comment "A location where data is stored within or in relation to a Pod." .
-
-:PrivacyNotice a owl:Class ;
-  rdfs:label "Privacy notice" ;
-  rdfs:comment "A machine-readable notice describing data handling practices of a Pod or application/service." .
-
-:DataRequirement a owl:Class ;
-  rdfs:label "Data requirement" ;
-  rdfs:comment "A declaration of what data an application or service needs to function." .
-
-:PrivacyPolicy a owl:Class ;
-  rdfs:label "Privacy policy" ;
-  rdfs:comment "A privacy preference or requirement expressed by a user." .
-
-:DataRequest a owl:Class ;
-  rdfs:label "Data request" ;
-  rdfs:comment "A request for use of data that can be managed by a user." .
-
-:Decision a owl:Class ;
-  rdfs:label "Decision" ;
-  rdfs:comment "A decision regarding a data request or the use of data." .
+    rdfs:label "Solid governance log ontology design pattern" ;
+    rdfs:comment "An ontology design pattern for representing governance-relevant logs in Solid apps and Pods, including the action performed on data, the interacting entity, the log publisher, issuance time, storage location of the data, and the application or service used to generate the data." .
 
 :LogEntry a owl:Class ;
-  rdfs:label "Log entry" ;
-  rdfs:comment "A provenance or accountability record published to document an interaction with data." .
+    rdfs:label "Log entry" ;
+    rdfs:comment "A governance or accountability record describing an interaction with data." .
 
-:ActionType a owl:Class ;
-  rdfs:label "Action type" ;
-  rdfs:comment "A type of action performed on data, such as create, update, or erase." .
+:DataAction a owl:Class ;
+    rdfs:label "Data action" ;
+    rdfs:comment "A type of action performed on data, such as create, update, or erase." .
 
-:PolicyChange a owl:Class ;
-  rdfs:label "Policy change" ;
-  rdfs:comment "A change to a data handling policy that may be recorded for accountability." .
+:Entity a owl:Class ;
+    rdfs:label "Entity" ;
+    rdfs:comment "An entity involved in the Solid ecosystem, such as an actor interacting with data or publishing a log." .
 
-:ConsentRecord a owl:Class ;
-  rdfs:label "Consent record" ;
-  rdfs:comment "A record of consent kept for accountability and governance." .
+:StorageLocation a owl:Class ;
+    rdfs:label "Storage location" ;
+    rdfs:comment "A location where data is stored, such as a place within a Pod." .
 
-:ComplianceEvent a owl:Class ;
-  rdfs:label "Compliance event" ;
-  rdfs:comment "An event related to legal compliance, such as exercising GDPR-related rights or supporting an audit." .
+:ApplicationService a owl:Class ;
+    rdfs:label "Application or service" ;
+    rdfs:comment "An application or service used to generate data." .
 
-#################################################################
-# Object Properties
-#################################################################
+:DataResource a owl:Class ;
+    rdfs:label "Data resource" ;
+    rdfs:comment "A data item or dataset that is the subject of a logged interaction." .
 
-:hasRole a owl:ObjectProperty ;
-  rdfs:label "has role" ;
-  rdfs:comment "Relates a Solid actor to a role it plays." ;
-  rdfs:domain :SolidActor ;
-  rdfs:range :Role .
+:hasActionType a owl:ObjectProperty ;
+    rdfs:label "has action type" ;
+    rdfs:comment "Relates a log entry to the type of action being performed on the data." ;
+    rdfs:domain :LogEntry ;
+    rdfs:range :DataAction .
 
-:providesPod a owl:ObjectProperty ;
-  rdfs:label
+:hasInteractingEntity a owl:ObjectProperty ;
+    rdfs:label "has interacting entity" ;
+    rdfs:comment "Relates a log entry to the entity interacting with the data." ;
+    rdfs:domain :LogEntry ;
+    rdfs:range :Entity .
+
+:hasLogPublisher a owl:ObjectProperty ;
+    rdfs:label "has log publisher" ;
+    rdfs:comment "Relates a log entry to the entity publishing the log." ;
+    rdfs:domain :LogEntry ;
+    rdfs:range :Entity .
+
+:hasStorageLocation a owl:ObjectProperty ;
+    rdfs:label "has storage location" ;
+    rdfs:comment "Relates a data resource to the location where it is stored." ;
+    rdfs:domain :DataResource ;
+    rdfs:range :StorageLocation .
+
+:hasDataResource a owl:ObjectProperty ;
+    rdfs:label "has data resource" ;
+    rdfs:comment "Relates a log entry to the data resource that is the subject of the logged action." ;
+    rdfs:domain :LogEntry ;
+    rdfs:range :DataResource .
+
+:usedApplicationService a owl:ObjectProperty ;
+    rdfs:label "used application or service" ;
+    rdfs:comment "Relates a log entry to the application or service used to generate the data, if any." ;
+    rdfs:domain :LogEntry ;
+    rdfs:range :ApplicationService .
+
+:issuedAtTime a owl:DatatypeProperty ;
+    rdfs:label "issued at time" ;
+    rdfs:comment "Relates a log entry to the date and time when the log was issued." ;
+    rdfs:domain :LogEntry ;
+    rdfs:range xsd:dateTime .
+```
+
+2. Scenario-requirement-to-axiom mapping:
+- Requirement: There is no logging or record-keeping, and provenance metadata should be recorded for accountability in Pods.
+  - Axioms:
+    - `:LogEntry a owl:Class`
+    - `:hasActionType a owl:ObjectProperty`
+    - `:hasInteractingEntity a owl:ObjectProperty`
+    - `:hasLogPublisher a owl:ObjectProperty`
+    - `:issuedAtTime a owl:DatatypeProperty`
+    - `:hasDataResource a owl:ObjectProperty`
+- Requirement: Users need information about who is interacting with their data.
+  - Axioms:
+    - `:Entity a owl:Class`
+    - `:hasInteractingEntity a owl:ObjectProperty`
+- Requirement: Accountability requires knowing who publishes the log.
+  -

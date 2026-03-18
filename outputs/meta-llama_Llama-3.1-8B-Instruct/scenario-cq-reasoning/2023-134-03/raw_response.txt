@@ -1,57 +1,116 @@
-**Reasoning Steps**
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
 
-1. **Extract atomic requirements from the scenario**
-	* C1: Identity of Solid actors and their roles is unknown
-	* C2: No metadata about Solid infrastructure
-	* C3: Availability/Discovery of categories of data
-	* C4: Pod and app providers do not provide information on their data handling practices
-	* C5: Users cannot express their privacy policies
-	* C6: No logging or record-keeping
-	* C7: No legal compliance checks
-2. **Propose candidate classes and properties for each requirement**
-	* C1: `:Actor`, `:Role`, `:Identity`
-	* C2: `:Infrastructure`, `:Specification`, `:Functionalities`
-	* C3: `:DataCategory`, `:DataAvailability`, `:StorageLocation`
-	* C4: `:DataHandlingPractice`, `:PrivacyNotice`, `:DataRequirements`
-	* C5: `:PrivacyPolicy`, `:DataRequest`, `:ConsentRecord`
-	* C6: `:Provenance`, `:Logging`, `:RecordKeeping`
-	* C7: `:LegalCompliance`, `:GDPRRight`, `:AuditingInformation`
-3. **Draft axioms (subclass, domain, range, cardinality, disjointness) for each candidate**
-	* `:Actor` rdfs:subClassOf `:Entity`
-	* `:Role` rdfs:subClassOf `:Job`
-	* `:Identity` rdfs:subClassOf `:Information`
-	* `:Infrastructure` rdfs:subClassOf `:System`
-	* `:Specification` rdfs:subClassOf `:Document`
-	* `:Functionalities` rdfs:subClassOf `:Service`
-	* `:DataCategory` rdfs:subClassOf `:Classification`
-	* `:DataAvailability` rdfs:subClassOf `:Resource`
-	* `:StorageLocation` rdfs:subClassOf `:Place`
-	* `:DataHandlingPractice` rdfs:subClassOf `:Procedure`
-	* `:PrivacyNotice` rdfs:subClassOf `:Statement`
-	* `:DataRequirements` rdfs:subClassOf `:Constraint`
-	* `:PrivacyPolicy` rdfs:subClassOf `:Policy`
-	* `:DataRequest` rdfs:subClassOf `:Request`
-	* `:ConsentRecord` rdfs:subClassOf `:Record`
-	* `:Provenance` rdfs:subClassOf `:Metadata`
-	* `:Logging` rdfs:subClassOf `:Process`
-	* `:RecordKeeping` rdfs:subClassOf `:Procedure`
-	* `:LegalCompliance` rdfs:subClassOf `:Regulation`
-	* `:GDPRRight` rdfs:subClassOf `:Right`
-	* `:AuditingInformation` rdfs:subClassOf `:Information`
-4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
-	* CQ1: Who is maintaining the registry?
-		+ Axioms: `:Actor` rdfs:subClassOf `:Entity`, `:Entity` rdfs:subClassOf `:Person`
-	* CQ2: When was the registry created/updated?
-		+ Axioms: `:Infrastructure` rdfs:subClassOf `:System`, `:System` rdfs:subClassOf `:Machine`
-	* CQ3: What types of data are available?
-		+ Axioms: `:DataCategory` rdfs:subClassOf `:Classification`, `:Classification` rdfs:subClassOf `:Category`
-	* CQ4: Where is a specific type of data being stored?
-		+ Axioms: `:DataAvailability` rdfs:subClassOf `:Resource`, `:Resource` rdfs:subClassOf `:Location`
-	* CQ5: What policy is associated with the data?
-		+ Axioms: `:PrivacyPolicy` rdfs:subClassOf `:Policy`, `:Policy` rdfs:subClassOf `:Statement`
-	* CQ6: Not yet covered
-5. **Add or refine axioms to cover any uncovered CQs**
-	* CQ6: Who is maintaining the registry?
-		+ Axiom: `:Registry` rdfs:subClassOf `:System`, `:System` rdfs:subClassOf `:Machine`
-	* CQ6: When was the registry created/updated?
-		+ Axiom: `:Registry` rdfs:subClassOf `:Infrastructure`, `:Infrastructure
+:Ontology a owl:Ontology ;
+  rdfs:label "Governance Patterns in Solid Apps Ontology" ;
+  rdfs:comment "Ontology for governance patterns in Solid apps".
+
+:Registry a owl:Class ;
+  rdfs:label "Registry" ;
+  rdfs:comment "Registry for governance patterns in Solid apps".
+
+:RegistryMaintainer a owl:Class ;
+  rdfs:label "Registry Maintainer" ;
+  rdfs:comment "Entity maintaining the registry".
+
+:DataCategory a owl:Class ;
+  rdfs:label "Data Category" ;
+  rdfs:comment "Category of data in a Pod".
+
+:DataStorageLocation a owl:Class ;
+  rdfs:label "Data Storage Location" ;
+  rdfs:comment "Location where data is stored in a Pod".
+
+:DataHandlingPractice a owl:Class ;
+  rdfs:label "Data Handling Practice" ;
+  rdfs:comment "Practice of handling data in a Pod or app".
+
+:PrivacyPolicy a owl:Class ;
+  rdfs:label "Privacy Policy" ;
+  rdfs:comment "Policy for handling user data".
+
+:ProvenanceMetadata a owl:Class ;
+  rdfs:label "Provenance Metadata" ;
+  rdfs:comment "Metadata for accountability in a Pod".
+
+:LegalComplianceCheck a owl:Class ;
+  rdfs:label "Legal Compliance Check" ;
+  rdfs:comment "Check for compliance with GDPR-related rights".
+
+:RegistryMaintainer a owl:ObjectProperty ;
+  rdfs:label "Maintains" ;
+  rdfs:comment "Entity maintaining the registry" ;
+  owl:domain :Registry ;
+  owl:range :RegistryMaintainer.
+
+:Registry a owl:ObjectProperty ;
+  rdfs:label "Registry of" ;
+  rdfs:comment "Registry for governance patterns in Solid apps" ;
+  owl:domain :RegistryMaintainer ;
+  owl:range :Registry.
+
+:DataCategory a owl:ObjectProperty ;
+  rdfs:label "Category of" ;
+  rdfs:comment "Category of data in a Pod" ;
+  owl:domain :DataStorageLocation ;
+  owl:range :DataCategory.
+
+:DataStorageLocation a owl:ObjectProperty ;
+  rdfs:label "Location of" ;
+  rdfs:comment "Location where data is stored in a Pod" ;
+  owl:domain :DataCategory ;
+  owl:range :DataStorageLocation.
+
+:DataHandlingPractice a owl:ObjectProperty ;
+  rdfs:label "Practice of" ;
+  rdfs:comment "Practice of handling data in a Pod or app" ;
+  owl:domain :DataStorageLocation ;
+  owl:range :DataHandlingPractice.
+
+:PrivacyPolicy a owl:ObjectProperty ;
+  rdfs:label "Policy of" ;
+  rdfs:comment "Policy for handling user data" ;
+  owl:domain :DataStorageLocation ;
+  owl:range :PrivacyPolicy.
+
+:ProvenanceMetadata a owl:ObjectProperty ;
+  rdfs:label "Metadata of" ;
+  rdfs:comment "Metadata for accountability in a Pod" ;
+  owl:domain :DataStorageLocation ;
+  owl:range :ProvenanceMetadata.
+
+:LegalComplianceCheck a owl:ObjectProperty ;
+  rdfs:label "Check of" ;
+  rdfs:comment "Check for compliance with GDPR-related rights" ;
+  owl:domain :DataStorageLocation ;
+  owl:range :LegalComplianceCheck.
+
+:Created a owl:DatatypeProperty ;
+  rdfs:label "Created" ;
+  rdfs:comment "Date when the registry was created" ;
+  owl:domain :Registry ;
+  owl:range xsd:date.
+
+:Updated a owl:DatatypeProperty ;
+  rdfs:label "Updated" ;
+  rdfs:comment "Date when the registry was last updated" ;
+  owl:domain :Registry ;
+  owl:range xsd:date.
+
+:Data a owl:DatatypeProperty ;
+  rdfs:label "Data" ;
+  rdfs:comment "Type of data available" ;
+  owl:domain :DataCategory ;
+  owl:range xsd:string.
+
+:StorageLocation a owl:DatatypeProperty ;
+  rdfs:label "Storage Location" ;
+  rdfs:comment "Location where data is stored" ;
+  owl:domain :DataStorageLocation ;
+  owl:range xsd:string.
+
+:Policy a owl:Datatype

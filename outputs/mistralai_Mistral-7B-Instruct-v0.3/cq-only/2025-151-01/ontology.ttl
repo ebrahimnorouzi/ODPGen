@@ -1,35 +1,86 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
 :Ontology a owl:Ontology ;
-    rdfs:label "Evaluation Request Ontology" ;
-    rdfs:comment "This ontology models evaluation requests, their actions, parties, assets, timestamps, and context.".
+  rdfs:label "Evaluation Request Ontology" ;
+  rdfs:comment "An ontology for modeling evaluation requests.".
 
-:Action rdf:Type owl:Class ;
-    rdfs:label "Requested Action" ;
-    rdfs:comment "The action being requested in the evaluation.".
+# Classes
+:Action a owl:Class ;
+  rdfs:label "Requested Action" ;
+  rdfs:comment "The action requested in the evaluation request.".
 
-:Party rdf:Type owl:Class ;
-    rdfs:label "Party Issuing Request" ;
-    rdfs:comment "The party that is issuing the evaluation request.".
+:Party a owl:Class ;
+  rdfs:label "Party Issuing Request" ;
+  rdfs:comment "The party issuing the evaluation request.".
 
-:Asset rdf:Type owl:Class ;
-    rdfs:label "Target Asset" ;
-    rdfs:comment "The asset that is the target of the evaluation request.".
+:Asset a owl:Class ;
+  rdfs:label "Target Asset" ;
+  rdfs:comment "The asset of the evaluation request.".
 
-:Timestamp rdf:Type owl:DatatypeProperty ;
-    rdfs:domain :EvaluationRequest ;
-    rdfs:range xsd:dateTime ;
-    rdfs:label "Request Timestamp" ;
-    rdfs:comment "The timestamp when the evaluation request was issued.".
+:Time a owl:Class ;
+  rdfs:label "Evaluation Request Time" ;
+  rdfs:comment "The time when the evaluation request was issued.".
 
-:Context rdf:Type owl:ObjectProperty ;
-    rdfs:domain :EvaluationRequest ;
-    rdfs:range owl:Thing ;
-    rdfs:label "Additional Context" ;
-    rdfs:comment "Additional contextual information related to the evaluation request.".
+:Context a owl:Class ;
+  rdfs:label "Additional Contextual Information" ;
+  rdfs:comment "Additional contextual information included in the evaluation request.".
 
-:EvaluationRequest a owl:Class ;
-    rdfs:subClassOf [ a owl:Restriction ;
-                      owl:onProperty :Context ;
-                      owl:hasValue owl:Thing ;
-                      owl:allValuesFrom owl:Thing ] ;
-    rdfs:label "Evaluation Request" ;
-    rdfs:comment "An evaluation request with action, party, asset, timestamp, and context.".
+# Object Properties
+:hasAction a owl:ObjectProperty ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Action ;
+  rdfs:label "Has Requested Action" ;
+  rdfs:comment "The action requested in the evaluation request.".
+
+:issuedBy a owl:ObjectProperty ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Party ;
+  rdfs:label "Issued By" ;
+  rdfs:comment "The party issuing the evaluation request.".
+
+:targets a owl:ObjectProperty ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Asset ;
+  rdfs:label "Targets" ;
+  rdfs:comment "The asset of the evaluation request.".
+
+:hasTime a owl:ObjectProperty ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Time ;
+  rdfs:label "Has Time" ;
+  rdfs:comment "The time when the evaluation request was issued.".
+
+:hasContext a owl:ObjectProperty ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Context ;
+  rdfs:label "Has Context" ;
+  rdfs:comment "Additional contextual information included in the evaluation request.".
+
+# Data Properties
+:action rdf:Property ;
+  rdfs:domain :Action ;
+  rdfs:range xsd:string ;
+  rdfs:label "Action" ;
+  rdfs:comment "The action as a string.".
+
+:party rdf:Property ;
+  rdfs:domain :Party ;
+  rdfs:range xsd:string ;
+  rdfs:label "Party" ;
+  rdfs:comment "The party as a string.".
+
+:asset rdf:Property ;
+  rdfs:domain :Asset ;
+  rdfs:range xsd:string ;
+  rdfs:label "Asset" ;
+  rdfs:comment "The asset as a string.".
+
+:time rdf:Property ;
+  rdfs:domain :Time ;
+  rdfs:range xsd:dateTime ;
+  rdfs:label "Time" ;
+  rdfs:comment "The time as a date-time string.".

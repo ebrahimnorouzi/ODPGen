@@ -5,29 +5,40 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "Pseudonym authorship and river-park crossing ODP" ;
-    rdfs:comment "An ontology design pattern for representing authors using alternative identities such as pseudonyms when acting as writers of works, and for representing river trajectories that cross national parks." .
+    rdfs:label "Pseudonym authorship and river trajectory crossing ODP" ;
+    rdfs:comment "An ontology design pattern for representing authors using pseudonyms or alternative names when writing works, and rivers with trajectories that cross national parks." .
 
 :Person a owl:Class ;
     rdfs:label "Person" ;
-    rdfs:comment "A human individual." .
+    rdfs:comment "A human individual, such as an author." .
 
-:AlternativeIdentity a owl:Class ;
-    rdfs:label "Alternative identity" ;
-    rdfs:comment "An alternative identity used by a person, such as a pseudonym." .
+:Author a owl:Class ;
+    rdfs:label "Author" ;
+    rdfs:comment "A person in the role of writing a work." ;
+    rdfs:subClassOf :Person .
+
+:NameUsage a owl:Class ;
+    rdfs:label "Name usage" ;
+    rdfs:comment "A name or designation used by a person in a particular context, such as authorship." .
 
 :Pseudonym a owl:Class ;
     rdfs:label "Pseudonym" ;
-    rdfs:comment "An alternative identity used by a person for publication or authorship." ;
-    rdfs:subClassOf :AlternativeIdentity .
+    rdfs:comment "A name usage adopted by a person instead of their usual name, especially for publication." ;
+    rdfs:subClassOf :NameUsage .
 
-:WriterRole a owl:Class ;
-    rdfs:label "Writer role" ;
-    rdfs:comment "The role of being a writer or author of a work." .
+:AlternativeName a owl:Class ;
+    rdfs:label "Alternative name" ;
+    rdfs:comment "A name usage that is an alternative designation used by a person." ;
+    rdfs:subClassOf :NameUsage .
 
 :Work a owl:Class ;
     rdfs:label "Work" ;
     rdfs:comment "A created intellectual or artistic work, such as a book or a collection of poems." .
+
+:Book a owl:Class ;
+    rdfs:label "Book" ;
+    rdfs:comment "A written work in book form." ;
+    rdfs:subClassOf :Work .
 
 :CollectionOfPoems a owl:Class ;
     rdfs:label "Collection of poems" ;
@@ -40,50 +51,46 @@
 
 :Trajectory a owl:Class ;
     rdfs:label "Trajectory" ;
-    rdfs:comment "The spatial path or course followed by a river." .
+    rdfs:comment "The path or course followed by a river." .
 
 :NationalPark a owl:Class ;
     rdfs:label "National park" ;
-    rdfs:comment "A protected natural park designated at national level." .
+    rdfs:comment "A protected natural area designated as a national park." .
 
-:usesAlternativeIdentity a owl:ObjectProperty ;
-    rdfs:label "uses alternative identity" ;
-    rdfs:comment "Relates a person to an alternative identity that the person uses." ;
+:hasNameUsage a owl:ObjectProperty ;
+    rdfs:label "has name usage" ;
+    rdfs:comment "Relates a person to a name usage they use." ;
     rdfs:domain :Person ;
-    rdfs:range :AlternativeIdentity .
+    rdfs:range :NameUsage .
 
-:assumesRole a owl:ObjectProperty ;
-    rdfs:label "assumes role" ;
-    rdfs:comment "Relates a person to a role that the person assumes." ;
-    rdfs:domain :Person ;
-    rdfs:range :WriterRole .
+:usedForAuthorshipBy a owl:ObjectProperty ;
+    rdfs:label "used for authorship by" ;
+    rdfs:comment "Relates a name usage to the person who uses it for authorship." ;
+    rdfs:domain :NameUsage ;
+    rdfs:range :Person ;
+    owl:inverseOf :hasNameUsage .
 
-:usesIdentityInRole a owl:ObjectProperty ;
-    rdfs:label "uses identity in role" ;
-    rdfs:comment "Relates a person to an alternative identity used when assuming a specific role such as writer." ;
-    rdfs:domain :Person ;
-    rdfs:range :AlternativeIdentity .
-
-:publishesWork a owl:ObjectProperty ;
-    rdfs:label "publishes work" ;
-    rdfs:comment "Relates an alternative identity to a work published under that identity." ;
-    rdfs:domain :AlternativeIdentity ;
+:wroteWork a owl:ObjectProperty ;
+    rdfs:label "wrote work" ;
+    rdfs:comment "Relates an author to a work they wrote." ;
+    rdfs:domain :Author ;
     rdfs:range :Work .
 
-:hasTitle a owl:DatatypeProperty ;
-    rdfs:label "has title" ;
-    rdfs:comment "Relates a work to its title." ;
+:hasAuthor a owl:ObjectProperty ;
+    rdfs:label "has author" ;
+    rdfs:comment "Relates a work to its author." ;
     rdfs:domain :Work ;
-    rdfs:range xsd:string .
+    rdfs:range :Author ;
+    owl:inverseOf :wroteWork .
 
-:hasTrajectory a owl:ObjectProperty ;
-    rdfs:label "has trajectory" ;
-    rdfs:comment "Relates a river to its trajectory." ;
-    rdfs:domain :River ;
-    rdfs:range :Trajectory .
+:wroteWorkUsingName a owl:ObjectProperty ;
+    rdfs:label "wrote work using name" ;
+    rdfs:comment "Relates a person to a name usage they used when writing a work." ;
+    rdfs:domain :Person ;
+    rdfs:range :NameUsage .
 
-:crossesNationalPark a owl:ObjectProperty ;
-    rdfs:label "crosses national park" ;
-    rdfs:comment "Relates a trajectory to a national park that it crosses." ;
-    rdfs:domain :Trajectory ;
-    rdfs:range :NationalPark .
+:nameUsedForWork a owl:ObjectProperty ;
+    rdfs:label "name used for work" ;
+    rdfs:comment "Relates a work to the name usage under which it was written or published." ;
+    rdfs:domain :Work ;
+    rdfs:range :NameUsage .
