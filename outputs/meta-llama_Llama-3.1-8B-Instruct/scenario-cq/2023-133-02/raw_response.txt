@@ -1,3 +1,5 @@
+### Turtle Ontology
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -9,90 +11,87 @@
   rdfs:label "kHealth-Asthma Ontology" ;
   rdfs:comment "Ontology for the kHealth-Asthma project".
 
-:AsthmaPatient a rdfs:Class ;
+:AsthmaPatient a owl:Class ;
   rdfs:label "Asthma Patient" ;
   rdfs:comment "A patient with asthma".
 
-:AsthmaSymptom a rdfs:Class ;
+:AsthmaSymptom a owl:Class ;
   rdfs:label "Asthma Symptom" ;
-  rdfs:comment "A symptom of asthma, e.g., cough, chest tightness, wheezing, breathing patterns".
+  rdfs:comment "A symptom of asthma".
 
-:Medication a rdfs:Class ;
+:Medication a owl:Class ;
   rdfs:label "Medication" ;
-  rdfs:comment "A medication taken by the patient".
+  rdfs:comment "A medication for asthma".
 
-:OutdoorAllergen a rdfs:Class ;
-  rdfs:label "Outdoor Allergen" ;
-  rdfs:comment "An outdoor allergen, e.g., pollen, air quality index (AQI)".
+:OutdoorEnvironmentalAllergen a owl:Class ;
+  rdfs:label "Outdoor Environmental Allergen" ;
+  rdfs:comment "An allergen in the outdoor environment".
 
-:CausalRelation a rdfs:Class ;
-  rdfs:label "Causal Relation" ;
-  rdfs:comment "A causal relation between two entities".
-
-:hasEffectWeight a rdf:Property ;
-  rdfs:label "has Effect Weight" ;
-  rdfs:comment "The effect weight of a causal relation" ;
-  rdfs:range xsd:float.
-
-:causes a rdf:Property ;
-  rdfs:label "causes" ;
-  rdfs:comment "The causal relation between two entities" ;
-  rdfs:domain :CausalRelation ;
-  rdfs:range :AsthmaSymptom.
-
-:hasCausalEffect a rdf:Property ;
-  rdfs:label "has Causal Effect" ;
-  rdfs:comment "The causal effect of an outdoor allergen on a patient's symptoms" ;
-  rdfs:domain :OutdoorAllergen ;
-  rdfs:range :AsthmaSymptom.
-
-:hasMedicationIntake a rdf:Property ;
-  rdfs:label "has Medication Intake" ;
-  rdfs:comment "The medication intake of a patient" ;
-  rdfs:domain :AsthmaPatient ;
-  rdfs:range :Medication.
-
-:hasSymptom a rdf:Property ;
+:hasSymptom a owl:ObjectProperty ;
   rdfs:label "has Symptom" ;
-  rdfs:comment "The symptoms of a patient" ;
+  rdfs:comment "A patient has a symptom" ;
   rdfs:domain :AsthmaPatient ;
   rdfs:range :AsthmaSymptom.
 
-:hasOutdoorAllergen a rdf:Property ;
-  rdfs:label "has Outdoor Allergen" ;
-  rdfs:comment "The outdoor allergen affecting a patient" ;
+:hasMedication a owl:ObjectProperty ;
+  rdfs:label "has Medication" ;
+  rdfs:comment "A patient has a medication" ;
   rdfs:domain :AsthmaPatient ;
-  rdfs:range :OutdoorAllergen.
+  rdfs:range :Medication.
 
-:hasCausalEffectWeight a rdf:Property ;
-  rdfs:label "has Causal Effect Weight" ;
-  rdfs:comment "The causal effect weight of a causal relation" ;
-  rdfs:domain :CausalRelation ;
+:hasAllergen a owl:ObjectProperty ;
+  rdfs:label "has Allergen" ;
+  rdfs:comment "A patient is exposed to an allergen" ;
+  rdfs:domain :AsthmaPatient ;
+  rdfs:range :OutdoorEnvironmentalAllergen.
+
+:causes a owl:ObjectProperty ;
+  rdfs:label "causes" ;
+  rdfs:comment "One thing causes another" ;
+  rdfs:domain :OutdoorEnvironmentalAllergen ;
+  rdfs:range :AsthmaSymptom.
+
+:effectWeight a owl:DatatypeProperty ;
+  rdfs:label "Effect Weight" ;
+  rdfs:comment "The weight of the effect of one thing on another" ;
+  rdfs:domain :causes ;
   rdfs:range xsd:float.
 
-:hasProbableCause a rdf:Property ;
-  rdfs:label "has Probable Cause" ;
-  rdfs:comment "The probable cause of a patient's symptom" ;
-  rdfs:domain :AsthmaSymptom ;
-  rdfs:range :OutdoorAllergen.
-
-:hasEffectOnMedication a rdf:Property ;
-  rdfs:label "has Effect on Medication" ;
-  rdfs:comment "The effect of a patient's symptom on medication intake" ;
-  rdfs:domain :AsthmaSymptom ;
+:hasMedicationIntake a owl:ObjectProperty ;
+  rdfs:label "has Medication Intake" ;
+  rdfs:comment "A patient has a medication intake" ;
+  rdfs:domain :AsthmaPatient ;
   rdfs:range :Medication.
 
-:hasEffectOnPatient a rdf:Property ;
-  rdfs:label "has Effect on Patient" ;
-  rdfs:comment "The effect of an outdoor allergen on a patient" ;
-  rdfs:domain :OutdoorAllergen ;
-  rdfs:range :AsthmaPatient.
+:hasSymptomEffect a owl:ObjectProperty ;
+  rdfs:label "has Symptom Effect" ;
+  rdfs:comment "A symptom has an effect on medication intake" ;
+  rdfs:domain :AsthmaSymptom ;
+  rdfs:range :xsd:float.
+```
 
-:hasCounterfactualEffect a rdf:Property ;
-  rdfs:label "has Counterfactual Effect" ;
-  rdfs:comment "The counterfactual effect of an outdoor allergen on medication intake" ;
-  rdfs:domain :OutdoorAllergen ;
-  rdfs:range :Medication.
+### Scenario-requirement-to-axiom mapping
 
-:hasCounterfactualEffectOnMedication a rdf:Property ;
-  rdfs:label "has Counter
+1. "Asthma is a complex disease with multiple factors affecting a patient's condition."
+   - Axiom: `:AsthmaPatient a owl:Class ;`
+   - This axiom represents the concept of an asthma patient, which is a key entity in the scenario.
+
+2. "The data collected about asthma patients include their (1) symptoms, such as cough, chest tightness, wheezing, and breathing patterns, (2) intake of medications, and (3) outdoor environment features, such as pollen and air quality index (AQI)."
+   - Axioms:
+     - `:AsthmaSymptom a owl:Class ;`
+     - `:Medication a owl:Class ;`
+     - `:OutdoorEnvironmentalAllergen a owl:Class ;`
+   - These axioms represent the concepts of asthma symptoms, medications, and outdoor environmental allergens, which are essential entities in the scenario.
+
+3. "The edges represent the causal relations with effect weights."
+   - Axioms:
+     - `:causes a owl:ObjectProperty ;`
+     - `:effectWeight a owl:DatatypeProperty ;`
+   - These axioms represent the causal relations between outdoor environmental allergens and asthma symptoms, along with the effect weights.
+
+### CQ-to-axiom mapping
+
+1. "Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI?"
+   - Axioms:
+     - `:hasAllergen a owl:ObjectProperty ;`
+     -

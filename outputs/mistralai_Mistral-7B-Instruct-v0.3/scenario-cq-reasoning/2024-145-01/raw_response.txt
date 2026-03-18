@@ -1,0 +1,74 @@
+**1. Extract atomic requirements from the scenario:**
+- Define court hierarchies (district, state, and national levels)
+- Define court locations (state for a district court)
+- Count the number of districts in a state
+- Determine the authority of a court over another
+- Define bad check crime regulations (check transaction type, check payment status)
+
+**2. Propose candidate classes and properties for each requirement:**
+- Court (owl:Class)
+  - rdfs:label "Court"
+  - rdfs:comment "Represents a court instance."
+- DistrictCourt (owl:Class)
+  - rdfs:label "District Court"
+  - rdfs:comment "Represents a district court instance."
+- StateCourt (owl:Class)
+  - rdfs:label "State Court"
+  - rdfs:comment "Represents a state court instance."
+- NationalCourt (owl:Class)
+  - rdfs:label "National Court"
+  - rdfs:comment "Represents a national court instance."
+- hasLocation (owl:ObjectProperty)
+  - rdfs:label "hasLocation"
+  - rdfs:comment "Relates a court to its location."
+- hasAuthority (owl:ObjectProperty)
+  - rdfs:label "hasAuthority"
+  - rdfs:comment "Relates a court to the court it has authority over."
+- hasTransactionType (owl:ObjectProperty)
+  - rdfs:label "hasTransactionType"
+  - rdfs:comment "Relates a check payment to its transaction type."
+- hasStatus (owl:ObjectProperty)
+  - rdfs:label "hasStatus"
+  - rdfs:comment "Relates a check payment to its status."
+
+**3. Draft axioms for each candidate:**
+- Court, DistrictCourt, StateCourt, NationalCourt
+  - rdf:type owl:Class
+- hasLocation, hasAuthority, hasTransactionType, hasStatus
+  - rdf:type owl:ObjectProperty
+- DistrictCourt rdf:type owl:SubClassOf [ a owl:Restriction ; owl:onProperty hasLocation ; owl:allValuesFrom StateCourt ]
+- hasLocation domain Court ; range Location
+- hasAuthority domain Court ; range Court
+- hasTransactionType domain CheckPayment ; range CheckTransactionType
+- hasStatus domain CheckPayment ; range CheckPaymentStatus
+
+**4. For each CQ, check which axioms enable answering it:**
+- List all district courts in a given state: hasLocation(Court, StateCourt)
+- In which state is a given district court instance located?: hasLocation(DistrictCourt, StateCourt)
+- How many districts are in a given state of India?: Not covered (need a count property)
+- Which court has authority over a given court?: hasAuthority(Court, Court)
+- What is the check transaction type for a bad check?: hasTransactionType(CheckPayment, CheckTransactionType)
+- When is a check payment of a bad check?: Not covered (need a temporal property)
+- What is the transaction status of a given check payment?: hasStatus(CheckPayment, CheckPaymentStatus)
+
+**5. Add or refine axioms to cover any uncovered CQs:**
+- Add a count property for the number of districts in a state:
+  - hasNumberOfDistricts (owl:ObjectProperty)
+    - rdfs:label "hasNumberOfDistricts"
+    - rdfs:comment "Relates a state to the number of its districts."
+  - StateCourt rdf:type owl:SubClassOf [ a owl:Restriction ; owl:onProperty hasNumberOfDistricts ; owl:cardinality exact 1 ]
+  - hasNumberOfDistricts domain StateCourt ; range xsd:nonNegativeInteger
+
+**6. Remove any classes or properties not traceable to a requirement or CQ:**
+- No classes or properties need to be removed.
+
+**7. Output the final ontology:**
+
+```turtle
+:Ontology a owl:Ontology ;
+  rdfs:label "Legal Tasks Ontology" ;
+  rdfs:comment "An ontology for managing legal tasks.".
+
+Court a owl:Class ;
+  rdfs:label "Court" ;
+  rdfs:comment

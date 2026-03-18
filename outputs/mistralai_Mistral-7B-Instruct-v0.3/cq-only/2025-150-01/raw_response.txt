@@ -1,0 +1,76 @@
+Here is the Turtle ontology design pattern for the given competency questions:
+
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+@prefix mqtt: <http://example.org/mqtt#>.
+@prefix sosa: <http://www.opengis.net/ont/sosa#>.
+@prefix qudt: <http://qudt.org/vocab/unit/>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "MQTT and SOSA Ontology" ;
+  rdfs:comment "An ontology for modeling MQTT clients, brokers, network connections, and their interactions with SOSA systems.".
+
+# MQTT Clients and Brokers
+:MQTTClient a owl:Class ;
+  rdfs:label "MQTT Client" ;
+  rdfs:comment "An MQTT client that connects to a broker.".
+
+:MQTTBroker a owl:Class ;
+  rdfs:label "MQTT Broker" ;
+  rdfs:comment "An MQTT broker that manages connections from clients.".
+
+:hasClientID a mqtt:Property ;
+  rdfs:domain :MQTTClient ;
+  rdfs:range xsd:string ;
+  rdfs:label "Client ID" ;
+  rdfs:comment "The unique identifier of an MQTT client.".
+
+:hasBroker a mqtt:Property ;
+  rdfs:domain :MQTTClient ;
+  rdfs:range :MQTTBroker ;
+  rdfs:label "Broker" ;
+  rdfs:comment "The MQTT broker that the client is connected to.".
+
+:hasClient a mqtt:Property ;
+  rdfs:domain :MQTTBroker ;
+  rdfs:range :MQTTClient ;
+  rdfs:label "Client" ;
+  rdfs:comment "An MQTT client that is connected to the broker.".
+
+# MQTT Network Connections
+:NetworkConnection a owl:Class ;
+  rdfs:label "Network Connection" ;
+  rdfs:comment "A connection between two MQTT clients or a client and a broker.".
+
+:isSecure a mqtt:ObjectProperty ;
+  rdfs:domain :NetworkConnection ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "Is Secure" ;
+  rdfs:comment "Indicates whether the network connection is TLS-secured.".
+
+:initiator a mqtt:ObjectProperty ;
+  rdfs:domain :NetworkConnection ;
+  rdfs:range :MQTTClient ;
+  rdfs:label "Initiator" ;
+  rdfs:comment "The MQTT client that initiated the network connection.".
+
+:acceptor a mqtt:ObjectProperty ;
+  rdfs:domain :NetworkConnection ;
+  rdfs:range :MQTTClient ;
+  rdfs:label "Acceptor" ;
+  rdfs:comment "The MQTT client that accepted the network connection.".
+
+# SOSA Systems and Platforms
+:SOSAPlatform a owl:Class ;
+  rdfs:label "SOSA Platform" ;
+  rdfs:comment "A platform that runs SOSA systems (sensors or actuators).".
+
+:hasClient a owl:ObjectProperty ;
+  rdfs:domain :SOSAPlatform ;
+  rdfs:range :MQTTClient ;
+  rdfs:label "Has Client" ;
+  rdfs:comment "The MQTT client that runs on the SOSA platform.".

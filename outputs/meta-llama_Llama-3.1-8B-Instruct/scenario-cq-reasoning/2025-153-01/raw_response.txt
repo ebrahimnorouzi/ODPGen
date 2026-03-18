@@ -1,0 +1,62 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* Persistent identifiers serve as stable referents for dynamic entities.
+	* Entities referenced by persistent identifiers undergo temporal indirection.
+	* Real-time attributes are bound to current contract instances.
+2. **Propose candidate classes and properties for each requirement**
+	* `:PersistentIdentifier` (class) - stable referent for dynamic entities
+	* `:DynamicEntity` (class) - entities referenced by persistent identifiers
+	* `:TemporalBinding` (class) - temporal indirection relationships
+	* `:Attribute` (class) - real-time attributes bound to current contract instances
+	* `:referent` (property) - relationship between persistent identifier and dynamic entity
+	* `:transition` (property) - temporal binding relationships
+	* `:attributeValue` (property) - real-time attributes bound to current contract instances
+3. **Draft axioms for each candidate**
+	* `:PersistentIdentifier` rdfs:subClassOf `:Concept` (subclass)
+	* `:DynamicEntity` rdfs:subClassOf `:Concept` (subclass)
+	* `:TemporalBinding` rdfs:subClassOf `:Relationship` (subclass)
+	* `:Attribute` rdfs:subClassOf `:Concept` (subclass)
+	* `:referent` rdfs:domain `:PersistentIdentifier` (domain)
+	* `:referent` rdfs:range `:DynamicEntity` (range)
+	* `:transition` rdfs:domain `:TemporalBinding` (domain)
+	* `:transition` rdfs:range `:Instant` (range)
+	* `:attributeValue` rdfs:domain `:Attribute` (domain)
+	* `:attributeValue` rdfs:range `:Value` (range)
+4. **Check which axioms enable answering each CQ**
+	* CQ 1: Which entity does a persistent identifier currently reference?
+		+ Axioms: `:referent` rdfs:domain `:PersistentIdentifier`, `:referent` rdfs:range `:DynamicEntity`
+	* CQ 2: Which entity was referenced at a past timestamp?
+		+ Axioms: `:TemporalBinding` rdfs:subClassOf `:Relationship`, `:transition` rdfs:domain `:TemporalBinding`
+	* CQ 3: When did referent transitions occur?
+		+ Axioms: `:TemporalBinding` rdfs:subClassOf `:Relationship`, `:transition` rdfs:range `:Instant`
+	* CQ 4: What observations are associated with specific referents?
+		+ Axioms: `:Attribute` rdfs:subClassOf `:Concept`, `:attributeValue` rdfs:domain `:Attribute`
+	* CQ 5: What is the full sequence of referents over time?
+		+ Axioms: `:TemporalBinding` rdfs:subClassOf `:Relationship`, `:transition` rdfs:domain `:TemporalBinding`
+	* CQ 6: Which rules triggered specific transitions?
+		+ Axioms: None (new axiom needed)
+	* CQ 7: Are there gaps or overlaps in temporal bindings?
+		+ Axioms: None (new axiom needed)
+	* CQ 8: Can complete context be rebuilt for any time point?
+		+ Axioms: None (new axiom needed)
+5. **Add or refine axioms to cover any uncovered CQs**
+	* CQ 6: Which rules triggered specific transitions?
+		+ Axiom: `:triggeredBy` (property) - relationship between temporal binding and rule
+	* CQ 7: Are there gaps or overlaps in temporal bindings?
+		+ Axiom: `:gap` (property) - relationship between temporal binding and gap
+	* CQ 8: Can complete context be rebuilt for any time point?
+		+ Axiom: `:rebuildable` (property) - relationship between temporal binding and rebuildability
+6. **Remove any classes or properties not traceable to a requirement or CQ**
+	* Removed: `:Concept`, `:Relationship`, `:Value`
+
+**Turtle Ontology**
+
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;

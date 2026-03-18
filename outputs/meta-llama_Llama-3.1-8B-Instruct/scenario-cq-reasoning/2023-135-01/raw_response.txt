@@ -1,0 +1,83 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* An author can adopt different names to publish books.
+	* An author can change their name (e.g., after marriage).
+2. **Propose candidate classes and properties for each requirement**
+	* Requirement 1:
+		+ Class: `Author`
+		+ Class: `Name`
+		+ Property: `adoptedName` (domain: `Author`, range: `Name`)
+	* Requirement 2:
+		+ Class: `Author`
+		+ Class: `NameChange`
+		+ Property: `previousName` (domain: `NameChange`, range: `Name`)
+		+ Property: `newName` (domain: `NameChange`, range: `Name`)
+3. **Draft axioms for each candidate**
+	* `Author` subclass of `rdfs:Resource`
+	* `Name` subclass of `rdfs:Resource`
+	* `adoptedName` domain: `Author`, range: `Name`
+	* `previousName` domain: `NameChange`, range: `Name`
+	* `newName` domain: `NameChange`, range: `Name`
+4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
+	* CQ 1: Under what pseudonym did the author C. S. Lewis publish a collection of poems, Spirit in Bondage?
+		+ Axioms enabling answer: `adoptedName` property, `Author` class
+	* CQ 2: What alternative did C. S. Lewis use to assume the role of a book writer?
+		+ Axioms enabling answer: `adoptedName` property, `Author` class
+	* CQ 3: Show the trajectories of rivers which cross national parks?
+		+ Not covered by current axioms (this CQ is unrelated to the scenario)
+5. **Add or refine axioms to cover any uncovered CQs**
+	* Introduce a new class `Book` and property `publishedBy` (domain: `Book`, range: `Author`)
+	* Refine `adoptedName` property to have a more specific domain: `Book`
+6. **Remove any classes or properties not traceable to a requirement or CQ**
+	* Remove `NameChange` class and properties `previousName` and `newName` (not required by any CQ)
+
+**Turtle Ontology**
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Authorship Ontology" ;
+  rdfs:comment "Ontology for authors and their adopted names".
+
+:Author a rdfs:Class ;
+  rdfs:label "Author" ;
+  rdfs:comment "An individual who writes books".
+
+:Name a rdfs:Class ;
+  rdfs:label "Name" ;
+  rdfs:comment "A personal name".
+
+:adoptedName a owl:Property ;
+  rdfs:label "adopted name" ;
+  rdfs:comment "A name adopted by an author for publishing" ;
+  owl:domain :Author ;
+  owl:range :Name.
+
+:Book a rdfs:Class ;
+  rdfs:label "Book" ;
+  rdfs:comment "A written work".
+
+:publishedBy a owl:Property ;
+  rdfs:label "published by" ;
+  rdfs:comment "The author of a book" ;
+  owl:domain :Book ;
+  owl:range :Author.
+
+:Author rdfs:subClassOf owl:Thing.
+:Name rdfs:subClassOf owl:Thing.
+```
+
+**Traceability Table**
+
+| (a) requirement/CQ → axiom(s) | (b) axiom → requirement/CQ |
+| --- | --- |
+| Requirement 1: An author can adopt different names to publish books | `:adoptedName` (domain: `Author`, range: `Name`) |
+| Requirement 1: An author can adopt different names to publish books | `:Author` subclass of `rdfs:Resource` |
+| Requirement 1: An author can adopt different names to publish books | `:Name` subclass of `rdfs:Resource` |
+| CQ 1: Under what pseudonym did the author C. S. Lewis publish a collection of poems, Spirit in Bondage?

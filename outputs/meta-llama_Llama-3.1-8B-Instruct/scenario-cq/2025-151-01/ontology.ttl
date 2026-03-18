@@ -6,122 +6,108 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Evaluation Request Ontology" ;
-  rdfs:comment "Describes a requested action on a target asset with contextual information".
+  rdfs:comment "Formal description of a requested action by an assignee on a target asset.".
 
-:Request a :Request ;
+:Request a :RequestClass ;
   rdfs:label "Request" ;
-  rdfs:comment "A formal description of a requested action on a target asset".
+  rdfs:comment "Formal description of a requested action by an assignee on a target asset.".
 
-:Request a owl:Thing ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasAction ;
-    owl:allValuesFrom :Action
-  ] ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasTarget ;
-    owl:allValuesFrom :TargetAsset
-  ].
-
-:Action a rdfs:Class ;
+:Action a owl:Class ;
   rdfs:label "Action" ;
-  rdfs:comment "The requested action on the target asset".
+  rdfs:comment "The requested action.".
 
-:TargetAsset a rdfs:Class ;
-  rdfs:label "Target Asset" ;
-  rdfs:comment "The asset being evaluated".
+:Assignee a owl:Class ;
+  rdfs:label "Assignee" ;
+  rdfs:comment "The party issuing the evaluation request.".
 
-:Party a rdfs:Class ;
-  rdfs:label "Party" ;
-  rdfs:comment "The party issuing the evaluation request".
+:Asset a owl:Class ;
+  rdfs:label "Asset" ;
+  rdfs:comment "The target asset of the evaluation request.".
 
-:Requester a :Party ;
-  rdfs:label "Requester" ;
-  rdfs:comment "The party issuing the evaluation request".
-
-:Requester a owl:Thing ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasRole ;
-    owl:allValuesFrom :Role
-  ].
-
-:Role a rdfs:Class ;
-  rdfs:label "Role" ;
-  rdfs:comment "The role of the party issuing the evaluation request".
-
-:TemporalContext a rdfs:Class ;
+:TemporalContext a owl:Class ;
   rdfs:label "Temporal Context" ;
-  rdfs:comment "Temporal constraints on the evaluation request".
+  rdfs:comment "Temporal context of the evaluation request.".
 
-:TemporalContext a owl:Thing ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasDate ;
-    owl:allValuesFrom xsd:date
-  ] ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasTime ;
-    owl:allValuesFrom xsd:time
-  ].
+:TemporalContext hasTemporalValue :TemporalValue ;
+  rdfs:label "hasTemporalValue" ;
+  rdfs:comment "Temporal value of the evaluation request." ;
+  rdfs:domain :TemporalContext ;
+  rdfs:range xsd:dateTime.
 
-:SpatialContext a rdfs:Class ;
+:TemporalValue a owl:DatatypeProperty ;
+  rdfs:label "Temporal Value" ;
+  rdfs:comment "Temporal value of the evaluation request." ;
+  rdfs:domain :TemporalContext ;
+  rdfs:range xsd:dateTime.
+
+:SpatialContext a owl:Class ;
   rdfs:label "Spatial Context" ;
-  rdfs:comment "Spatial constraints on the evaluation request".
+  rdfs:comment "Spatial context of the evaluation request.".
 
-:SpatialContext a owl:Thing ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasLocation ;
-    owl:allValuesFrom :Location
-  ].
+:EU a owl:Class ;
+  rdfs:label "EU" ;
+  rdfs:comment "Spatial context of the evaluation request (EU).".
 
-:Location a rdfs:Class ;
-  rdfs:label "Location" ;
-  rdfs:comment "The location of the evaluation request".
+:Role a owl:Class ;
+  rdfs:label "Role" ;
+  rdfs:comment "Role of the assignee.".
 
-:RequestCapability a rdfs:Class ;
+:RequestCapability a owl:Class ;
   rdfs:label "Request Capability" ;
-  rdfs:comment "The capability of the party issuing the evaluation request".
+  rdfs:comment "Request capability of the assignee.".
 
-:RequestCapability a owl:Thing ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasCapability ;
-    owl:allValuesFrom :Capability
-  ].
+:RequestCapability hasCapability :Capability ;
+  rdfs:label "hasCapability" ;
+  rdfs:comment "Capability of the request capability." ;
+  rdfs:domain :RequestCapability ;
+  rdfs:range :Capability.
 
-:Capability a rdfs:Class ;
+:Capability a owl:Class ;
   rdfs:label "Capability" ;
-  rdfs:comment "The capability of the party issuing the evaluation request".
+  rdfs:comment "Capability of the request capability.".
 
-:EU a :Location ;
-  rdfs:label "European Union" ;
-  rdfs:comment "The European Union location".
+:RequestCapability hasEU :EU ;
+  rdfs:label "hasEU" ;
+  rdfs:comment "EU of the request capability." ;
+  rdfs:domain :RequestCapability ;
+  rdfs:range :EU.
 
-:Weekday a :TemporalContext ;
+:RequestCapability hasWeekday :Weekday ;
+  rdfs:label "hasWeekday" ;
+  rdfs:comment "Weekday of the request capability." ;
+  rdfs:domain :RequestCapability ;
+  rdfs:range :Weekday.
+
+:Weekday a owl:Class ;
   rdfs:label "Weekday" ;
-  rdfs:comment "A weekday temporal context".
+  rdfs:comment "Weekday of the request capability.".
 
-:Employee a :Role ;
-  rdfs:label "Employee" ;
-  rdfs:comment "An employee role".
+:Request hasAction :Action ;
+  rdfs:label "hasAction" ;
+  rdfs:comment "The requested action." ;
+  rdfs:domain :Request ;
+  rdfs:range :Action.
 
-:Request a owl:Thing ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasTemporalContext ;
-    owl:allValuesFrom :TemporalContext
-  ] ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasSpatialContext ;
-    owl:allValuesFrom :SpatialContext
-  ] ;
-  rdfs:subClassOf [
-    a owl:Restriction ;
-    owl:onProperty :hasRequestCapability ;
-    owl:allValuesFrom :RequestCapability
-  ].
+:Request hasAssignee :Assignee ;
+  rdfs:label "hasAssignee" ;
+  rdfs:comment "The party issuing the evaluation request." ;
+  rdfs:domain :Request ;
+  rdfs:range :Assignee.
+
+:Request hasAsset :Asset ;
+  rdfs:label "hasAsset" ;
+  rdfs:comment "The target asset of the evaluation request." ;
+  rdfs:domain :Request ;
+  rdfs:range :Asset.
+
+:Request hasTemporalContext :TemporalContext ;
+  rdfs:label "hasTemporalContext" ;
+  rdfs:comment "Temporal context of the evaluation request." ;
+  rdfs:domain :Request ;
+  rdfs:range :TemporalContext.
+
+:Request hasSpatialContext :SpatialContext ;
+  rdfs:label "hasSpatialContext" ;
+  rdfs:comment "Spatial context of the evaluation request." ;
+  rdfs:domain :Request ;
+  rdfs:range :SpatialContext.

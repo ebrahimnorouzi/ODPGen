@@ -1,0 +1,80 @@
+Here is the OWL ontology design pattern in Turtle syntax:
+
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+@prefix sosa: <http://www.w3.org/ns/sosa/>.
+@prefix mqtt: <http://example.org/mqtt#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "MQTT-based IoT Process Data Ontology" ;
+  rdfs:comment "An ontology for modeling automated process data captured and transmitted via MQTT packets in the context of the EKI project.".
+
+# MQTT Brokers
+:Broker a owl:Class ;
+  rdfs:label "MQTT Broker" ;
+  rdfs:comment "An MQTT Broker that manages network connections and handles messages." ;
+  owl:equivalentClass [ a owl:Restriction ;
+                         owl:onProperty :connectedTo ;
+                         owl:hasValue :Broker ;
+                         owl:someValuesFrom :NetworkConnection ].
+
+:connectedTo a rdf:Property ;
+  rdfs:label "Connected to" ;
+  rdfs:comment "Relates two Brokers that are connected.".
+
+:NetworkConnection a owl:Class ;
+  rdfs:label "Network Connection" ;
+  rdfs:comment "A connection between two MQTT Brokers.".
+
+:TLS_secured a owl:ObjectProperty ;
+  rdfs:label "TLS secured" ;
+  rdfs:comment "Indicates whether a NetworkConnection is TLS-secured.".
+
+# MQTT Participants
+:Participant a owl:Class ;
+  rdfs:label "MQTT Participant" ;
+  rdfs:comment "An entity that can act as a Client or a Broker.".
+
+:Client a owl:Class ;
+  rdfs:label "MQTT Client" ;
+  rdfs:comment "An MQTT Client that sends and receives messages.".
+
+:Broker or :Client owl:disjointWith :SOSA_platform.
+
+:SOSA_platform a owl:Class ;
+  rdfs:label "SOSA Platform" ;
+  rdfs:comment "A platform running SOSA systems.".
+
+:host_port a owl:DatatypeProperty ;
+  rdfs:label "Host/Port" ;
+  rdfs:comment "The host and port of a Broker.".
+
+# MQTT NetworkConnections
+:NetworkConnection a owl:Class ;
+  rdfs:label "Network Connection" ;
+  rdfs:comment "A connection between two MQTT Participants.".
+
+:initiatedBy a owl:ObjectProperty ;
+  rdfs:label "Initiated by" ;
+  rdfs:comment "Indicates the Participant that initiated a NetworkConnection.".
+
+:acceptedBy a owl:ObjectProperty ;
+  rdfs:label "Accepted by" ;
+  rdfs:comment "Indicates the Participant that accepted a NetworkConnection.".
+
+# MQTT Clients and SOSA systems
+:Client a owl:Class ;
+  rdfs:label "MQTT Client" ;
+  rdfs:comment "An MQTT Client that sends and receives messages.".
+
+:ClientID a owl:DatatypeProperty ;
+  rdfs:label "Client ID" ;
+  rdfs:comment "The unique identifier of an MQTT Client.".
+
+:hosts a owl:ObjectProperty ;
+  rdfs:label "Hosts" ;
+  rdfs:comment "Indicates the SOSA system hosted by an MQTT Client.".

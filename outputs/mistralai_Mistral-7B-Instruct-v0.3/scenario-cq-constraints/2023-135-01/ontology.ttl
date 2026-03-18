@@ -1,0 +1,50 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Author Pseudonyms and Book Publications" ;
+    rdfs:comment "An ontology for modeling authors adopting different names to publish books.".
+
+:Author a owl:Class ;
+    rdfs:label "Author" ;
+    rdfs:comment "A person who writes books under different names.".
+
+:Pseudonym a owl:Class ;
+    rdfs:label "Pseudonym" ;
+    rdfs:comment "An alternative name used by an author to publish books.".
+
+:hasPseudonym rdf:property ;
+    rdfs:domain :Author ;
+    rdfs:range :Pseudonym ;
+    rdfs:label "Has Pseudonym" ;
+    rdfs:comment "Relates an author to the pseudonym they use.".
+
+:Book a owl:Class ;
+    rdfs:label "Book" ;
+    rdfs:comment "A written work published by an author.".
+
+:hasAuthor rdf:property ;
+    rdfs:domain :Book ;
+    rdfs:range :Author ;
+    rdfs:label "Has Author" ;
+    rdfs:comment "Relates a book to the author who wrote it.".
+
+:PublishedWork a owl:Class ;
+    rdfs:subClassOf [ owl:intersectionOf ( :Book owl:Restriction [ owl:onProperty :hasAuthor ] ) ] ;
+    rdfs:label "Published Work" ;
+    rdfs:comment "A book that has been published.".
+
+:PublishedUnderPseudonym rdf:property ;
+    rdfs:domain :PublishedWork ;
+    rdfs:range :Pseudonym ;
+    rdfs:label "Published Under Pseudonym" ;
+    rdfs:comment "Relates a published work to the pseudonym under which it was published.".
+
+:BookTitle rdf:property ;
+    rdfs:domain :PublishedWork ;
+    rdfs:range xsd:string ;
+    rdfs:label "Book Title" ;
+    rdfs:comment "The title of a published book.".

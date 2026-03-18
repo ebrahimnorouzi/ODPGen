@@ -1,0 +1,89 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Maritime vessel semantic integration ontology design pattern" ;
+    rdfs:comment "An ontology design pattern for representing ships, their characteristics, trajectory data, data sources, and propulsion system structures in a machine-interpretable way to support semantic integration, querying, and analysis across heterogeneous maritime datasets." .
+
+### Classes
+
+:Ship a owl:Class ;
+    rdfs:label "Ship" ;
+    rdfs:comment "A vessel represented as a machine-interpretable maritime asset with identifiable characteristics and technical structure." .
+
+:ShipProperty a owl:Class ;
+    rdfs:label "Ship property" ;
+    rdfs:comment "A characteristic or property used to describe a ship in a standardized semantic form." .
+
+:VesselTrajectory a owl:Class ;
+    rdfs:label "Vessel trajectory" ;
+    rdfs:comment "Trajectory data describing the movement history or track of a ship, such as data derived from AIS." .
+
+:DataSource a owl:Class ;
+    rdfs:label "Data source" ;
+    rdfs:comment "A source of maritime data used for integration, such as AIS feeds, registries, technical specifications, classification databases, or onboard monitoring platforms." .
+
+:PropulsionSystem a owl:Class ;
+    rdfs:label "Propulsion system" ;
+    rdfs:comment "A propulsion system of a ship, modeled as part of the vessel structure for technical representation and digital twin support." .
+
+### Object Properties
+
+:hasProperty a owl:ObjectProperty ;
+    rdfs:label "has property" ;
+    rdfs:comment "Relates a ship to a ship property that describes one of its characteristics." ;
+    rdfs:domain :Ship ;
+    rdfs:range :ShipProperty .
+
+:hasTrajectory a owl:ObjectProperty ;
+    rdfs:label "has trajectory" ;
+    rdfs:comment "Relates a ship to trajectory data representing its movement or track." ;
+    rdfs:domain :Ship ;
+    rdfs:range :VesselTrajectory .
+
+:describedInDataSource a owl:ObjectProperty ;
+    rdfs:label "described in data source" ;
+    rdfs:comment "Relates a ship to a data source in which information about that ship is provided." ;
+    rdfs:domain :Ship ;
+    rdfs:range :DataSource .
+
+:trajectoryFromDataSource a owl:ObjectProperty ;
+    rdfs:label "trajectory from data source" ;
+    rdfs:comment "Relates vessel trajectory data to the data source from which it originates." ;
+    rdfs:domain :VesselTrajectory ;
+    rdfs:range :DataSource .
+
+:hasPropulsionSystem a owl:ObjectProperty ;
+    rdfs:label "has propulsion system" ;
+    rdfs:comment "Relates a ship to one of its propulsion systems." ;
+    rdfs:domain :Ship ;
+    rdfs:range :PropulsionSystem .
+
+:connectedToPropulsionSystem a owl:ObjectProperty ;
+    rdfs:label "connected to propulsion system" ;
+    rdfs:comment "Relates one propulsion system to another propulsion system to represent their interconnection within a ship." ;
+    rdfs:domain :PropulsionSystem ;
+    rdfs:range :PropulsionSystem .
+
+### Datatype Properties
+
+:hasIdentifier a owl:DatatypeProperty ;
+    rdfs:label "has identifier" ;
+    rdfs:comment "Associates an entity with an identifier used to distinguish it within or across data sources." ;
+    rdfs:range xsd:string .
+
+:hasPropertyValue a owl:DatatypeProperty ;
+    rdfs:label "has property value" ;
+    rdfs:comment "Associates a ship property with its literal value as provided by a data source or semantic description." ;
+    rdfs:domain :ShipProperty ;
+    rdfs:range xsd:string .
+
+### Disjointness
+
+:Ship owl:disjointWith :ShipProperty, :VesselTrajectory, :DataSource, :PropulsionSystem .
+:ShipProperty owl:disjointWith :VesselTrajectory, :DataSource, :PropulsionSystem .
+:VesselTrajectory owl:disjointWith :DataSource, :PropulsionSystem .
+:DataSource owl:disjointWith :PropulsionSystem .

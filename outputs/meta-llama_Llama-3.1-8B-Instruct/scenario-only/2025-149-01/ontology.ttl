@@ -1,0 +1,60 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Relational Database Access Security Ontology" ;
+  rdfs:comment "Models access control to a relational database queried via SQL.".
+
+:User a owl:Class ;
+  rdfs:label "Database User" ;
+  rdfs:comment "An individual with access rights to the database.".
+
+:Role a owl:Class ;
+  rdfs:label "Database Role" ;
+  rdfs:comment "A set of privileges assigned to a user for database access.".
+
+:Privilege a owl:Class ;
+  rdfs:label "Database Privilege" ;
+  rdfs:comment "A specific right to perform an action on the database.".
+
+:hasPrivilege a owl:ObjectProperty ;
+  rdfs:label "has Privilege" ;
+  rdfs:comment "A user or role has a specific privilege." ;
+  owl:domain :User ;
+  owl:domain :Role ;
+  owl:range :Privilege.
+
+:assignsRole a owl:ObjectProperty ;
+  rdfs:label "assigns Role" ;
+  rdfs:comment "An administrator assigns a role to a user." ;
+  owl:domain :User ;
+  owl:domain :Administrator ;
+  owl:range :Role.
+
+:grantsPrivilege a owl:ObjectProperty ;
+  rdfs:label "grants Privilege" ;
+  rdfs:comment "An administrator grants a privilege to a user or role." ;
+  owl:domain :Administrator ;
+  owl:range :Privilege.
+
+:isDisjointWith a owl:ObjectProperty ;
+  rdfs:label "is disjoint with" ;
+  rdfs:comment "Two roles or privileges are mutually exclusive." ;
+  owl:propertyChain [ a owl:ObjectProperty ;
+    owl:propertyChain :hasPrivilege ;
+    owl:propertyChain :assignsRole ].
+
+:User rdfs:subClassOf :Entity ;
+:Role rdfs:subClassOf :Entity ;
+:Privilege rdfs:subClassOf :Entity.
+
+:Entity a owl:Class ;
+  rdfs:label "Database Entity" ;
+  rdfs:comment "A user, role, or privilege in the database access control system.".
+
+:Administrator a owl:Class ;
+  rdfs:label "Database Administrator" ;
+  rdfs:comment "An individual responsible for managing database access rights.".

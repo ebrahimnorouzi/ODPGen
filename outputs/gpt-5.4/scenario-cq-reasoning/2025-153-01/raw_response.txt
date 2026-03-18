@@ -1,0 +1,76 @@
+1. **Reasoning for steps 1–6**
+
+### Step 1. Atomic requirements
+- A persistent identifier must be modeled as something stable over time.
+- A persistent identifier must be able to reference different entities at different times.
+- Each reference from a persistent identifier to an entity must be temporally qualified.
+- It must be possible to determine the entity currently referenced by a persistent identifier.
+- It must be possible to determine the entity referenced at a past timestamp.
+- It must be possible to identify when transitions between referents occurred.
+- Real-time or other observations must be associated with the specific referent entity, not directly with the persistent identifier.
+- Observations exposed through a persistent identifier must still be recoverable via the current or historical referent.
+- It must be possible to reconstruct the full sequence of referents for a persistent identifier over time.
+- It must be possible to represent rules that trigger transitions between referents.
+- It must be possible to associate a transition with the rule that triggered it.
+- It must be possible to detect temporal gaps or overlaps in bindings.
+- It must be possible to rebuild the complete context for any time point.
+- The pattern should be generic and reusable across domains such as finance, healthcare, environmental monitoring, digital services, regulation, and air transportation.
+
+### Step 2. Candidate classes and properties
+- For stable identifiers:
+  - Class: `:PersistentIdentifier`
+- For things that can be referenced:
+  - Class: `:Referent`
+- For temporal qualification of identifier-to-referent relation:
+  - Class: `:TemporalBinding`
+  - Object properties: `:bindsIdentifier`, `:bindsReferent`
+  - Datatype properties: `:validFrom`, `:validUntil`
+- For transitions:
+  - Class: `:ReferentTransition`
+  - Object properties: `:forIdentifier`, `:fromReferent`, `:toReferent`, `:triggeredByRule`
+  - Datatype property: `:transitionTime`
+- For rules:
+  - Class: `:TransitionRule`
+- For observations on referents:
+  - Class: `:Observation`
+  - Object property: `:observedReferent`
+  - Datatype property: `:observationTime`
+- For rebuilding context:
+  - Class: `:ContextSnapshot`
+  - Datatype property: `:contextTime`
+  - Object properties: `:snapshotIdentifier`, `:snapshotReferent`, `:includesObservation`
+- For current reference shortcut:
+  - Object property: `:currentlyReferences`
+
+### Step 3. Draft axioms
+- `:PersistentIdentifier`, `:Referent`, `:TemporalBinding`, `:ReferentTransition`, `:TransitionRule`, `:Observation`, `:ContextSnapshot` as owl classes.
+- `:bindsIdentifier` domain `:TemporalBinding`, range `:PersistentIdentifier`.
+- `:bindsReferent` domain `:TemporalBinding`, range `:Referent`.
+- `:validFrom` domain `:TemporalBinding`, range `xsd:dateTime`.
+- `:validUntil` domain `:TemporalBinding`, range `xsd:dateTime`.
+- `:TemporalBinding` subclass of:
+  - exactly 1 `:bindsIdentifier`
+  - exactly 1 `:bindsReferent`
+  - exactly 1 `:validFrom`
+  - max 1 `:validUntil`
+- `:currentlyReferences` domain `:PersistentIdentifier`, range `:Referent`.
+- `:forIdentifier` domain `:ReferentTransition`, range `:PersistentIdentifier`.
+- `:fromReferent` domain `:ReferentTransition`, range `:Referent`.
+- `:toReferent` domain `:ReferentTransition`, range `:Referent`.
+- `:transitionTime` domain `:ReferentTransition`, range `xsd:dateTime`.
+- `:triggeredByRule` domain `:ReferentTransition`, range `:TransitionRule`.
+- `:ReferentTransition` subclass of:
+  - exactly 1 `:forIdentifier`
+  - exactly 1 `:toReferent`
+  - exactly 1 `:transitionTime`
+  - max 1 `:fromReferent`
+  - min 0 `:triggeredByRule`
+- `:observedReferent` domain `:Observation`, range `:Referent`.
+- `:observationTime` domain `:Observation`, range `xsd:dateTime`.
+- `:Observation` subclass of:
+  - exactly 1 `:observedReferent`
+  - exactly 1 `:observationTime`
+- `:snapshotIdentifier` domain `:ContextSnapshot`, range `:PersistentIdentifier`.
+- `:snapshotReferent` domain `:ContextSnapshot`, range `:Referent`.
+- `:includesObservation` domain `:ContextSnapshot`, range `:Observation`.
+- `:contextTime` domain `:

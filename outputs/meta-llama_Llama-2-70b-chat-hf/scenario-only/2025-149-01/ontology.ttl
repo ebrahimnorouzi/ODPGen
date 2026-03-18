@@ -1,0 +1,78 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Secure Access to Relational Database" ;
+rdfs:comment "Models secure access to a relational database (RDB) queried via Structured Query Language (SQL).".
+
+# Classes
+
+:User a owl:Class ;
+rdfs:label "User" ;
+rdfs:comment "An individual who accesses the relational database.".
+
+:Role a owl:Class ;
+rdfs:label "Role" ;
+rdfs:comment "A set of permissions granted to a user.".
+
+:Permission a owl:Class ;
+rdfs:label "Permission" ;
+rdfs:comment "A specific access right granted to a user.".
+
+:Query a owl:Class ;
+rdfs:label "Query" ;
+rdfs:comment "A request to retrieve data from the relational database.".
+
+:Result a owl:Class ;
+rdfs:label "Result" ;
+rdfs:comment "The output of a query.".
+
+# Properties
+
+:hasRole a owl:ObjectProperty ;
+rdfs:label "hasRole" ;
+rdfs:comment "A user has a role." ;
+domain :User ;
+range :Role.
+
+:hasPermission a owl:ObjectProperty ;
+rdfs:label "hasPermission" ;
+rdfs:comment "A user has a permission." ;
+domain :Role ;
+range :Permission.
+
+:query a owl:ObjectProperty ;
+rdfs:label "query" ;
+rdfs:comment "A user submits a query." ;
+domain :User ;
+range :Query.
+
+:result a owl:ObjectProperty ;
+rdfs:label "result" ;
+rdfs:comment "A query produces a result." ;
+domain :Query ;
+range :Result.
+
+# Axioms
+
+:User rdfs:subClassOf :Role.
+:Role rdfs:subClassOf :Permission.
+:Query rdfs:subClassOf :Result.
+
+:hasRole rdfs:domain :User.
+:hasRole rdfs:range :Role.
+
+:hasPermission rdfs:domain :Role.
+:hasPermission rdfs:range :Permission.
+
+:query rdfs:domain :User.
+:query rdfs:range :Query.
+
+:result rdfs:domain :Query.
+:result rdfs:range :Result.
+
+:User rdfs:disjointWith :Query.
+:Role rdfs:disjointWith :Result.

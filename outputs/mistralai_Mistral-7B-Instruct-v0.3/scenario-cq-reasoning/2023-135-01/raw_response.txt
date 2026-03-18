@@ -1,0 +1,76 @@
+**1. Extract atomic requirements from the scenario:**
+- The author adopts different names (pseudonyms) to publish books.
+- An author can have multiple pseudonyms.
+- A book can be published under a specific pseudonym.
+- A book can have multiple authors (pseudonyms).
+- A pseudonym can be associated with a real name (of the author).
+
+**2. Propose candidate classes and properties for each requirement:**
+- `:Author` (rdfs:subClassOf `owl:Thing`)
+- `:Pseudonym` (rdfs:subClassOf `owl:NamedIndividual`)
+- `:RealName` (rdfs:subClassOf `owl:NamedIndividual`)
+- `:Book` (rdfs:subClassOf `owl:Thing`)
+- `:PublishedBy` (ObjectProperty)
+- `:HasAuthor` (ObjectProperty)
+- `:IsPseudonymOf` (ObjectProperty)
+
+**3. Draft axioms for each candidate:**
+
+```turtle
+:Ontology a owl:Ontology ;
+    rdfs:label "Pseudonym Ontology" ;
+    rdfs:comment "An ontology for authors adopting different names to publish books.".
+
+:Author rdfs:subClassOf owl:Thing.
+:Pseudonym rdfs:subClassOf owl:NamedIndividual ;
+    rdfs:label "Pseudonym" ;
+    rdfs:comment "A name adopted by an author to publish books.".
+:RealName rdfs:subClassOf owl:NamedIndividual ;
+    rdfs:label "Real Name" ;
+    rdfs:comment "The real name of an author.".
+:Book rdfs:subClassOf owl:Thing ;
+    rdfs:label "Book" ;
+    rdfs:comment "A published work.".
+
+:PublishedBy rdf:type owl:ObjectProperty ;
+    rdfs:domain :Book ;
+    rdfs:range :Pseudonym ;
+    rdfs:label "Published By" ;
+    rdfs:comment "The pseudonym under which a book was published.".
+
+:HasAuthor rdf:type owl:ObjectProperty ;
+    rdfs:domain :Book ;
+    rdfs:range :Author ;
+    rdfs:label "Has Author" ;
+    rdfs:comment "The author(s) of a book.".
+
+:IsPseudonymOf rdf:type owl:ObjectProperty ;
+    rdfs:domain :RealName ;
+    rdfs:range :Pseudonym ;
+    rdfs:label "Is Pseudonym Of" ;
+    rdfs:comment "The pseudonym associated with a real name.".
+```
+
+**4. For each CQ, check which axioms enable answering it:**
+- CQ1: `:PublishedBy` enables answering this CQ.
+- CQ2: `:HasAuthor`, `:IsPseudonymOf` enable answering this CQ.
+- CQ3: Not applicable to the given scenario.
+
+**5. Add or refine axioms to cover any uncovered CQs.**
+Since there are no uncovered CQs, no additional axioms are needed.
+
+**6. Remove any classes or properties not traceable to a requirement or CQ.**
+Since all classes and properties are traceable to a requirement or CQ, no removal is needed.
+
+**7. Output the final ontology:**
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Pseudonym Ontology" ;
+    rdfs:comment "An ontology for authors

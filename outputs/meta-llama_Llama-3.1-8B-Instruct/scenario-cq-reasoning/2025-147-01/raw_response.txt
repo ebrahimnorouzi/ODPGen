@@ -1,0 +1,70 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* A formalized and extensible conceptual model for representing ships and their properties in a machine-interpretable way.
+	* Unified semantic structure for heterogeneous data sources.
+	* Machine-readable descriptions of vessel characteristics.
+	* Fast semantic querying of relevant vessel trajectory data.
+	* Common semantic layer across disparate data systems.
+	* Structural backbone for building digital twins of vessels.
+2. **Propose candidate classes and properties for each requirement**
+	* Ship: class
+		+ Properties: name, dimensions, location, owner, speed, draught, route, trajectory, propulsion system, engine, fuel, propeller, sail, wind assistance.
+	* Vessel Characteristic: class
+		+ Properties: dimension, speed, draught.
+	* Trajectory: class
+		+ Properties: location, time, speed.
+	* Propulsion System: class
+		+ Properties: type, engine, fuel, propeller, sail, wind assistance.
+	* Engine: class
+		+ Properties: type, power, fuel.
+	* Propeller: class
+		+ Properties: type, diameter, number of blades.
+	* Sail: class
+		+ Properties: type, size.
+	* Wind Assistance: class
+		+ Properties: type, speed.
+3. **Draft axioms (subclass, domain, range, cardinality, disjointness) for each candidate**
+	* Ship ⊑ Vessel Characteristic
+	* Vessel Characteristic ⊑ hasDimension (Ship, xsd:double)
+	* Vessel Characteristic ⊑ hasSpeed (Ship, xsd:double)
+	* Vessel Characteristic ⊑ hasDraught (Ship, xsd:double)
+	* Trajectory ⊑ hasLocation (Ship, xsd:double)
+	* Trajectory ⊑ hasTime (Ship, xsd:dateTime)
+	* Trajectory ⊑ hasSpeed (Ship, xsd:double)
+	* Propulsion System ⊑ hasEngine (Ship, Engine)
+	* Propulsion System ⊑ hasFuel (Ship, xsd:string)
+	* Propulsion System ⊑ hasPropeller (Ship, Propeller)
+	* Propulsion System ⊑ hasSail (Ship, Sail)
+	* Propulsion System ⊑ hasWindAssistance (Ship, WindAssistance)
+	* Engine ⊑ hasPower (xsd:double)
+	* Engine ⊑ hasFuel (xsd:string)
+	* Propeller ⊑ hasDiameter (xsd:double)
+	* Propeller ⊑ hasNumberOfBlades (xsd:integer)
+	* Sail ⊑ hasSize (xsd:double)
+	* WindAssistance ⊑ hasSpeed (xsd:double)
+4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
+	* CQ1: How are ships clearly identified?
+		+ Axioms: Ship ⊑ hasName (xsd:string)
+	* CQ2: How are a ship's dimensions described?
+		+ Axioms: Vessel Characteristic ⊑ hasDimension (Ship, xsd:double)
+	* CQ3: What information can be provided about the typical location of a ship?
+		+ Axioms: Trajectory ⊑ hasLocation (Ship, xsd:double)
+	* CQ4: Who can be the owner of a ship?
+		+ Axioms: Ship ⊑ hasOwner (xsd:string)
+	* CQ5: How is a ship's average speed over ground specified?
+		+ Axioms: Vessel Characteristic ⊑ hasSpeed (Ship, xsd:double)
+	* CQ6: How many container ships are registered under the German flag?
+		+ Axioms: Ship ⊑ hasFlag (xsd:string)
+	* CQ7: How is the GPS antenna placed relatively to the ship's structure (bow, stern, port, starboard)?
+		+ Axioms: Ship ⊑ hasGPSAntennaPosition (xsd:string)
+	* CQ8: Which organization owns the most ships?
+		+ Axioms: Ship ⊑ hasOwner (xsd:string)
+	* CQ9: What information can be provided about a ship route?
+		+ Axioms: Trajectory ⊑ hasRoute (Ship, xsd:string)
+	* CQ10: What information is known about a single trajectory part?
+		+ Axioms: Trajectory ⊑ hasLocation (Ship, xsd:double)
+	* CQ11: What types of trajectories are distinguished?
+		+ Axioms: Trajectory ⊑ hasType (xsd:string)
+	* CQ12: What unit does the draught of a ship have?
+		+ Axioms: Vessel Characteristic ⊑ hasDraught (Ship,

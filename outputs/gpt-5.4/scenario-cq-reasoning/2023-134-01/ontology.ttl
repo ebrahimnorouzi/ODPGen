@@ -1,0 +1,85 @@
+1. **Reasoning for steps 1–6**
+
+### Step 1. Atomic requirements
+- R1. The ontology must represent identifiable actors involved in Solid governance, including users, app/service providers, and Pod providers.
+- R2. The ontology must represent roles that actors can play in relation to governance artifacts.
+- R3. The ontology must represent policies as identifiable governance artifacts with a unique identifier.
+- R4. The ontology must represent the creator of a policy.
+- R5. The ontology must represent the issuance time of a policy.
+- R6. The ontology must represent the assignee of a policy.
+- R7. The ontology must represent an application or service used to access data.
+- R8. The ontology must represent an access request or governed access event linked to a policy.
+- R9. The ontology must represent the access mode being requested.
+- R10. The ontology must represent the personal data being accessed.
+- R11. The ontology must represent the purpose for accessing the data.
+- R12. The ontology should stay minimal and reusable, avoiding unnecessary Solid-specific infrastructure details not needed by the CQs.
+
+### Step 2. Candidate classes and properties
+- For R1:
+  - Classes: `:Actor`, `:Application`, `:Service`, `:PodProvider`, `:AppProvider`, `:User`
+- For R2:
+  - Class: `:Role`
+  - Property: `:hasRole`
+- For R3:
+  - Class: `:Policy`
+  - Datatype property: `:policyIdentifier`
+- For R4:
+  - Object property: `:creator`
+- For R5:
+  - Datatype property: `:issuedAt`
+- For R6:
+  - Object property: `:assignee`
+- For R7:
+  - Class: `:Application`
+  - Object property: `:usesApplication`
+- For R8:
+  - Class: `:AccessRequest`
+  - Object property: `:governsAccessRequest`
+- For R9:
+  - Class: `:AccessMode`
+  - Object property: `:requestedAccessMode`
+- For R10:
+  - Class: `:PersonalData`
+  - Object property: `:accessesPersonalData`
+- For R11:
+  - Class: `:Purpose`
+  - Object property: `:hasPurpose`
+
+### Step 3. Draft axioms
+- `:Policy` as a class for governance artifacts.
+- `:AccessRequest` as a class for requests governed by a policy.
+- `:Actor` as a general class for agents.
+- `:Application` as a subclass of `:Actor` or separate class; choose separate class to avoid overcommitting that all applications are actors in the same sense.
+- `:PersonalData`, `:Purpose`, `:AccessMode`, `:Role` as classes.
+- `:policyIdentifier` domain `:Policy`, range `xsd:string`.
+- `:creator` domain `:Policy`, range `:Actor`.
+- `:issuedAt` domain `:Policy`, range `xsd:dateTime`.
+- `:assignee` domain `:Policy`, range `:Actor`.
+- `:governsAccessRequest` domain `:Policy`, range `:AccessRequest`.
+- `:usesApplication` domain `:AccessRequest`, range `:Application`.
+- `:requestedAccessMode` domain `:AccessRequest`, range `:AccessMode`.
+- `:accessesPersonalData` domain `:AccessRequest`, range `:PersonalData`.
+- `:hasPurpose` domain `:AccessRequest`, range `:Purpose`.
+- `:hasRole` domain `:Actor`, range `:Role`.
+- Cardinalities on `:Policy`:
+  - exactly 1 `:policyIdentifier`
+  - exactly 1 `:creator`
+  - exactly 1 `:issuedAt`
+  - exactly 1 `:assignee`
+- Cardinality on `:Policy`:
+  - at least 1 `:governsAccessRequest`
+- Cardinalities on `:AccessRequest`:
+  - exactly 1 `:usesApplication`
+  - exactly 1 `:requestedAccessMode`
+  - at least 1 `:accessesPersonalData`
+  - exactly 1 `:hasPurpose`
+
+### Step 4. CQ coverage check
+- CQ1. “What is the unique identifier of the policy?”  
+  - Covered by `:Policy` and `:policyIdentifier`.
+- CQ2. “Who is the creator of the policy?”  
+  - Covered by `:creator`.
+- CQ3. “When was the policy issued?”  
+  - Covered by `:issuedAt`.
+- CQ4. “Who is the assignee of the policy?”  
+  - Covered by `:assignee`.

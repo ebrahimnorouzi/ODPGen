@@ -1,0 +1,100 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Persistent Identifier Temporal Referent Pattern" ;
+    rdfs:comment "An ontology design pattern for representing which entity a persistent identifier refers to over time, the transitions between referents, the rules that triggered transitions, and observations and context associated with referents and time-bounded bindings." .
+
+### Classes
+
+:PersistentIdentifier a owl:Class ;
+    rdfs:label "Persistent Identifier" ;
+    rdfs:comment "An identifier whose referent may vary over time through explicit temporal bindings." .
+
+:Entity a owl:Class ;
+    rdfs:label "Entity" ;
+    rdfs:comment "A thing that can be referenced by a persistent identifier as a referent." .
+
+:TemporalBinding a owl:Class ;
+    rdfs:label "Temporal Binding" ;
+    rdfs:comment "A time-bounded assignment linking a persistent identifier to an entity during a specific interval." .
+
+:ReferentTransition a owl:Class ;
+    rdfs:label "Referent Transition" ;
+    rdfs:comment "An event or record describing a change from one temporal binding to another for a persistent identifier." .
+
+:TransitionRule a owl:Class ;
+    rdfs:label "Transition Rule" ;
+    rdfs:comment "A rule, policy, or criterion that triggers or justifies a referent transition." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "An observation associated with a specific referent or temporal binding." .
+
+:ContextRecord a owl:Class ;
+    rdfs:label "Context Record" ;
+    rdfs:comment "A record capturing contextual information needed to reconstruct the state applicable at a given time point." .
+
+### Object Properties
+
+:hasBinding a owl:ObjectProperty ;
+    rdfs:label "has binding" ;
+    rdfs:comment "Relates a persistent identifier to one of its temporal bindings." ;
+    rdfs:domain :PersistentIdentifier ;
+    rdfs:range :TemporalBinding .
+
+:bindsIdentifier a owl:ObjectProperty ;
+    rdfs:label "binds identifier" ;
+    rdfs:comment "Relates a temporal binding to the persistent identifier whose reference it specifies." ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :PersistentIdentifier ;
+    owl:inverseOf :hasBinding .
+
+:hasReferent a owl:ObjectProperty ;
+    rdfs:label "has referent" ;
+    rdfs:comment "Relates a temporal binding to the entity referenced during that binding interval." ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :Entity .
+
+:isReferentIn a owl:ObjectProperty ;
+    rdfs:label "is referent in" ;
+    rdfs:comment "Relates an entity to a temporal binding in which it is the referent." ;
+    rdfs:domain :Entity ;
+    rdfs:range :TemporalBinding ;
+    owl:inverseOf :hasReferent .
+
+:hasTransition a owl:ObjectProperty ;
+    rdfs:label "has transition" ;
+    rdfs:comment "Relates a persistent identifier to a referent transition in its referent history." ;
+    rdfs:domain :PersistentIdentifier ;
+    rdfs:range :ReferentTransition .
+
+:fromBinding a owl:ObjectProperty ;
+    rdfs:label "from binding" ;
+    rdfs:comment "Relates a referent transition to the earlier temporal binding." ;
+    rdfs:domain :ReferentTransition ;
+    rdfs:range :TemporalBinding .
+
+:toBinding a owl:ObjectProperty ;
+    rdfs:label "to binding" ;
+    rdfs:comment "Relates a referent transition to the later temporal binding." ;
+    rdfs:domain :ReferentTransition ;
+    rdfs:range :TemporalBinding .
+
+:triggeredByRule a owl:ObjectProperty ;
+    rdfs:label "triggered by rule" ;
+    rdfs:comment "Relates a referent transition to the rule that triggered or justified it." ;
+    rdfs:domain :ReferentTransition ;
+    rdfs:range :TransitionRule .
+
+:associatedWithReferent a owl:ObjectProperty ;
+    rdfs:label "associated with referent" ;
+    rdfs:comment "Relates an observation to the entity that it concerns as referent." ;
+    rdfs:domain :Observation ;
+    rdfs:range :Entity .
+
+:associatedWithBinding a

@@ -1,0 +1,78 @@
+Reasoning steps:
+
+1. Extract atomic requirements from the scenario:
+* The model should represent the causal relations between events.
+* The model should be able to reason about the effect of turning the sprinkler system on or off.
+* The model should be able to reason about the causal link between the sprinkler being on and the pavement being wet.
+* The model should be able to reason about the effect of the pavement being wet on the pavement being slippery.
+2. Propose candidate classes and properties for each requirement:
+* Event
+* CausalRelation
+* Effect
+* Pavement
+* Wet
+* Slippery
+* Sprinkler
+* On
+* Off
+3. Draft axioms for each candidate:
+* Subclass axioms:
+	+ Event ⊑ CausalRelation
+	+ CausalRelation ⊑ Effect
+	+ Pavement ⊑ Wet
+	+ Wet ⊑ Slippery
+	+ Sprinkler ⊑ On
+	+ Sprinkler ⊑ Off
+* Domain axioms:
+	+ CausalRelation domain Event
+	+ Effect domain CausalRelation
+	+ Wet domain Pavement
+	+ Slippery domain Pavement
+	+ On domain Sprinkler
+	+ Off domain Sprinkler
+* Range axioms:
+	+ CausalRelation range Effect
+	+ Effect range CausalRelation
+	+ Wet range Pavement
+	+ Slippery range Pavement
+	+ On range Sprinkler
+	+ Off range Sprinkler
+* Cardinality axioms:
+	+ CausalRelation cardinality 1
+	+ Effect cardinality 1
+	+ Wet cardinality 1
+	+ Slippery cardinality 1
+	+ On cardinality 1
+	+ Off cardinality 1
+* Disjointness axioms:
+	+ CausalRelation disjointWith CausalRelation
+	+ Effect disjointWith Effect
+	+ Wet disjointWith Wet
+	+ Slippery disjointWith Slippery
+	+ On disjointWith Off
+4. For each CQ, check which axioms enable answering it; note any CQs not yet covered:
+* CQ 1: What events are responsible for the pavement being slippery?
+	+ Axioms: CausalRelation, Effect, Pavement, Wet, Slippery
+* CQ 2: What would be the outcome of turning the sprinkler system on(off)?
+	+ Axioms: CausalRelation, Effect, Sprinkler, On, Off
+* CQ 3: How strong is the causal link between the sprinkler being on and the pavement being wet?
+	+ Axioms: CausalRelation, Effect, Sprinkler, On, Wet
+* CQ 4: What if the pavement is not wet, how would it effect the pavement being slippery?
+	+ Axioms: CausalRelation, Effect, Pavement, Wet, Slippery
+5. Add or refine axioms to cover any uncovered CQs:
+* Add a new axiom to represent the causal relation between the pavement being wet and the pavement being slippery:
+	+ CausalRelation(Wet, Slippery)
+6. Remove any classes or properties not traceable to a requirement or CQ:
+* Remove the On and Off classes, as they are not relevant to the scenario.
+
+Final ontology:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Sprinkler Use Case Ontology" ;
+rdfs:comment "An ontology for representing the causal relations between

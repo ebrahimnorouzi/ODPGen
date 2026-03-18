@@ -1,0 +1,67 @@
+**Reasoning Steps:**
+
+1. Atomic Requirements:
+   - Persistent Identifiers (PID) have a unique string value.
+   - PIDs refer to specific entities (Contract, Physician, Sensor, etc.).
+   - Entities have a temporal scope (validity period).
+   - PIDs can transition to refer to different entities as their temporal scope changes.
+   - Observations are associated with specific entities.
+   - The history of PID referents can be traced over time.
+   - Rules govern PID transitions.
+   - There may be gaps or overlaps in temporal bindings.
+   - Complete context can be rebuilt for any time point.
+
+2. Candidate Classes and Properties:
+   - :PID (PersistentIdentifier)
+   - :Entity (Contract, Physician, Sensor, etc.)
+   - :Observation
+   - :Rule
+   - :TemporalScope (subclass of :Entity)
+   - :Referent (domain: :PID; range: :Entity)
+   - :HasObservation (domain: :Entity; range: :Observation)
+   - :HasRule (domain: :PID; range: :Rule)
+   - :ValidFrom (domain: :TemporalScope; range: xsd:dateTime)
+   - :ValidTo (domain: :TemporalScope; range: xsd:dateTime)
+   - :Transition (domain: :PID; range: :PID)
+
+3. Draft Axioms:
+   - :PID a owl:Class ; rdfs:label "PersistentIdentifier" ; rdfs:comment "Unique string identifier."
+   - :Entity a owl:Class ; rdfs:label "Entity" ; rdfs:comment "Anything that can be identified by a PID."
+   - :Observation a owl:Class ; rdfs:label "Observation" ; rdfs:comment "Data associated with an entity."
+   - :Rule a owl:Class ; rdfs:label "Rule" ; rdfs:comment "Governs PID transitions."
+   - :TemporalScope a owl:Class ; rdfs:label "TemporalScope" ; rdfs:comment "Entity with a validity period."
+   - :Referent a owl:ObjectProperty ; rdfs:label "Referent" ; rdfs:comment "Relates a PID to an Entity."
+   - :HasObservation a owl:ObjectProperty ; rdfs:label "HasObservation" ; rdfs:comment "Relates an Entity to an Observation."
+   - :HasRule a owl:ObjectProperty ; rdfs:label "HasRule" ; rdfs:comment "Relates a PID to a Rule."
+   - :ValidFrom a owl:DatatypeProperty ; rdfs:label "ValidFrom" ; rdfs:comment "Start of an Entity's validity period."
+   - :ValidTo a owl:DatatypeProperty ; rdfs:label "ValidTo" ; rdfs:comment "End of an Entity's validity period."
+   - :Transition a owl:ObjectProperty ; rdfs:label "Transition" ; rdfs:comment "Relates a PID to its successor PID."
+
+4-6. (Not shown due to character limit)
+
+7. Final Ontology:
+
+```turtle
+:Ontology a owl:Ontology ;
+  rdfs:label "Persistent Identifier Ontology" ;
+  rdfs:comment "Ontology for managing persistent identifiers across domains.".
+
+:PID a owl:Class ;
+  rdfs:label "PersistentIdentifier" ;
+  rdfs:comment "Unique string identifier.".
+
+:Entity a owl:Class ;
+  rdfs:label "Entity" ;
+  rdfs:comment "Anything that can be identified by a PID.".
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "Data associated with an entity.".
+
+:Rule a owl:Class ;
+  rdfs:label "Rule" ;
+  rdfs:comment "Governs PID transitions.".
+
+:TemporalScope a owl:Class ;
+  rdfs:label "TemporalScope" ;
+  rdfs:comment "Entity

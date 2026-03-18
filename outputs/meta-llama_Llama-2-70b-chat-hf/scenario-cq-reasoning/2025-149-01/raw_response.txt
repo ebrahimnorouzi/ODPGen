@@ -1,0 +1,90 @@
+Reasoning Steps:
+
+1. Extract atomic requirements from the scenario:
+* The ontology should represent a relational database as a first-class schema entity.
+* The ontology should represent tables belonging to a database.
+* The ontology should represent columns belonging to a table.
+* The ontology should represent primary-key relationships in the schema.
+* The ontology should represent foreign-key relationships and distinguish same-named columns across different tables when they are not semantically linked.
+* The ontology should define a policy for a specific agent.
+* The policy should specify a high-level ReadAction.
+* The policy should specify a high-level ModifyAction.
+* The policy should specify a ViewActionScope for read operations.
+* The policy should specify a ProcessActionScope for read operations.
+* The policy should be defined at table level.
+* The policy should be defined at column level.
+* The policy should be defined at row level using conditions.
+* The ontology should express a prohibited modify action on a table.
+* The ontology should express a table-level read prohibition for processing.
+* The ontology should express a table-level read prohibition for viewing.
+* The ontology should express a conditional row-level read restriction for later enforcement.
+* The ontology should represent a SQL query as an AST-based semantic graph.
+* A SQL statement such as SelectStatement or UpdateStatement should be mapped to its semantic action type.
+* A query statement should be linked to the executing agent.
+* SQL clauses should be assigned operational scopes such as view or process.
+* Scope should be propagated to reference nodes as an effectiveActionScope.
+* A TableRef in the query should be linked to its corresponding schema Table.
+* A ColumnRef in the query should be linked to its corresponding schema Column.
+* The reasoner should infer whether a referenced table or column is Violated or RowTag based on the matching policy, action, and scope.
+2. Propose candidate classes and properties for each requirement:
+* Classes:
+	+ Database
+	+ Table
+	+ Column
+	+ Policy
+	+ Agent
+	+ Query
+	+ TableRef
+	+ ColumnRef
+* Properties:
+	+ database:tables (Database, Table)
+	+ table:columns (Table, Column)
+	+ column:name (Column, xsd:string)
+	+ policy:agent (Policy, Agent)
+	+ policy:readAction (Policy, ReadAction)
+	+ policy:modifyAction (Policy, ModifyAction)
+	+ policy:viewActionScope (Policy, ViewActionScope)
+	+ policy:processActionScope (Policy, ProcessActionScope)
+	+ table:policy (Table, Policy)
+	+ column:policy (Column, Policy)
+	+ row:policy (Row, Policy)
+	+ query:agent (Query, Agent)
+	+ query:tableRef (Query, TableRef)
+	+ query:columnRef (Query, ColumnRef)
+	+ query:action (Query, Action)
+	+ query:scope (Query, Scope)
+3. Draft axioms for each candidate:
+* Class assertions:
+	+ Database(db)
+	+ Table(tb)
+	+ Column(cl)
+	+ Policy(py)
+	+ Agent(ag)
+	+ Query(qry)
+	+ TableRef(tr)
+	+ ColumnRef(cr)
+* Object property assertions:
+	+ database:tables db:tb
+	+ table:columns tb:cl
+	+ column:name cl:name
+	+ policy:agent py:ag
+	+ policy:readAction py:ra
+	+ policy:modifyAction py:ma
+	+ policy:viewActionScope py:vas
+	+ policy:processActionScope py:pas
+	+ table:policy tb:py
+	+ column:policy cl:py
+	+ row:policy rw:py
+	+ query:agent qry:ag
+	+ query:tableRef qry:tr
+	+ query:columnRef qry:cr
+	+ query:action qry:a
+	+ query:scope qry:s
+* Data property assertions:
+	+ database:name db:name
+	+ table:name tb:name
+	+ column:name cl:name
+	+ policy:name py:name
+	+ agent:name ag:name
+	+ query:name qry:name
+4. For each CQ, check which axioms enable answering it; note any CQs not yet covered:

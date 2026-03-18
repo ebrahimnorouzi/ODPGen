@@ -1,0 +1,61 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* Employees are the only ones allowed to access the system.
+	* Access is allowed only on weekdays.
+	* Access is allowed only from the EU.
+	* Evaluation needs temporal context.
+	* Evaluation needs spatial context.
+	* Evaluation needs role context.
+	* Evaluation needs request-capability context.
+2. **Propose candidate classes and properties for each requirement**
+	* Employees: class `:Employee`, property `:hasRole`
+	* Weekdays: class `:Weekday`, property `:hasDay`
+	* EU: class `:EU`, property `:hasLocation`
+	* Temporal context: class `:Time`, property `:hasDate`
+	* Spatial context: class `:Location`, property `:hasAddress`
+	* Role context: class `:Role`, property `:hasEmployee`
+	* Request-capability context: class `:Capability`, property `:hasRequest`
+	* Requested action: class `:Action`, property `:hasTarget`
+	* Target asset: class `:Asset`, property `:hasAction`
+	* Evaluation request: class `:EvaluationRequest`, property `:hasAction`, `:hasTarget`, `:hasIssuer`, `:hasDate`, `:hasLocation`, `:hasRole`, `:hasCapability`
+3. **Draft axioms for each candidate**
+	* `:Employee rdfs:subClassOf owl:Thing.`
+	* `:Weekday rdfs:subClassOf owl:Thing.`
+	* `:EU rdfs:subClassOf owl:Thing.`
+	* `:Time rdfs:subClassOf owl:Thing.`
+	* `:Location rdfs:subClassOf owl:Thing.`
+	* `:Role rdfs:subClassOf owl:Thing.`
+	* `:Capability rdfs:subClassOf owl:Thing.`
+	* `:Action rdfs:subClassOf owl:Thing.`
+	* `:Asset rdfs:subClassOf owl:Thing.`
+	* `:EvaluationRequest rdfs:subClassOf owl:Thing.`
+	* `:hasAction rdfs:domain :EvaluationRequest ; rdfs:range :Action.`
+	* `:hasTarget rdfs:domain :EvaluationRequest ; rdfs:range :Asset.`
+	* `:hasIssuer rdfs:domain :EvaluationRequest ; rdfs:range :Employee.`
+	* `:hasDate rdfs:domain :EvaluationRequest ; rdfs:range :Time.`
+	* `:hasLocation rdfs:domain :EvaluationRequest ; rdfs:range :Location.`
+	* `:hasRole rdfs:domain :EvaluationRequest ; rdfs:range :Role.`
+	* `:hasCapability rdfs:domain :EvaluationRequest ; rdfs:range :Capability.`
+	* `:Employee owl:disjoint :Weekday.`
+	* `:Weekday owl:disjoint :EU.`
+	* `:EU owl:disjoint :Time.`
+	* `:Time owl:disjoint :Location.`
+	* `:Location owl:disjoint :Role.`
+	* `:Role owl:disjoint :Capability.`
+	* `:Capability owl:disjoint :Action.`
+	* `:Action owl:disjoint :Asset.`
+	* `:Asset owl:disjoint :EvaluationRequest.`
+4. **Check which axioms enable answering each CQ**
+	* CQ1: What is the requested action?
+		+ Axioms: `:hasAction rdfs:domain :EvaluationRequest ; rdfs:range :Action.`
+	* CQ2: Who is the party issuing the evaluation request?
+		+ Axioms: `:hasIssuer rdfs:domain :EvaluationRequest ; rdfs:range :Employee.`
+	* CQ3: What is the target asset of the evaluation request?
+		+ Axioms: `:hasTarget rdfs:domain :EvaluationRequest ; rdfs:range :Asset.`
+	* CQ4: When was the evaluation request issued?
+		+ Axioms: `:hasDate rdfs:domain :EvaluationRequest ; rdfs:range :Time.`
+	* CQ5: What additional contextual information can be included in the evaluation request to further constrain it?
+		+ Axioms: `:hasLocation rdfs:domain :EvaluationRequest ; rdfs:range :Location.`, `:hasRole rdfs:domain :EvaluationRequest ; rdfs:range :Role.`, `:hasCapability rdfs:domain :EvaluationRequest ; rdfs:range :Capability.`
+5. **Add or refine axioms to cover any uncovered CQs**
+	* CQ6: What is the spatial context of

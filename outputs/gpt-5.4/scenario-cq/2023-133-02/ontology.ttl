@@ -1,0 +1,98 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "kHealth-Asthma causal monitoring ODP" ;
+  rdfs:comment "An ontology design pattern for representing pediatric asthma self-monitoring data about symptoms, medication intake, outdoor environmental allergens, and weighted causal relations among them." .
+
+### Classes
+
+:Patient a owl:Class ;
+  rdfs:label "Patient" ;
+  rdfs:comment "A pediatric asthma patient being monitored in the kHealth-Asthma use case." .
+
+:ClinicalFactor a owl:Class ;
+  rdfs:label "Clinical factor" ;
+  rdfs:comment "A factor relevant to the patient's asthma condition, used as a source or target in causal relations." .
+
+:Symptom a owl:Class ;
+  rdfs:label "Symptom" ;
+  rdfs:comment "An asthma symptom experienced by a patient, such as cough, chest tightness, wheezing, or breathing pattern." ;
+  rdfs:subClassOf :ClinicalFactor .
+
+:MedicationIntake a owl:Class ;
+  rdfs:label "Medication intake" ;
+  rdfs:comment "An intake of medication by a patient." ;
+  rdfs:subClassOf :ClinicalFactor .
+
+:OutdoorEnvironmentalAllergen a owl:Class ;
+  rdfs:label "Outdoor environmental allergen" ;
+  rdfs:comment "An outdoor environmental factor affecting the patient, such as pollen or air quality index (AQI)." ;
+  rdfs:subClassOf :ClinicalFactor .
+
+:CausalRelation a owl:Class ;
+  rdfs:label "Causal relation" ;
+  rdfs:comment "A weighted causal relation in which one clinical factor causes another clinical factor." .
+
+### Object Properties
+
+:hasSymptom a owl:ObjectProperty ;
+  rdfs:label "has symptom" ;
+  rdfs:comment "Relates a patient to a symptom the patient experiences." ;
+  rdfs:domain :Patient ;
+  rdfs:range :Symptom .
+
+:hasMedicationIntake a owl:ObjectProperty ;
+  rdfs:label "has medication intake" ;
+  rdfs:comment "Relates a patient to a medication intake event or state." ;
+  rdfs:domain :Patient ;
+  rdfs:range :MedicationIntake .
+
+:hasOutdoorEnvironmentalAllergen a owl:ObjectProperty ;
+  rdfs:label "has outdoor environmental allergen" ;
+  rdfs:comment "Relates a patient to an outdoor environmental allergen present in the patient's environment." ;
+  rdfs:domain :Patient ;
+  rdfs:range :OutdoorEnvironmentalAllergen .
+
+:hasCause a owl:ObjectProperty ;
+  rdfs:label "has cause" ;
+  rdfs:comment "Relates a causal relation to the factor that acts as its cause." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :ClinicalFactor .
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has effect" ;
+  rdfs:comment "Relates a causal relation to the factor that acts as its effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :ClinicalFactor .
+
+:affectsPatient a owl:ObjectProperty ;
+  rdfs:label "affects patient" ;
+  rdfs:comment "Relates a clinical factor to the patient affected by that factor." ;
+  rdfs:domain :ClinicalFactor ;
+  rdfs:range :Patient .
+
+### Datatype Properties
+
+:hasEffectWeight a owl:DatatypeProperty ;
+  rdfs:label "has effect weight" ;
+  rdfs:comment "Associates a causal relation with a numeric weight expressing the strength of the causal effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal .
+
+### Example named individuals grounded in the scenario
+
+:Cough a :Symptom ;
+  rdfs:label "Cough" ;
+  rdfs:comment "A cough symptom experienced by a patient." .
+
+:ChestTightness a :Symptom ;
+  rdfs:label "Chest tightness" ;
+  rdfs:comment "A chest tightness symptom experienced by a patient." .
+
+:Wheezing a :Symptom ;
+  rdfs:label "Wheezing" ;
+  rdfs:comment "A wheezing symptom experienced by a patient." .

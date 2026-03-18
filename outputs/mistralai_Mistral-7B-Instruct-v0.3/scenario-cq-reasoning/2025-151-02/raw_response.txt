@@ -1,0 +1,62 @@
+**Reasoning Steps**
+
+1. Atomic Requirements:
+   - Asset Collection
+   - Policy Collection
+   - Party Collection
+   - Rule Collection
+   - Event Collection
+   - Action Collection
+   - Financial Payment
+
+2. Candidate Classes and Properties:
+   - :Asset
+   - :Policy
+   - :Party
+   - :Rule
+   - :Event
+   - :Action
+   - :FinancialPayment
+   - :hasAsset (ObjectProperty)
+   - :hasPolicy (ObjectProperty)
+   - :hasParty (ObjectProperty)
+   - :hasRule (ObjectProperty)
+   - :hasEvent (ObjectProperty)
+   - :hasAction (ObjectProperty)
+   - :hasFinancialPayment (ObjectProperty)
+   - :occursAtTime (DatatypeProperty)
+   - :occursAtLocation (DatatypeProperty)
+   - :hasDuration (DatatypeProperty)
+   - :hasRecipient (ObjectProperty)
+   - :hasAmountPaid (DatatypeProperty)
+
+3. Draft Axioms:
+   - :Asset a owl:Class ; rdfs:label "Asset" ; rdfs:comment "Represents a real-world object."
+   - :Policy a owl:Class ; rdfs:label "Policy" ; rdfs:comment "Represents a set of rules governing access to assets."
+   - :Party a owl:Class ; rdfs:label "Party" ; rdfs:comment "Represents a group or individual involved in a policy."
+   - :Rule a owl:Class ; rdfs:label "Rule" ; rdfs:comment "Represents a condition or action in a policy."
+   - :Event a owl:Class ; rdfs:label "Event" ; rdfs:comment "Represents an occurrence related to a policy."
+   - :Action a owl:Class ; rdfs:label "Action" ; rdfs:comment "Represents an action performed or attempted."
+   - :FinancialPayment a owl:Class ; rdfs:label "FinancialPayment" ; rdfs:comment "Represents a financial transaction."
+   - :hasAsset owl:ObjectProperty ; rdfs:domain :Policy ; rdfs:range :Asset.
+   - :hasPolicy owl:ObjectProperty ; rdfs:domain :Party ; rdfs:range :Policy.
+   - :hasParty owl:ObjectProperty ; rdfs:domain :Rule ; rdfs:range :Party.
+   - :hasRule owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range :Rule.
+   - :hasAction owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range :Action.
+   - :hasFinancialPayment owl:ObjectProperty ; rdfs:domain :Event ; rdfs:range :FinancialPayment.
+   - :occursAtTime rdfs:DatatypeProperty ; rdfs:domain :Event ; rdfs:range xsd:time.
+   - :occursAtLocation rdfs:DatatypeProperty ; rdfs:domain :Event ; rdfs:range xsd:string.
+   - :hasDuration rdfs:DatatypeProperty ; rdfs:domain :Event ; rdfs:range xsd:duration.
+   - :hasRecipient owl:ObjectProperty ; rdfs:domain :Rule ; rdfs:range :Party.
+   - :hasAmountPaid rdfs:DatatypeProperty ; rdfs:domain :FinancialPayment ; rdfs:range xsd:decimal.
+
+4. For each CQ, check which axioms enable answering it:
+   - What is the current time? (Not covered)
+   - What is the location of a party? (occursAtLocation)
+   - What assets are part of the asset collection of the policy that is being evaluated? (hasAsset)
+   - Which parties are part of the party collection of the policy that is being evaluated? (hasParty)
+   - What actions were already performed or attempted? (hasAction)
+   - How many times has a rule been exercised? (Not covered)
+   - What information is available about an event that has occurred? (All properties related to Event)
+   - How long has a rule been exercised? (hasDuration)
+   - Which recipients or categories of recipients can receive the result of the rule that has

@@ -1,0 +1,79 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Author name usage for publication ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing an author using alternative names, including pseudonyms and name changes, in relation to published books." .
+
+:Author a owl:Class ;
+  rdfs:label "Author" ;
+  rdfs:comment "A person who writes or publishes books under one or more names." .
+
+:Book a owl:Class ;
+  rdfs:label "Book" ;
+  rdfs:comment "A published book or literary work." .
+
+:NameUsage a owl:Class ;
+  rdfs:label "Name usage" ;
+  rdfs:comment "A contextual use of a name by an author for publishing or authorship." .
+
+:Name a owl:Class ;
+  rdfs:label "Name" ;
+  rdfs:comment "A name used by an author, such as a legal name, changed name, or pseudonym." .
+
+:Pseudonym a owl:Class ;
+  rdfs:label "Pseudonym" ;
+  rdfs:comment "A name adopted by an author for publication that is not the author's primary personal name." ;
+  rdfs:subClassOf :Name .
+
+:ChangedName a owl:Class ;
+  rdfs:label "Changed name" ;
+  rdfs:comment "A name used by an author after a name change, for example after marriage." ;
+  rdfs:subClassOf :Name .
+
+:usesName a owl:ObjectProperty ;
+  rdfs:label "uses name" ;
+  rdfs:comment "Relates an author to a name that the author uses or has used." ;
+  rdfs:domain :Author ;
+  rdfs:range :Name .
+
+:hasNameUsage a owl:ObjectProperty ;
+  rdfs:label "has name usage" ;
+  rdfs:comment "Relates an author to a contextual usage of one of their names." ;
+  rdfs:domain :Author ;
+  rdfs:range :NameUsage .
+
+:usedName a owl:ObjectProperty ;
+  rdfs:label "used name" ;
+  rdfs:comment "Relates a name usage event or context to the name used in that context." ;
+  rdfs:domain :NameUsage ;
+  rdfs:range :Name .
+
+:forBook a owl:ObjectProperty ;
+  rdfs:label "for book" ;
+  rdfs:comment "Relates a name usage to the book for which that name was used." ;
+  rdfs:domain :NameUsage ;
+  rdfs:range :Book .
+
+:assumedBy a owl:ObjectProperty ;
+  rdfs:label "assumed by" ;
+  rdfs:comment "Relates a name to the author who assumed or used it." ;
+  rdfs:domain :Name ;
+  rdfs:range :Author ;
+  owl:inverseOf :usesName .
+
+:publishesAs a owl:ObjectProperty ;
+  rdfs:label "publishes as" ;
+  rdfs:comment "Relates a book to the name under which it was published." ;
+  rdfs:domain :Book ;
+  rdfs:range :Name .
+
+:usedForPublication a owl:ObjectProperty ;
+  rdfs:label "used for publication" ;
+  rdfs:comment "Relates a name to a book published under that name." ;
+  rdfs:domain :Name ;
+  rdfs:range :Book ;
+  owl:inverseOf :publishesAs .

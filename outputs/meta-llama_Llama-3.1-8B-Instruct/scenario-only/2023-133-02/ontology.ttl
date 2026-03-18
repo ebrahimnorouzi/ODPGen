@@ -1,0 +1,60 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Asthma Patient Monitoring Ontology" ;
+  rdfs:comment "Ontology for modeling asthma patient monitoring data".
+
+:AsthmaPatient a owl:Class ;
+  rdfs:label "Asthma Patient" ;
+  rdfs:comment "A patient with asthma".
+
+:AsthmaSymptom a owl:Class ;
+  rdfs:label "Asthma Symptom" ;
+  rdfs:comment "A symptom of asthma, e.g. cough, chest tightness".
+
+:AsthmaMedication a owl:Class ;
+  rdfs:label "Asthma Medication" ;
+  rdfs:comment "A medication for asthma".
+
+:OutdoorEnvironmentFeature a owl:Class ;
+  rdfs:label "Outdoor Environment Feature" ;
+  rdfs:comment "A feature of the outdoor environment, e.g. pollen, air quality index".
+
+:AsthmaSymptomCause a owl:ObjectProperty ;
+  rdfs:label "Causes Asthma Symptom" ;
+  rdfs:comment "A causal relation between an outdoor environment feature and an asthma symptom" ;
+  owl:propertyChain (:OutdoorEnvironmentFeature :AsthmaSymptomCause :AsthmaSymptom) ;
+  owl:inverseOf :AsthmaSymptomEffect.
+
+:AsthmaSymptomEffect a owl:ObjectProperty ;
+  rdfs:label "Effect of Asthma Symptom" ;
+  rdfs:comment "The effect weight of an asthma symptom caused by an outdoor environment feature" ;
+  rdfs:range xsd:float.
+
+:AsthmaPatientHasSymptom a owl:ObjectProperty ;
+  rdfs:label "Has Asthma Symptom" ;
+  rdfs:comment "A relation between an asthma patient and their symptoms" ;
+  owl:inverseOf :SymptomBelongsToPatient.
+
+:AsthmaPatientHasMedication a owl:ObjectProperty ;
+  rdfs:label "Has Asthma Medication" ;
+  rdfs:comment "A relation between an asthma patient and their medications" ;
+  owl:inverseOf :MedicationBelongsToPatient.
+
+:SymptomBelongsToPatient a owl:ObjectProperty ;
+  rdfs:label "Belongs to Asthma Patient" ;
+  rdfs:comment "A relation between an asthma symptom and its patient".
+
+:MedicationBelongsToPatient a owl:ObjectProperty ;
+  rdfs:label "Belongs to Asthma Patient" ;
+  rdfs:comment "A relation between an asthma medication and its patient".
+
+:AsthmaPatient a :AsthmaPatientHasSymptom+ ;
+  :AsthmaPatient a :AsthmaPatientHasMedication+.
+
+:AsthmaSymptom a :SymptomBelongsToPatient+.
+:AsthmaMedication a :MedicationBelongsToPatient+.

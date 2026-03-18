@@ -1,0 +1,105 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "ODRL Policy Evaluation Support Ontology" ;
+  rdfs:comment "Aids in the evaluation of ODRL policies by representing real-world information.".
+
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "A policy defined by ODRL.".
+
+:PolicyEvaluation a owl:Class ;
+  rdfs:label "Policy Evaluation" ;
+  rdfs:comment "The process of evaluating a policy.".
+
+:PolicyEvaluator a owl:Class ;
+  rdfs:label "Policy Evaluator" ;
+  rdfs:comment "An entity that evaluates a policy.".
+
+:VideoStream a owl:Class ;
+  rdfs:label "Video Stream" ;
+  rdfs:comment "A video stream that can be subject to a policy.".
+
+:TimeRange a owl:Class ;
+  rdfs:label "Time Range" ;
+  rdfs:comment "A range of time within a video stream.".
+
+:TimeRangeStart a owl:DatatypeProperty ;
+  rdfs:label "Start Time" ;
+  rdfs:comment "The start time of a time range." ;
+  rdfs:domain :TimeRange ;
+  rdfs:range xsd:dateTime.
+
+:TimeRangeEnd a owl:DatatypeProperty ;
+  rdfs:label "End Time" ;
+  rdfs:comment "The end time of a time range." ;
+  rdfs:domain :TimeRange ;
+  rdfs:range xsd:dateTime.
+
+:PolicyEvaluatorEvaluates a owl:ObjectProperty ;
+  rdfs:label "Evaluates" ;
+  rdfs:comment "A policy evaluator evaluates a policy." ;
+  rdfs:domain :PolicyEvaluator ;
+  rdfs:range :Policy.
+
+:PolicySubject a owl:ObjectProperty ;
+  rdfs:label "Subject" ;
+  rdfs:comment "A policy is subject to a policy evaluator." ;
+  rdfs:domain :Policy ;
+  rdfs:range :PolicyEvaluator.
+
+:PolicySubjectOf a owl:ObjectProperty ;
+  rdfs:label "Subject Of" ;
+  rdfs:comment "A policy evaluator is subject to a policy." ;
+  rdfs:domain :PolicyEvaluator ;
+  rdfs:range :Policy.
+
+:VideoStreamSubject a owl:ObjectProperty ;
+  rdfs:label "Subject" ;
+  rdfs:comment "A video stream is subject to a policy." ;
+  rdfs:domain :VideoStream ;
+  rdfs:range :Policy.
+
+:TimeRangeOf a owl:ObjectProperty ;
+  rdfs:label "Time Range Of" ;
+  rdfs:comment "A policy is subject to a time range." ;
+  rdfs:domain :Policy ;
+  rdfs:range :TimeRange.
+
+:TimeRangeOfVideoStream a owl:ObjectProperty ;
+  rdfs:label "Time Range Of Video Stream" ;
+  rdfs:comment "A video stream is subject to a time range." ;
+  rdfs:domain :VideoStream ;
+  rdfs:range :TimeRange.
+
+:PolicyEvaluatorEvaluatesPolicy a owl:FunctionalProperty ;
+  rdfs:label "Evaluates Policy" ;
+  rdfs:comment "A policy evaluator evaluates a policy." ;
+  rdfs:domain :PolicyEvaluator ;
+  rdfs:range :Policy ;
+  owl:inverseOf :PolicySubject.
+
+:PolicySubjectPolicy a owl:FunctionalProperty ;
+  rdfs:label "Policy Subject" ;
+  rdfs:comment "A policy is subject to a policy evaluator." ;
+  rdfs:domain :Policy ;
+  rdfs:range :PolicyEvaluator ;
+  owl:inverseOf :PolicySubjectOf.
+
+:PolicySubjectTimeRange a owl:FunctionalProperty ;
+  rdfs:label "Policy Subject Time Range" ;
+  rdfs:comment "A policy is subject to a time range." ;
+  rdfs:domain :Policy ;
+  rdfs:range :TimeRange ;
+  owl:inverseOf :TimeRangeOf.
+
+:VideoStreamSubjectTimeRange a owl:FunctionalProperty ;
+  rdfs:label "Video Stream Subject Time Range" ;
+  rdfs:comment "A video stream is subject to a time range." ;
+  rdfs:domain :VideoStream ;
+  rdfs:range :TimeRange ;
+  owl:inverseOf :TimeRangeOfVideoStream.

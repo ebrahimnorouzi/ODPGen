@@ -1,0 +1,77 @@
+1. **Reasoning for steps 1–6**
+
+- **Step 1: Atomic requirements**
+  - R1. The model must represent a registry that can be maintained by some actor.
+  - R2. The model must represent creation and update timestamps for a registry.
+  - R3. The model must represent types/categories of data available.
+  - R4. The model must represent where a specific data type is stored.
+  - R5. The model must represent a policy associated with data.
+  - R6. The model should stay minimal and reusable, avoiding unnecessary domain-specific commitments.
+
+- **Step 2: Candidate classes and properties**
+  - For R1:
+    - Classes: `:Registry`, `:Actor`
+    - Property: `:maintainedBy`
+  - For R2:
+    - Class: `:Registry`
+    - Datatype properties: `:createdAt`, `:updatedAt`
+  - For R3:
+    - Classes: `:DataCategory`
+    - Property: `:hasAvailableDataCategory`
+  - For R4:
+    - Classes: `:StorageLocation`
+    - Property: `:storedAt`
+  - For R5:
+    - Class: `:Policy`
+    - Property: `:hasPolicy`
+  - For connecting data category to policy and storage in a minimal way:
+    - Treat `:DataCategory` as the thing whose storage location and policy are described.
+
+- **Step 3: Draft axioms**
+  - `:Registry` and `:Actor`, `:DataCategory`, `:StorageLocation`, `:Policy` as owl classes.
+  - `:maintainedBy` with domain `:Registry` and range `:Actor`.
+  - `:createdAt` with domain `:Registry` and range `xsd:dateTime`.
+  - `:updatedAt` with domain `:Registry` and range `xsd:dateTime`.
+  - `:hasAvailableDataCategory` with domain `:Registry` and range `:DataCategory`.
+  - `:storedAt` with domain `:DataCategory` and range `:StorageLocation`.
+  - `:hasPolicy` with domain `:DataCategory` and range `:Policy`.
+  - Cardinality:
+    - A registry may have at most one creation timestamp.
+    - A registry may have at most one update timestamp.
+  - Minimal disjointness:
+    - `:Actor`, `:Registry`, `:DataCategory`, `:StorageLocation`, `:Policy` pairwise disjoint enough to avoid category confusion.
+
+- **Step 4: CQ coverage check**
+  - CQ1. *Who is maintaining the registry?*
+    - Enabled by `:maintainedBy` domain/range.
+  - CQ2. *When was the registry created/updated?*
+    - Enabled by `:createdAt`, `:updatedAt`.
+  - CQ3. *What types of data are available?*
+    - Enabled by `:hasAvailableDataCategory`.
+  - CQ4. *Where is a specific type of data being stored?*
+    - Enabled by `:storedAt` from `:DataCategory` to `:StorageLocation`.
+  - CQ5. *What policy is associated with the data?*
+    - Enabled by `:hasPolicy` from `:DataCategory` to `:Policy`.
+  - No CQ remains uncovered.
+
+- **Step 5: Add/refine axioms**
+  - Add existential restrictions on `:Registry` to indicate that a registry is intended to describe available data categories and may identify a maintainer.
+  - Keep these weak/minimal:
+    - `:Registry rdfs:subClassOf [ owl:onProperty :hasAvailableDataCategory ; owl:someValuesFrom :DataCategory ]`
+  - Do not force every registry to have maintainer or timestamps, since scenario/CQs ask for representation, not mandatory completeness.
+
+- **Step 6: Remove untraceable elements**
+  - Removed any notions about apps, pods, consent logs, legal compliance, specifications, and functionality installation because they are not needed for the given CQs.
+  - Kept only: `:Registry`, `:Actor`, `:DataCategory`, `:StorageLocation`, `:Policy`, and the five core properties plus timestamps.
+
+2. **Turtle ontology**
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label

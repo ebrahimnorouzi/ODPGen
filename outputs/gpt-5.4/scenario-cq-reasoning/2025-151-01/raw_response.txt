@@ -1,0 +1,82 @@
+1. **Reasoning for steps 1–6**
+
+### 1. Atomic requirements
+- There is an evaluation request.
+- An evaluation request is a formal description of a requested action.
+- An evaluation request involves an assignee.
+- An evaluation request involves a target asset.
+- An evaluation request can be enriched with additional contextual information.
+- Evaluation may depend on temporal context.
+- Evaluation may depend on spatial context.
+- Evaluation may depend on role context.
+- Evaluation may depend on request-capability context.
+- The request has an issuing party.
+- The request has an issuance time.
+- Access being allowed only to employees motivates representing employee-related role context.
+- Access being allowed only on weekdays motivates representing temporal context.
+- Access being allowed only from the EU motivates representing spatial context.
+
+### 2. Candidate classes and properties
+- For the evaluation request:
+  - Class: `:EvaluationRequest`
+- For requested action:
+  - Class: `:Action`
+  - Property: `:requestedAction`
+- For assignee:
+  - Class: `:Agent`
+  - Property: `:hasAssignee`
+- For target asset:
+  - Class: `:Asset`
+  - Property: `:targetAsset`
+- For issuing party:
+  - Property: `:issuedBy`
+- For issuance time:
+  - Property: `:issuedAt`
+- For contextual enrichment:
+  - Class: `:ContextInformation`
+  - Property: `:hasContextInformation`
+- For temporal context:
+  - Class: `:TemporalContext`
+- For spatial context:
+  - Class: `:SpatialContext`
+- For role context:
+  - Class: `:RoleContext`
+- For request-capability context:
+  - Class: `:CapabilityContext`
+- For minimal reusable actor concept:
+  - Class: `:Party` as a superclass of `:Agent`
+- For employee-related role context:
+  - Class: `:EmployeeRoleContext`
+- For weekday-related temporal context:
+  - Class: `:WeekdayContext`
+- For EU-related spatial context:
+  - Class: `:EUContext`
+
+### 3. Draft axioms
+- `:EvaluationRequest rdf:type owl:Class`
+- `:Action rdf:type owl:Class`
+- `:Asset rdf:type owl:Class`
+- `:Party rdf:type owl:Class`
+- `:Agent rdf:type owl:Class ; rdfs:subClassOf :Party`
+- `:ContextInformation rdf:type owl:Class`
+- `:TemporalContext rdf:type owl:Class ; rdfs:subClassOf :ContextInformation`
+- `:SpatialContext rdf:type owl:Class ; rdfs:subClassOf :ContextInformation`
+- `:RoleContext rdf:type owl:Class ; rdfs:subClassOf :ContextInformation`
+- `:CapabilityContext rdf:type owl:Class ; rdfs:subClassOf :ContextInformation`
+- `:EmployeeRoleContext rdf:type owl:Class ; rdfs:subClassOf :RoleContext`
+- `:WeekdayContext rdf:type owl:Class ; rdfs:subClassOf :TemporalContext`
+- `:EUContext rdf:type owl:Class ; rdfs:subClassOf :SpatialContext`
+- Disjointness among top context dimensions:
+  - `:TemporalContext owl:disjointWith :SpatialContext, :RoleContext, :CapabilityContext`
+  - `:SpatialContext owl:disjointWith :RoleContext, :CapabilityContext`
+  - `:RoleContext owl:disjointWith :CapabilityContext`
+- `:requestedAction rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Action`
+- `:hasAssignee rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Agent`
+- `:targetAsset rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Asset`
+- `:issuedBy rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :Party`
+- `:issuedAt rdf:type owl:DatatypeProperty ; rdfs:domain :EvaluationRequest ; rdfs:range xsd:dateTime`
+- `:hasContextInformation rdf:type owl:ObjectProperty ; rdfs:domain :EvaluationRequest ; rdfs:range :ContextInformation`
+- Cardinalities for core request structure:
+  - `:EvaluationRequest rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :requestedAction ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :Action ]`
+  - `:EvaluationRequest rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :hasAssignee ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :Agent ]`
+  - `:EvaluationRequest rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :targetAsset ; owl:

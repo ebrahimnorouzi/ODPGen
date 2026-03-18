@@ -1,0 +1,83 @@
+Here is the OWL ontology design pattern in Turtle syntax:
+
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Ontology for Courts and Check Payments" ;
+  rdfs:comment "An ontology to model district courts, states, check transactions, and their relationships.".
+
+:State a owl:Class ;
+  rdfs:label "State" ;
+  rdfs:comment "Represents a state in which district courts are located.".
+
+:DistrictCourt a owl:Class ;
+  rdfs:label "District Court" ;
+  rdfs:comment "Represents a district court in a state.".
+
+:hasLocation rdf:Property ;
+  rdfs:label "hasLocation" ;
+  rdfs:comment "Relates a district court to the state in which it is located.".
+
+:India a :State ;
+  rdfs:label "India".
+
+:Court a owl:Class ;
+  rdfs:label "Court" ;
+  rdfs:comment "Represents a court with authority over other courts.".
+
+:hasAuthority rdf:Property ;
+  rdfs:label "hasAuthority" ;
+  rdfs:comment "Relates a court to the court it has authority over.".
+
+:CheckPayment a owl:Class ;
+  rdfs:label "Check Payment" ;
+  rdfs:comment "Represents a check payment.".
+
+:transactionType rdf:Property ;
+  rdfs:label "transactionType" ;
+  rdfs:comment "Specifies the type of transaction for a check payment.".
+
+:badCheck rdf:Resource ;
+  rdfs:label "Bad Check".
+
+:checkTransactionType rdf:Property ;
+  rdfs:label "checkTransactionType" ;
+  rdfs:comment "Specifies the type of check for a check payment.".
+
+:transactionStatus rdf:Property ;
+  rdfs:label "transactionStatus" ;
+  rdfs:comment "Specifies the status of a check payment.".
+
+:Check a owl:Class ;
+  rdfs:label "Check" ;
+  rdfs:comment "Represents a check.".
+
+:isBadCheck rdf:Property ;
+  rdfs:label "isBadCheck" ;
+  rdfs:comment "Indicates whether a check is a bad check.".
+
+:paymentDate rdf:Property ;
+  rdfs:label "paymentDate" ;
+  rdfs:comment "Specifies the date of a check payment.".
+
+:statusDate rdf:Property ;
+  rdfs:label "statusDate" ;
+  rdfs:comment "Specifies the date of the status update for a check payment.".
+```
+
+CQ-to-axiom mapping table:
+
+| Competency Question | Classes | Properties |
+|---------------------|---------|------------|
+| List all district courts in a given state | :DistrictCourt | :hasLocation |
+| In which state is a given district court instance located? | :DistrictCourt | :hasLocation |
+| How many districts are in a given state of India? | :State (:India) | none (use SPARQL COUNT query) |
+| Which court has authority over a given court? | :Court | :hasAuthority |
+| What is the check transaction type for a bad check? | :CheckPayment, :Check | :checkTransactionType |
+| When is a check payment of a bad check? | :CheckPayment | :paymentDate |
+| What is the transaction status of a given check payment? | :CheckPayment | :transactionStatus |

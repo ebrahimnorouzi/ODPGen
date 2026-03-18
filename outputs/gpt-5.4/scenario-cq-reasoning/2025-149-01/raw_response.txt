@@ -1,0 +1,59 @@
+1. **Reasoning for steps 1–6**
+
+### Step 1. Atomic requirements
+- The ontology must represent a relational database as a schema entity.
+- The ontology must represent tables that belong to a database.
+- The ontology must represent columns that belong to a table.
+- The ontology must represent primary keys in the schema.
+- The ontology must represent foreign keys in the schema.
+- The ontology must distinguish same-named columns in different tables by table membership rather than name alone.
+- The ontology must represent an agent.
+- The ontology must represent a policy defined for a specific agent.
+- The ontology must represent high-level action types for reading and modifying.
+- The ontology must represent action scopes for read operations, including view and process.
+- The ontology must allow policies to target schema resources at table level.
+- The ontology must allow policies to target schema resources at column level.
+- The ontology must allow policies to target row level through conditions.
+- The ontology must represent prohibitions/restrictions on actions.
+- The ontology must represent a SQL query/statement as an AST-like semantic graph.
+- The ontology must distinguish SQL statement kinds such as select and update.
+- The ontology must map SQL statement kinds to high-level semantic action types.
+- The ontology must link a query statement to the executing agent.
+- The ontology must represent SQL clauses/nodes with operational scopes.
+- The ontology must propagate or record effective scope on reference nodes.
+- The ontology must link table references in a query to schema tables.
+- The ontology must link column references in a query to schema columns.
+- The ontology must support inference that a referenced table or column is violated when matching a prohibitive policy applies for agent, action, and scope.
+- The ontology must support inference that a referenced table or column is row-tagged when a row-level conditional policy applies for agent, action, and scope.
+
+### Step 2. Candidate classes and properties
+- Classes for schema: `Database`, `Table`, `Column`, `PrimaryKey`, `ForeignKey`.
+- Properties for schema containment: `hasTable`, `inDatabase`, `hasColumn`, `inTable`.
+- Properties for keys: `hasPrimaryKey`, `primaryKeyColumn`, `hasForeignKey`, `foreignKeyColumn`, `referencesColumn`.
+- Class for actor: `Agent`.
+- Classes for policy pattern: `Policy`, `Prohibition`, `Condition`.
+- Properties for policy: `forAgent`, `hasAction`, `hasScope`, `targetsTable`, `targetsColumn`, `hasCondition`.
+- Classes for actions/scopes: `Action`, `ReadAction`, `ModifyAction`, `ActionScope`, `ViewActionScope`, `ProcessActionScope`.
+- Classes for query graph: `QueryStatement`, `SelectStatement`, `UpdateStatement`, `Clause`, `ReferenceNode`, `TableRef`, `ColumnRef`.
+- Properties for query graph: `hasClause`, `hasReference`, `executedBy`, `mapsToAction`, `clauseScope`, `effectiveActionScope`, `refersToTable`, `refersToColumn`.
+- Classes for inference results: `Violated`, `RowTag`.
+- Properties to support row-level policy tagging from query refs: `aboutTableRef`, `aboutColumnRef`.
+- Candidate helper classes for policy targets: maybe `SchemaResource`; later remove if unnecessary.
+
+### Step 3. Draft axioms
+- `Table ⊑ (inDatabase exactly 1 Database)` and `Database ⊑ (hasTable only Table)`.
+- `Column ⊑ (inTable exactly 1 Table)` and `Table ⊑ (hasColumn only Column)`.
+- Inverse pairs: `hasTable` / `inDatabase`, `hasColumn` / `inTable`.
+- `PrimaryKey ⊑ (primaryKeyColumn min 1 Column)`.
+- `ForeignKey ⊑ (foreignKeyColumn min 1 Column) and (referencesColumn min 1 Column)`.
+- `Table ⊑ (hasPrimaryKey max 1 PrimaryKey)` as a minimal reusable assumption.
+- `Table ⊑ (hasForeignKey only ForeignKey)`.
+- `Policy ⊑ (forAgent exactly 1 Agent) and (hasAction some Action)`.
+- `Prohibition ⊑ Policy`.
+- `ReadAction ⊑ Action`, `ModifyAction ⊑ Action`.
+- `ViewActionScope ⊑ ActionScope`, `ProcessActionScope ⊑ ActionScope`, and disjointness of the two scopes.
+- `Policy ⊑ (hasScope only ActionScope)`.
+- `Policy ⊑ (targetsTable only Table) and (targetsColumn only Column) and (hasCondition only Condition)`.
+- `QueryStatement ⊑ (executedBy exactly 1 Agent) and (mapsToAction some Action)`.
+- `SelectStatement ⊑ QueryStatement`, `UpdateStatement ⊑ QueryStatement`.
+- `SelectStatement ⊑ (mapsToAction some ReadAction

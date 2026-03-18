@@ -1,0 +1,83 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Cultural Heritage Survey ODP" ;
+    rdfs:comment "An ontology design pattern for modeling the structure of scientific survey activities performed on cultural heritage entities, including surveys, observations, methods, equipment configurations, and interpretation processes." .
+
+:Survey a owl:Class ;
+    rdfs:label "Survey" ;
+    rdfs:comment "A scientific survey activity performed on a cultural heritage entity." .
+
+:CulturalHeritageEntity a owl:Class ;
+    rdfs:label "Cultural Heritage Entity" ;
+    rdfs:comment "A cultural heritage entity that is the subject of a scientific survey." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "An observation produced or carried out within the context of a survey." .
+
+:Method a owl:Class ;
+    rdfs:label "Method" ;
+    rdfs:comment "A method used in a survey or observation." .
+
+:EquipmentConfiguration a owl:Class ;
+    rdfs:label "Equipment Configuration" ;
+    rdfs:comment "A configuration of equipment used in a survey or observation." .
+
+:InterpretationProcess a owl:Class ;
+    rdfs:label "Interpretation Process" ;
+    rdfs:comment "A process in which observations are interpreted in the context of a survey." .
+
+:surveysEntity a owl:ObjectProperty ;
+    rdfs:label "surveys entity" ;
+    rdfs:comment "Relates a survey to the cultural heritage entity it investigates." ;
+    rdfs:domain :Survey ;
+    rdfs:range :CulturalHeritageEntity .
+
+:hasObservation a owl:ObjectProperty ;
+    rdfs:label "has observation" ;
+    rdfs:comment "Relates a survey to an observation carried out as part of it." ;
+    rdfs:domain :Survey ;
+    rdfs:range :Observation .
+
+:usesMethod a owl:ObjectProperty ;
+    rdfs:label "uses method" ;
+    rdfs:comment "Relates a survey, observation, or interpretation process to a method it uses." ;
+    rdfs:range :Method .
+
+:usesEquipmentConfiguration a owl:ObjectProperty ;
+    rdfs:label "uses equipment configuration" ;
+    rdfs:comment "Relates a survey or observation to an equipment configuration used in it." ;
+    rdfs:range :EquipmentConfiguration .
+
+:hasInterpretationProcess a owl:ObjectProperty ;
+    rdfs:label "has interpretation process" ;
+    rdfs:comment "Relates a survey to an interpretation process associated with it." ;
+    rdfs:domain :Survey ;
+    rdfs:range :InterpretationProcess .
+
+:interpretsObservation a owl:ObjectProperty ;
+    rdfs:label "interprets observation" ;
+    rdfs:comment "Relates an interpretation process to an observation that it interprets." ;
+    rdfs:domain :InterpretationProcess ;
+    rdfs:range :Observation .
+
+:Survey owl:disjointWith :CulturalHeritageEntity, :Observation, :Method, :EquipmentConfiguration, :InterpretationProcess .
+:CulturalHeritageEntity owl:disjointWith :Observation, :Method, :EquipmentConfiguration, :InterpretationProcess .
+:Observation owl:disjointWith :Method, :EquipmentConfiguration, :InterpretationProcess .
+:Method owl:disjointWith :EquipmentConfiguration, :InterpretationProcess .
+:EquipmentConfiguration owl:disjointWith :InterpretationProcess .
+
+:usesMethod rdfs:domain [
+    a owl:Class ;
+    owl:unionOf ( :Survey :Observation :InterpretationProcess )
+] .
+
+:usesEquipmentConfiguration rdfs:domain [
+    a owl:Class ;
+    owl:unionOf ( :Survey :Observation )
+] .

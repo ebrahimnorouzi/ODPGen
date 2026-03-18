@@ -1,0 +1,105 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Sprinkler Use Case Ontology" ;
+  rdfs:comment "Modeling the sprinkler use case for causal reasoning about slippery pavement.".
+
+:WeatherEvent a owl:Class ;
+  rdfs:label "Weather Event" ;
+  rdfs:comment "An event related to weather.".
+
+:RainySeason a :WeatherEvent ;
+  rdfs:label "Rainy Season" ;
+  rdfs:comment "A season with significant rainfall.".
+
+:SprinklerStatus a owl:Class ;
+  rdfs:label "Sprinkler Status" ;
+  rdfs:comment "The status of the sprinkler system.".
+
+:SprinklerOn a :SprinklerStatus ;
+  rdfs:label "Sprinkler On" ;
+  rdfs:comment "The sprinkler system is turned on.".
+
+:WeatherCondition a owl:Class ;
+  rdfs:label "Weather Condition" ;
+  rdfs:comment "A condition of the weather.".
+
+:Rain a :WeatherCondition ;
+  rdfs:label "Rain" ;
+  rdfs:comment "Precipitation in the form of water.".
+
+:PavementState a owl:Class ;
+  rdfs:label "Pavement State" ;
+  rdfs:comment "The state of the pavement.".
+
+:WetPavement a :PavementState ;
+  rdfs:label "Wet Pavement" ;
+  rdfs:comment "The pavement is wet.".
+
+:SlipperyPavement a :PavementState ;
+  rdfs:label "Slippery Pavement" ;
+  rdfs:comment "The pavement is slippery.".
+
+:CausalRelation a owl:Class ;
+  rdfs:label "Causal Relation" ;
+  rdfs:comment "A relation between events where one event causes another.".
+
+:EffectWeight a owl:DatatypeProperty ;
+  rdfs:label "Effect Weight" ;
+  rdfs:comment "The weight of the effect of one event on another." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal.
+
+:causes a owl:ObjectProperty ;
+  rdfs:label "Causes" ;
+  rdfs:comment "An event causes another event." ;
+  rdfs:domain :WeatherEvent ;
+  rdfs:range :WeatherEvent.
+
+:mediatedBy a owl:ObjectProperty ;
+  rdfs:label "Mediated By" ;
+  rdfs:comment "An event causes another event through a third event." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :WeatherEvent.
+
+:hasEffectWeight a owl:ObjectProperty ;
+  rdfs:label "Has Effect Weight" ;
+  rdfs:comment "An event has an effect weight on another event." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :EffectWeight.
+
+:RainySeason :causes :Rain ;
+  rdfs:comment "Rainy season causes rain.".
+
+:Rain :causes :WetPavement ;
+  rdfs:comment "Rain causes wet pavement.".
+
+:WetPavement :causes :SlipperyPavement ;
+  rdfs:comment "Wet pavement causes slippery pavement.".
+
+:Rain :mediatedBy :WetPavement ;
+  rdfs:comment "Rain causes slippery pavement through wet pavement.".
+```
+
+**Documentation**
+
+### Intent
+This ontology design pattern models the sprinkler use case for causal reasoning about slippery pavement, capturing the relationships between weather events, sprinkler status, pavement states, and causal relations.
+
+### Covered requirements
+* Modeling the sprinkler use case
+* Capturing causal relations between events
+* Representing effect weights of causal relations
+* Mediated causal relations
+
+### Known assumptions and exclusions
+* This ontology assumes a binary causal relation, where one event causes another.
+* It does not account for complex causal networks or multiple causal paths.
+* The effect weights are represented as decimal values, but the ontology does not enforce any specific weight range or distribution.
+* The sprinkler status is represented as a simple on/off state, but the ontology does not capture any nuances of sprinkler operation.
+* The pavement state is represented as a simple wet/slippery state, but the ontology does not capture any other pavement conditions.

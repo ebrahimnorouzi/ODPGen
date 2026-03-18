@@ -1,0 +1,58 @@
+**Turtle Ontology Design Pattern (ODP)**
+
+```turtle
+:Ontology a owl:Ontology ;
+  rdfs:label "Temporal Indirection Ontology" ;
+  rdfs:comment "This ontology models the concept of temporal indirection, where a persistent identifier refers to a dynamically changing entity over time.".
+
+:PersistentIdentifier a owl:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A unique identifier that remains constant while the identified entity changes over time.".
+
+:IdentifiedEntity a owl:Class ;
+  rdfs:label "Identified Entity" ;
+  rdfs:comment "The entity that is identified by a PersistentIdentifier.".
+
+:TemporalResolution a owl:ObjectProperty ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :IdentifiedEntity ;
+  rdfs:label "Temporal Resolution" ;
+  rdfs:comment "The relationship between a PersistentIdentifier and the current instance of the IdentifiedEntity.".
+
+:CurrentInstance a owl:Class ;
+  rdfs:subClassOf :IdentifiedEntity ;
+  rdfs:label "Current Instance" ;
+  rdfs:comment "The current instance of the IdentifiedEntity, bound to the PersistentIdentifier through the TemporalResolution relationship.".
+
+:MarketAttribute a owl:Class ;
+  rdfs:subClassOf rdf:Property ;
+  rdfs:label "Market Attribute" ;
+  rdfs:comment "A property that describes an attribute of the CurrentInstance.".
+
+:BoundTo a owl:ObjectProperty ;
+  rdfs:domain :CurrentInstance ;
+  rdfs:range :MarketAttribute ;
+  rdfs:label "Bound To" ;
+  rdfs:comment "The relationship between a CurrentInstance and a MarketAttribute.".
+
+:FrontMonthContract a :IdentifiedEntity ;
+  :TemporalResolution (:PersistentIdentifier1) ;
+  :BoundTo (:LastTradePrice) ;
+  :BoundTo (:TradingVolume) ;
+  :BoundTo (:SettlementValue).
+
+:PersistentIdentifier1 a :PersistentIdentifier.
+```
+
+**Documentation**
+
+- Intent: This pattern models the concept of temporal indirection, where a persistent identifier refers to a dynamically changing entity over time.
+- Covered requirements:
+  - The ontology includes a PersistentIdentifier class, an IdentifiedEntity class, and a TemporalResolution object property.
+  - The PersistentIdentifier class has a domain and range defined for the TemporalResolution property.
+  - The IdentifiedEntity class has a subclass, CurrentInstance, which represents the current instance of the identified entity.
+  - The CurrentInstance class has a domain and range defined for the BoundTo property, which represents the market attributes bound to the current instance.
+- Known assumptions and exclusions:
+  - This pattern assumes that the identified entities change over time and that there is a need for a persistent identifier to maintain continuity.
+  - This pattern does not include any specific reasoning or change mechanisms for the transition of the identified entity when it changes over time.
+  - This pattern does not include any constraints on the number of current instances that can be associated with a single persistent identifier.

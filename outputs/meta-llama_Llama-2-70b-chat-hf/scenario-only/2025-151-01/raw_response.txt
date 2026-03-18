@@ -1,0 +1,97 @@
+Here is an OWL ontology design pattern (ODP) in Turtle syntax that models the scenario you provided:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Formal description of a requested action by an assignee on a target asset" ;
+rdfs:comment "Models a requested action by an assignee on a target asset, enriched with contextual information.".
+
+; Classes
+
+:Assignee a owl:Class ;
+rdfs:label "Assignee" ;
+rdfs:comment "An individual or organization assigned to perform a task.".
+
+:TargetAsset a owl:Class ;
+rdfs:label "Target Asset" ;
+rdfs:comment "The asset on which the action is performed.".
+
+:Action a owl:Class ;
+rdfs:label "Action" ;
+rdfs:comment "The action performed by the assignee on the target asset.".
+
+:Context a owl:Class ;
+rdfs:label "Context" ;
+rdfs:comment "Additional information about the action, including temporal, spatial, role, and request-capability context.".
+
+; Properties
+
+:assignee a owl:ObjectProperty ;
+rdfs:label "assignee" ;
+rdfs:comment "The assignee who performs the action." ;
+domain :Action ;
+range :Assignee.
+
+:targetAsset a owl:ObjectProperty ;
+rdfs:label "targetAsset" ;
+rdfs:comment "The target asset on which the action is performed." ;
+domain :Action ;
+range :TargetAsset.
+
+:context a owl:ObjectProperty ;
+rdfs:label "context" ;
+rdfs:comment "The context in which the action is performed." ;
+domain :Action ;
+range :Context.
+
+:temporalContext a owl:ObjectProperty ;
+rdfs:label "temporalContext" ;
+rdfs:comment "The temporal context in which the action is performed, e.g. date, time." ;
+domain :Context ;
+range :xsd:dateTime.
+
+:spatialContext a owl:ObjectProperty ;
+rdfs:label "spatialContext" ;
+rdfs:comment "The spatial context in which the action is performed, e.g. location." ;
+domain :Context ;
+range :xsd:string.
+
+:roleContext a owl:ObjectProperty ;
+rdfs:label "roleContext" ;
+rdfs:comment "The role context in which the action is performed, e.g. employee, manager." ;
+domain :Context ;
+range :xsd:string.
+
+:requestCapabilityContext a owl:ObjectProperty ;
+rdfs:label "requestCapabilityContext" ;
+rdfs:comment "The request capability context in which the action is performed, e.g. requester, approver." ;
+domain :Context ;
+range :xsd:string.
+
+; Axioms
+
+:Assignee subclassOf :Person.
+:TargetAsset subclassOf :Asset.
+:Action subclassOf :Event.
+:Context subclassOf :Information.
+
+:assignee domain :Action range :Assignee.
+:targetAsset domain :Action range :TargetAsset.
+:context domain :Action range :Context.
+
+:temporalContext domain :Context range :xsd:dateTime.
+:spatialContext domain :Context range :xsd:string.
+:roleContext domain :Context range :xsd:string.
+:requestCapabilityContext domain :Context range :xsd:string.
+
+:Action disjointWith :xsd:dateTime.
+:Context disjointWith :xsd:string.
+```
+Intent:
+The ODP models a requested action by an assignee on a target asset, enriched with contextual information, including temporal, spatial, role, and request-capability context.
+
+Covered requirements

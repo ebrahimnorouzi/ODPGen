@@ -1,0 +1,87 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Author Name Ontology" ;
+rdfs:comment "An ontology for modeling author names and name changes.".
+
+:Author a owl:Class ;
+rdfs:label "Author" ;
+rdfs:comment "An author who writes books.".
+
+:Name a owl:Class ;
+rdfs:label "Name" ;
+rdfs:comment "A name adopted by an author.".
+
+:AdoptedName a owl:Class ;
+rdfs:label "Adopted Name" ;
+rdfs:comment "A name adopted by an author for a specific book.".
+
+:Book a owl:Class ;
+rdfs:label "Book" ;
+rdfs:comment "A book written by an author.".
+
+:AuthorName a owl:Class ;
+rdfs:label "Author Name" ;
+rdfs:comment "A name used by an author for a specific book.".
+
+:nameChange a owl:Class ;
+rdfs:label "Name Change" ;
+rdfs:comment "A change of name adopted by an author.".
+
+:marriage a owl:Class ;
+rdfs:label "Marriage" ;
+rdfs:comment "A marriage that results in a name change for an author.".
+
+:Author rdfs:subClassOf :Person.
+:Person a owl:Class ;
+rdfs:label "Person" ;
+rdfs:comment "A person who may adopt different names.".
+
+:Name rdfs:subClassOf :String.
+:AdoptedName rdfs:subClassOf :Name.
+:AuthorName rdfs:subClassOf :Name.
+:Book rdfs:subClassOf :Publication.
+:Publication a owl:Class ;
+rdfs:label "Publication" ;
+rdfs:comment "A publication written by an author.".
+
+:nameChange rdfs:subClassOf :Change.
+:Change a owl:Class ;
+rdfs:label "Change" ;
+rdfs:comment "A change of name or other attribute.".
+
+:marriage rdfs:subClassOf :NameChange.
+
+:Author rdfs:hasName :Name.
+:Author rdfs:hasAdoptedName :AdoptedName.
+:AdoptedName rdfs:hasAuthor :Author.
+:Book rdfs:hasAuthor :Author.
+:Author rdfs:hasBook :Book.
+:Name rdfs:hasAuthor :Author.
+:AuthorName rdfs:hasAuthor :Author.
+:Author rdfs:hasNameChange :NameChange.
+:NameChange rdfs:hasOldName :Name.
+:NameChange rdfs:hasNewName :Name.
+:marriage rdfs:hasNameChange :NameChange.
+
+Intent:
+This ontology models the relationship between an author and their adopted names, including name changes due to marriage.
+
+Covered requirements:
+
+* An author can adopt different names for different books.
+* An author can change their name due to marriage.
+* A book can have only one author.
+* An author can have multiple books.
+* A name can be adopted by only one author.
+* A name change can be due to marriage.
+
+Known assumptions and exclusions:
+
+* This ontology assumes that an author's name is a string.
+* This ontology does not model the relationship between an author and their books beyond the fact that an author can have multiple books.
+* This ontology does not model the relationship between an author and their personal information beyond their name and marriage status.

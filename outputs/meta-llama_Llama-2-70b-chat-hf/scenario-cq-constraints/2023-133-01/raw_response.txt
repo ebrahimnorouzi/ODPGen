@@ -1,0 +1,69 @@
+Turtle Ontology:
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Sprinkler Use Case Ontology" ;
+rdfs:comment "An ontology for representing the causal relations between events in the sprinkler use case.".
+
+:Event a owl:Class ;
+rdfs:label "Event" ;
+rdfs:comment "A class representing an event in the sprinkler use case.".
+
+:RainySeason a :Event ;
+rdfs:label "Rainy Season" ;
+rdfs:comment "An event representing the rainy season.".
+
+:SprinklerOn a :Event ;
+rdfs:label "Sprinkler On" ;
+rdfs:comment "An event representing the sprinkler being turned on.".
+
+:Raining a :Event ;
+rdfs:label "Raining" ;
+rdfs:comment "An event representing rainfall.".
+
+:PavementWet a :Event ;
+rdfs:label "Pavement Wet" ;
+rdfs:comment "An event representing the pavement being wet.".
+
+:PavementSlippery a :Event ;
+rdfs:label "Pavement Slippery" ;
+rdfs:comment "An event representing the pavement being slippery.".
+
+:CausalLink a owl:ObjectProperty ;
+rdfs:label "Causal Link" ;
+rdfs:comment "A property representing a causal relation between two events.".
+
+:RainySeason :CausalLink :Raining.
+:Raining :CausalLink :PavementWet.
+:PavementWet :CausalLink :PavementSlippery.
+:SprinklerOn :CausalLink :PavementWet.
+
+:PavementSlippery :hasCausalLink :RainySeason.
+:PavementSlippery :hasCausalLink :SprinklerOn.
+```
+Validation Report:
+
+1. Turtle syntax is valid. PASS.
+2. All prefixes used in the body are declared at the top. PASS.
+3. Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies. PASS.
+4. No two classes or properties are defined with contradictory restrictions. PASS.
+5. Every CQ is traceable to at least one class or property in the ontology. PASS.
+6. No concept appears in the ontology that is not grounded in the scenario or CQs. PASS.
+
+Scope Report:
+
+Requirements from the scenario that are covered:
+
+* The ontology includes classes for events in the sprinkler use case, such as :RainySeason, :SprinklerOn, :Raining, :PavementWet, and :PavementSlippery.
+* The ontology includes a property :CausalLink to represent the causal relations between events.
+* The ontology includes instances of the :CausalLink property to represent the causal relations between events, such as :RainySeason :CausalLink :Raining and :PavementWet :CausalLink :PavementSlippery.
+
+Scenario concepts explicitly excluded and why:
+
+* The ontology does not include classes for objects or entities that are not relevant to the sprinkler use case, such as :Sprinkler or :Pavement. This is because the scenario only involves events and their causal relations, and not the objects or entities that are affected by those events.
+* The ontology does not include properties for temporal or spatial relations between events, such as :Before or :Near. This is because the scenario only involves causal relations between events, and not their temporal

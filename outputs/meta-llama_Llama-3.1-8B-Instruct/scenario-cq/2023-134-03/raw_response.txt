@@ -1,3 +1,5 @@
+### Turtle Ontology
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -7,108 +9,94 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Governance Patterns in Solid Apps Ontology" ;
-  rdfs:comment "An ontology for governance patterns in Solid apps".
+  rdfs:comment "Ontology for governance patterns in Solid apps".
 
-:Actor a rdfs:Class ;
-  rdfs:label "Actor" ;
-  rdfs:comment "An entity providing a Pod or an app".
-
-:Role a rdfs:Class ;
-  rdfs:label "Role" ;
-  rdfs:comment "A function or position within a Pod or an app".
-
-:Pod a rdfs:Class ;
-  rdfs:label "Pod" ;
-  rdfs:comment "A container for user data in Solid".
-
-:App a rdfs:Class ;
-  rdfs:label "App" ;
-  rdfs:comment "A software application running on a Pod".
-
-:Infrastructure a rdfs:Class ;
-  rdfs:label "Infrastructure" ;
-  rdfs:comment "The underlying system supporting a Pod".
-
-:Specification a rdfs:Class ;
-  rdfs:label "Specification" ;
-  rdfs:comment "A set of rules or standards for a Pod".
-
-:Category a rdfs:Class ;
-  rdfs:label "Category" ;
-  rdfs:comment "A classification of data within a Pod".
-
-:Data a rdfs:Class ;
-  rdfs:label "Data" ;
-  rdfs:comment "Information stored within a Pod".
-
-:Provider a rdfs:Class ;
-  rdfs:label "Provider" ;
-  rdfs:comment "An entity providing a Pod or an app".
-
-:DataHandlingPractice a rdfs:Class ;
-  rdfs:label "Data Handling Practice" ;
-  rdfs:comment "A description of how data is handled within a Pod".
-
-:PrivacyPolicy a rdfs:Class ;
-  rdfs:label "Privacy Policy" ;
-  rdfs:comment "A statement of how data is used and protected".
-
-:User a rdfs:Class ;
-  rdfs:label "User" ;
-  rdfs:comment "An individual interacting with a Pod or an app".
-
-:Registry a rdfs:Class ;
+:Registry a owl:Class ;
   rdfs:label "Registry" ;
-  rdfs:comment "A database of information about Pods and apps".
+  rdfs:comment "A registry for governance patterns in Solid apps".
 
 :RegistryMaintainer a owl:Class ;
   rdfs:label "Registry Maintainer" ;
-  rdfs:comment "An entity responsible for maintaining a registry".
+  rdfs:comment "An entity maintaining the registry".
 
 :RegistryCreationDate a owl:DatatypeProperty ;
   rdfs:label "Registry Creation Date" ;
-  rdfs:comment "The date a registry was created" ;
+  rdfs:comment "The date the registry was created" ;
+  rdfs:domain :Registry ;
   rdfs:range xsd:date.
 
 :RegistryUpdateDate a owl:DatatypeProperty ;
   rdfs:label "Registry Update Date" ;
-  rdfs:comment "The date a registry was last updated" ;
+  rdfs:comment "The date the registry was last updated" ;
+  rdfs:domain :Registry ;
   rdfs:range xsd:date.
 
-:DataCategory a owl:DatatypeProperty ;
-  rdfs:label "Data Category" ;
-  rdfs:comment "A classification of data within a Pod" ;
-  rdfs:range :Category.
+:DataType a owl:Class ;
+  rdfs:label "Data Type" ;
+  rdfs:comment "A category of data".
 
-:DataStorageLocation a owl:DatatypeProperty ;
+:DataStorageLocation a owl:Class ;
   rdfs:label "Data Storage Location" ;
-  rdfs:comment "The location where data is stored within a Pod" ;
-  rdfs:range xsd:string.
+  rdfs:comment "A location where data is stored".
 
-:Policy a owl:DatatypeProperty ;
-  rdfs:label "Policy" ;
-  rdfs:comment "A statement of how data is used and protected" ;
-  rdfs:range :PrivacyPolicy.
+:DataPolicy a owl:Class ;
+  rdfs:label "Data Policy" ;
+  rdfs:comment "A policy associated with data".
 
-:RegistryMaintainer a owl:inverseOf :maintainsRegistry.
-
-:maintainsRegistry a owl:ObjectProperty ;
+:RegistryMaintainerRegistry a owl:ObjectProperty ;
   rdfs:label "Maintains Registry" ;
-  rdfs:comment "An entity responsible for maintaining a registry" ;
+  rdfs:comment "An entity maintaining the registry" ;
+  rdfs:domain :RegistryMaintainer ;
+  rdfs:range :Registry.
+
+:RegistryRegistryCreationDate a owl:ObjectProperty ;
+  rdfs:label "Registry Creation Date" ;
+  rdfs:comment "The date the registry was created" ;
   rdfs:domain :Registry ;
-  rdfs:range :RegistryMaintainer.
+  rdfs:range xsd:date.
 
-:hasActor a owl:ObjectProperty ;
-  rdfs:label "Has Actor" ;
-  rdfs:comment "An entity providing a Pod or an app" ;
-  rdfs:domain :Pod ;
-  rdfs:range :Actor.
+:RegistryRegistryUpdateDate a owl:ObjectProperty ;
+  rdfs:label "Registry Update Date" ;
+  rdfs:comment "The date the registry was last updated" ;
+  rdfs:domain :Registry ;
+  rdfs:range xsd:date.
 
-:hasRole a owl:ObjectProperty ;
-  rdfs:label "Has Role" ;
-  rdfs:comment "A function or position within a Pod or an app" ;
-  rdfs:domain :Actor ;
-  rdfs:range :Role.
+:DataHasDataType a owl:ObjectProperty ;
+  rdfs:label "Has Data Type" ;
+  rdfs:comment "A category of data" ;
+  rdfs:domain :DataStorageLocation ;
+  rdfs:range :DataType.
 
-:hasInfrastructure a owl:ObjectProperty ;
-  r
+:DataStorageLocationHasData a owl:ObjectProperty ;
+  rdfs:label "Has Data" ;
+  rdfs:comment "A location where data is stored" ;
+  rdfs:domain :DataStorageLocation ;
+  rdfs:range :Data.
+
+:DataHasDataPolicy a owl:ObjectProperty ;
+  rdfs:label "Has Data Policy" ;
+  rdfs:comment "A policy associated with data" ;
+  rdfs:domain :DataStorageLocation ;
+  rdfs:range :DataPolicy.
+```
+
+### Scenario-requirement-to-axiom mapping
+
+1. **Identity of Solid actors and their roles is unknown**: 
+   - Axiom: `:RegistryMaintainer a owl:Class ;`
+   - Axiom: `:RegistryMaintainerRegistry a owl:ObjectProperty ;`
+2. **No metadata about Solid infrastructure**: 
+   - Axiom: `:Registry a owl:Class ;`
+   - Axiom: `:RegistryRegistryCreationDate a owl:ObjectProperty ;`
+   - Axiom: `:RegistryRegistryUpdateDate a owl:ObjectProperty ;`
+3. **Availability/Discovery of categories of data**: 
+   - Axiom: `:DataType a owl:Class ;`
+   - Axiom: `:DataHasDataType a owl:ObjectProperty ;`
+4. **Pod and app providers do not provide information on their data handling practices**: 
+   - Axiom: `:DataPolicy a owl:Class ;`
+   - Axiom: `:DataHasDataPolicy a owl:ObjectProperty ;`
+5. **Users cannot express their privacy policies**: 
+   - Axiom: `:DataPolicy a owl:Class ;`
+   - Axiom: `:DataHasDataPolicy a owl:ObjectProperty ;`
+6. **No logging or record-keeping**: 
+   - Axiom: `:DataStorageLocation a owl:Class

@@ -1,0 +1,99 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Causal Bayesian Network sprinkler ODP" ;
+  rdfs:comment "An ontology design pattern for representing the sprinkler causal Bayesian network use case, including events, causal relations, effect weights, and mediation needed to answer the stated competency questions." .
+
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An event represented as a node in the causal Bayesian network." .
+
+:CausalRelation a owl:Class ;
+  rdfs:label "Causal relation" ;
+  rdfs:comment "A directed causal relation between two events in the model." .
+
+:MediatedCausalRelation a owl:Class ;
+  rdfs:label "Mediated causal relation" ;
+  rdfs:comment "A causal relation whose effect on a target event is mediated by another event." ;
+  rdfs:subClassOf :CausalRelation .
+
+:RainySeason a owl:Class ;
+  rdfs:label "Rainy season" ;
+  rdfs:comment "The event that it is rainy season." ;
+  rdfs:subClassOf :Event .
+
+:SprinklerOn a owl:Class ;
+  rdfs:label "Sprinkler on" ;
+  rdfs:comment "The event that the sprinkler is on." ;
+  rdfs:subClassOf :Event .
+
+:Raining a owl:Class ;
+  rdfs:label "Raining" ;
+  rdfs:comment "The event that it is raining." ;
+  rdfs:subClassOf :Event .
+
+:PavementWet a owl:Class ;
+  rdfs:label "Pavement wet" ;
+  rdfs:comment "The event that the pavement is wet." ;
+  rdfs:subClassOf :Event .
+
+:PavementSlippery a owl:Class ;
+  rdfs:label "Pavement slippery" ;
+  rdfs:comment "The event that the pavement is slippery." ;
+  rdfs:subClassOf :Event .
+
+:hasCause a owl:ObjectProperty ;
+  rdfs:label "has cause" ;
+  rdfs:comment "Relates an event to an event that causally influences it." ;
+  rdfs:domain :Event ;
+  rdfs:range :Event .
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has effect" ;
+  rdfs:comment "Relates an event to an event that it causally influences." ;
+  rdfs:domain :Event ;
+  rdfs:range :Event ;
+  owl:inverseOf :hasCause .
+
+:hasCausalRelation a owl:ObjectProperty ;
+  rdfs:label "has causal relation" ;
+  rdfs:comment "Relates an event to an outgoing causal relation for which it is the source." ;
+  rdfs:domain :Event ;
+  rdfs:range :CausalRelation .
+
+:hasSourceEvent a owl:ObjectProperty ;
+  rdfs:label "has source event" ;
+  rdfs:comment "Relates a causal relation to its source event." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Event .
+
+:hasTargetEvent a owl:ObjectProperty ;
+  rdfs:label "has target event" ;
+  rdfs:comment "Relates a causal relation to its target event." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :Event .
+
+:hasMediatorEvent a owl:ObjectProperty ;
+  rdfs:label "has mediator event" ;
+  rdfs:comment "Relates a mediated causal relation to the event through which the causal effect is mediated." ;
+  rdfs:domain :MediatedCausalRelation ;
+  rdfs:range :Event .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+  rdfs:label "has effect weight" ;
+  rdfs:comment "Associates a causal relation with its effect weight." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal .
+
+:RainySeasonEvent a :RainySeason ;
+  rdfs:label "rainy season event" ;
+  rdfs:comment "The node representing the event that it is rainy season." .
+
+:SprinklerOnEvent a :SprinklerOn ;
+  rdfs:label "sprinkler on event" ;
+  rdfs:comment "The node representing the event that the

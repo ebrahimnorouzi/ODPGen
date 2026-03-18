@@ -1,0 +1,74 @@
+:Ontology a owl:Ontology ;
+    rdfs:label "CBN Sprinkler Scenario" ;
+    rdfs:comment "An ontology modeling the CBN sprinkler scenario, focusing on causal relations and mediated effects.".
+
+:Event a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "A general class for events.".
+
+:RainySeason a :Event ;
+    rdfs:label "Rainy Season" ;
+    rdfs:comment "The event representing the rainy season.".
+
+:SprinklerOn a :Event ;
+    rdfs:label "Sprinkler On" ;
+    rdfs:comment "The event representing the sprinkler being on.".
+
+:Raining a :Event ;
+    rdfs:label "Raining" ;
+    rdfs:comment "The event representing it is raining.".
+
+:PavementWet a :Event ;
+    rdfs:label "Pavement Wet" ;
+    rdfs:comment "The event representing the pavement is wet.".
+
+:PavementSlippery a :Event ;
+    rdfs:label "Pavement Slippery" ;
+    rdfs:comment "The event representing the pavement is slippery.".
+
+:Causes a owl:ObjectProperty ;
+    rdfs:domain :Event ;
+    rdfs:range :Event ;
+    rdfs:label "Causes" ;
+    rdfs:comment "A property indicating that one event causes another.".
+
+:MediatedBy a owl:ObjectProperty ;
+    rdfs:domain :Event ;
+    rdfs:range :Event ;
+    rdfs:label "Mediated By" ;
+    rdfs:comment "A property indicating that an event is mediated by another event.".
+
+:EffectWeight a xsd:decimal ;
+    rdfs:label "Effect Weight" ;
+    rdfs:comment "A data type for effect weights.".
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A class for causal relations between events.".
+
+:CausalRelation rdf:type owl:Restriction ;
+    owl:onProperty :Causes ;
+    owl:allValuesFrom :CausalRelation ;
+
+:MediatedCausalRelation a owl:Class ;
+    rdfs:label "Mediated Causal Relation" ;
+    rdfs:comment "A class for causal relations where one event is mediated by another.".
+
+:MediatedCausalRelation rdf:type owl:Restriction ;
+    owl:onProperty :Causes ;
+    owl:allValuesFrom :MediatedCausalRelation ;
+    owl:someValuesFrom :MediatedBy.
+
+:CausalRelation rdf:type owl:FunctionalProperty ;
+    owl:inverseOf :MediatedBy ;
+
+:MediatedCausalRelation rdf:type owl:FunctionalProperty ;
+    owl:inverseOf :Causes ;
+
+:CausalRelation :EffectWeight owl:hasValue "0.6" ;
+    rdfs:label "Rainy Season Causes Rain" ;
+    rdfs:comment "The causal relation between the rainy season and rain with an effect weight of 0.6.".
+
+:MediatedCausalRelation :Raining :PavementWet :EffectWeight "0.8" ;
+    rdfs:label "Rain Causes Wet Pavement" ;
+    rdfs:comment "The mediated causal relation between rain and wet pavement with an effect weight of 0.8.".

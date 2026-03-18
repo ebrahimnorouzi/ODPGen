@@ -1,0 +1,86 @@
+1. **Reasoning for steps 1–6**
+
+### Step 1. Atomic requirements
+- The ontology must represent a policy that is being evaluated.
+- The ontology must represent parties relevant to policy evaluation.
+- The ontology must represent assets relevant to policy evaluation.
+- The ontology must represent collections of assets associated with a policy.
+- The ontology must represent collections of parties associated with a policy.
+- The ontology must represent rules associated with a policy.
+- The ontology must represent actions that were performed or attempted.
+- The ontology must represent events that have occurred and information about them.
+- The ontology must represent the number of times a rule has been exercised.
+- The ontology must represent the duration for which a rule has been exercised.
+- The ontology must represent recipients or recipient categories for the result of an exercised rule.
+- The ontology must represent whether a financial payment has been made and the amount paid.
+- The ontology must represent the current time.
+- The ontology must represent the location of a party.
+- The ontology must represent a party requesting access to an asset.
+- The ontology must represent a segment or part of an asset, such as minutes 4 to 9 of a video stream.
+- The ontology must represent a purpose for access, such as academic research.
+
+### Step 2. Candidate classes and properties
+- Classes:
+  - `:Policy`
+  - `:Rule`
+  - `:Party`
+  - `:Asset`
+  - `:AssetCollection`
+  - `:PartyCollection`
+  - `:Action`
+  - `:Event`
+  - `:Recipient`
+  - `:RecipientCategory`
+  - `:Payment`
+  - `:Purpose`
+  - `:AssetSegment`
+  - `:TemporalContext`
+  - `:Location`
+- Object properties:
+  - `:hasRule` (Policy → Rule)
+  - `:hasAssetCollection` (Policy → AssetCollection)
+  - `:hasPartyCollection` (Policy → PartyCollection)
+  - `:hasMemberAsset` (AssetCollection → Asset)
+  - `:hasMemberParty` (PartyCollection → Party)
+  - `:performedAction` (Party → Action)
+  - `:attemptedAction` (Party → Action)
+  - `:hasEvent` (Policy or Rule → Event)
+  - `:aboutRule` (Event → Rule)
+  - `:aboutAction` (Event → Action)
+  - `:hasRecipient` (Rule → Recipient)
+  - `:hasRecipientCategory` (Rule → RecipientCategory)
+  - `:hasPayment` (Rule → Payment)
+  - `:hasPurpose` (Rule → Purpose)
+  - `:hasTargetAsset` (Rule → Asset)
+  - `:hasTargetSegment` (Rule → AssetSegment)
+  - `:requestedBy` (Rule → Party)
+  - `:hasLocation` (Party → Location)
+  - `:hasTemporalContext` (Policy → TemporalContext)
+- Datatype properties:
+  - `:currentTime` (TemporalContext → xsd:dateTime)
+  - `:exerciseCount` (Rule → xsd:nonNegativeInteger)
+  - `:exerciseDuration` (Rule → xsd:duration)
+  - `:paymentMade` (Payment → xsd:boolean)
+  - `:amountPaid` (Payment → xsd:decimal)
+  - `:eventTime` (Event → xsd:dateTime)
+  - `:eventDescription` (Event → xsd:string)
+  - `:segmentStartMinute` (AssetSegment → xsd:decimal)
+  - `:segmentEndMinute` (AssetSegment → xsd:decimal)
+
+### Step 3. Draft axioms
+- Subclass axioms:
+  - `:AssetSegment rdfs:subClassOf :Asset`
+- Domain/range axioms:
+  - `:hasRule` domain `:Policy`, range `:Rule`
+  - `:hasAssetCollection` domain `:Policy`, range `:AssetCollection`
+  - `:hasPartyCollection` domain `:Policy`, range `:PartyCollection`
+  - `:hasMemberAsset` domain `:AssetCollection`, range `:Asset`
+  - `:hasMemberParty` domain `:PartyCollection`, range `:Party`
+  - `:performedAction` domain `:Party`, range `:Action`
+  - `:attemptedAction` domain `:Party`, range `:Action`
+  - `:hasEvent` domain `owl:Thing`, range `:Event`
+  - `:aboutRule` domain `:Event`, range `:Rule`
+  - `:aboutAction` domain `:Event`, range `:Action`
+  - `:hasRecipient` domain `:Rule`, range `:Recipient`
+  - `:hasRecipientCategory` domain `:Rule`, range `:RecipientCategory`
+  - `:hasPayment` domain

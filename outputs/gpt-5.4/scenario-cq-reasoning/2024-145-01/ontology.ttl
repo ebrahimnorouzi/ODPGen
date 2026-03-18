@@ -1,0 +1,79 @@
+**Step 1 — Atomic requirements**
+- The ontology must represent states.
+- The ontology must represent districts.
+- The ontology must represent courts.
+- The ontology must represent district courts as a kind of court.
+- The ontology must represent that a district is located in a state.
+- The ontology must represent that a district court is located in a state.
+- The ontology must represent authority relations between courts.
+- The ontology must represent bad checks.
+- The ontology must represent check payments.
+- The ontology must represent a relation between a bad check and its check payment.
+- The ontology must represent the transaction type of a bad check.
+- The ontology must represent the transaction status of a check payment.
+- The ontology must represent the time/date of a check payment.
+
+**Step 2 — Candidate classes and properties**
+- Classes:
+  - `:State`
+  - `:District`
+  - `:Court`
+  - `:DistrictCourt`
+  - `:BadCheck`
+  - `:CheckPayment`
+- Object properties:
+  - `:inState` (District or Court → State)
+  - `:hasAuthorityOver` (Court → Court)
+  - `:hasCheckPayment` (BadCheck → CheckPayment)
+- Datatype properties:
+  - `:transactionType` (BadCheck → string)
+  - `:transactionStatus` (CheckPayment → string)
+  - `:paymentDate` (CheckPayment → dateTime)
+
+**Step 3 — Draft axioms**
+- Subclass axioms:
+  - `:DistrictCourt rdfs:subClassOf :Court`
+- Domain/range axioms:
+  - `:inState` domain `owl:Thing`, range `:State` initially; then refine to support both district and district court.
+  - `:hasAuthorityOver` domain `:Court`, range `:Court`
+  - `:hasCheckPayment` domain `:BadCheck`, range `:CheckPayment`
+  - `:transactionType` domain `:BadCheck`, range `xsd:string`
+  - `:transactionStatus` domain `:CheckPayment`, range `xsd:string`
+  - `:paymentDate` domain `:CheckPayment`, range `xsd:dateTime`
+- Cardinality axioms:
+  - A `:BadCheck` has at most one `:transactionType`
+  - A `:BadCheck` has at most one `:hasCheckPayment`
+  - A `:CheckPayment` has at most one `:transactionStatus`
+  - A `:CheckPayment` has at most one `:paymentDate`
+- Disjointness axioms:
+  - `:State`, `:District`, `:Court`, `:BadCheck`, `:CheckPayment` pairwise disjoint where sensible
+  - `:DistrictCourt` is not disjoint with `:Court` because it is a subclass
+
+**Step 4 — CQ coverage check**
+- CQ: “List all district courts in a given state.”
+  - Enabled by `:DistrictCourt`, `:inState`, and range `:State`.
+- CQ: “In which state is a given district court instance located?”
+  - Enabled by `:inState`.
+- CQ: “How many districts are in a given state of India?”
+  - Enabled by `:District` and `:inState`.
+- CQ: “Which court has authority over a given court?”
+  - Enabled by `:hasAuthorityOver`.
+- CQ: “What is the check transaction type for a bad check?”
+  - Enabled by `:transactionType`.
+- CQ: “When is a check payment of a bad check?”
+  - Enabled by `:hasCheckPayment` and `:paymentDate`.
+- CQ: “What is the transaction status of a given check payment?”
+  - Enabled by `:transactionStatus`.
+- Uncovered/weakly covered:
+  - `:inState` needs a clean domain that works for both `:District` and `:DistrictCourt` without overcommitting.
+  - Counting districts in a state is query-level, but class/property support is sufficient.
+
+**Step 5 — Refine axioms**
+- Refine `:inState` domain to an anonymous union of `:District` and `:Court` so both districts and district courts can use it minimally.
+- Add inverse property `:hasSubordinateCourt` as inverse of `:hasAuthorityOver` only if needed; not needed by any CQ, so omit for minimality.
+- Keep transaction type and status as datatype properties with strings to avoid unnecessary controlled vocabularies.
+- Keep payment time as `xsd:dateTime` to answer “when”.
+
+**Step 6 — Remove untraceable elements**
+- Removed any India-specific class because the CQ only needs states and districts; “of India” is contextual, not a required ontology commitment.
+- Removed any regulation-specific classes because no CQ asks about regulations directly.

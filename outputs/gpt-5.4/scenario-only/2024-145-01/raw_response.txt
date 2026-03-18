@@ -1,0 +1,96 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Court Hierarchy and Bad Check Regulation ODP" ;
+    rdfs:comment "An ontology design pattern for representing legal information about court hierarchies and regulations related to bad check crime, including unstructured legal information resources." .
+
+:LegalInformation a owl:Class ;
+    rdfs:label "Legal Information" ;
+    rdfs:comment "Information used in legal tasks." .
+
+:UnstructuredLegalInformation a owl:Class ;
+    rdfs:label "Unstructured Legal Information" ;
+    rdfs:comment "Legal information that is primarily unstructured in nature." ;
+    rdfs:subClassOf :LegalInformation .
+
+:Court a owl:Class ;
+    rdfs:label "Court" ;
+    rdfs:comment "A court within a court hierarchy." .
+
+:CourtHierarchy a owl:Class ;
+    rdfs:label "Court Hierarchy" ;
+    rdfs:comment "A hierarchical organization of courts." .
+
+:Regulation a owl:Class ;
+    rdfs:label "Regulation" ;
+    rdfs:comment "A legal regulation." .
+
+:BadCheckCrimeRegulation a owl:Class ;
+    rdfs:label "Bad Check Crime Regulation" ;
+    rdfs:comment "A regulation related to bad check crime." ;
+    rdfs:subClassOf :Regulation .
+
+:BadCheckCrime a owl:Class ;
+    rdfs:label "Bad Check Crime" ;
+    rdfs:comment "The crime concerning bad checks." .
+
+:hasCourt a owl:ObjectProperty ;
+    rdfs:label "has court" ;
+    rdfs:comment "Relates a court hierarchy to a court that is part of it." ;
+    rdfs:domain :CourtHierarchy ;
+    rdfs:range :Court .
+
+:hasHigherCourt a owl:ObjectProperty ;
+    rdfs:label "has higher court" ;
+    rdfs:comment "Relates a court to another court that is higher in the hierarchy." ;
+    rdfs:domain :Court ;
+    rdfs:range :Court .
+
+:capturesCourtHierarchy a owl:ObjectProperty ;
+    rdfs:label "captures court hierarchy" ;
+    rdfs:comment "Relates legal information to a court hierarchy it captures." ;
+    rdfs:domain :LegalInformation ;
+    rdfs:range :CourtHierarchy .
+
+:capturesRegulation a owl:ObjectProperty ;
+    rdfs:label "captures regulation" ;
+    rdfs:comment "Relates legal information to a regulation it captures." ;
+    rdfs:domain :LegalInformation ;
+    rdfs:range :Regulation .
+
+:regulatesCrime a owl:ObjectProperty ;
+    rdfs:label "regulates crime" ;
+    rdfs:comment "Relates a regulation to the crime it regulates." ;
+    rdfs:domain :Regulation ;
+    rdfs:range :BadCheckCrime .
+
+:Court owl:disjointWith :Regulation, :LegalInformation, :CourtHierarchy, :BadCheckCrime .
+:Regulation owl:disjointWith :LegalInformation, :CourtHierarchy, :BadCheckCrime .
+:LegalInformation owl:disjointWith :CourtHierarchy, :BadCheckCrime .
+:CourtHierarchy owl:disjointWith :BadCheckCrime .
+```
+
+**Intent:**  
+Model legal information resources that capture court hierarchies and regulations concerning bad check crime, with emphasis on primarily unstructured legal information.
+
+**Covered requirements:**
+- Represent legal tasks as involving legal information.
+- Represent that the information is primarily unstructured in nature.
+- Represent court hierarchies.
+- Represent courts as members of a hierarchy.
+- Represent hierarchical relations among courts.
+- Represent regulations related to bad check crime.
+- Represent the relation between regulations and the bad check crime they concern.
+- Represent that legal information captures both court hierarchies and relevant regulations.
+
+**Known assumptions and exclusions:**
+- “Legal tasks” are not modeled as a separate class because the scenario only states a context, not explicit task entities or relations.
+- “Bad check crime” is modeled as a single crime concept without further criminal law detail.
+- No procedural, jurisdictional, temporal, documentary, or textual structure is added for the unstructured information.
+- No specific court levels, named courts, or specific regulations are introduced.
+- Disjointness is only asserted among the clearly distinct high-level categories used in the pattern.

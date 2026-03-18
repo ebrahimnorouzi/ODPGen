@@ -1,0 +1,73 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Weather and Pavement Conditions" ;
+  rdfs:comment "An ontology for modeling weather events and their effects on pavement conditions.".
+
+# Classes
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An occurrence or action that has an impact on the pavement.".
+
+:WeatherEvent a owl:Class ;
+  rdfs:subClassOf [ owl:allValuesFrom (:Event) ] ;
+  rdfs:label "Weather Event" ;
+  rdfs:comment "A specific weather event that affects the pavement.".
+
+:PavementCondition a owl:Class ;
+  rdfs:label "Pavement Condition" ;
+  rdfs:comment "The current state of the pavement.".
+
+:SlipperyPavement a owl:Class ;
+  rdfs:subClassOf [ owl:disjointUnion (:PavementCondition) ] ;
+  rdfs:label "Slippery Pavement" ;
+  rdfs:comment "A pavement condition where the surface is slippery.".
+
+:WetPavement a owl:Class ;
+  rdfs:subClassOf [ owl:disjointUnion (:PavementCondition) ] ;
+  rdfs:label "Wet Pavement" ;
+  rdfs:comment "A pavement condition where the surface is wet.".
+
+:Sprinkler a owl:Class ;
+  rdfs:label "Sprinkler" ;
+  rdfs:comment "A device used to spray water.".
+
+:SprinklerSystem a owl:Class ;
+  rdfs:subClassOf [ owl:allValuesFrom (:Sprinkler) ] ;
+  rdfs:label "Sprinkler System" ;
+  rdfs:comment "A system of sprinklers used to water an area.".
+
+# Properties
+:hasEvent a owl:ObjectProperty ;
+  rdfs:domain [ owl:allValuesFrom (:PavementCondition) ] ;
+  rdfs:range (:Event) ;
+  rdfs:label "Has Event" ;
+  rdfs:comment "The event that caused the pavement condition.".
+
+:causes a owl:ObjectProperty ;
+  rdfs:domain (:Event) ;
+  rdfs:range (:PavementCondition) ;
+  rdfs:label "Causes" ;
+  rdfs:comment "The pavement condition that is caused by the event.".
+
+:isOn a owl:ObjectProperty ;
+  rdfs:domain (:SprinklerSystem) ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "Is On" ;
+  rdfs:comment "Indicates whether the sprinkler system is turned on or off.".
+
+# Axioms
+:SlipperyPavement a owl:Class ;
+  owl:equivalentClass [ rdf:type owl:Class ;
+    owl:intersectionOf (
+      (:PavementCondition)
+      (owl:Restriction [
+        owl:onProperty :causes ;
+        owl:hasValue :SlipperyPavement
+      ])
+    )
+  ].

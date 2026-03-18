@@ -1,3 +1,5 @@
+### Turtle Ontology
+
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
@@ -7,89 +9,108 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Sprinkler Use Case Ontology" ;
-  rdfs:comment "An ontology for the sprinkler use case, a well-known example in the CBN literature.".
+  rdfs:comment "Ontology for reasoning about the cause of a slippery pavement".
 
-:Event a rdfs:Class ;
+:Event a owl:Class ;
   rdfs:label "Event" ;
-  rdfs:comment "An event in the sprinkler use case.".
+  rdfs:comment "An event in the sprinkler use case".
 
-:RainySeason a :Event ;
+:Cause a owl:ObjectProperty ;
+  rdfs:label "Cause" ;
+  rdfs:comment "A causal relation between two events" ;
+  rdfs:domain :Event ;
+  rdfs:range :Event.
+
+:Effect a owl:ObjectProperty ;
+  rdfs:label "Effect" ;
+  rdfs:comment "The outcome of a causal relation" ;
+  rdfs:domain :Cause ;
+  rdfs:range :Event.
+
+:Pavement a owl:Class ;
+  rdfs:label "Pavement" ;
+  rdfs:comment "The pavement in the sprinkler use case".
+
+:SlipperyPavement a owl:Class ;
+  rdfs:label "Slippery Pavement" ;
+  rdfs:comment "The pavement is slippery" ;
+  rdfs:subClassOf :Pavement.
+
+:WetPavement a owl:Class ;
+  rdfs:label "Wet Pavement" ;
+  rdfs:comment "The pavement is wet" ;
+  rdfs:subClassOf :Pavement.
+
+:RainySeason a owl:Class ;
   rdfs:label "Rainy Season" ;
-  rdfs:comment "It is rainy season.".
+  rdfs:comment "It is rainy season" ;
+  rdfs:subClassOf :Event.
 
-:SprinklerOn a :Event ;
-  rdfs:label "Sprinkler is On" ;
-  rdfs:comment "The sprinkler is on.".
+:SprinklerOn a owl:Class ;
+  rdfs:label "Sprinkler On" ;
+  rdfs:comment "The sprinkler is on" ;
+  rdfs:subClassOf :Event.
 
-:Raining a :Event ;
-  rdfs:label "It is Raining" ;
-  rdfs:comment "It is raining.".
+:Rain a owl:Class ;
+  rdfs:label "Rain" ;
+  rdfs:comment "It is raining" ;
+  rdfs:subClassOf :Event.
 
-:PavementWet a :Event ;
-  rdfs:label "Pavement is Wet" ;
-  rdfs:comment "The pavement is wet.".
+:CausalLink a owl:Class ;
+  rdfs:label "Causal Link" ;
+  rdfs:comment "A causal link between two events" ;
+  rdfs:subClassOf :Event.
 
-:PavementSlippery a :Event ;
-  rdfs:label "Pavement is Slippery" ;
-  rdfs:comment "The pavement is slippery.".
-
-:CausalRelation a rdfs:Class ;
-  rdfs:label "Causal Relation" ;
-  rdfs:comment "A causal relation between two events.".
-
-:EffectWeight a rdfs:Class ;
+:EffectWeight a owl:DatatypeProperty ;
   rdfs:label "Effect Weight" ;
-  rdfs:comment "The effect weight of a causal relation.".
+  rdfs:comment "The strength of a causal link" ;
+  rdfs:domain :CausalLink ;
+  rdfs:range xsd:float.
 
-:hasEffectWeight a owl:ObjectProperty ;
-  rdfs:label "has Effect Weight" ;
-  rdfs:comment "The effect weight of a causal relation." ;
-  rdfs:domain :CausalRelation ;
-  rdfs:range :EffectWeight.
+:Sprinkler a owl:Class ;
+  rdfs:label "Sprinkler" ;
+  rdfs:comment "The sprinkler system".
 
-:hasCause a owl:ObjectProperty ;
-  rdfs:label "has Cause" ;
-  rdfs:comment "The cause of a causal relation." ;
-  rdfs:domain :CausalRelation ;
+:TurnOn a owl:ObjectProperty ;
+  rdfs:label "Turn On" ;
+  rdfs:comment "The action of turning the sprinkler system on" ;
+  rdfs:domain :Sprinkler ;
   rdfs:range :Event.
 
-:hasEffect a owl:ObjectProperty ;
-  rdfs:label "has Effect" ;
-  rdfs:comment "The effect of a causal relation." ;
-  rdfs:domain :CausalRelation ;
+:TurnOff a owl:ObjectProperty ;
+  rdfs:label "Turn Off" ;
+  rdfs:comment "The action of turning the sprinkler system off" ;
+  rdfs:domain :Sprinkler ;
   rdfs:range :Event.
 
-:SprinklerOn_hasEffect_PavementWet a :CausalRelation ;
-  rdfs:label "Sprinkler On -> Pavement Wet" ;
-  rdfs:comment "The sprinkler being on causes the pavement to be wet." ;
-  :hasCause :SprinklerOn ;
-  :hasEffect :PavementWet ;
-  :hasEffectWeight "0.8"^^xsd:decimal.
+:Mediates a owl:ObjectProperty ;
+  rdfs:label "Mediates" ;
+  rdfs:comment "A causal relation is mediated by another event" ;
+  rdfs:domain :Cause ;
+  rdfs:range :Event.
 
-:PavementWet_hasEffect_PavementSlippery a :CausalRelation ;
-  rdfs:label "Pavement Wet -> Pavement Slippery" ;
-  rdfs:comment "The pavement being wet causes the pavement to be slippery." ;
-  :hasCause :PavementWet ;
-  :hasEffect :PavementSlippery ;
-  :hasEffectWeight "0.9"^^xsd:decimal.
+:HasEffect a owl:ObjectProperty ;
+  rdfs:label "Has Effect" ;
+  rdfs:comment "An event has an effect on another event" ;
+  rdfs:domain :Event ;
+  rdfs:range :Event.
 
-:RainySeason_hasEffect_Raining a :CausalRelation ;
-  rdfs:label "Rainy Season -> It is Raining" ;
-  rdfs:comment "The rainy season causes it to be raining." ;
-  :hasCause :RainySeason ;
-  :hasEffect :Raining ;
-  :hasEffectWeight "0.6"^^xsd:decimal.
+:Outcome a owl:ObjectProperty ;
+  rdfs:label "Outcome" ;
+  rdfs:comment "The outcome of an event" ;
+  rdfs:domain :Event ;
+  rdfs:range :Event.
 
-:SprinklerOn_hasEffect_Raining a :CausalRelation ;
-  rdfs:label "Sprinkler On -> It is Raining" ;
-  rdfs:comment "The sprinkler being on causes it to be raining." ;
-  :hasCause :SprinklerOn ;
-  :hasEffect :Raining ;
-  :hasEffectWeight "0.4"^^xsd:decimal.
-```
+:Condition a owl:ObjectProperty ;
+  rdfs:label "Condition" ;
+  rdfs:comment "A condition for an event to occur" ;
+  rdfs:domain :Event ;
+  rdfs:range :Event.
 
-**Scenario-requirement-to-axiom mapping:**
+:EffectWeight a owl:DatatypeProperty ;
+  rdfs:label "Effect Weight" ;
+  rdfs:comment "The strength of a causal link" ;
+  rdfs:domain :CausalLink ;
+  rdfs:range xsd:float.
 
-1. The sprinkler use case is a well-known example often used in the CBN literature.
-   - Axiom: `:Ontology a owl:Ontology ; rdfs:label "Sprinkler Use Case Ontology" ; rdfs:comment "An ontology for the sprinkler use case, a well-known example in the CBN literature.".`
-2. A CBN is used to reason about the cause of
+:RainySeason :Cause :Rain

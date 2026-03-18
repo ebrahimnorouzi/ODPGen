@@ -1,0 +1,94 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Author naming and publication role ODP" ;
+  rdfs:comment "An ontology design pattern for representing an author who adopts different names, including pseudonyms and name changes, in order to publish books or assume the role of a book writer." .
+
+:Person a owl:Class ;
+  rdfs:label "Person" ;
+  rdfs:comment "A human individual, such as an author." .
+
+:Name a owl:Class ;
+  rdfs:label "Name" ;
+  rdfs:comment "A name used by a person, including legal names, changed names, and pseudonyms." .
+
+:Pseudonym a owl:Class ;
+  rdfs:label "Pseudonym" ;
+  rdfs:comment "A name adopted by a person for publishing or writing instead of another name." ;
+  rdfs:subClassOf :Name .
+
+:NameChange a owl:Class ;
+  rdfs:label "Name change" ;
+  rdfs:comment "An event or situation in which a person changes from one name to another, for example after marriage." .
+
+:Book a owl:Class ;
+  rdfs:label "Book" ;
+  rdfs:comment "A published book or book-like work." .
+
+:CollectionOfPoems a owl:Class ;
+  rdfs:label "Collection of poems" ;
+  rdfs:comment "A book that is a collection of poems." ;
+  rdfs:subClassOf :Book .
+
+:BookWriterRole a owl:Class ;
+  rdfs:label "Book writer role" ;
+  rdfs:comment "The role of being a writer of a book." .
+
+:usesName a owl:ObjectProperty ;
+  rdfs:label "uses name" ;
+  rdfs:comment "Relates a person to a name that the person uses." ;
+  rdfs:domain :Person ;
+  rdfs:range :Name .
+
+:hasPseudonym a owl:ObjectProperty ;
+  rdfs:label "has pseudonym" ;
+  rdfs:comment "Relates a person to a pseudonym adopted by that person." ;
+  rdfs:domain :Person ;
+  rdfs:range :Pseudonym ;
+  rdfs:subPropertyOf :usesName .
+
+:publishedUnderName a owl:ObjectProperty ;
+  rdfs:label "published under name" ;
+  rdfs:comment "Relates a book to the name under which it was published." ;
+  rdfs:domain :Book ;
+  rdfs:range :Name .
+
+:writtenBy a owl:ObjectProperty ;
+  rdfs:label "written by" ;
+  rdfs:comment "Relates a book to the person who wrote it." ;
+  rdfs:domain :Book ;
+  rdfs:range :Person .
+
+:assumesRole a owl:ObjectProperty ;
+  rdfs:label "assumes role" ;
+  rdfs:comment "Relates a person to a role that the person assumes." ;
+  rdfs:domain :Person ;
+  rdfs:range :BookWriterRole .
+
+:assumesRoleUsingName a owl:ObjectProperty ;
+  rdfs:label "assumes role using name" ;
+  rdfs:comment "Relates a person to the name used by that person when assuming a role such as book writer." ;
+  rdfs:domain :Person ;
+  rdfs:range :Name .
+
+:hasOldName a owl:ObjectProperty ;
+  rdfs:label "has old name" ;
+  rdfs:comment "Relates a name change to the name used before the change." ;
+  rdfs:domain :NameChange ;
+  rdfs:range :Name .
+
+:hasNewName a owl:ObjectProperty ;
+  rdfs:label "has new name" ;
+  rdfs:comment "Relates a name change to the name used after the change." ;
+  rdfs:domain :NameChange ;
+  rdfs:range :Name .
+
+:hasNameChange a owl:ObjectProperty ;
+  rdfs:label "has name change" ;
+  rdfs:comment "Relates a person to a name change associated with that person." ;
+  rdfs:domain :Person ;
+  rdfs:range :NameChange .

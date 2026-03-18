@@ -1,0 +1,66 @@
+Reasoning:
+
+1. Extract atomic requirements from the scenario:
+* Persistent identifiers (e.g., 'CL1') refer to changing referents over time.
+* Referents are front-month crude oil futures contracts.
+* Contracts rollover monthly.
+* Real-time market attributes are bound to the current contract instance.
+* Invariant identifier is used for continuity across contract rollovers.
+2. Propose candidate classes and properties:
+* Classes:
+	+ PersistentIdentifier
+	+ FrontMonthCrudeOilFuturesContract
+	+ ContractRollover
+	+ RealTimeMarketAttribute
+* Properties:
+	+ persistentIdentifier (domain: FrontMonthCrudeOilFuturesContract, range: String)
+	+ referent (domain: PersistentIdentifier, range: FrontMonthCrudeOilFuturesContract)
+	+ rollover (domain: ContractRollover, range: TimeInterval)
+	+ attribute (domain: RealTimeMarketAttribute, range: String)
+3. Draft axioms:
+* Subclass:
+	+ PersistentIdentifier ⊑ Object
+	+ FrontMonthCrudeOilFuturesContract ⊑ Object
+	+ ContractRollover ⊑ Object
+	+ RealTimeMarketAttribute ⊑ Object
+* Domain and range:
+	+ persistentIdentifier (domain: FrontMonthCrudeOilFuturesContract, range: String)
+	+ referent (domain: PersistentIdentifier, range: FrontMonthCrudeOilFuturesContract)
+	+ rollover (domain: ContractRollover, range: TimeInterval)
+	+ attribute (domain: RealTimeMarketAttribute, range: String)
+* Cardinality and disjointness:
+	+ cardinality(PersistentIdentifier, 1)
+	+ cardinality(FrontMonthCrudeOilFuturesContract, 1)
+	+ disjointness(PersistentIdentifier, FrontMonthCrudeOilFuturesContract)
+	+ disjointness(ContractRollover, RealTimeMarketAttribute)
+4. Check which axioms enable answering each Competency Question (CQ):
+| CQ | Axioms Enabling Answer |
+| --- | --- |
+| 1. Which entity does a persistent identifier currently reference? | persistentIdentifier(X, Y) |
+| 2. Which entity was referenced at a past timestamp? | referent(X, Y) |
+| 3. When did referent transitions occur? | rollover(X, Y) |
+| 4. What observations are associated with specific referents? | attribute(X, Y) |
+| 5. What is the full sequence of referents over time? | sequence(X, Y) |
+| 6. Which rules triggered specific transitions? | not directly answerable |
+| 7. Are there gaps or overlaps in temporal bindings? | not directly answerable |
+| 8. Can complete context be rebuilt for any time point? | not directly answerable |
+5. Add or refine axioms to cover any uncovered CQs:
+* Add axioms for temporal reasoning:
+	+ temporalSequence(X, Y, Z) ⟺ sequence(X, Y) ∧ sequence(Y, Z)
+	+ temporalPrecedence(X, Y) ⟺ sequence(X, Y) ∧ (Y ≠ X)
+	+ temporalSuccessor(X, Y) ⟺ temporalPrecedence(X, Y) ∧ (Y ≠ X)
+	+ temporalInterval(X, Y, Z) ⟺ temporalSequence(X, Y, Z) ∧ (Y ≠ X ∧ Z ≠ Y)
+* Refine axioms for clarity and consistency:
+	+ rename(persistentIdentifier, identifier)
+	+ rename(referent, referentContract)
+	+ rename(rollover, contractRollover)
+	+ rename(attribute, marketAttribute)
+6. Remove any classes or properties not traceable to a requirement or CQ:
+* Remove unused classes and properties:
+	+ Remove class: RealTimeMarketAttribute
+	+ Remove property: attribute
+
+Final ontology:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http

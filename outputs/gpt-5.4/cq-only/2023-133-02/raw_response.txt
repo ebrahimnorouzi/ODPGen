@@ -1,0 +1,98 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Asthma-related causal influence ODP" ;
+    rdfs:comment "An ontology design pattern for representing how outdoor environmental allergens and asthma symptoms causally influence medication intake and patient effects, including support for probable causes and counterfactual what-if questions." .
+
+#################################################################
+# Classes
+#################################################################
+
+:Patient a owl:Class ;
+    rdfs:label "Patient" ;
+    rdfs:comment "A person whose symptoms, exposures, and medication intake are being considered." .
+
+:MedicationIntake a owl:Class ;
+    rdfs:label "Medication intake" ;
+    rdfs:comment "An event or situation in which a patient takes medication." .
+
+:AsthmaSymptom a owl:Class ;
+    rdfs:label "Asthma symptom" ;
+    rdfs:comment "A symptom experienced by a patient that is relevant to asthma." .
+
+:Cough a owl:Class ;
+    rdfs:subClassOf :AsthmaSymptom ;
+    rdfs:label "Cough" ;
+    rdfs:comment "A cough experienced by a patient as a kind of asthma symptom." .
+
+:OutdoorEnvironmentalAllergen a owl:Class ;
+    rdfs:label "Outdoor environmental allergen" ;
+    rdfs:comment "An outdoor environmental factor, such as pollen or AQI, that may affect a patient and influence symptoms or medication intake." .
+
+:Pollen a owl:Class ;
+    rdfs:subClassOf :OutdoorEnvironmentalAllergen ;
+    rdfs:label "Pollen" ;
+    rdfs:comment "Pollen as a kind of outdoor environmental allergen." .
+
+:AQI a owl:Class ;
+    rdfs:subClassOf :OutdoorEnvironmentalAllergen ;
+    rdfs:label "AQI" ;
+    rdfs:comment "Air Quality Index related condition treated here as a kind of outdoor environmental allergen or exposure factor." .
+
+:EffectOnPatient a owl:Class ;
+    rdfs:label "Effect on patient" ;
+    rdfs:comment "An effect that an outdoor environmental allergen has on a patient." .
+
+:CausalInfluence a owl:Class ;
+    rdfs:label "Causal influence" ;
+    rdfs:comment "A relation-like situation representing that one factor causally influences another, optionally with a strength value." .
+
+:ProbableCauseAssertion a owl:Class ;
+    rdfs:label "Probable cause assertion" ;
+    rdfs:comment "An assertion that some factor is a probable cause of a symptom experienced by a patient." .
+
+:CounterfactualScenario a owl:Class ;
+    rdfs:label "Counterfactual scenario" ;
+    rdfs:comment "A what-if scenario in which the presence or absence of a factor is varied to assess its effect on medication intake." .
+
+#################################################################
+# Object Properties
+#################################################################
+
+:hasPatient a owl:ObjectProperty ;
+    rdfs:label "has patient" ;
+    rdfs:comment "Relates an event, effect, influence, cause assertion, or scenario to the patient it concerns." ;
+    rdfs:range :Patient .
+
+:experiencesSymptom a owl:ObjectProperty ;
+    rdfs:label "experiences symptom" ;
+    rdfs:comment "Relates a patient to a symptom the patient experiences." ;
+    rdfs:domain :Patient ;
+    rdfs:range :AsthmaSymptom .
+
+:takesMedication a owl:ObjectProperty ;
+    rdfs:label "takes medication" ;
+    rdfs:comment "Relates a patient to a medication intake event." ;
+    rdfs:domain :Patient ;
+    rdfs:range :MedicationIntake .
+
+:hasAllergenExposure a owl:ObjectProperty ;
+    rdfs:label "has allergen exposure" ;
+    rdfs:comment "Relates a patient to an outdoor environmental allergen present in the patient's environment." ;
+    rdfs:domain :Patient ;
+    rdfs:range :OutdoorEnvironmentalAllergen .
+
+:affectsPatient a owl:ObjectProperty ;
+    rdfs:label "affects patient" ;
+    rdfs:comment "Relates an outdoor environmental allergen to an effect on a patient." ;
+    rdfs:domain :OutdoorEnvironmentalAllergen ;
+    rdfs:range :EffectOnPatient .
+
+:hasCause a owl:ObjectProperty ;
+    rdfs:label "has cause" ;
+    rdfs:comment "Relates a causal influence, probable cause assertion, or effect to

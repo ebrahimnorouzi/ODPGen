@@ -1,0 +1,65 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Author Name Changes Ontology" ;
+  rdfs:comment "An ontology to model author name changes.".
+
+:Author a owl:Class ;
+  rdfs:label "Author" ;
+  rdfs:comment "An individual who writes books.".
+
+:Name a owl:Class ;
+  rdfs:label "Name" ;
+  rdfs:comment "A name adopted by an author.".
+
+:NameChange a owl:Class ;
+  rdfs:label "Name Change" ;
+  rdfs:comment "An event where an author changes their name.".
+
+:AuthorName a owl:Class ;
+  rdfs:label "Author Name" ;
+  rdfs:comment "The name adopted by an author at a particular time.".
+
+:usesName a owl:ObjectProperty ;
+  rdfs:label "uses name" ;
+  rdfs:comment "An author uses a particular name." ;
+  domain :Author ;
+  range :Name.
+
+:hasNameChange a owl:ObjectProperty ;
+  rdfs:label "has name change" ;
+  rdfs:comment "An author experiences a name change." ;
+  domain :Author ;
+  range :NameChange.
+
+:isNameChangeOf a owl:ObjectProperty ;
+  rdfs:label "is name change of" ;
+  rdfs:comment "A name change is associated with an author." ;
+  domain :NameChange ;
+  range :Author.
+
+:hasName a owl:ObjectProperty ;
+  rdfs:label "has name" ;
+  rdfs:comment "An author has a particular name at a particular time." ;
+  domain :Author ;
+  range :AuthorName.
+
+:hasNameChangeDate a owl:ObjectProperty ;
+  rdfs:label "has name change date" ;
+  rdfs:comment "A name change occurs on a particular date." ;
+  domain :NameChange ;
+  range xsd:date.
+
+:AuthorName rdfs:subClassOf :Name.
+
+:NameChange rdfs:subClassOf a owl:Restriction ;
+  owl:onProperty :hasNameChangeDate ;
+  owl:allValuesFrom xsd:date.
+
+:AuthorName rdfs:disjoint :Name.
+
+:AuthorName rdfs:disjoint :NameChange.

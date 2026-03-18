@@ -1,0 +1,85 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Environmental Allergen and Asthma Symptom Ontology" ;
+  rdfs:comment "Ontology for modeling the relationship between environmental allergens and asthma symptoms.".
+
+:Patient a owl:Class ;
+  rdfs:label "Patient" ;
+  rdfs:comment "A person who experiences asthma symptoms.".
+
+:Medication a owl:Class ;
+  rdfs:label "Medication" ;
+  rdfs:comment "A substance used to treat asthma symptoms.".
+
+:EnvironmentalAllergen a owl:Class ;
+  rdfs:label "Environmental Allergen" ;
+  rdfs:comment "A substance in the environment that can cause allergic reactions.".
+
+:AsthmaSymptom a owl:Class ;
+  rdfs:label "Asthma Symptom" ;
+  rdfs:comment "A symptom experienced by a patient with asthma.".
+
+:Causes a owl:ObjectProperty ;
+  rdfs:label "Causes" ;
+  rdfs:comment "The relationship between an environmental allergen and an asthma symptom." ;
+  rdfs:domain :EnvironmentalAllergen ;
+  rdfs:range :AsthmaSymptom.
+
+:Effect a owl:ObjectProperty ;
+  rdfs:label "Effect" ;
+  rdfs:comment "The relationship between an asthma symptom and the intake of medication." ;
+  rdfs:domain :AsthmaSymptom ;
+  rdfs:range :Medication.
+
+:ProbableCause a owl:ObjectProperty ;
+  rdfs:label "Probable Cause" ;
+  rdfs:comment "The relationship between an asthma symptom and its probable cause." ;
+  rdfs:domain :AsthmaSymptom ;
+  rdfs:range :EnvironmentalAllergen.
+
+:HasAllergen a owl:ObjectProperty ;
+  rdfs:label "Has Allergen" ;
+  rdfs:comment "The relationship between an environmental allergen and its effect on the patient." ;
+  rdfs:domain :EnvironmentalAllergen ;
+  rdfs:range :Patient.
+
+:HasSymptom a owl:ObjectProperty ;
+  rdfs:label "Has Symptom" ;
+  rdfs:comment "The relationship between a patient and their asthma symptoms." ;
+  rdfs:domain :Patient ;
+  rdfs:range :AsthmaSymptom.
+
+:HasMedication a owl:ObjectProperty ;
+  rdfs:label "Has Medication" ;
+  rdfs:comment "The relationship between a patient and their medication intake." ;
+  rdfs:domain :Patient ;
+  rdfs:range :Medication.
+
+:HasAQI a owl:ObjectProperty ;
+  rdfs:label "Has AQI" ;
+  rdfs:comment "The relationship between an environmental allergen and its AQI value." ;
+  rdfs:domain :EnvironmentalAllergen ;
+  rdfs:range xsd:integer.
+
+:HasPollen a owl:ObjectProperty ;
+  rdfs:label "Has Pollen" ;
+  rdfs:comment "The relationship between an environmental allergen and its pollen value." ;
+  rdfs:domain :EnvironmentalAllergen ;
+  rdfs:range xsd:integer.
+```
+
+CQ-to-Axiom Mapping Table:
+
+| CQ | Enabling Axioms |
+| --- | --- |
+| Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI? | :Effect rdfs:domain :AsthmaSymptom ; :Effect rdfs:range :Medication. :Causes rdfs:domain :EnvironmentalAllergen ; :Causes rdfs:range :AsthmaSymptom. |
+| How much does the presence of an asthma symptom effect the intake of medication? | :Effect rdfs:domain :AsthmaSymptom ; :Effect rdfs:range :Medication. |
+| How does an outdoor environmental allergen affect the patient? | :HasAllergen rdfs:domain :EnvironmentalAllergen ; :HasAllergen rdfs:range :Patient. |
+| What is the probable cause of the cough experienced by the patient? | :ProbableCause rdfs:domain :AsthmaSymptom ; :ProbableCause rdfs:range :EnvironmentalAllergen. |
+| What if pollen (or AQI) allergen was not present in the outdoor environment, how would it effect the

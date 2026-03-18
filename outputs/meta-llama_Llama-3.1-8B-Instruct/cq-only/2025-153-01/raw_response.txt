@@ -1,0 +1,74 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Referent Transition Ontology" ;
+  rdfs:comment "Modeling referent transitions and associated observations.".
+
+:Referent a owl:Class ;
+  rdfs:label "Referent" ;
+  rdfs:comment "An entity being referenced.".
+
+:ReferentTransition a owl:Class ;
+  rdfs:label "Referent Transition" ;
+  rdfs:comment "A change in the referenced entity.".
+
+:ReferentTransitionTimestamp a owl:DatatypeProperty ;
+  rdfs:label "Referent Transition Timestamp" ;
+  rdfs:comment "The timestamp when the referent transition occurred." ;
+  rdfs:domain :ReferentTransition ;
+  rdfs:range xsd:dateTime.
+
+:ReferentTransitionTrigger a owl:Class ;
+  rdfs:label "Referent Transition Trigger" ;
+  rdfs:comment "A rule that triggered a referent transition.".
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "An association between a referent and an observation.".
+
+:ReferentTransitionObservation a owl:ObjectProperty ;
+  rdfs:label "Referent Transition Observation" ;
+  rdfs:comment "An observation associated with a referent transition." ;
+  rdfs:domain :ReferentTransition ;
+  rdfs:range :Observation.
+
+:ReferentTransitionSequence a owl:Class ;
+  rdfs:label "Referent Transition Sequence" ;
+  rdfs:comment "A sequence of referent transitions over time.".
+
+:TemporalBinding a owl:Class ;
+  rdfs:label "Temporal Binding" ;
+  rdfs:comment "A binding of a referent to a time point.".
+
+:TemporalBindingGap a owl:Class ;
+  rdfs:label "Temporal Binding Gap" ;
+  rdfs:comment "A gap in temporal bindings.".
+
+:TemporalBindingOverlap a owl:Class ;
+  rdfs:label "Temporal Binding Overlap" ;
+  rdfs:comment "An overlap in temporal bindings.".
+
+:CompleteContext a owl:Class ;
+  rdfs:label "Complete Context" ;
+  rdfs:comment "A complete context for a time point.".
+```
+
+CQ-to-Axiom Mapping Table:
+
+| CQ | Enabling Axioms |
+| --- | --- |
+| Which entity does a persistent identifier currently reference? | `:ReferentTransition :referent :Referent.` |
+| Which entity was referenced at a past timestamp? | `:ReferentTransition :referent :Referent ; :referentTransitionTimestamp?t.` |
+| When did referent transitions occur? | `:ReferentTransition :referentTransitionTimestamp?t.` |
+| What observations are associated with specific referents? | `:Observation :referent :Referent ; :observation?o.` |
+| What is the full sequence of referents over time? | `:ReferentTransitionSequence :referentTransitionSequence?seq.` |
+| Which rules triggered specific transitions? | `:ReferentTransitionTrigger :triggeredTransition :ReferentTransition.` |
+| Are there gaps or overlaps in temporal bindings? | `:TemporalBindingGap :hasGap?gap.`, `:TemporalBindingOverlap :hasOverlap?overlap.` |
+| Can complete context be rebuilt for any time point? | `:CompleteContext :hasCompleteContext?ctx.` |
+
+Note: The `?t`, `?seq`, `?o`, `?gap`, `?overlap`, and `?ctx` are variables representing timestamps, sequences, observations, gaps, overlaps, and complete contexts, respectively.

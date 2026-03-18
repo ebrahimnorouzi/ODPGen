@@ -8,104 +8,99 @@
   rdfs:label "ODRL Policy Evaluation Ontology" ;
   rdfs:comment "Ontology for representing ODRL policies and their evaluation.".
 
-:Time a rdfs:Class ;
+:Time a owl:Class ;
   rdfs:label "Time" ;
-  rdfs:comment "A point in time.".
+  rdfs:comment "Represents a point in time.".
 
-:Location a rdfs:Class ;
+:Location a owl:Class ;
   rdfs:label "Location" ;
-  rdfs:comment "A geographical location.".
+  rdfs:comment "Represents a geographical location.".
 
-:Asset a rdfs:Class ;
+:Asset a owl:Class ;
   rdfs:label "Asset" ;
-  rdfs:comment "A digital or physical resource.".
+  rdfs:comment "Represents a digital or physical asset.".
 
-:Policy a rdfs:Class ;
-  rdfs:label "Policy" ;
-  rdfs:comment "A set of rules governing access to assets.".
-
-:Party a rdfs:Class ;
-  rdfs:label "Party" ;
-  rdfs:comment "An entity with rights or obligations.".
-
-:AssetCollection a rdfs:Class ;
+:AssetCollection a owl:Class ;
   rdfs:label "Asset Collection" ;
-  rdfs:comment "A collection of assets governed by a policy.".
+  rdfs:comment "Represents a collection of assets.".
 
-:PartyCollection a rdfs:Class ;
+:Party a owl:Class ;
+  rdfs:label "Party" ;
+  rdfs:comment "Represents an individual or organization.".
+
+:PartyCollection a owl:Class ;
   rdfs:label "Party Collection" ;
-  rdfs:comment "A collection of parties governed by a policy.".
+  rdfs:comment "Represents a collection of parties.".
 
-:Action a rdfs:Class ;
+:Action a owl:Class ;
   rdfs:label "Action" ;
-  rdfs:comment "An event that occurs during policy evaluation.".
+  rdfs:comment "Represents an action performed or attempted.".
 
-:RuleExercise a rdfs:Class ;
+:RuleExercise a owl:Class ;
   rdfs:label "Rule Exercise" ;
-  rdfs:comment "An instance of a rule being applied.".
+  rdfs:comment "Represents the exercise of a rule.".
 
-:Event a rdfs:Class ;
+:Event a owl:Class ;
   rdfs:label "Event" ;
-  rdfs:comment "A significant occurrence during policy evaluation.".
+  rdfs:comment "Represents an occurrence or event.".
 
-:Recipient a rdfs:Class ;
-  rdfs:label "Recipient" ;
-  rdfs:comment "A party that receives the result of a rule exercise.".
-
-:FinancialPayment a rdfs:Class ;
+:FinancialPayment a owl:Class ;
   rdfs:label "Financial Payment" ;
-  rdfs:comment "A payment made during policy evaluation.".
+  rdfs:comment "Represents a financial payment.".
 
-:hasTime  a rdfs:Property ;
+:hasTime rdf:type owl:DatatypeProperty ;
   rdfs:label "has Time" ;
-  rdfs:comment "The time at which an event occurs." ;
+  rdfs:comment "Associates an asset or event with a point in time." ;
+  rdfs:domain :Asset ;
   rdfs:domain :Event ;
-  rdfs:range :Time.
+  rdfs:range xsd:dateTime.
 
-:hasLocation  a rdfs:Property ;
+:hasLocation rdf:type owl:DatatypeProperty ;
   rdfs:label "has Location" ;
-  rdfs:comment "The location at which an event occurs." ;
-  rdfs:domain :Event ;
+  rdfs:comment "Associates a party or asset with a geographical location." ;
+  rdfs:domain :Party ;
+  rdfs:domain :Asset ;
   rdfs:range :Location.
 
-:hasAsset  a rdfs:Property ;
+:hasAsset rdf:type owl:ObjectProperty ;
   rdfs:label "has Asset" ;
-  rdfs:comment "The asset governed by a policy." ;
-  rdfs:domain :Policy ;
+  rdfs:comment "Associates an asset collection with its assets." ;
+  rdfs:domain :AssetCollection ;
   rdfs:range :Asset.
 
-:hasPolicy  a rdfs:Property ;
-  rdfs:label "has Policy" ;
-  rdfs:comment "The policy governing access to an asset." ;
-  rdfs:domain :Asset ;
-  rdfs:range :Policy.
-
-:hasParty  a rdfs:Property ;
+:hasParty rdf:type owl:ObjectProperty ;
   rdfs:label "has Party" ;
-  rdfs:comment "The party governed by a policy." ;
-  rdfs:domain :Policy ;
+  rdfs:comment "Associates a party collection with its parties." ;
+  rdfs:domain :PartyCollection ;
   rdfs:range :Party.
 
-:hasAssetCollection  a rdfs:Property ;
-  rdfs:label "has Asset Collection" ;
-  rdfs:comment "The asset collection governed by a policy." ;
-  rdfs:domain :Policy ;
-  rdfs:range :AssetCollection.
+:performedBy rdf:type owl:ObjectProperty ;
+  rdfs:label "performedBy" ;
+  rdfs:comment "Associates an action with the party that performed it." ;
+  rdfs:domain :Action ;
+  rdfs:range :Party.
 
-:hasPartyCollection  a rdfs:Property ;
-  rdfs:label "has Party Collection" ;
-  rdfs:comment "The party collection governed by a policy." ;
-  rdfs:domain :Policy ;
-  rdfs:range :PartyCollection.
+:exerciseCount rdf:type owl:DatatypeProperty ;
+  rdfs:label "exerciseCount" ;
+  rdfs:comment "Counts the number of times a rule has been exercised." ;
+  rdfs:domain :RuleExercise ;
+  rdfs:range xsd:integer.
 
-:hasAction  a rdfs:Property ;
-  rdfs:label "has Action" ;
-  rdfs:comment "The action that occurs during policy evaluation." ;
-  rdfs:domain :Event ;
-  rdfs:range :Action.
+:hasEvent rdf:type owl:ObjectProperty ;
+  rdfs:label "has Event" ;
+  rdfs:comment "Associates an asset or party with an event." ;
+  rdfs:domain :Asset ;
+  rdfs:domain :Party ;
+  rdfs:range :Event.
 
-:hasRuleExercise  a rdfs:Property ;
-  rdfs:label "has Rule Exercise" ;
-  rdfs:comment "The rule exercise that occurs during policy evaluation." ;
-  rdfs:domain :Event ;
-  rdfs:range :RuleExercise.
+:hasDuration rdf:type owl:DatatypeProperty ;
+  rdfs:label "has Duration" ;
+  rdfs:comment "Associates a rule exercise with its duration." ;
+  rdfs:domain :RuleExercise ;
+  rdfs:range xsd:duration.
+
+:receivesResult rdf:type owl:ObjectProperty ;
+  rdfs:label "receivesResult" ;
+  rdfs:comment "Associates a recipient with the result of a rule exercise." ;
+  rdfs:domain :RuleExercise ;
+  rdfs:range :Party.

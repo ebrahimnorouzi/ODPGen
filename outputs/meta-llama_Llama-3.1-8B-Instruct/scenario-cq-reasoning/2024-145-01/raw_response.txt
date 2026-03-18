@@ -1,0 +1,70 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* Legal tasks require managing complex information that is primarily unstructured in nature.
+	* It captures the court hierarchies and bad check crime related regulations.
+2. **Propose candidate classes and properties for each requirement**
+	* Legal tasks: `:LegalTask`, `:manages`, `:information`
+	* Court hierarchies: `:CourtHierarchy`, `:hasCourt`, `:court`
+	* Bad check crime related regulations: `:BadCheckRegulation`, `:hasRegulation`, `:regulation`
+3. **Draft axioms (subclass, domain, range, cardinality, disjointness) for each candidate**
+	* `:LegalTask rdfs:subClassOf owl:Thing.`
+	* `:CourtHierarchy rdfs:subClassOf owl:Thing.`
+	* `:BadCheckRegulation rdfs:subClassOf owl:Thing.`
+	* `:manages rdfs:domain :LegalTask ; rdfs:range xsd:string.`
+	* `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
+	* `:hasRegulation rdfs:domain :BadCheckRegulation ; rdfs:range :Regulation.`
+4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
+	* CQ1: List all district courts in a given state.
+		+ Axioms enabling answer: `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
+	* CQ2: In which state is a given district court instance located?
+		+ Axioms enabling answer: `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
+	* CQ3: How many districts are in a given state of India?
+		+ Axioms enabling answer: `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
+	* CQ4: Which court has authority over a given court?
+		+ Axioms enabling answer: `:hasCourt rdfs:domain :CourtHierarchy ; rdfs:range :Court.`
+	* CQ5: What is the check transaction type for a bad check?
+		+ Axioms enabling answer: `:hasRegulation rdfs:domain :BadCheckRegulation ; rdfs:range :Regulation.`
+	* CQ6: When is a check payment of a bad check?
+		+ Axioms enabling answer: None
+	* CQ7: What is the transaction status of a given check payment?
+		+ Axioms enabling answer: None
+5. **Add or refine axioms to cover any uncovered CQs**
+	* `:CheckPayment a owl:Class.`
+	* `:hasPaymentDate rdfs:domain :CheckPayment ; rdfs:range xsd:date.`
+	* `:hasTransactionStatus rdfs:domain :CheckPayment ; rdfs:range :TransactionStatus.`
+6. **Remove any classes or properties not traceable to a requirement or CQ**
+	* Removed `:information`, `:regulation`
+
+**Turtle Ontology**
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Court Hierarchy and Bad Check Regulation Ontology" ;
+  rdfs:comment "Ontology for court hierarchies and bad check crime related regulations".
+
+:LegalTask rdfs:subClassOf owl:Thing ;
+  rdfs:label "Legal Task" ;
+  rdfs:comment "A legal task that requires managing complex information".
+
+:manages rdfs:domain :LegalTask ;
+  rdfs:range xsd:string ;
+  rdfs:label "Manages" ;
+  rdfs:comment "Manages complex information".
+
+:CourtHierarchy rdfs:subClassOf owl:Thing ;
+  rdfs:label "Court Hierarchy" ;
+  rdfs:comment "A court hierarchy that captures court relationships".
+
+:hasCourt rdfs:domain :CourtHierarchy ;
+  rdfs:range :Court ;
+  rdfs:label "Has Court" ;
+  rdfs:comment "Has a court in the hierarchy".
+
+:BadCheckRegulation rdfs:subClass

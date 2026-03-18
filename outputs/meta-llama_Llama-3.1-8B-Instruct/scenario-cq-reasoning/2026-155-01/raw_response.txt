@@ -1,0 +1,63 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* The Cultural Heritage Survey ODP models the structure of scientific survey activities performed on cultural heritage entities.
+	* It represents the relationships between surveys, observations, methods, equipment configurations, and interpretation processes.
+2. **Propose candidate classes and properties for each requirement**
+	* `Survey` class with properties: `has_cultural_property`, `has_feature_of_interest`, `has_method`, `has_equipment_configuration`, `has_expert`, `has_acquisition_parameters`
+	* `Observation` class with properties: `has_survey`, `has_method`, `has_equipment_configuration`
+	* `Method` class with properties: `has_survey`, `has_equipment_configuration`
+	* `EquipmentConfiguration` class with properties: `has_survey`, `has_method`
+	* `Expert` class with properties: `has_survey`, `has_role`
+	* `AcquisitionParameters` class with properties: `has_survey`, `has_photographic_acquisition_cycle`
+3. **Draft axioms (subclass, domain, range, cardinality, disjointness) for each candidate**
+	* `Survey` subclass of `Activity`
+	* `has_cultural_property` domain `Survey`, range `CulturalProperty`
+	* `has_feature_of_interest` domain `Survey`, range `FeatureOfInterest`
+	* `has_method` domain `Survey`, range `Method`
+	* `has_equipment_configuration` domain `Survey`, range `EquipmentConfiguration`
+	* `has_expert` domain `Survey`, range `Expert`
+	* `has_acquisition_parameters` domain `Survey`, range `AcquisitionParameters`
+	* `Observation` subclass of `Product`
+	* `has_survey` domain `Observation`, range `Survey`
+	* `has_method` domain `Observation`, range `Method`
+	* `has_equipment_configuration` domain `Observation`, range `EquipmentConfiguration`
+	* `Method` subclass of `Activity`
+	* `has_survey` domain `Method`, range `Survey`
+	* `has_equipment_configuration` domain `Method`, range `EquipmentConfiguration`
+	* `EquipmentConfiguration` subclass of `Resource`
+	* `has_survey` domain `EquipmentConfiguration`, range `Survey`
+	* `has_method` domain `EquipmentConfiguration`, range `Method`
+	* `Expert` subclass of `Agent`
+	* `has_survey` domain `Expert`, range `Survey`
+	* `has_role` domain `Expert`, range `Role`
+	* `AcquisitionParameters` subclass of `Resource`
+	* `has_survey` domain `AcquisitionParameters`, range `Survey`
+	* `has_photographic_acquisition_cycle` domain `AcquisitionParameters`, range `PhotographicAcquisitionCycle`
+4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
+	* CQ1: Which survey or investigation activities were performed on a given cultural property or on a specific feature of interest?
+		+ Axioms: `has_cultural_property`, `has_feature_of_interest`
+	* CQ2: Which method or investigation technique was adopted in a specific survey or investigation activity?
+		+ Axioms: `has_method`
+	* CQ3: Which observations were produced during a given survey or investigation activity?
+		+ Axioms: `has_survey`
+	* CQ4: Which experts participated in the survey or investigation activity, and with which roles?
+		+ Axioms: `has_expert`, `has_role`
+	* CQ5: Which hardware, software, and technical configurations were used to conduct a specific survey or investigation activity?
+		+ Axioms: `has_equipment_configuration`
+	* CQ6: What interpretations or claims are supported by the observations produced during a survey?
+		+ Axioms: `has_survey`, `has_observation` (new axiom)
+	* CQ7: How are post-processed outputs (e.g., interactive images, spectra, datasets) related to the underlying acquisition or observation activities?
+		+ Axioms: `has_survey`, `has_observation` (new axiom)
+	* CQ8: Which acquisition parameters (e.g., exposure time, ISO, aperture) characterised a specific photographic acquisition cycle within a survey?
+		+ Axioms: `has_acquisition_parameters`
+5. **Add or refine axioms to cover any uncovered CQs**
+	* Add `has_observation` domain `Survey`, range `Observation`
+	* Add `has_post_processed_output` domain `Survey`, range `PostProcessedOutput`
+6. **Remove any classes or properties not traceable to a requirement or CQ**
+	* Remove `PhotographicAcquisitionCycle` class (not mentioned in requirements or CQs)
+
+**Turtle Ontology**
+
+```turtle
+@prefix owl:

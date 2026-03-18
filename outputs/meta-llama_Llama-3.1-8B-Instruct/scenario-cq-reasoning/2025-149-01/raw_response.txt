@@ -1,0 +1,68 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* A relational database is a first-class schema entity.
+	* Tables belong to a database.
+	* Columns belong to a table.
+	* Primary-key relationships exist in the schema.
+	* Foreign-key relationships exist in the schema.
+	* Policies can be defined for specific agents.
+	* Policies can specify high-level actions.
+	* Policies can specify scopes for read operations.
+	* Policies can be defined at different levels (table, column, row).
+	* Prohibited modify actions can be expressed.
+	* Table-level read prohibitions can be expressed.
+	* Conditional row-level read restrictions can be expressed.
+	* SQL queries can be represented as AST-based semantic graphs.
+	* SQL statements can be mapped to their semantic action types.
+	* Query statements can be linked to executing agents.
+	* SQL clauses can be assigned operational scopes.
+	* Scopes can be propagated to reference nodes.
+	* Table and column references can be linked to their schema counterparts.
+2. **Propose candidate classes and properties for each requirement**
+	* `:Database` (class), `:hasTable` (property)
+	* `:Table` (class), `:hasColumn` (property)
+	* `:Column` (class), `:hasForeignKey` (property)
+	* `:PrimaryKey` (class), `:belongsTo` (property)
+	* `:ForeignKey` (class), `:references` (property)
+	* `:Policy` (class), `:appliesTo` (property), `:specifiesAction` (property), `:specifiesScope` (property)
+	* `:Agent` (class), `:hasPolicy` (property)
+	* `:Action` (class), `:hasType` (property)
+	* `:Scope` (class), `:hasType` (property)
+	* `:ReadAction` (class), `:hasScope` (property)
+	* `:ModifyAction` (class), `:hasScope` (property)
+	* `:ViewActionScope` (class), `:hasScope` (property)
+	* `:ProcessActionScope` (class), `:hasScope` (property)
+	* `:ProhibitedAction` (class), `:appliesTo` (property)
+	* `:ConditionalRestriction` (class), `:appliesTo` (property)
+	* `:SQLQuery` (class), `:hasAST` (property)
+	* `:SQLStatement` (class), `:hasActionType` (property)
+	* `:QueryStatement` (class), `:hasExecutingAgent` (property)
+	* `:SQLClause` (class), `:hasScope` (property)
+	* `:TableRef` (class), `:belongsTo` (property)
+	* `:ColumnRef` (class), `:belongsTo` (property)
+3. **Draft axioms for each candidate**
+	* `:Database rdfs:subClassOf owl:Thing.`
+	* `:Table rdfs:subClassOf :Database.`
+	* `:Column rdfs:subClassOf :Table.`
+	* `:PrimaryKey rdfs:subClassOf :Column.`
+	* `:ForeignKey rdfs:subClassOf :Column.`
+	* `:Policy rdfs:subClassOf owl:Thing.`
+	* `:Agent rdfs:subClassOf owl:Thing.`
+	* `:Action rdfs:subClassOf owl:Thing.`
+	* `:Scope rdfs:subClassOf owl:Thing.`
+	* `:ReadAction rdfs:subClassOf :Action.`
+	* `:ModifyAction rdfs:subClassOf :Action.`
+	* `:ViewActionScope rdfs:subClassOf :Scope.`
+	* `:ProcessActionScope rdfs:subClassOf :Scope.`
+	* `:ProhibitedAction rdfs:subClassOf :Action.`
+	* `:ConditionalRestriction rdfs:subClassOf :Policy.`
+	* `:SQLQuery rdfs:subClassOf owl:Thing.`
+	* `:SQLStatement rdfs:subClassOf :SQLQuery.`
+	* `:QueryStatement rdfs:subClassOf :SQLStatement.`
+	* `:SQLClause rdfs:subClassOf :SQLStatement.`
+	* `:TableRef rdfs:subClassOf :SQLClause.`
+	* `:ColumnRef rdfs:subClassOf :SQLClause.`
+4. **Check which axioms enable answering each CQ**
+	* CQ 1: Can the ontology represent a relational database as a first-class schema entity?
+		+ Axioms: `:Database rdfs:subClassOf owl:Thing.`

@@ -1,0 +1,82 @@
+Here is the OWL ontology design pattern (ODP) in Turtle syntax:
+
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Evaluation Request Ontology" ;
+    rdfs:comment "An ontology for modeling evaluation requests on assets.".
+
+:Request a owl:Class ;
+    rdfs:label "Evaluation Request" ;
+    rdfs:comment "A formal description of a requested action on a target asset.".
+
+:Assignee a owl:Class ;
+    rdfs:label "Assignee" ;
+    rdfs:comment "The party issuing the evaluation request.".
+
+:Employee rdf:type owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+                      owl:onProperty :assignee ;
+                      owl:hasValue :employee ;
+                      owl:allValuesFrom :Role ].
+
+:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "The role of the assignee.".
+
+:Asset a owl:Class ;
+    rdfs:label "Asset" ;
+    rdfs:comment "The target asset of the evaluation request.".
+
+:Weekday a xsd:string ;
+    rdfs:subClassOf [ a owl:Restriction ;
+                      owl:onProperty :time ;
+                      owl:hasValue "Monday"^^xsd:string ;
+                      owl:allValuesFrom [ a owl:Class ;
+                                           owl:unionOf ( ( :Weekday "Tuesday"^^xsd:string )
+                                                            ( :Weekday "Wednesday"^^xsd:string )
+                                                            ( :Weekday "Thursday"^^xsd:string )
+                                                            ( :Weekday "Friday"^^xsd:string ) ) ] ].
+
+:EU a xsd:string ;
+    rdfs:subClassOf [ a owl:Restriction ;
+                      owl:onProperty :location ;
+                      owl:hasValue "EU"^^xsd:string ;
+                      owl:allValuesFrom [ a owl:Class ;
+                                           owl:unionOf ( ( :Country "EU_Country_1" )
+                                                            ( :Country "EU_Country_2" )
+                                                           ... ) ] ].
+
+:Time a owl:DatatypeProperty ;
+    rdfs:label "Time" ;
+    rdfs:comment "The time when the evaluation request was issued.".
+
+:Location a owl:DatatypeProperty ;
+    rdfs:label "Location" ;
+    rdfs:comment "The location from which the evaluation request was issued.".
+
+:RequestedAction a owl:ObjectProperty ;
+    rdfs:label "Requested Action" ;
+    rdfs:comment "The action requested on the target asset.".
+
+:AdditionalContext a owl:ObjectProperty ;
+    rdfs:label "Additional Context" ;
+    rdfs:comment "Additional contextual information included in the evaluation request.".
+
+:Request a owl:Class ;
+    rdf:type owl:FunctionalProperty ;
+    rdfs:domain :Assignee ;
+    rdfs:range :Role.
+
+:assignee rdf:type owl:ObjectProperty ;
+    rdfs:domain :Request ;
+    rdfs:range :Assignee.
+
+:role rdf:type owl:ObjectProperty ;
+    rdfs:domain :Request ;
+    rdfs:range :Role.

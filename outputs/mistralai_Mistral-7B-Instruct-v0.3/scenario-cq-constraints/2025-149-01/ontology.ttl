@@ -1,0 +1,84 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Database Access Policy Ontology" ;
+    rdfs:comment "An ontology for representing database access policies, tables, columns, and actions.".
+
+# Database
+:Database a owl:Class ;
+    rdfs:label "Relational Database" ;
+    rdfs:comment "A first-class schema entity representing a relational database.".
+
+# Table
+:Table a owl:Class ;
+    rdfs:label "Table" ;
+    rdfs:comment "A table belonging to a database." ;
+    owl:disjointWith :Column ;
+    owl:subClassOf [ a owl:Restriction ;
+                      owl:onProperty :hasTable ;
+                      owl:allValuesFrom :Database ].
+
+:hasTable a owl:ObjectProperty ;
+    rdfs:label "Has Table" ;
+    rdfs:comment "Relates a table to its parent database.".
+
+# Column
+:Column a owl:Class ;
+    rdfs:label "Column" ;
+    rdfs:comment "A column belonging to a table." ;
+    owl:disjointWith :Table ;
+    owl:subClassOf [ a owl:Restriction ;
+                      owl:onProperty :hasColumn ;
+                      owl:allValuesFrom :Table ].
+
+:hasColumn a owl:ObjectProperty ;
+    rdfs:label "Has Column" ;
+    rdfs:comment "Relates a column to its parent table.".
+
+# Primary Key
+:PrimaryKey a owl:Class ;
+    rdfs:label "Primary Key" ;
+    rdfs:comment "Represents the primary key relationship in the schema.".
+
+:hasPrimaryKey a owl:ObjectProperty ;
+    rdfs:label "Has Primary Key" ;
+    rdfs:comment "Relates a table to its primary key.".
+
+# Foreign Key
+:ForeignKey a owl:Class ;
+    rdfs:label "Foreign Key" ;
+    rdfs:comment "Represents the foreign key relationship in the schema.".
+
+:hasForeignKey a owl:ObjectProperty ;
+    rdfs:label "Has Foreign Key" ;
+    rdfs:comment "Relates a table to its foreign key.".
+
+# Policy
+:Policy a owl:Class ;
+    rdfs:label "Policy" ;
+    rdfs:comment "Defines a policy for a specific agent.".
+
+# Action
+:Action a owl:Class ;
+    rdfs:label "Action" ;
+    rdfs:comment "Represents a high-level ReadAction, ModifyAction, or ViewActionScope for read operations.".
+
+:ReadAction a owl:Class ;
+    rdfs:label "Read Action" ;
+    rdfs:comment "Represents a high-level read action.".
+
+:ModifyAction a owl:Class ;
+    rdfs:label "Modify Action" ;
+    rdfs:comment "Represents a high-level modify action.".
+
+:ViewActionScope a owl:Class ;
+    rdfs:label "View Action Scope" ;
+    rdfs:comment "Represents the view action scope for read operations.".
+
+:ProcessActionScope a owl:Class ;
+    rdfs:label "Process Action Scope" ;
+    rdfs:comment "Represents the process action scope for read operations.".

@@ -1,4 +1,4 @@
-### Turtle Ontology
+### Ontology Design Pattern (ODP) in Turtle Syntax
 
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#>.
@@ -8,89 +8,94 @@
 @prefix :     <http://example.org/odp#>.
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Authorship and Pseudonyms" ;
-  rdfs:comment "An ontology for modeling authorship and pseudonyms".
+  rdfs:label "Authorship and Pseudonyms Ontology" ;
+  rdfs:comment "An ontology for modeling authorship and pseudonyms.".
 
-:Author a rdfs:Class ;
+:Author a owl:Class ;
   rdfs:label "Author" ;
-  rdfs:comment "A person who writes books".
+  rdfs:comment "An individual who creates literary works.".
 
-:Pseudonym a rdfs:Class ;
+:Name a owl:Class ;
+  rdfs:label "Name" ;
+  rdfs:comment "A label or identifier used to refer to an individual.".
+
+:Pseudonym a owl:Class ;
   rdfs:label "Pseudonym" ;
-  rdfs:comment "A name used by an author to publish under".
+  rdfs:comment "A name used by an author to conceal their identity.".
 
-:Book a rdfs:Class ;
+:Book a owl:Class ;
   rdfs:label "Book" ;
-  rdfs:comment "A written work".
+  rdfs:comment "A written or printed work consisting of pages glued or sewn together.".
 
-:Published a rdf:Property ;
-  rdfs:label "published" ;
-  rdfs:comment "The act of publishing a book" ;
+:Published a owl:ObjectProperty ;
+  rdfs:label "Published" ;
+  rdfs:comment "The act of making a book available to the public." ;
   rdfs:domain :Author ;
   rdfs:range :Book.
 
-:UsesPseudonym a rdf:Property ;
-  rdfs:label "uses pseudonym" ;
-  rdfs:comment "An author uses a pseudonym to publish" ;
+:Uses a owl:ObjectProperty ;
+  rdfs:label "Uses" ;
+  rdfs:comment "The act of adopting a pseudonym." ;
   rdfs:domain :Author ;
   rdfs:range :Pseudonym.
 
-:Title a rdf:Property ;
-  rdfs:label "title" ;
-  rdfs:comment "The title of a book" ;
-  rdfs:domain :Book ;
-  rdfs:range xsd:string.
+:HasName a owl:ObjectProperty ;
+  rdfs:label "Has Name" ;
+  rdfs:comment "The relationship between an individual and their name." ;
+  rdfs:domain :Author ;
+  rdfs:range :Name.
 
-:Authorship a rdf:Property ;
-  rdfs:label "authorship" ;
-  rdfs:comment "The relationship between an author and a book" ;
+:Authorship a owl:Class ;
+  rdfs:label "Authorship" ;
+  rdfs:comment "The act of creating a literary work.".
+
+:BookTitle a owl:Class ;
+  rdfs:label "Book Title" ;
+  rdfs:comment "The title of a book.".
+
+:Title a owl:ObjectProperty ;
+  rdfs:label "Title" ;
+  rdfs:comment "The name given to a book." ;
+  rdfs:domain :Book ;
+  rdfs:range :BookTitle.
+
+:AuthorshipOf a owl:ObjectProperty ;
+  rdfs:label "Authorship Of" ;
+  rdfs:comment "The relationship between an author and their literary work." ;
+  rdfs:domain :Author ;
+  rdfs:range :Book.
+
+:C. S. Lewis a owl:NamedIndividual ;
+  rdfs:label "C. S. Lewis" ;
+  rdfs:comment "A renowned author.".
+
+:Spirit in Bondage a owl:NamedIndividual ;
+  rdfs:label "Spirit in Bondage" ;
+  rdfs:comment "A collection of poems.".
+
+:PublishedBy a owl:ObjectProperty ;
+  rdfs:label "Published By" ;
+  rdfs:comment "The act of publishing a book." ;
   rdfs:domain :Book ;
   rdfs:range :Author.
 
-:PseudonymUsed a rdf:Property ;
-  rdfs:label "pseudonym used" ;
-  rdfs:comment "The pseudonym used by an author" ;
-  rdfs:domain :Author ;
-  rdfs:range :Pseudonym.
-
-:C. S. Lewis a :Author ;
-  rdfs:label "C. S. Lewis".
-
-:CSLewis a :Author ;
-  rdfs:label "C. S. Lewis" ;
-  owl:sameAs :C. S. Lewis.
-
-:CSLewisUsesPseudonym :Pseudonym1 ;
-  a :Pseudonym ;
-  rdfs:label "Pseudonym1".
-
-:CSLewisPublishedBook :Book1 ;
-  a :Book ;
-  :Title "Spirit in Bondage" ;
-  :Authorship :C. S. Lewis ;
-  :PseudonymUsed :Pseudonym1.
+:C. S. Lewis :Uses :Pseudonym1.
+:Spirit in Bondage :PublishedBy :C. S. Lewis.
+:Spirit in Bondage :Title "Spirit in Bondage".
 ```
 
 ### Scenario-requirement-to-axiom mapping
 
-1. An author adopting different names to publish books: 
-   - Axioms: `:Author a rdfs:Class ;`, `:Pseudonym a rdfs:Class ;`, `:UsesPseudonym a rdf:Property ;`
-2. Name changes (e.g., after marriage): 
-   - Axioms: `:CSLewisUsesPseudonym :Pseudonym1 ;`, `:Pseudonym1 a :Pseudonym ;`
+1. An author adopting different names to publish books, Name changes (e.g. - after marriage)
+   - Axioms: `:HasName a owl:ObjectProperty ;`, `:Author a owl:Class ;`, `:Name a owl:Class ;`
+2. Competency Questions:
+   - Under what pseudonym did the author C. S. Lewis publish a collection of poems, Spirit in Bondage?
+     - Axioms: `:Uses a owl:ObjectProperty ;`, `:C. S. Lewis a owl:NamedIndividual ;`, `:Pseudonym a owl:Class ;`
+   - What alternative did C. S. Lewis use to assume the role of a book writer?
+     - Axioms: `:Uses a owl:ObjectProperty ;`, `:C. S. Lewis a owl:NamedIndividual ;`, `:Pseudonym a owl:Class ;`
+   - Show the trajectories of rivers which cross national parks?
+     - Axioms: None (this CQ is not relevant to the scenario)
 
 ### CQ-to-axiom mapping
 
-1. Under what pseudonym did the author C. S. Lewis publish a collection of poems, Spirit in Bondage?
-   - Classes: `:Author`, `:Pseudonym`, `:Book`
-   - Properties: `:UsesPseudonym`, `:PseudonymUsed`, `:Authorship`, `:Title`
-2. What alternative did C. S. Lewis use to assume the role of a book writer?
-   - Classes: `:Author`, `:Pseudonym`
-   - Properties: `:UsesPseudonym`
-3. Show the trajectories of rivers which cross national parks? 
-   - This competency question is not supported by the ontology, as it is unrelated to the scenario of authorship and pseudonyms.
-
-### Intentionally excluded concepts
-
-- Rivers and national parks: These concepts are not relevant to the scenario of authorship and pseudonyms, and therefore are not included in the ontology.
-- Trajectories of rivers: This concept is also not relevant to the scenario and is not included in the ontology.
-- Marriage: While name changes after marriage are mentioned in the scenario, the ontology does not explicitly model marriage as a concept. However, it does model the use of pseudonyms, which can be related to name changes after marriage.
+1. Under what pseudonym did the author C.

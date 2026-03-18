@@ -1,0 +1,71 @@
+1. Reasoning for steps 1–6
+
+### Step 1. Atomic requirements
+- An author can adopt different names.
+- Different names can be used for publishing books.
+- A name used by an author may be a pseudonym.
+- An author may change name over time, for example after marriage.
+- A book can be published under a specific name adopted by an author.
+- The ontology should support asking which pseudonym was used to publish a given book.
+- The ontology should support asking which alternative name an author used in the role of book writer.
+- The ontology should support asking for trajectories of rivers that cross national parks.
+
+### Step 2. Candidate classes and properties
+- For authors adopting different names:
+  - Classes: `:Agent`, `:Author`, `:NameUsage`, `:Appellation`
+  - Properties: `:usesName`, `:usedBy`
+- For publishing books under a name:
+  - Classes: `:Book`
+  - Properties: `:publishedUnderName`, `:usedForWork`
+- For pseudonyms:
+  - Classes: `:Pseudonym`
+  - Properties: none beyond name-use links
+- For name changes:
+  - Classes: `:MarriedName`
+  - Properties: none necessary if modeled as a kind of appellation
+- For role of book writer:
+  - Classes: `:WritingRole`
+  - Properties: `:assumesRoleName`
+- For rivers crossing national parks:
+  - Classes: `:River`, `:NationalPark`, `:Trajectory`
+  - Properties: `:hasTrajectory`, `:crosses`
+
+### Step 3. Draft axioms
+- `:Author rdfs:subClassOf :Agent`
+- `:Pseudonym rdfs:subClassOf :Appellation`
+- `:MarriedName rdfs:subClassOf :Appellation`
+- `:usesName rdfs:domain :Agent ; rdfs:range :Appellation`
+- `:usedBy owl:inverseOf :usesName`
+- `:publishedUnderName rdfs:domain :Book ; rdfs:range :Appellation`
+- `:Book rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :publishedUnderName ; owl:minCardinality "0"^^xsd:nonNegativeInteger ]`
+- `:assumesRoleName rdfs:domain :Author ; rdfs:range :Appellation`
+- `:WritingRole` was considered, but no CQ requires explicit role individuals.
+- `:River rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :hasTrajectory ; owl:maxCardinality "1"^^xsd:nonNegativeInteger ]`
+- `:hasTrajectory rdfs:domain :River ; rdfs:range :Trajectory`
+- `:crosses rdfs:domain :River ; rdfs:range :NationalPark`
+- Disjointness candidates:
+  - `:Book owl:disjointWith :Appellation`
+  - `:River owl:disjointWith :NationalPark`
+
+### Step 4. CQ coverage check
+- CQ1: “Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?”
+  - Enabled by: `:publishedUnderName`, `:usesName`, `:Pseudonym`
+  - Need a way to connect the book’s publication name to the author who uses that name; this can be done by querying shared `:Appellation`.
+- CQ2: “What alternative did C. S. Lewis used to assume the role of a book writer?”
+  - Enabled by: `:usesName` or `:assumesRoleName`
+  - `:assumesRoleName` is more specific to the CQ.
+- CQ3: “Show the trajectories of rivers which cross national parks?”
+  - Enabled by: `:crosses`, `:hasTrajectory`
+- Uncovered issue:
+  - Need a general superclass for names so pseudonyms and married names are both alternatives.
+  - Need to avoid overcommitting to a separate role class if not needed.
+
+### Step 5. Add/refine axioms
+- Add `:AlternativeName rdfs:subClassOf :Appellation` to capture general alternative names.
+- Refine:
+  - `:Pseudonym rdfs:subClassOf :AlternativeName`
+  - `:MarriedName rdfs:subClassOf :AlternativeName`
+- Refine `:assumesRoleName` to be a subproperty of `:usesName` so role-specific usage is still general name usage.
+- Add `:publishedUnderName rdfs:range :AlternativeName`? Too restrictive, because a book may be published under a primary name too. Keep range as `:Appellation`.
+- Add `:assumesRoleName rdfs:range :AlternativeName` to answer CQ2.
+- Keep river pattern independent and minimal

@@ -1,0 +1,53 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* It is rainy season.
+	* The sprinkler is on.
+	* It is raining.
+	* The pavement is wet.
+	* The pavement is slippery.
+	* The sprinkler being on causes the pavement to be wet.
+	* The pavement being wet causes the pavement to be slippery.
+2. **Propose candidate classes and properties for each requirement**
+	* `:Event` (class) - represents an event in the sprinkler use case
+		+ `:hasEffect` (property) - represents the effect of an event
+		+ `:hasCausalLink` (property) - represents a causal link between events
+	* `:SprinklerState` (class) - represents the state of the sprinkler
+		+ `:isOn` (property) - represents whether the sprinkler is on or off
+	* `:Weather` (class) - represents the weather conditions
+		+ `:isRainySeason` (property) - represents whether it is rainy season
+		+ `:isRaining` (property) - represents whether it is raining
+	* `:Pavement` (class) - represents the pavement
+		+ `:isWet` (property) - represents whether the pavement is wet
+		+ `:isSlippery` (property) - represents whether the pavement is slippery
+3. **Draft axioms for each candidate**
+	* `:Event` rdfs:subClassOf owl:Thing.
+	* `:SprinklerState` rdfs:subClassOf :Event.
+	* `:Weather` rdfs:subClassOf :Event.
+	* `:Pavement` rdfs:subClassOf :Event.
+	* `:hasEffect` rdfs:domain :Event ; rdfs:range xsd:float.
+	* `:hasCausalLink` rdfs:domain :Event ; rdfs:range :Event.
+	* `:isOn` rdfs:domain :SprinklerState ; rdfs:range xsd:boolean.
+	* `:isRainySeason` rdfs:domain :Weather ; rdfs:range xsd:boolean.
+	* `:isRaining` rdfs:domain :Weather ; rdfs:range xsd:boolean.
+	* `:isWet` rdfs:domain :Pavement ; rdfs:range xsd:boolean.
+	* `:isSlippery` rdfs:domain :Pavement ; rdfs:range xsd:boolean.
+	* `:SprinklerState` owl:disjointWith :Weather.
+	* `:SprinklerState` owl:disjointWith :Pavement.
+	* `:Weather` owl:disjointWith :Pavement.
+4. **For each CQ, check which axioms enable answering it; note any CQs not yet covered**
+	* CQ1: What events are responsible for the pavement being slippery?
+		+ Axioms: `:hasCausalLink`, `:isWet`, `:isSlippery`
+	* CQ2: What would be the outcome of turning the sprinkler system on(off)?
+		+ Axioms: `:hasEffect`, `:isOn`, `:isWet`
+	* CQ3: How strong is the causal link between the sprinkler being on and the pavement being wet?
+		+ Axioms: `:hasCausalLink`, `:isOn`, `:isWet`
+	* CQ4: What if the pavement is not wet, how would it effect the pavement being slippery?
+		+ Axioms: `:hasCausalLink`, `:isWet`, `:isSlippery`
+	* CQ5: How strong is the causal link between the rain and slippery pavement event?
+		+ Axioms: `:hasCausalLink`, `:isRaining`, `:isWet`, `:isSlippery`
+5. **Add or refine axioms to cover any uncovered CQs**
+	* `:hasCausalLink` rdfs:domain :Event ; rdfs:range :Event ; owl:propertyChain (:isWet :isSlippery).
+	* `:hasEffect` rdfs:domain :Event ; rdfs:range xsd:float ; owl:propertyChain (:isOn :isWet).
+6. **Remove any classes or properties not traceable to a requirement or CQ**
+	* Removed `:SprinklerState`, `:Weather`, `:Pavement` as they are not directly related to the requirements or CQs.

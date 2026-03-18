@@ -1,0 +1,79 @@
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Database Access Control" ;
+  rdfs:comment "This ontology models the access control to a relational database queried via SQL.".
+
+# Database related classes
+:Database a owl:Class ;
+  rdfs:label "Database" ;
+  rdfs:comment "A relational database.".
+
+:SQLQuery a owl:Class ;
+  rdfs:label "SQL Query" ;
+  rdfs:comment "A Structured Query Language query.".
+
+:User a owl:Class ;
+  rdfs:label "User" ;
+  rdfs:comment "A user who queries the database.".
+
+# Access control related classes
+:AccessPermission a owl:Class ;
+  rdfs:label "Access Permission" ;
+  rdfs:comment "A permission that grants or denies access to a resource.".
+
+:ReadPermission a owl:Class ;
+  rdfs:label "Read Permission" ;
+  rdfs:comment "A permission that grants read access to a resource.".
+
+:WritePermission a owl:Class ;
+  rdfs:label "Write Permission" ;
+  rdfs:comment "A permission that grants write access to a resource.".
+
+:ExecutePermission a owl:Class ;
+  rdfs:label "Execute Permission" ;
+  rdfs:comment "A permission that grants execution permission to a SQL query.".
+
+# Relationships
+:Database rdf:type owl:ObjectProperty ;
+  rdfs:label "hasDatabase" ;
+  rdfs:comment "Relates a user to the database they are accessing.".
+
+:SQLQuery rdf:type owl:ObjectProperty ;
+  rdfs:label "hasSQLQuery" ;
+  rdfs:comment "Relates a user to the SQL query they are executing.".
+
+:User rdf:type owl:Class ;
+  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                     owl:onProperty :hasDatabase ;
+                     owl:hasValue xsd:string ] ;
+
+:AccessPermission rdf:type owl:Class ;
+  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                     owl:onProperty [ rdf:type owl:ObjectProperty ;
+                                       rdfs:label "hasAccessPermission" ;
+                                       rdfs:comment "Relates a user to their access permissions." ] ;
+                     owl:hasValue xsd:boolean ] ;
+
+:ReadPermission rdf:type owl:Class ;
+  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                     owl:onProperty [ rdf:type owl:ObjectProperty ;
+                                       rdfs:label "hasReadPermission" ;
+                                       rdfs:comment "Relates a user to their read permissions." ] ;
+                     owl:hasValue xsd:boolean ] ;
+
+:WritePermission rdf:type owl:Class ;
+  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                     owl:onProperty [ rdf:type owl:ObjectProperty ;
+                                       rdfs:label "hasWritePermission" ;
+                                       rdfs:comment "Relates a user to their write permissions." ] ;
+                     owl:hasValue xsd:boolean ] ;
+
+:ExecutePermission rdf:type owl:Class ;
+  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                     owl:onProperty [ rdf:type owl:ObjectProperty ;

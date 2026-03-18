@@ -1,0 +1,114 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Action Log Ontology" ;
+  rdfs:comment "Ontology for modeling action logs.".
+
+:ActionType a rdfs:Class ;
+  rdfs:label "Action Type" ;
+  rdfs:comment "Type of action being performed.".
+
+:CreateAction a :ActionType ;
+  rdfs:label "Create Action" ;
+  rdfs:comment "Action of creating data.".
+
+:UpdateAction a :ActionType ;
+  rdfs:label "Update Action" ;
+  rdfs:comment "Action of updating data.".
+
+:EraseAction a :ActionType ;
+  rdfs:label "Erase Action" ;
+  rdfs:comment "Action of erasing data.".
+
+:Entity a rdfs:Class ;
+  rdfs:label "Entity" ;
+  rdfs:comment "Entity interacting with the data.".
+
+:User a :Entity ;
+  rdfs:label "User" ;
+  rdfs:comment "Human entity interacting with the data.".
+
+:Application a :Entity ;
+  rdfs:label "Application" ;
+  rdfs:comment "Software entity interacting with the data.".
+
+:LogPublisher a :Entity ;
+  rdfs:label "Log Publisher" ;
+  rdfs:comment "Entity publishing the log.".
+
+:LogIssueDate a rdf:Property ;
+  rdfs:label "Log Issue Date" ;
+  rdfs:comment "Date when the log was issued." ;
+  rdfs:domain :Log ;
+  rdfs:range xsd:date.
+
+:Log a rdfs:Class ;
+  rdfs:label "Log" ;
+  rdfs:comment "Log of actions.".
+
+:DataStorageLocation a rdfs:Class ;
+  rdfs:label "Data Storage Location" ;
+  rdfs:comment "Location where the data is being stored.".
+
+:StorageServer a :DataStorageLocation ;
+  rdfs:label "Storage Server" ;
+  rdfs:comment "Server where the data is being stored.".
+
+:ApplicationService a rdfs:Class ;
+  rdfs:label "Application Service" ;
+  rdfs:comment "Service used to generate the data.".
+
+:Log a owl:intersectionOf (:Log :LogPublisher :LogIssueDate) ;
+  rdfs:label "Log" ;
+  rdfs:comment "Log of actions.".
+
+:Log :hasActionType :ActionType ;
+  rdfs:label "has Action Type" ;
+  rdfs:comment "Action type of the log." ;
+  rdfs:domain :Log ;
+  rdfs:range :ActionType.
+
+:Log :hasEntity :Entity ;
+  rdfs:label "has Entity" ;
+  rdfs:comment "Entity interacting with the data." ;
+  rdfs:domain :Log ;
+  rdfs:range :Entity.
+
+:Log :hasLogPublisher :LogPublisher ;
+  rdfs:label "has Log Publisher" ;
+  rdfs:comment "Entity publishing the log." ;
+  rdfs:domain :Log ;
+  rdfs:range :LogPublisher.
+
+:Log :hasLogIssueDate :LogIssueDate ;
+  rdfs:label "has Log Issue Date" ;
+  rdfs:comment "Date when the log was issued." ;
+  rdfs:domain :Log ;
+  rdfs:range xsd:date.
+
+:Log :hasDataStorageLocation :DataStorageLocation ;
+  rdfs:label "has Data Storage Location" ;
+  rdfs:comment "Location where the data is being stored." ;
+  rdfs:domain :Log ;
+  rdfs:range :DataStorageLocation.
+
+:Log :hasApplicationService :ApplicationService ;
+  rdfs:label "has Application Service" ;
+  rdfs:comment "Service used to generate the data." ;
+  rdfs:domain :Log ;
+  rdfs:range :ApplicationService.
+```
+
+**CQ-to-Axiom Mapping Table**
+
+| Competency Question | Enabling Axioms |
+| --- | --- |
+| What type of action, e.g., create, update, erase, is being performed on the data? | `:Log :hasActionType :ActionType` |
+| Who is the entity interacting with the data? | `:Log :hasEntity :Entity` |
+| Who is the entity publishing the log? | `:Log :hasLogPublisher :LogPublisher` |
+|

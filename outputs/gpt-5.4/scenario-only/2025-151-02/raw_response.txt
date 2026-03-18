@@ -1,0 +1,97 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "ODRL policy evaluation context for partial video stream access" ;
+    rdfs:comment "An ontology design pattern for representing real-world information relevant to evaluating ODRL policies, specifically a person's requested access to a segment of a video stream for an academic research purpose." .
+
+:Agent a owl:Class ;
+    rdfs:label "Agent" ;
+    rdfs:comment "An entity that can request or hold access to a resource." .
+
+:VideoStream a owl:Class ;
+    rdfs:label "Video stream" ;
+    rdfs:comment "A video resource to which access may be requested." .
+
+:AccessRequest a owl:Class ;
+    rdfs:label "Access request" ;
+    rdfs:comment "A request by an agent to access a resource under certain constraints and for a stated purpose." .
+
+:TemporalSegment a owl:Class ;
+    rdfs:label "Temporal segment" ;
+    rdfs:comment "A time-bounded segment of a media resource, defined by a start minute and an end minute." .
+
+:Purpose a owl:Class ;
+    rdfs:label "Purpose" ;
+    rdfs:comment "The intended purpose for which access to a resource is requested." .
+
+:AcademicResearchPurpose a owl:Class ;
+    rdfs:label "Academic research purpose" ;
+    rdfs:comment "A purpose corresponding to academic research." ;
+    rdfs:subClassOf :Purpose .
+
+:Agent owl:disjointWith :VideoStream, :AccessRequest, :TemporalSegment, :Purpose .
+:VideoStream owl:disjointWith :AccessRequest, :TemporalSegment, :Purpose .
+:AccessRequest owl:disjointWith :TemporalSegment, :Purpose .
+:TemporalSegment owl:disjointWith :Purpose .
+
+:requestedBy a owl:ObjectProperty ;
+    rdfs:label "requested by" ;
+    rdfs:comment "Relates an access request to the agent making the request." ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :Agent .
+
+:requestsAccessTo a owl:ObjectProperty ;
+    rdfs:label "requests access to" ;
+    rdfs:comment "Relates an access request to the video stream that is requested." ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :VideoStream .
+
+:hasRequestedSegment a owl:ObjectProperty ;
+    rdfs:label "has requested segment" ;
+    rdfs:comment "Relates an access request to the temporal segment of the video stream that is needed." ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :TemporalSegment .
+
+:hasPurpose a owl:ObjectProperty ;
+    rdfs:label "has purpose" ;
+    rdfs:comment "Relates an access request to the purpose for which access is needed." ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :Purpose .
+
+:segmentStartMinute a owl:DatatypeProperty ;
+    rdfs:label "segment start minute" ;
+    rdfs:comment "The starting minute of a temporal segment within a video stream." ;
+    rdfs:domain :TemporalSegment ;
+    rdfs:range xsd:decimal .
+
+:segmentEndMinute a owl:DatatypeProperty ;
+    rdfs:label "segment end minute" ;
+    rdfs:comment "The ending minute of a temporal segment within a video stream." ;
+    rdfs:domain :TemporalSegment ;
+    rdfs:range xsd:decimal .
+
+:Bob a :Agent ;
+    rdfs:label "Bob" ;
+    rdfs:comment "The agent who wants access to a certain video stream." .
+
+:RequestedVideoStream a :VideoStream ;
+    rdfs:label "Requested video stream" ;
+    rdfs:comment "The certain video stream that Bob wants to access." .
+
+:AcademicResearch a :AcademicResearchPurpose ;
+    rdfs:label "Academic research" ;
+    rdfs:comment "The academic research purpose motivating the access request." .
+
+:Minutes4To9 a :TemporalSegment ;
+    rdfs:label "Minutes 4 to 9" ;
+    rdfs:comment "The temporal segment of the video stream covering minutes 4 through 9." ;
+    :segmentStartMinute "4"^^xsd:decimal ;
+    :segmentEndMinute "9"^^xsd:decimal .
+
+:BobVideoAccessRequest a :AccessRequest ;
+    rdfs

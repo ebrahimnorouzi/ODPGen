@@ -340,16 +340,14 @@ def generate_with_openai(
 
     client = OpenAI(api_key=api_key)
 
-    response = client.chat.completions.create(
+    response = client.responses.create(
         model=model,
-        messages=[{"role": "user", "content": prompt}],
+        input=prompt,
         temperature=temperature,
-        max_tokens=max_new_tokens,
+        max_output_tokens=max_new_tokens,
     )
 
-    content = response.choices[0].message.content
-    return content.strip() if content else ""
-
+    return response.output_text.strip() if response.output_text else ""
 
 # ---------------------------------------------------------------------------
 # Config / template map

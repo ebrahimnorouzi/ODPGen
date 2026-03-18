@@ -1,0 +1,32 @@
+**Reasoning Steps:**
+
+1. Atomic Requirements:
+   - R1: Asthma symptoms exist for a patient.
+   - R2: Medication intake by the patient exists.
+   - R3: Outdoor environmental allergens (pollen, AQI) exist.
+   - R4: There is a causal relationship between outdoor allergens and asthma symptoms.
+   - R5: There is a causal relationship between outdoor allergens and medication intake.
+   - R6: There is a causal relationship between asthma symptoms and medication intake.
+
+2. Candidate Classes and Properties:
+   - Classes: Patient, AsthmaSymptom, Medication, OutdoorAllergen (Pollen, AQI), CausalRelation
+   - Properties: hasSymptom, takesMedication, existsInEnvironment, hasCausalEffect
+
+3. Draft Axioms:
+   - :Patient rdf:type owl:Class ; rdfs:label "Patient" ; rdfs:comment "Represents a patient.".
+   - :AsthmaSymptom rdf:type owl:Class ; rdfs:label "AsthmaSymptom" ; rdfs:comment "Represents an asthma symptom.".
+   - :Medication rdf:type owl:Class ; rdfs:label "Medication" ; rdfs:comment "Represents a medication.".
+   - :OutdoorAllergen rdf:type owl:Class ; rdfs:label "OutdoorAllergen" ; rdfs:comment "Represents an outdoor allergen.".
+   - :CausalRelation rdf:type owl:Class ; rdfs:label "CausalRelation" ; rdfs:comment "Represents a causal relationship.".
+   - :hasSymptom rdf:type owl:ObjectProperty ; domain :Patient ; range :AsthmaSymptom ; rdfs:label "Has Asthma Symptom" ; rdfs:comment "Indicates the patient has a specific asthma symptom.".
+   - :takesMedication rdf:type owl:ObjectProperty ; domain :Patient ; range :Medication ; rdfs:label "Takes Medication" ; rdfs:comment "Indicates the patient is taking a specific medication.".
+   - :existsInEnvironment rdf:type owl:ObjectProperty ; domain :OutdoorAllergen ; range rdf:Resource ; rdfs:label "Exists in Environment" ; rdfs:comment "Indicates the allergen exists in the outdoor environment.".
+   - :hasCausalEffect rdf:type owl:ObjectProperty ; domain :OutdoorAllergen ; range :CausalRelation ; rdfs:label "Has Causal Effect" ; rdfs:comment "Indicates the causal effect of an allergen.".
+
+4. For each CQ, check which axioms enable answering it:
+   - CQ1: owl:ObjectPropertyAssertion(:Patient :hasCausalEffect :OutdoorAllergen)
+   - CQ2: owl:ObjectPropertyAssertion(:AsthmaSymptom :hasCausalEffect :CausalRelation)
+   - CQ3: owl:ObjectPropertyAssertion(:OutdoorAllergen :hasCausalEffect :CausalRelation)
+   - CQ4: owl:ObjectPropertyAssertion(:AsthmaSymptom :hasCausalEffect :CausalRelation) and owl:ObjectPropertyAssertion(:CausalRelation :hasCausalEffect :Medication)
+   - CQ5: owl:ObjectPropertyAssertion(:OutdoorAllergen :hasCausalEffect :CausalRelation) and owl:ObjectPropertyAssertion(:AsthmaSymptom :hasCausalEffect :CausalRelation) and owl:ObjectPropertyAssertion(:CausalRelation :inverseOf :hasCausalEffect)
+   - CQ6: owl:ObjectPropertyAssertion(:OutdoorAllergen :hasCausalEffect :CausalRelation) and owl:ObjectPropertyAssertion(:AsthmaSymptom :hasCausalEffect :CausalRelation) and owl:ObjectPropertyAssertion(:CausalRelation :inverseOf :hasCaus

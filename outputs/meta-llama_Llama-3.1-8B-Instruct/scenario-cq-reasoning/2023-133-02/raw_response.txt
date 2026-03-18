@@ -1,0 +1,78 @@
+**Reasoning Steps**
+
+1. **Extract atomic requirements from the scenario**
+	* The data collected about asthma patients include their symptoms, medication intake, and outdoor environment features.
+	* The presence of outdoor allergen: pollen/AQI causes the patient to experience a cough with causal effect weights.
+2. **Propose candidate classes and properties for each requirement**
+	* `Patient`: class
+	* `Symptom`: class
+	* `Medication`: class
+	* `OutdoorEnvironmentFeature`: class
+	* `causes`: property (Patient, Symptom, OutdoorEnvironmentFeature)
+	* `effectWeight`: property (Symptom, OutdoorEnvironmentFeature)
+3. **Draft axioms for each candidate**
+	* `Patient` subclass of `Individual`
+	* `Symptom` subclass of `Condition`
+	* `Medication` subclass of `Treatment`
+	* `OutdoorEnvironmentFeature` subclass of `EnvironmentalFactor`
+	* `causes` domain: `Patient`, range: `Symptom`
+	* `causes` range: `OutdoorEnvironmentFeature`
+	* `effectWeight` domain: `Symptom`, range: `xsd:float`
+	* `effectWeight` domain: `OutdoorEnvironmentFeature`, range: `xsd:float`
+	* `Patient` disjoint from `Symptom`
+	* `Patient` disjoint from `Medication`
+	* `Patient` disjoint from `OutdoorEnvironmentFeature`
+4. **Check which axioms enable answering each CQ**
+	* CQ1: `Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI?`
+		+ Axioms: `causes` domain, `causes` range
+	* CQ2: `How much does the presence of an asthma symptom effect the intake of medication?`
+		+ Axioms: `effectWeight` domain, `effectWeight` range
+	* CQ3: `How does an outdoor environmental allergen affect the patient?`
+		+ Axioms: `causes` domain, `causes` range
+	* CQ4: `What is the probable cause of the cough experienced by the patient?`
+		+ Axioms: `causes` domain, `causes` range
+	* CQ5: `What if pollen (or AQI) allergen was not present in the outdoor environment, how would it effect the intake of medication?`
+		+ Axioms: `causes` domain, `causes` range
+	* CQ6: `What if the patient did not experience a cough, how would it effect the intake of medication?`
+		+ Axioms: `causes` domain, `causes` range
+5. **Add or refine axioms to cover any uncovered CQs**
+	* Add axiom: `Patient` subclass of `Individual` with `hasSymptom` property (Patient, Symptom)
+	* Add axiom: `Symptom` subclass of `Condition` with `hasEffect` property (Symptom, Medication)
+6. **Remove any classes or properties not traceable to a requirement or CQ**
+	* Remove `hasEffect` property (Symptom, Medication) as it is not explicitly mentioned in the requirements or CQs
+
+**Turtle Ontology**
+
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Asthma Patient Ontology" ;
+  rdfs:comment "Ontology for asthma patient data".
+
+:Patient a owl:Class ;
+  rdfs:label "Patient" ;
+  rdfs:comment "Asthma patient" ;
+  owl:disjointWith :Symptom ;
+  owl:disjointWith :Medication ;
+  owl:disjointWith :OutdoorEnvironmentFeature.
+
+:Symptom a owl:Class ;
+  rdfs:label "Symptom" ;
+  rdfs:comment "Asthma symptom" ;
+  owl:disjointWith :Patient ;
+  owl:disjointWith :Medication ;
+  owl:disjointWith :OutdoorEnvironmentFeature.
+
+:Medication a owl:Class ;
+  rdfs:label "Medication" ;
+  rdfs:comment "Medication for asthma" ;
+  owl:disjointWith :Patient ;
+  owl:disjointWith :Symptom ;
+  owl:disjointWith :OutdoorEnvironmentFeature.
+
+:OutdoorEnvironment

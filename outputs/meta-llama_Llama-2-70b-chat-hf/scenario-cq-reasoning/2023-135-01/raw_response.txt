@@ -1,0 +1,80 @@
+Reasoning:
+
+1. Extract atomic requirements from the scenario:
+* Author adopts different names to publish books.
+* Name changes (e.g. after marriage).
+2. Propose candidate classes and properties for each requirement:
+* Author:
+	+ hasName (range: String)
+	+ hasPseudonym (range: String)
+	+ hasWrittenWork (range: Work)
+* Work:
+	+ hasTitle (range: String)
+	+ hasAuthor (range: Author)
+	+ hasPublicationDate (range: Date)
+* Pseudonym:
+	+ hasName (range: String)
+	+ hasAuthor (range: Author)
+3. Draft axioms for each candidate class and property:
+* Author:
+	+ subclass (Author owl:Thing)
+	+ domain (hasName rdfs:String)
+	+ range (hasWrittenWork rdfs:Work)
+	+ cardinality (hasWrittenWork 1..*)
+* Work:
+	+ subclass (Work owl:Thing)
+	+ domain (hasTitle rdfs:String)
+	+ range (hasAuthor rdfs:Author)
+	+ cardinality (hasAuthor 1..*)
+	+ domain (hasPublicationDate rdfs:Date)
+* Pseudonym:
+	+ subclass (Pseudonym owl:Thing)
+	+ domain (hasName rdfs:String)
+	+ range (hasAuthor rdfs:Author)
+	+ cardinality (hasAuthor 1..*)
+4. For each CQ, check which axioms enable answering it; note any CQs not yet covered:
+* CQ 1: Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?
+	+ Axioms: hasPseudonym, hasWrittenWork
+* CQ 2: What alternative did C. S. Lewis used to assume the role of a book writer?
+	+ Axioms: hasName, hasPseudonym
+* CQ 3: Show the trajectories of rivers which cross national parks?
+	+ Not covered by the current ontology.
+5. Add or refine axioms to cover any uncovered CQs:
+* Add a new class and property for River and its trajectory:
+	+ River:
+		- subclass (River owl:Thing)
+		- domain (hasTrajectory rdfs:Trajectory)
+		- range (hasRiver rdfs:River)
+		- cardinality (hasRiver 1..*)
+	+ Trajectory:
+		- subclass (Trajectory owl:Thing)
+		- domain (hasStartPoint rdfs:Point)
+		- range (hasEndPoint rdfs:Point)
+		- cardinality (hasStartPoint 1..1)
+		- cardinality (hasEndPoint 1..1)
+* Add a new axiom for the hasTrajectory property to relate River and Trajectory:
+	+ hasTrajectory (range: Trajectory)
+6. Remove any classes or properties not traceable to a requirement or CQ:
+* Remove the Pseudonym class and its properties, as it is not necessary to answer any of the CQs.
+
+Final ontology:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "Author and Work Ontology" ;
+rdfs:comment "An ontology for representing authors, their works, and their pseudonyms.".
+
+Author a owl:Thing ;
+rdfs:label "Author" ;
+rdfs:comment "An author who has written works.".
+
+hasName a rdfs:String ;
+rdfs:label "name" ;
+rdfs:comment "The name of the author.".
+
+hasPseudonym
