@@ -67,23 +67,27 @@ def extract_turtle(response: str) -> str:
     # Fallback: remove a leading explanatory sentence if present
     lines = text.splitlines()
 
-    # Start from the first line that looks like Turtle
+    # Start from the first line that looks like Turtle.
+    # We intentionally exclude bare ":" from markers — it is too broad and
+    # would match ":ClassName" in reasoning bullet points.  Instead we
+    # look for unambiguous Turtle starts:
+    #   • @prefix / @base / prefix / base declarations
+    #   • Absolute URI references  <http://…>
+    #   • A line that looks like a typed OWL declaration:
+    #       :Something  a  owl:…   (must contain " a owl:" or " a rdf:")
     turtle_start = None
-    turtle_markers = (
-        "@prefix",
-        "@base",
-        "prefix ",
-        "base ",
-        "<http://",
-        "<https://",
-        ":",
-    )
+    _SAFE_MARKERS = ("@prefix", "@base", "prefix ", "base ", "<http://", "<https://")
 
     for i, line in enumerate(lines):
         stripped = line.strip()
         if not stripped:
             continue
-        if stripped.lower().startswith(turtle_markers):
+        lower = stripped.lower()
+        if lower.startswith(_SAFE_MARKERS):
+            turtle_start = i
+            break
+        # Accept ":Foo a owl:…" declarations but NOT bare ":Foo" bullet references
+        if stripped.startswith(":") and (" a owl:" in lower or " a rdf:" in lower):
             turtle_start = i
             break
 

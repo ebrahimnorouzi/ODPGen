@@ -116,7 +116,7 @@ def _f1_from_name_lists(
     and vice versa.
     """
     if not gen_names and not gt_names:
-        return 1.0, 1.0, 1.0, []
+        return 0.0, 0.0, 0.0, []
     if not gen_names or not gt_names:
         return 0.0, 0.0, 0.0, []
 
@@ -171,7 +171,14 @@ def evaluate_structure_similarity(
     gen_classes = _extract_names(gen_g, [OWL.Class])
     gen_props = _extract_names(gen_g, _PROPERTY_TYPES)
 
+    # Guard: a GT graph with hundreds of classes is a full ontology, not an ODP.
+    # Treat it as unavailable so it does not pollute similarity scores.
+    _GT_CLASS_LIMIT = 200
     gt_available = gt_graph is not None and len(gt_graph) > 0
+    if gt_available:
+        _gt_class_probe = _extract_names(gt_graph, [OWL.Class])
+        if len(_gt_class_probe) > _GT_CLASS_LIMIT:
+            gt_available = False
 
     if not gt_available:
         return {
