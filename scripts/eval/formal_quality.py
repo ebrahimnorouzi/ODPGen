@@ -64,6 +64,7 @@ def evaluate_formal_quality(ontology_path: Path) -> dict:
       ontology_declared, ontology_label_present, ontology_comment_present,
       class_count, object_property_count, datatype_property_count,
       annotation_property_count, label_coverage_ratio, comment_coverage_ratio,
+      class_label_ratio, property_label_ratio,
       domain_range_ratio, has_prefix_declarations, uses_standard_prefixes
     """
     raw_text = ontology_path.read_text(encoding="utf-8", errors="replace")
@@ -86,6 +87,8 @@ def evaluate_formal_quality(ontology_path: Path) -> dict:
             "annotation_property_count": 0,
             "label_coverage_ratio": 0.0,
             "comment_coverage_ratio": 0.0,
+            "class_label_ratio": 0.0,
+            "property_label_ratio": 0.0,
             "domain_range_ratio": 0.0,
             "has_prefix_declarations": has_prefix,
             "uses_standard_prefixes": False,
@@ -108,6 +111,10 @@ def evaluate_formal_quality(ontology_path: Path) -> dict:
     # --- Annotation coverage ---
     label_cov = _fraction_with_predicate(g, all_terms, RDFS.label)
     comment_cov = _fraction_with_predicate(g, all_terms, RDFS.comment)
+
+    # --- Per-type label coverage ---
+    class_label_ratio = _fraction_with_predicate(g, classes, RDFS.label)
+    property_label_ratio = _fraction_with_predicate(g, obj_props | data_props | ann_props, RDFS.label)
 
     # --- Domain/range coverage (object + datatype properties) ---
     props_with_dr = obj_props | data_props
@@ -138,6 +145,8 @@ def evaluate_formal_quality(ontology_path: Path) -> dict:
         "annotation_property_count": len(ann_props),
         "label_coverage_ratio": label_cov,
         "comment_coverage_ratio": comment_cov,
+        "class_label_ratio": class_label_ratio,
+        "property_label_ratio": property_label_ratio,
         "domain_range_ratio": domain_range_ratio,
         "has_prefix_declarations": has_prefix,
         "uses_standard_prefixes": uses_standard,

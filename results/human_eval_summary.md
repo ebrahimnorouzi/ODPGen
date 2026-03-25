@@ -1,15 +1,14 @@
 # Human/LLM Evaluation Summary
 
 Evaluator type: **mixed**
-Scored rows: **364**
-Unique outputs: **364**
+Scored rows: **350**
+Unique outputs: **350**
 Unique evaluators: **1**
 
 ## Mean / Median by Model + Config
 
 | Model | Config | Correctness (mean/median) | Completeness (mean/median) | Clarity-Reusability (mean/median) |
 |---|---|---:|---:|---:|
-| bigscience_bloom-3b | scenario-cq | / | / | / |
 | bigscience_bloomz-7b1 | cq-only | / | / | / |
 | bigscience_bloomz-7b1 | scenario-cq | / | / | / |
 | bigscience_bloomz-7b1 | scenario-cq-constraints | / | / | / |

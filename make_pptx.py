@@ -168,7 +168,7 @@ meta = [
     ("Models Evaluated",   "6 LLMs"),
     ("Prompt Strategies",  "5 Configurations"),
     ("ODP Scenarios",      "14 Benchmarks"),
-    ("Total Runs",         "364 Evaluated"),
+    ("Total Runs",         "350 Evaluated"),
 ]
 for i, (lbl, val) in enumerate(meta):
     col = i % 2
@@ -179,8 +179,8 @@ for i, (lbl, val) in enumerate(meta):
     txbox(s, lx, ly+Inches(0.28), Inches(2.6), Inches(0.4), val, 18, bold=True, color=ACCENT2)
 
 # right panel — decorative stats
-rdata = [("364", "evaluated outputs"), ("14", "ODP scenarios"),
-         ("5",  "prompt configs"),    ("6",  "LLMs tested")]
+rdata = [("350", "evaluated outputs"), ("14", "ODP scenarios"),
+         ("5",  "prompt configs"),    ("5",  "LLMs tested")]
 for i, (n, l) in enumerate(rdata):
     rx = Inches(7.2 + (i % 2) * 2.85)
     ry = Inches(1.6 + (i // 2) * 2.4)
@@ -228,7 +228,7 @@ callout(s, Inches(0.5), Inches(4.5), Inches(12.3), Inches(0.6),
 
 # stat row
 for i, (n, l, c) in enumerate([("6", "LLMs", ACCENT2), ("5", "Prompt Configs", GREEN),
-                                ("14", "Scenarios", YELLOW), ("364", "Runs", PURPLE)]):
+                                ("14", "Scenarios", YELLOW), ("350", "Runs", PURPLE)]):
     stat_card(s, Inches(0.5 + i * 3.1), Inches(5.3), Inches(2.8), Inches(1.9), n, l, c)
 
 
@@ -385,9 +385,12 @@ layers = [
      ["parse_success — Valid Turtle syntax?",
       "triple_count — Total RDF triples",
       "ontology_declared — owl:Ontology header?",
-      "label/comment_coverage_ratio",
-      "domain_range_ratio — rdfs:domain & range",
-      "class_count, property_count"]),
+      "label_coverage_ratio — all named entities with rdfs:label",
+      "class_label_ratio [NEW] — owl:Class entities with rdfs:label",
+      "property_label_ratio [NEW] — Obj/Data/Ann properties with rdfs:label",
+      "comment_coverage_ratio — entities with rdfs:comment",
+      "domain_range_ratio — rdfs:domain & rdfs:range",
+      "class_count, property_count — pattern size"]),
     ("Layer 2 — Scenario Faithfulness", GREEN,
      ["cq_coverage_ratio — CQs answerable (token overlap)",
       "cq_mean_token_recall — avg recall per CQ",
@@ -395,11 +398,13 @@ layers = [
       "hallucination_ratio — unsupported vocab fraction",
       "ontology_vocab_size"]),
     ("Layer 3 — Semantic Similarity (vs Ground Truth)", YELLOW,
-     ["class_name_precision / recall / F1",
-      "property_name_precision / recall / F1",
-      "class_jaccard, property_jaccard",
-      "combined_f1 — harmonic mean of cls+prop F1",
-      "matched_class/property_names"]),
+     ["class_name_precision / recall / F1 — name match vs ground truth",
+      "property_name_precision / recall / F1 — same for properties",
+      "class_jaccard, property_jaccard — |A∩B|/|A∪B| set similarity",
+      "combined_f1 — macro avg of class + property F1",
+      "matched_class_names — class names in both generated & GT",
+      "matched_property_names — property names in both generated & GT",
+      "  e.g. 'event', 'has effect', 'relational database'"]),
     ("Layer 4 — Feasibility & Unseen Analysis", PURPLE,
      ["(model, ODP) labelled plausible_unseen or likely_seen",
       "Compares ODP pub date vs. model training cutoff",
@@ -418,7 +423,8 @@ for i, (title, color, bullets) in enumerate(layers):
 
 callout(s, Inches(0.5), Inches(6.78), Inches(12.3), Inches(0.62),
         "Pipeline: evaluate_outputs.py → eval/formal_quality.py + eval/faithfulness.py "
-        "+ eval/similarity.py → results/summary.csv  (364 rows × 42 columns)")
+        "+ eval/similarity.py → results/summary.csv  (350 rows × 44 columns, "
+        "incl. class_label_ratio & property_label_ratio)")
 
 
 # ────────────────────────────────────────────────────────────
@@ -528,73 +534,154 @@ bg(s)
 slide_header(s, "08", "Results — Quality Metrics (Successful Parses Only)")
 
 txbox(s, Inches(0.5), Inches(1.2), Inches(12.3), Inches(0.3),
-      "Metrics computed only when parse_success = True.  Average across all scenarios and successful configurations.",
-      12, color=MUTED)
+      "Metrics computed only when parse_success = True.  350 runs × 44 metrics.  "
+      "New: class_label_ratio & property_label_ratio split from the aggregate label_coverage_ratio.",
+      11, color=MUTED)
 
-# table by model
-col_labels = ["Model", "Parse Rate", "Avg Classes", "Avg Obj Props",
-              "CQ Coverage", "Scenario Cov.", "Hallucination", "Combined F1"]
-col_xs = [Inches(0.5), Inches(2.4), Inches(3.65), Inches(4.85),
-          Inches(6.1),  Inches(7.4), Inches(8.7),  Inches(10.05)]
-col_ws = [Inches(1.85), Inches(1.2), Inches(1.15), Inches(1.2),
-          Inches(1.25), Inches(1.25), Inches(1.3),  Inches(1.2)]
+# ── Model table ──────────────────────────────────────────
+# cols: Model | Parse | CQ Cov | Scen Cov | Halluc | Cls Lbl★ | Prop Lbl★ | F1
+col_labels = ["Model", "Parse Rate", "CQ Coverage", "Scenario Cov.",
+              "Hallucination", "Class Label ★", "Prop Label ★", "Combined F1"]
+col_xs = [Inches(0.5),  Inches(2.35), Inches(3.6),  Inches(4.9),
+          Inches(6.15), Inches(7.45), Inches(8.75), Inches(10.1)]
+col_ws = [Inches(1.8),  Inches(1.2),  Inches(1.25), Inches(1.2),
+          Inches(1.25), Inches(1.25), Inches(1.3),  Inches(1.15)]
 
 for hx, hw, hl in zip(col_xs, col_ws, col_labels):
     box(s, hx, Inches(1.6), hw, Inches(0.33), SURFACE2).line.fill.background()
-    txbox(s, hx+Pt(3), Inches(1.63), hw, Inches(0.28), hl, 9, bold=True, color=ACCENT2)
+    txbox(s, hx+Pt(3), Inches(1.63), hw, Inches(0.28), hl, 8, bold=True, color=ACCENT2)
 
+# (name, parse, cq, scen, halluc, cls_lbl, prop_lbl, f1, model_color, good_cols, bad_cols)
 model_rows = [
-    ("GPT-5.4",       "37.1%",  "9.6", "4.8", "0.804", "0.444", "0.585", "0.110",
-     YELLOW, [4, 7], [6]),
-    ("Llama-3.1-8B ★","75.7%",  "10.5","4.3", "0.729", "0.335", "0.345", "0.071",
-     GREEN,  [1],    [5]),
-    ("Llama-2-70B",   "65.7%",  "10.2","3.8", "0.689", "0.258", "0.489", "0.072",
-     ACCENT2,[], []),
-    ("Mistral-7B",    "41.4%",  "7.5", "4.1", "0.615", "0.279", "0.459", "0.059",
-     YELLOW, [], []),
-    ("BLOOMZ-7B1",    "0%",     "—",   "—",   "—",     "—",     "—",     "—",
-     RED,    [], []),
-    ("BLOOM-3B",      "0%",     "—",   "—",   "—",     "—",     "—",     "—",
-     RED,    [], []),
+    ("GPT-5.4",        "37.1%", "0.804", "0.444", "0.585", "1.000", "0.885", "0.110",
+     YELLOW, [2, 5, 7], [4]),
+    ("Llama-3.1-8B ★", "75.7%", "0.729", "0.335", "0.345", "1.000", "0.830", "0.071",
+     GREEN,  [1, 5],    [3]),          # best parse & halluc
+    ("Llama-2-70B",    "65.7%", "0.689", "0.258", "0.489", "1.000", "0.717", "0.072",
+     ACCENT2, [5],     [6]),           # worst prop label
+    ("Mistral-7B",     "41.4%", "0.615", "0.279", "0.459", "1.000", "0.966", "0.059",
+     YELLOW,  [5, 6],  []),            # best prop label
+    ("BLOOMZ-7B1",     "0%",    "—",     "—",     "—",     "—",     "—",     "—",
+     RED,     [],      []),
 ]
 for i, (mname, *vals, mc, highs, lows) in enumerate(model_rows):
-    ry = Inches(1.97) + i * Inches(0.56)
+    ry = Inches(1.97) + i * Inches(0.57)
     row_bg = RGBColor(mc[0]//16, mc[1]//16, mc[2]//16) if i < 4 else SURFACE
-    box(s, Inches(0.5), ry, Inches(10.75), Inches(0.52), row_bg).line.fill.background()
+    box(s, Inches(0.5), ry, Inches(10.75), Inches(0.53), row_bg).line.fill.background()
     all_vals = [mname] + vals
     for j, (hx, hw, val) in enumerate(zip(col_xs, col_ws, all_vals)):
         col2 = mc if j == 0 else (GREEN if j in highs else (RED if j in lows else WHITE))
         bold = j == 0 or j in highs or j in lows
-        txbox(s, hx+Pt(4), ry+Pt(8), hw-Pt(4), Inches(0.38), val, 11,
+        txbox(s, hx+Pt(4), ry+Pt(8), hw-Pt(4), Inches(0.4), val, 10,
               bold=bold, color=col2)
 
-# config table below
-txbox(s, Inches(0.5), Inches(5.28), Inches(12.3), Inches(0.3),
-      "Average Quality Metrics by Configuration (all models, successful parses)", 13, bold=True, color=ACCENT2)
+# label insight callout
+callout(s, Inches(0.5), Inches(5.02), Inches(12.3), Inches(0.52),
+        "class_label_ratio = 1.000 for ALL models — classes always annotated.  "
+        "property_label_ratio reveals the gap: Llama-2-70B leaves 28% of properties unlabelled (0.717); "
+        "Mistral-7B is the most diligent (0.966).  The old aggregate label_coverage_ratio (always 1.0) masked this.",
+        YELLOW)
 
-cfg_labels = ["Config", "CQ Coverage", "Scenario Coverage", "Hallucination", "Combined F1"]
-cfg_xs = [Inches(0.5), Inches(3.4), Inches(5.5), Inches(7.6), Inches(9.7)]
-cfg_ws = [Inches(2.85), Inches(2.05), Inches(2.05), Inches(2.05), Inches(1.5)]
+# ── Config table ────────────────────────────────────────
+txbox(s, Inches(0.5), Inches(5.65), Inches(12.3), Inches(0.28),
+      "Average Quality Metrics by Configuration (successful parses)", 12, bold=True, color=ACCENT2)
+
+cfg_labels = ["Config", "CQ Cov.", "Scen. Cov.", "Halluc.", "Cls Lbl", "Prop Lbl ★", "F1"]
+cfg_xs = [Inches(0.5), Inches(3.0), Inches(4.55), Inches(6.1), Inches(7.65), Inches(8.95), Inches(10.55)]
+cfg_ws = [Inches(2.45), Inches(1.5), Inches(1.5),  Inches(1.5), Inches(1.25), Inches(1.55), Inches(1.2)]
 for hx, hw, hl in zip(cfg_xs, cfg_ws, cfg_labels):
-    box(s, hx, Inches(5.62), hw, Inches(0.3), SURFACE2).line.fill.background()
-    txbox(s, hx+Pt(3), Inches(5.65), hw, Inches(0.26), hl, 9, bold=True, color=ACCENT2)
+    box(s, hx, Inches(5.98), hw, Inches(0.28), SURFACE2).line.fill.background()
+    txbox(s, hx+Pt(3), Inches(6.01), hw, Inches(0.24), hl, 8, bold=True, color=ACCENT2)
 
+# (name, cq, scen, halluc, cls_lbl, prop_lbl, f1, color)
 cfg_rows = [
-    ("cq-only",               "0.844", "0.182", "0.548", "0.088", RED),
-    ("scenario-cq",           "0.819", "0.346", "0.416", "0.086", ACCENT2),
-    ("scenario-cq-constraints","0.836","0.282", "0.392", "0.056", YELLOW),
-    ("scenario-cq-reasoning ★","0.748","0.379", "0.367", "0.082", GREEN),
-    ("scenario-only",         "0.352", "0.440", "0.451", "0.059", MUTED),
+    ("cq-only",                "0.844", "0.182", "0.548", "1.000", "0.833", "0.088", RED),
+    ("scenario-cq",            "0.819", "0.346", "0.416", "1.000", "0.788", "0.086", ACCENT2),
+    ("scenario-cq-constraints","0.836", "0.282", "0.392", "1.000", "0.850", "0.056", YELLOW),
+    ("scenario-cq-reasoning ★","0.748", "0.379", "0.367", "1.000", "0.826", "0.082", GREEN),
+    ("scenario-only",          "0.352", "0.440", "0.451", "1.000", "0.861", "0.059", MUTED),
 ]
-for i, (cname, cq, sc, hal, f1, cc) in enumerate(cfg_rows):
-    ry = Inches(5.96) + i * Inches(0.28)
-    box(s, Inches(0.5), ry, Inches(10.75), Inches(0.26),
-        SURFACE if i%2==0 else BG).line.fill.background()
+for i, (cname, cq, sc, hal, clbl, plbl, f1, cc) in enumerate(cfg_rows):
+    ry = Inches(6.3) + i * Inches(0.23)
+    box(s, Inches(0.5), ry, Inches(11.25), Inches(0.21),
+        SURFACE if i % 2 == 0 else BG).line.fill.background()
     for hx, hw, val, bold in zip(cfg_xs, cfg_ws,
-                                  [cname, cq, sc, hal, f1],
-                                  [True, False, False, False, False]):
-        col3 = cc if bold else WHITE
-        txbox(s, hx+Pt(3), ry+Pt(2), hw, Inches(0.22), val, 10, bold=bold, color=col3)
+                                  [cname, cq, sc, hal, clbl, plbl, f1],
+                                  [True,  False, False, False, False, False, False]):
+        vc = cc if bold else (GREEN if val == "1.000" else WHITE)
+        txbox(s, hx+Pt(3), ry+Pt(1), hw, Inches(0.19), val, 9, bold=bold, color=vc)
+
+
+# ────────────────────────────────────────────────────────────
+# SLIDE 9b — MATCHED CLASS & PROPERTY NAMES
+# ────────────────────────────────────────────────────────────
+s = blank_slide(prs)
+bg(s)
+slide_header(s, "09", "Matched Class & Property Names vs. Ground Truth")
+
+txbox(s, Inches(0.5), Inches(1.2), Inches(12.3), Inches(0.35),
+      "Names found in BOTH the generated ontology and the ground-truth (case-folded, CamelCase split). "
+      "Low F1 does not mean zero conceptual overlap — models do capture key domain terms.",
+      12, color=MUTED)
+
+# explain matching logic
+card(s, Inches(0.5), Inches(1.65), Inches(4.0), Inches(1.8),
+     "How matching works",
+     ["Local name extracted from URI (:hasCause → 'has cause')",
+      "CamelCase split: HasEffect → 'has effect'",
+      "Case-folded and whitespace-normalised",
+      "Precision = |matched| / |generated|",
+      "Recall    = |matched| / |ground truth|",
+      "F1        = harmonic mean of P & R"],
+     ACCENT2, ACCENT)
+
+# examples table
+txbox(s, Inches(4.7), Inches(1.65), Inches(8.1), Inches(0.3),
+      "Examples — GPT-5.4 / cq-only (successful parses with ground truth)", 12, bold=True, color=ACCENT2)
+
+ex_headers = ["Scenario", "Matched Classes", "Matched Properties"]
+ex_xs = [Inches(4.7), Inches(6.8), Inches(9.7)]
+ex_ws = [Inches(2.05), Inches(2.85), Inches(3.3)]
+for hx, hw, hl in zip(ex_xs, ex_ws, ex_headers):
+    box(s, hx, Inches(2.0), hw, Inches(0.3), SURFACE2).line.fill.background()
+    txbox(s, hx+Pt(4), Inches(2.03), hw, Inches(0.26), hl, 9, bold=True, color=ACCENT2)
+
+ex_rows = [
+    ("2023-133-01\nCausal BN",       "event",                          "has effect, has outcome"),
+    ("2023-135-01\nRole Naming",      "name usage",                     "has name usage"),
+    ("2025-149-01\nTemporal Indir.",  "relational database,\ntable, column", "—"),
+    ("2025-151-01\nEval Request",     "evaluation request",             "requested action, issued by"),
+    ("2025-153-01\nGovernance Roles", "entity, temporal binding,\ntransition rule",
+                                      "has temporal binding,\nbinds identifier, has transition"),
+]
+for i, (sid, cls, prop) in enumerate(ex_rows):
+    ry = Inches(2.34) + i * Inches(0.7)
+    rbg = SURFACE if i % 2 == 0 else BG
+    for hx, hw in zip(ex_xs, ex_ws):
+        box(s, hx, ry, hw, Inches(0.66), rbg).line.fill.background()
+    for hx, hw, val, vc in zip(ex_xs, ex_ws,
+                                [sid, cls, prop],
+                                [MUTED, GREEN, ACCENT2]):
+        txbox(s, hx+Pt(4), ry+Pt(4), hw-Pt(8), Inches(0.58), val, 10, color=vc)
+
+# property label breakdown chart
+txbox(s, Inches(0.5), Inches(3.6), Inches(4.0), Inches(0.3),
+      "Property Label Ratio by Model", 13, bold=True, color=ACCENT2)
+prop_bars = [
+    ("Mistral-7B",     0.966, "0.966", GREEN),
+    ("GPT-5.4",        0.885, "0.885", GREEN),
+    ("Llama-3.1-8B",   0.830, "0.830", YELLOW),
+    ("Llama-2-70B",    0.717, "0.717", RED),
+]
+for i, (lbl, pct, txt, col) in enumerate(prop_bars):
+    hbar(s, Inches(0.5), Inches(4.0) + i * Inches(0.68), Inches(3.8), Inches(0.5),
+         pct, lbl, txt, col)
+
+callout(s, Inches(0.5), Inches(6.88), Inches(12.3), Inches(0.52),
+        "class_label_ratio = 1.000 for ALL models on ALL successful parses.  "
+        "The split metric reveals that Llama-2-70B neglects property annotations (0.717); "
+        "scenario-cq config yields the worst property labelling (0.788) while scenario-only is best (0.861).",
+        YELLOW)
 
 
 # ────────────────────────────────────────────────────────────
@@ -602,15 +689,14 @@ for i, (cname, cq, sc, hal, f1, cc) in enumerate(cfg_rows):
 # ────────────────────────────────────────────────────────────
 s = blank_slide(prs)
 bg(s)
-slide_header(s, "09", "Model × Config Parse Success Heatmap")
+slide_header(s, "10", "Model × Config Parse Success Heatmap")
 
 txbox(s, Inches(0.5), Inches(1.2), Inches(12.3), Inches(0.3),
       "Parse success rate for each (model, config) pair. 14 scenarios per cell.", 12, color=MUTED)
 
 heat_configs = ["cq-only", "scenario-cq", "scenario-cq-\nconstraints", "scenario-cq-\nreasoning", "scenario-only", "Average"]
-heat_models  = ["BLOOM-3B", "BLOOMZ-7B1", "GPT-5.4", "Llama-2-70B", "Llama-3.1-8B ★", "Mistral-7B"]
+heat_models  = ["BLOOMZ-7B1", "GPT-5.4", "Llama-2-70B", "Llama-3.1-8B ★", "Mistral-7B"]
 heat_data = [
-    ["—",   "0%",  "—",   "—",   "—",   "0%"],
     ["0%",  "0%",  "0%",  "0%",  "0%",  "0%"],
     ["86%", "50%", "0%",  "0%",  "50%", "37%"],
     ["86%", "71%", "71%", "50%", "50%", "66%"],
@@ -618,7 +704,6 @@ heat_data = [
     ["50%", "29%", "7%",  "43%", "79%", "41%"],
 ]
 heat_colors = [
-    [MUTED,  RED,    MUTED,  MUTED,  MUTED,  RED],
     [RED,    RED,    RED,    RED,    RED,    RED],
     [GREEN,  YELLOW, RED,    RED,    YELLOW, YELLOW],
     [GREEN,  GREEN,  GREEN,  YELLOW, YELLOW, GREEN],
@@ -644,7 +729,7 @@ for i, (model, row, colors) in enumerate(zip(heat_models, heat_data, heat_colors
     box(s, Inches(0.5), ry, Inches(1.95), cell_h,
         RGBColor(0x1a, 0x1d, 0x2e)).line.fill.background()
     txbox(s, Inches(0.52), ry+Pt(8), Inches(1.9), cell_h-Pt(10), model,
-          11, bold=(i==4), color=(GREEN if i==4 else WHITE))
+          11, bold=(i==3), color=(GREEN if i==3 else WHITE))
     for j, (val, vc) in enumerate(zip(row, colors)):
         cx = start_x + j * cell_w
         bg_c = RGBColor(vc[0]//8, vc[1]//8, vc[2]//8)
@@ -665,7 +750,7 @@ callout(s, Inches(8.2), Inches(6.55), Inches(4.6), Inches(0.82),
 # ────────────────────────────────────────────────────────────
 s = blank_slide(prs)
 bg(s)
-slide_header(s, "10", "Summary & Best Performing Model")
+slide_header(s, "11", "Summary & Best Performing Model")
 
 # winner card
 box(s, Inches(0.5), Inches(1.2), Inches(5.5), Inches(3.6),

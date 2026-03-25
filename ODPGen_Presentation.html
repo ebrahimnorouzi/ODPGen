@@ -571,11 +571,17 @@
         <li><strong>parse_success</strong> — Can the output be parsed as valid Turtle?</li>
         <li><strong>triple_count</strong> — Total number of RDF triples</li>
         <li><strong>ontology_declared</strong> — owl:Ontology header present?</li>
-        <li><strong>label/comment coverage</strong> — Ratio of entities with rdfs:label / rdfs:comment</li>
+        <li><strong>label_coverage_ratio</strong> — Fraction of <em>all</em> named entities with rdfs:label</li>
+        <li><strong>class_label_ratio</strong> <span class="chip chip-green">new</span> — Fraction of <code>owl:Class</code> entities with rdfs:label</li>
+        <li><strong>property_label_ratio</strong> <span class="chip chip-green">new</span> — Fraction of Object/Datatype/Annotation properties with rdfs:label</li>
+        <li><strong>comment_coverage_ratio</strong> — Fraction of entities with rdfs:comment</li>
         <li><strong>domain_range_ratio</strong> — Properties with rdfs:domain &amp; rdfs:range</li>
         <li><strong>has_prefix_declarations</strong> — Standard OWL/RDF prefixes used?</li>
         <li><strong>class_count, property_count</strong> — Size of the pattern</li>
       </ul>
+      <div class="callout mt16" style="font-size:12px;">
+        <strong>Why split?</strong> The aggregate <code>label_coverage_ratio</code> was always 1.0 (masking a real gap): classes dominate the count and all models label them. Splitting reveals that <strong>property labelling is inconsistent</strong> — Llama-2-70B leaves 28% of properties unlabelled.
+      </div>
     </div>
 
     <div class="card green">
@@ -592,12 +598,16 @@
     <div class="card yellow">
       <h4>Layer 3 — Semantic Similarity to Ground Truth</h4>
       <ul>
-        <li><strong>class_name_precision/recall/F1</strong> — Name match of generated vs. ground-truth classes</li>
-        <li><strong>property_name_precision/recall/F1</strong> — Same for properties</li>
-        <li><strong>class_jaccard, property_jaccard</strong> — Set-theoretic similarity</li>
-        <li><strong>combined_f1</strong> — Harmonic mean of class + property F1</li>
-        <li><strong>matched_class/property_names</strong> — Exact name matches found</li>
+        <li><strong>class_name_precision/recall/F1</strong> — Name match of generated vs. ground-truth classes (case-folded, space-normalised)</li>
+        <li><strong>property_name_precision/recall/F1</strong> — Same for Object/Datatype/Annotation properties</li>
+        <li><strong>class_jaccard, property_jaccard</strong> — Set-theoretic overlap (|A∩B| / |A∪B|)</li>
+        <li><strong>combined_f1</strong> — Macro average of class_name_f1 and property_name_f1</li>
+        <li><strong>matched_class_names</strong> — List of class name strings present in both generated and ground-truth ontology</li>
+        <li><strong>matched_property_names</strong> — Same for properties; e.g. <em>"event", "has effect", "relational database"</em></li>
       </ul>
+      <div class="callout mt16" style="font-size:12px;">
+        Matching is done on the <em>local name</em> after splitting CamelCase / snake_case into tokens, so <code>:hasCause</code> ↔ <code>"has cause"</code> will match.
+      </div>
     </div>
 
     <div class="card" style="border-color: var(--purple);">
@@ -615,7 +625,7 @@
   </div>
 
   <div class="callout mt24">
-    <strong>Pipeline:</strong> <code>evaluate_outputs.py</code> → <code>eval/formal_quality.py</code> + <code>eval/faithfulness.py</code> + <code>eval/similarity.py</code> → <code>results/summary.csv</code> (364 rows × 42 columns)
+    <strong>Pipeline:</strong> <code>evaluate_outputs.py</code> → <code>eval/formal_quality.py</code> + <code>eval/faithfulness.py</code> + <code>eval/similarity.py</code> → <code>results/summary.csv</code> (350 rows × 44 columns, including <strong>class_label_ratio</strong> &amp; <strong>property_label_ratio</strong>)
   </div>
 </div>
 
@@ -838,60 +848,60 @@ If the pavement is not wet, the pavement is wet..."</span>
     <h2>Results — Quality Metrics (Successful Parses)</h2>
   </div>
 
-  <p class="mb16">Metrics are computed only when parse_success = True. Average across all scenarios and all successful configurations.</p>
+  <p class="mb16">Metrics computed only when parse_success = True. Averages across all scenarios and successful configurations. Total: 350 evaluated runs × 44 metrics.</p>
 
   <table>
     <thead>
       <tr>
         <th>Model</th>
         <th>Parse Rate</th>
-        <th>Avg Classes</th>
-        <th>Avg Obj Props</th>
         <th>CQ Coverage</th>
-        <th>Scenario Coverage</th>
+        <th>Scenario Cov.</th>
         <th>Hallucination</th>
+        <th>Class Label ★</th>
+        <th>Prop Label ★</th>
         <th>Combined F1</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="best">
+      <tr>
         <td><span class="chip chip-purple">GPT-5.4</span></td>
         <td><span class="mid">37.1%</span></td>
-        <td>9.6</td>
-        <td>4.8</td>
         <td><span class="good">0.804</span></td>
         <td>0.444</td>
         <td><span class="bad">0.585</span></td>
+        <td><span class="good">1.000</span></td>
+        <td><span class="mid">0.885</span></td>
         <td><span class="good">0.110</span></td>
       </tr>
-      <tr>
+      <tr class="best">
         <td><span class="chip chip-green">Llama-3.1-8B</span></td>
         <td><span class="good">75.7%</span></td>
-        <td>10.5</td>
-        <td>4.3</td>
         <td>0.729</td>
         <td><span class="mid">0.335</span></td>
         <td><span class="good">0.345</span></td>
+        <td><span class="good">1.000</span></td>
+        <td>0.830</td>
         <td>0.071</td>
       </tr>
       <tr>
         <td><span class="chip chip-blue">Llama-2-70B</span></td>
         <td><span class="mid">65.7%</span></td>
-        <td>10.2</td>
-        <td>3.8</td>
         <td>0.689</td>
         <td>0.258</td>
         <td>0.489</td>
+        <td><span class="good">1.000</span></td>
+        <td><span class="bad">0.717</span></td>
         <td>0.072</td>
       </tr>
       <tr>
         <td><span class="chip chip-yellow">Mistral-7B</span></td>
         <td><span class="mid">41.4%</span></td>
-        <td>7.5</td>
-        <td>4.1</td>
         <td>0.615</td>
         <td>0.279</td>
         <td>0.459</td>
+        <td><span class="good">1.000</span></td>
+        <td><span class="good">0.966</span></td>
         <td>0.059</td>
       </tr>
       <tr>
@@ -899,41 +909,68 @@ If the pavement is not wet, the pavement is wet..."</span>
         <td><span class="bad">0%</span></td>
         <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
       </tr>
-      <tr>
-        <td><span class="chip chip-red">BLOOM-3B</span></td>
-        <td><span class="bad">0%</span></td>
-        <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
-      </tr>
     </tbody>
   </table>
 
-  <div class="grid3 mt32">
+  <div class="callout yellow mt16">
+    <strong>★ Label coverage insight:</strong> <code>class_label_ratio = 1.000</code> for every model — all classes are always annotated. But <code>property_label_ratio</code> varies significantly: <strong>Llama-2-70B leaves 28% of properties unlabelled</strong> (0.717), while Mistral-7B is the most diligent at 0.966. The old aggregate <code>label_coverage_ratio</code> (always 1.0) was masking this gap because classes dominate the term count.
+  </div>
+
+  <div class="grid3 mt24">
     <div class="card green">
       <h4>CQ Coverage</h4>
-      <p>GPT-5.4 covers the most CQs when it does parse (0.804). Llama-3.1-8B follows at 0.729. All models use token-overlap to check if each CQ is answerable.</p>
+      <p>GPT-5.4 covers the most CQs when parsed (0.804). Llama-3.1-8B follows at 0.729. Token-overlap against each CQ's text.</p>
     </div>
     <div class="card yellow">
       <h4>Hallucination</h4>
-      <p>Llama-3.1-8B produces the fewest hallucinations (0.345 — vocabulary not grounded in the scenario). GPT-5.4 is surprisingly the worst at 0.585 despite highest CQ coverage.</p>
+      <p>Llama-3.1-8B: fewest hallucinations (0.345). GPT-5.4 worst at 0.585 despite top CQ coverage — adds domain knowledge not in the scenario.</p>
     </div>
     <div class="card">
-      <h4>Ground-Truth Match (F1)</h4>
-      <p>All models score low on combined F1 (~0.06–0.11), indicating significant name divergence from the expert-authored ground truth. This is expected given creative naming freedom.</p>
+      <h4>Ground-Truth Match (F1 + matched names)</h4>
+      <p>Combined F1 is low (0.06–0.11) due to naming divergence. Matched names examples: <em>"event", "has effect", "relational database", "temporal binding", "evaluation request"</em>. Even low-F1 outputs share key conceptual terms.</p>
     </div>
   </div>
 
   <hr>
-  <h3 class="mt24">Quality Metrics by Configuration (avg, all models)</h3>
+  <h3 class="mt24">Quality Metrics by Configuration (avg, successful parses)</h3>
   <table class="mt16">
     <thead>
-      <tr><th>Config</th><th>CQ Coverage</th><th>Scenario Coverage</th><th>Hallucination</th><th>Combined F1</th></tr>
+      <tr>
+        <th>Config</th>
+        <th>CQ Coverage</th>
+        <th>Scenario Cov.</th>
+        <th>Hallucination</th>
+        <th>Class Label</th>
+        <th>Prop Label ★</th>
+        <th>Combined F1</th>
+      </tr>
     </thead>
     <tbody>
-      <tr><td>cq-only</td><td><span class="good">0.844</span></td><td><span class="bad">0.182</span></td><td><span class="bad">0.548</span></td><td>0.088</td></tr>
-      <tr><td>scenario-cq</td><td>0.819</td><td>0.346</td><td>0.416</td><td>0.086</td></tr>
-      <tr><td>scenario-cq-constraints</td><td>0.836</td><td>0.282</td><td>0.392</td><td>0.056</td></tr>
-      <tr class="best"><td>scenario-cq-reasoning</td><td>0.748</td><td><span class="good">0.379</span></td><td><span class="good">0.367</span></td><td>0.082</td></tr>
-      <tr><td>scenario-only</td><td><span class="bad">0.352</span></td><td><span class="good">0.440</span></td><td>0.451</td><td>0.059</td></tr>
+      <tr><td>cq-only</td><td><span class="good">0.844</span></td><td><span class="bad">0.182</span></td><td><span class="bad">0.548</span></td><td><span class="good">1.000</span></td><td>0.833</td><td>0.088</td></tr>
+      <tr><td>scenario-cq</td><td>0.819</td><td>0.346</td><td>0.416</td><td><span class="good">1.000</span></td><td><span class="bad">0.788</span></td><td>0.086</td></tr>
+      <tr><td>scenario-cq-constraints</td><td>0.836</td><td>0.282</td><td>0.392</td><td><span class="good">1.000</span></td><td>0.850</td><td>0.056</td></tr>
+      <tr class="best"><td>scenario-cq-reasoning ★</td><td>0.748</td><td><span class="good">0.379</span></td><td><span class="good">0.367</span></td><td><span class="good">1.000</span></td><td>0.826</td><td>0.082</td></tr>
+      <tr><td>scenario-only</td><td><span class="bad">0.352</span></td><td><span class="good">0.440</span></td><td>0.451</td><td><span class="good">1.000</span></td><td><span class="good">0.861</span></td><td>0.059</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout mt16">
+    <strong>Property label pattern:</strong> <code>scenario-cq</code> produces the <em>lowest</em> property label ratio (0.788) — adding both inputs may push the model to focus on axioms rather than annotations. <code>scenario-only</code> yields the <em>best</em> property labelling (0.861), suggesting unconstrained generation leads to more complete annotation.
+  </div>
+
+  <hr>
+  <h3 class="mt24">Matched Class &amp; Property Names — Examples</h3>
+  <p class="small muted mb16">Names found in both the generated and ground-truth ontology (case-folded, CamelCase split). Low F1 does not mean zero overlap — models do capture core concepts.</p>
+  <table class="mt8">
+    <thead>
+      <tr><th>Model / Config / Scenario</th><th>Matched Classes</th><th>Matched Properties</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>GPT-5.4 / cq-only / 2023-133-01</td><td>event</td><td>has effect, has outcome</td></tr>
+      <tr><td>GPT-5.4 / cq-only / 2023-135-01</td><td>name usage</td><td>has name usage</td></tr>
+      <tr><td>GPT-5.4 / cq-only / 2025-149-01</td><td>relational database, table, column</td><td>—</td></tr>
+      <tr><td>GPT-5.4 / cq-only / 2025-151-01</td><td>evaluation request</td><td>requested action, issued by</td></tr>
+      <tr><td>GPT-5.4 / cq-only / 2025-153-01</td><td>entity, temporal binding, transition rule</td><td>has temporal binding, binds identifier, has transition</td></tr>
     </tbody>
   </table>
 </div>
@@ -945,7 +982,7 @@ If the pavement is not wet, the pavement is wet..."</span>
     <h2>Model × Config Parse Success Heatmap</h2>
   </div>
 
-  <p class="mb16">Parse success rate for each (model, config) combination (out of 14 scenarios each).</p>
+  <p class="mb16">Parse success rate for each (model, config) combination (out of 14 scenarios each). BLOOM-3B excluded from this run.</p>
 
   <table>
     <thead>
@@ -960,13 +997,6 @@ If the pavement is not wet, the pavement is wet..."</span>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><strong>BLOOM-3B</strong></td>
-        <td>—</td>
-        <td><span class="bad">0%</span></td>
-        <td>—</td><td>—</td><td>—</td>
-        <td><span class="bad">0%</span></td>
-      </tr>
       <tr>
         <td><strong>BLOOMZ-7B1</strong></td>
         <td><span class="bad">0%</span></td>
@@ -1125,7 +1155,7 @@ If the pavement is not wet, the pavement is wet..."</span>
 
 <!-- ═══════════════════════════════════════ FOOTER ═══════════════════════════════════════ -->
 <div style="text-align:center; padding:40px; color: var(--muted); font-size:12px; border-top:1px solid var(--border);">
-  ODPGen Research Presentation &nbsp;·&nbsp; 6 Models &nbsp;·&nbsp; 5 Configs &nbsp;·&nbsp; 14 Scenarios &nbsp;·&nbsp; 364 Runs
+  ODPGen Research Presentation &nbsp;·&nbsp; 5 Models &nbsp;·&nbsp; 5 Configs &nbsp;·&nbsp; 14 Scenarios &nbsp;·&nbsp; 350 Runs &nbsp;·&nbsp; 44 Metrics
 </div>
 
 </body>
