@@ -1,0 +1,77 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Author Name Change Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern modeling authors who adopt different names (e.g., pen names, married names) to publish books, and the transitions between these names." .
+
+### Classes ###
+
+:Author a owl:Class ;
+    rdfs:label "Author" ;
+    rdfs:comment "A person who writes and publishes books." .
+
+:Book a owl:Class ;
+    rdfs:label "Book" ;
+    rdfs:comment "A literary work published by an author." .
+
+:Name a owl:Class ;
+    rdfs:label "Name" ;
+    rdfs:comment "A reified entity representing a specific designation or appellation adopted by an author." .
+
+:BirthName a owl:Class ;
+    rdfs:subClassOf :Name ;
+    rdfs:label "Birth Name" ;
+    rdfs:comment "The original name given to an author at birth." .
+
+:MarriedName a owl:Class ;
+    rdfs:subClassOf :Name ;
+    rdfs:label "Married Name" ;
+    rdfs:comment "A name adopted by an author following a marriage." .
+
+:PenName a owl:Class ;
+    rdfs:subClassOf :Name ;
+    rdfs:label "Pen Name" ;
+    rdfs:comment "A pseudonym adopted by an author specifically for the purpose of publishing books." .
+
+### Disjointness ###
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :Author :Book :Name ) .
+
+### Object Properties ###
+
+:publishes a owl:ObjectProperty ;
+    rdfs:domain :Author ;
+    rdfs:range :Book ;
+    rdfs:label "publishes" ;
+    rdfs:comment "Relates an author to a book they have authored and published." .
+
+:hasName a owl:ObjectProperty ;
+    rdfs:domain :Author ;
+    rdfs:range :Name ;
+    rdfs:label "has name" ;
+    rdfs:comment "Relates an author to a name entity they have adopted or been given." .
+
+:publishedUnderName a owl:ObjectProperty ;
+    rdfs:domain :Book ;
+    rdfs:range :Name ;
+    rdfs:label "published under name" ;
+    rdfs:comment "Relates a book to the specific name under which it was published, which may differ from the author's current or birth name." .
+
+:replacesName a owl:ObjectProperty ;
+    rdfs:domain :Name ;
+    rdfs:range :Name ;
+    rdfs:label "replaces name" ;
+    rdfs:comment "Indicates a name change event by linking a newly adopted name to the previous name it replaces (e.g., a married name replacing a birth name)." .
+
+### Datatype Properties ###
+
+:nameString a owl:DatatypeProperty ;
+    rdfs:domain :Name ;
+    rdfs:range xsd:string ;
+    rdfs:label "name string" ;
+    rdfs:comment "The literal string value of the name." .

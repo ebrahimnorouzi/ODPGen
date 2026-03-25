@@ -1,0 +1,182 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Cultural Heritage Survey ODP" ;
+    rdfs:comment "An ontology design pattern representing scientific survey activities performed on cultural heritage entities, including methods, observations, equipment, and interpretations." .
+
+### Classes ###
+
+:SurveyActivity a owl:Class ;
+    rdfs:label "Survey Activity" ;
+    rdfs:comment "A scientific survey or investigation activity performed on a cultural heritage entity." .
+
+:CulturalProperty a owl:Class ;
+    rdfs:label "Cultural Property" ;
+    rdfs:comment "A cultural heritage entity being surveyed or investigated." .
+
+:FeatureOfInterest a owl:Class ;
+    rdfs:label "Feature of Interest" ;
+    rdfs:comment "A specific feature or part of a cultural property being investigated." .
+
+:Method a owl:Class ;
+    rdfs:label "Method" ;
+    rdfs:comment "An investigation technique or method adopted in a survey." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "An observation produced during a survey or investigation activity." .
+
+:Expert a owl:Class ;
+    rdfs:label "Expert" ;
+    rdfs:comment "A person or expert participating in the survey activity." .
+
+:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "The specific role an expert plays during a survey activity." .
+
+:Participation a owl:Class ;
+    rdfs:label "Participation" ;
+    rdfs:comment "An n-ary relationship class representing the participation of an expert in a specific role during a survey." .
+
+:Hardware a owl:Class ;
+    rdfs:label "Hardware" ;
+    rdfs:comment "Hardware equipment used to conduct a survey activity." .
+
+:Software a owl:Class ;
+    rdfs:label "Software" ;
+    rdfs:comment "Software used to conduct a survey activity." .
+
+:TechnicalConfiguration a owl:Class ;
+    rdfs:label "Technical Configuration" ;
+    rdfs:comment "The technical configuration used during a survey activity." .
+
+:Interpretation a owl:Class ;
+    rdfs:label "Interpretation" ;
+    rdfs:comment "An interpretation or claim supported by observations." .
+
+:PostProcessedOutput a owl:Class ;
+    rdfs:label "Post-Processed Output" ;
+    rdfs:comment "Outputs such as interactive images, spectra, or datasets derived from acquisition activities." .
+
+:AcquisitionActivity a owl:Class ;
+    rdfs:subClassOf :SurveyActivity ;
+    rdfs:label "Acquisition Activity" ;
+    rdfs:comment "An activity focused on acquiring data or observations; a specific type of survey activity." .
+
+:PhotographicAcquisition a owl:Class ;
+    rdfs:subClassOf :AcquisitionActivity ;
+    rdfs:label "Photographic Acquisition" ;
+    rdfs:comment "A specific photographic acquisition cycle within a survey." .
+
+:AcquisitionParameter a owl:Class ;
+    rdfs:label "Acquisition Parameter" ;
+    rdfs:comment "A parameter characterizing an acquisition (e.g., exposure time, ISO, aperture)." .
+
+### Object Properties ###
+
+:investigates a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf ( :CulturalProperty :FeatureOfInterest )
+    ] ;
+    rdfs:label "investigates" ;
+    rdfs:comment "Links a survey activity to the cultural property or feature of interest it investigates." .
+
+:usesMethod a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Method ;
+    rdfs:label "uses method" ;
+    rdfs:comment "Links a survey activity to the method or technique adopted." .
+
+:producesObservation a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Observation ;
+    rdfs:label "produces observation" ;
+    rdfs:comment "Links a survey activity to the observations it produces." .
+
+:hasParticipation a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Participation ;
+    rdfs:label "has participation" ;
+    rdfs:comment "Links a survey activity to a participation context to describe who was involved and how." .
+
+:hasExpert a owl:ObjectProperty ;
+    rdfs:domain :Participation ;
+    rdfs:range :Expert ;
+    rdfs:label "has expert" ;
+    rdfs:comment "Links a participation context to the participating expert." .
+
+:hasRole a owl:ObjectProperty ;
+    rdfs:domain :Participation ;
+    rdfs:range :Role ;
+    rdfs:label "has role" ;
+    rdfs:comment "Links a participation context to the role played by the expert." .
+
+:usesHardware a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Hardware ;
+    rdfs:label "uses hardware" ;
+    rdfs:comment "Links a survey activity to the hardware used." .
+
+:usesSoftware a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Software ;
+    rdfs:label "uses software" ;
+    rdfs:comment "Links a survey activity to the software used." .
+
+:hasConfiguration a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :TechnicalConfiguration ;
+    rdfs:label "has configuration" ;
+    rdfs:comment "Links a survey activity to its technical configuration." .
+
+:supportsInterpretation a owl:ObjectProperty ;
+    rdfs:domain :Observation ;
+    rdfs:range :Interpretation ;
+    rdfs:label "supports interpretation" ;
+    rdfs:comment "Links an observation to the interpretation or claim it supports." .
+
+:derivedFrom a owl:ObjectProperty ;
+    rdfs:domain :PostProcessedOutput ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf ( :AcquisitionActivity :Observation )
+    ] ;
+    rdfs:label "derived from" ;
+    rdfs:comment "Links a post-processed output to its underlying acquisition activity or observation." .
+
+:hasParameter a owl:ObjectProperty ;
+    rdfs:domain :PhotographicAcquisition ;
+    rdfs:range :AcquisitionParameter ;
+    rdfs:label "has parameter" ;
+    rdfs:comment "Links a photographic acquisition to its specific acquisition parameters." .
+```
+
+### Validation Report
+
+1. **Turtle syntax is valid:** PASS (All statements are properly terminated with dots, and semicolons are used correctly for predicate-object lists).
+2. **All prefixes used in the body are declared at the top:** PASS (Standard prefixes `owl:`, `rdf:`, `rdfs:`, `xsd:`, and the default `:` are declared and used appropriately).
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS (All domains and ranges strictly reference the classes defined within the ODP, utilizing `owl:unionOf` where multiple ranges apply).
+4. **No two classes or properties are defined with contradictory restrictions:** PASS (No disjointness axioms were introduced, and domain/range assignments are logically consistent with the class hierarchy).
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS (Each CQ maps directly to specific classes and properties, e.g., CQ4 maps to the n-ary `Participation` pattern linking `Expert` and `Role`).
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS (Every class and property was explicitly derived from the nouns and verbs present in the provided scenario and CQs).
+
+### Scope Report
+
+**a) Requirements covered:**
+- **Survey Targets:** Modeled via `:CulturalProperty`, `:FeatureOfInterest`, and the `:investigates` property (CQ1).
+- **Methodology & Output:** Modeled via `:Method`, `:Observation`, `:usesMethod`, and `:producesObservation` (CQ2, CQ3).
+- **Actors & Roles:** Modeled using an n-ary relation (`:Participation`) to accurately link an `:Expert` and their `:Role` to a specific `:SurveyActivity` (CQ4).
+- **Equipment & Setup:** Modeled via `:Hardware`, `:Software`, `:TechnicalConfiguration`, and their respective properties (CQ5).
+- **Interpretations:** Modeled via `:Interpretation` and `:supportsInterpretation` linking back to observations (CQ6).
+- **Post-Processing & Parameters:** Modeled via `:PostProcessedOutput`, `:derivedFrom`, `:PhotographicAcquisition`, `:AcquisitionParameter`, and `:hasParameter` (CQ7, CQ8).
+
+**b) Excluded concepts:**
+- **Specific Parameter Values / Datatypes:** Specific values (e.g., "1/60s", "f/8") or literal data properties (e.g., `hasExposureValue`) were excluded. The CQs ask *which* parameters characterized the acquisition, which is satisfied by the `:AcquisitionParameter` class and object property, keeping the schema minimal and avoiding over-commitment to specific datatypes.
+- **Temporal and Spatial Entities:** Timeframes, dates, and physical locations of the survey were excluded as they were not explicitly requested in the CQs, ensuring the ODP remains strictly scoped to the provided requirements.

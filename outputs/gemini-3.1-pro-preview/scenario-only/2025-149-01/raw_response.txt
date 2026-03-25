@@ -1,0 +1,99 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Relational Database Secure Access Pattern"@en ;
+    rdfs:comment "An ontology design pattern modeling the secure access to a relational database queried via Structured Query Language (SQL)."@en .
+
+### Classes ###
+
+:RelationalDatabase a owl:Class ;
+    rdfs:label "Relational Database"@en ;
+    rdfs:comment "A database structured to recognize relations among stored items of information, acting as the secured resource."@en .
+
+:SQLQuery a owl:Class ;
+    rdfs:label "SQL Query"@en ;
+    rdfs:comment "A request for data or information from a database, formulated in Structured Query Language (SQL)."@en .
+
+:AccessPolicy a owl:Class ;
+    rdfs:label "Access Policy"@en ;
+    rdfs:comment "A set of rules, privileges, or mechanisms responsible for securing access to the relational database."@en .
+
+:Accessor a owl:Class ;
+    rdfs:label "Accessor"@en ;
+    rdfs:comment "An entity (such as a user, application, or role) that attempts to access the database by issuing SQL queries."@en .
+
+### Disjointness ###
+
+[ a owl:AllDisjointClasses ;
+  owl:members ( :AccessPolicy :Accessor :RelationalDatabase :SQLQuery )
+] .
+
+### Object Properties ###
+
+:isQueriedVia a owl:ObjectProperty ;
+    rdfs:label "is queried via"@en ;
+    rdfs:comment "Indicates the SQL query used to request data from the relational database."@en ;
+    rdfs:domain :RelationalDatabase ;
+    rdfs:range :SQLQuery ;
+    owl:inverseOf :queriesDatabase .
+
+:queriesDatabase a owl:ObjectProperty ;
+    rdfs:label "queries database"@en ;
+    rdfs:comment "Indicates the relational database targeted by the SQL query."@en ;
+    rdfs:domain :SQLQuery ;
+    rdfs:range :RelationalDatabase .
+
+:isSecuredBy a owl:ObjectProperty ;
+    rdfs:label "is secured by"@en ;
+    rdfs:comment "Links a relational database to the access policy that secures it."@en ;
+    rdfs:domain :RelationalDatabase ;
+    rdfs:range :AccessPolicy ;
+    owl:inverseOf :securesDatabase .
+
+:securesDatabase a owl:ObjectProperty ;
+    rdfs:label "secures database"@en ;
+    rdfs:comment "Links an access policy to the relational database it protects."@en ;
+    rdfs:domain :AccessPolicy ;
+    rdfs:range :RelationalDatabase .
+
+:issuesQuery a owl:ObjectProperty ;
+    rdfs:label "issues query"@en ;
+    rdfs:comment "Links an accessor to the SQL query they formulate and execute."@en ;
+    rdfs:domain :Accessor ;
+    rdfs:range :SQLQuery .
+
+:isSubjectTo a owl:ObjectProperty ;
+    rdfs:label "is subject to"@en ;
+    rdfs:comment "Links an accessor to the access policy that governs their permissions to the database."@en ;
+    rdfs:domain :Accessor ;
+    rdfs:range :AccessPolicy .
+
+### Datatype Properties ###
+
+:queryString a owl:DatatypeProperty ;
+    rdfs:label "query string"@en ;
+    rdfs:comment "The actual SQL statement text of the query."@en ;
+    rdfs:domain :SQLQuery ;
+    rdfs:range xsd:string .
+```
+
+### Documentation
+
+**Intent:** 
+To model the security and access control mechanisms for entities querying a relational database using Structured Query Language (SQL).
+
+**Covered requirements:**
+*   Representation of a Relational Database (RDB) as the core resource.
+*   Representation of Structured Query Language (SQL) queries used to interact with the database.
+*   Modeling the relationship of an RDB being queried via SQL (`isQueriedVia` / `queriesDatabase`).
+*   Modeling the security aspect of access (`AccessPolicy` and `isSecuredBy`), ensuring that interactions with the database are governed by a defined policy.
+
+**Known assumptions and exclusions:**
+*   **Assumption:** The concept of "access" inherently implies an actor or subject requesting that access. Therefore, an `Accessor` class was introduced to logically complete the pattern of issuing queries and being subject to security policies.
+*   **Exclusion:** The internal schema of the relational database (e.g., tables, columns, rows, primary keys) is excluded as it falls outside the strict scope of the scenario.
+*   **Exclusion:** Specific access control paradigms (like Role-Based Access Control or Attribute-Based Access Control) are not explicitly modeled to keep the pattern minimal and universally applicable to the scenario.

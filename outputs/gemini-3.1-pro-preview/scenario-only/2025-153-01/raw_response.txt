@@ -1,0 +1,102 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Temporal Indirection Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern modeling temporal indirection, where persistent identifiers dynamically resolve to time-bound instances across successive contexts, exposing instance-specific attributes through the stable identifier." .
+
+### Classes ###
+
+:PersistentIdentifier a owl:Class ;
+    rdfs:label "Persistent Identifier" ;
+    rdfs:comment "A stable, invariant referent (e.g., 'CL1', 'UA001', 'API Latest') that provides continuity across successive temporal changes or rollovers." .
+
+:DynamicInstance a owl:Class ;
+    rdfs:label "Dynamic Instance" ;
+    rdfs:comment "The specific, time-bound entity (e.g., February 2025 contract, individual physician, specific aircraft) to which the persistent identifier resolves at a given time." .
+
+:TemporalResolution a owl:Class ;
+    rdfs:label "Temporal Resolution" ;
+    rdfs:comment "An n-ary relationship class representing the time-bound mapping or transition state between a persistent identifier and a dynamic instance." .
+
+:TemporalContext a owl:Class ;
+    rdfs:label "Temporal Context" ;
+    rdfs:comment "The specific time period, shift, or duration (e.g., January 2025, daily shift) during which a temporal resolution is valid." .
+
+:InstanceAttribute a owl:Class ;
+    rdfs:label "Instance Attribute" ;
+    rdfs:comment "A real-time attribute, state, or value (e.g., last trade price, calibration status, debugging info) that is strictly bound to a specific dynamic instance." .
+
+### Disjointness ###
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( 
+        :PersistentIdentifier 
+        :DynamicInstance 
+        :TemporalResolution 
+        :TemporalContext 
+        :InstanceAttribute 
+    ) .
+
+### Object Properties ###
+
+:hasResolution a owl:ObjectProperty ;
+    rdfs:label "has resolution" ;
+    rdfs:comment "Links a persistent identifier to its temporal resolution mapping." ;
+    rdfs:domain :PersistentIdentifier ;
+    rdfs:range :TemporalResolution .
+
+:targetsInstance a owl:ObjectProperty ;
+    rdfs:label "targets instance" ;
+    rdfs:comment "Links a temporal resolution to the specific dynamic instance it resolves to." ;
+    rdfs:domain :TemporalResolution ;
+    rdfs:range :DynamicInstance .
+
+:validDuring a owl:ObjectProperty ;
+    rdfs:label "valid during" ;
+    rdfs:comment "Specifies the temporal context or time period during which the resolution holds true." ;
+    rdfs:domain :TemporalResolution ;
+    rdfs:range :TemporalContext .
+
+:hasInstanceAttribute a owl:ObjectProperty ;
+    rdfs:label "has instance attribute" ;
+    rdfs:comment "Binds a real-time attribute or state to the specific dynamic instance." ;
+    rdfs:domain :DynamicInstance ;
+    rdfs:range :InstanceAttribute .
+
+:exposesAttribute a owl:ObjectProperty ;
+    rdfs:label "exposes attribute" ;
+    rdfs:comment "A derived property demonstrating how real-time attributes bound to the current instance are exposed through the invariant persistent identifier." ;
+    rdfs:domain :PersistentIdentifier ;
+    rdfs:range :InstanceAttribute ;
+    owl:propertyChainAxiom ( :hasResolution :targetsInstance :hasInstanceAttribute ) .
+
+### Datatype Properties ###
+
+:identifierString a owl:DatatypeProperty ;
+    rdfs:label "identifier string" ;
+    rdfs:comment "The literal string representation of the persistent identifier (e.g., 'CL1')." ;
+    rdfs:domain :PersistentIdentifier ;
+    rdfs:range xsd:string .
+```
+
+### Documentation
+
+**Intent:** 
+To model temporal indirection by decoupling stable identifiers from dynamic entities, allowing a persistent identifier to dynamically resolve to different time-bound instances across successive contexts while seamlessly exposing the underlying instance's attributes.
+
+**Covered requirements:**
+*   **Persistent Identifiers:** Modeled via the `:PersistentIdentifier` class and `:identifierString` property to represent stable referents like 'CL1' or 'UA001'.
+*   **Dynamic Resolution:** Modeled using an n-ary relationship (`:TemporalResolution`) that connects the identifier to a `:DynamicInstance` (e.g., the February 2025 contract or a specific aircraft).
+*   **Temporal Continuity & Rollovers:** Captured by the `:validDuring` property and `:TemporalContext` class, allowing the system to represent successive shifts, months, or days.
+*   **Instance-Bound Attributes:** Modeled via the `:InstanceAttribute` class and `:hasInstanceAttribute` property, ensuring real-time data (price, calibration, debugging) is strictly attached to the correct temporal instance.
+*   **Attribute Exposure:** Addressed using the `:exposesAttribute` property chain axiom, which logically infers that attributes of the currently resolved instance are accessible/exposed through the invariant identifier.
+
+**Known assumptions and exclusions:**
+*   **Assumption:** Time and context can be represented as discrete, identifiable entities (e.g., "January 2025" or "Shift 1") rather than requiring complex continuous temporal logic (like Allen's Interval Algebra), which is sufficient for the described rollovers.
+*   **Exclusion:** The specific operational mechanics of *how* an "automatic transition" or rollover is triggered are excluded; the ontology models the structural state of the data, not the software behavior that updates it.
+*   **Exclusion:** Domain-specific subclasses (e.g., `FinancialContract`, `Physician`, `Sensor`) are intentionally excluded to maintain the pattern's generic, cross-domain applicability as an Ontology Design Pattern (ODP).

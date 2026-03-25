@@ -1,0 +1,123 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Solid App Governance Policy Pattern" ;
+    rdfs:comment "An ontology design pattern for representing privacy policies, data access requests, and governance metadata in Solid applications." .
+
+# --- Classes ---
+
+:Policy a owl:Class ;
+    rdfs:label "Policy" ;
+    rdfs:comment "A privacy or access policy expressing preferences, requirements, or consent." .
+
+:Actor a owl:Class ;
+    rdfs:label "Actor" ;
+    rdfs:comment "An entity (user, provider, etc.) interacting with the Solid ecosystem." .
+
+:Application a owl:Class ;
+    rdfs:label "Application" ;
+    rdfs:comment "A Solid application or service used to access data." .
+
+:AccessMode a owl:Class ;
+    rdfs:label "Access Mode" ;
+    rdfs:comment "The mode of access requested or granted (e.g., read, write)." .
+
+:PersonalData a owl:Class ;
+    rdfs:label "Personal Data" ;
+    rdfs:comment "Personal data stored within a Solid Pod." .
+
+:Purpose a owl:Class ;
+    rdfs:label "Purpose" ;
+    rdfs:comment "The specific purpose for which data access is requested or granted." .
+
+:Pod a owl:Class ;
+    rdfs:label "Pod" ;
+    rdfs:comment "A personal online data store in the Solid ecosystem." .
+
+:LogEntry a owl:Class ;
+    rdfs:label "Log Entry" ;
+    rdfs:comment "A record of data access or policy changes for accountability and compliance." .
+
+# --- Object Properties ---
+
+:hasCreator a owl:ObjectProperty ;
+    rdfs:label "has creator" ;
+    rdfs:comment "Links a policy to the actor who created it." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Actor .
+
+:hasAssignee a owl:ObjectProperty ;
+    rdfs:label "has assignee" ;
+    rdfs:comment "Links a policy to the actor it is assigned to or targets." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Actor .
+
+:usedApplication a owl:ObjectProperty ;
+    rdfs:label "used application" ;
+    rdfs:comment "Indicates the application used to access data under a policy." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Application .
+
+:hasAccessMode a owl:ObjectProperty ;
+    rdfs:label "has access mode" ;
+    rdfs:comment "Specifies the access mode granted or requested by the policy." ;
+    rdfs:domain :Policy ;
+    rdfs:range :AccessMode .
+
+:targetsPersonalData a owl:ObjectProperty ;
+    rdfs:label "targets personal data" ;
+    rdfs:comment "Indicates the personal data governed by the policy." ;
+    rdfs:domain :Policy ;
+    rdfs:range :PersonalData .
+
+:hasPurpose a owl:ObjectProperty ;
+    rdfs:label "has purpose" ;
+    rdfs:comment "Specifies the purpose for data access." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Purpose .
+
+:storedIn a owl:ObjectProperty ;
+    rdfs:label "stored in" ;
+    rdfs:comment "Indicates the Pod where the personal data is stored." ;
+    rdfs:domain :PersonalData ;
+    rdfs:range :Pod .
+
+# --- Datatype Properties ---
+
+:policyIdentifier a owl:DatatypeProperty ;
+    rdfs:label "policy identifier" ;
+    rdfs:comment "A unique identifier for the policy." ;
+    rdfs:domain :Policy ;
+    rdfs:range xsd:string .
+
+:issuedDate a owl:DatatypeProperty ;
+    rdfs:label "issued date" ;
+    rdfs:comment "The date and time when the policy was issued." ;
+    rdfs:domain :Policy ;
+    rdfs:range xsd:dateTime .
+```
+
+### Validation Report
+1. **PASS**: Turtle syntax is valid (all statements correctly terminated with dots, semicolons used properly for predicate-object lists).
+2. **PASS**: All prefixes (`owl:`, `rdf:`, `rdfs:`, `xsd:`, `:`) used in the body are declared at the top.
+3. **PASS**: Every property domain and range uses only classes defined within this ontology or standard `xsd` datatypes.
+4. **PASS**: No contradictory restrictions exist; the ontology uses simple, consistent domain/range assertions without disjointness axioms.
+5. **PASS**: Every CQ is traceable to the ontology (`:policyIdentifier` for CQ1, `:hasCreator` for CQ2, `:issuedDate` for CQ3, `:hasAssignee` for CQ4, `:usedApplication` for CQ5, `:hasAccessMode` for CQ6, `:targetsPersonalData` for CQ7, `:hasPurpose` for CQ8).
+6. **PASS**: All concepts are strictly grounded in the scenario text (e.g., Pods, Log Entries) and the provided CQs.
+
+### Scope Report
+**a) Requirements from the scenario that are covered:**
+- **C1 & C4 (Actors & Apps):** Covered via `:Actor` and `:Application` classes.
+- **C2 & C3 (Pods & Data):** Covered via `:Pod`, `:PersonalData`, and the `:storedIn` property.
+- **C5 (Privacy Policies):** Covered extensively via the `:Policy` class and its associated properties mapping to the CQs (creator, assignee, purpose, access mode).
+- **C6 (Logging/Record-keeping):** Covered via the `:LogEntry` class to represent provenance and accountability records.
+
+**b) Scenario concepts explicitly excluded and why:**
+- **Specific GDPR Rights (e.g., Right to Erasure, Withdrawing Consent) (C7):** Excluded because modeling specific legal frameworks would bloat the ontology and reduce reusability. The pattern instead provides the foundational metadata (`:Policy`, `:LogEntry`) required to *enable* these compliance checks.
+- **Data Categories (C3):** Excluded as a standalone class to keep the pattern minimal; data categorization is better handled by subclassing `:PersonalData` or integrating an external domain-specific vocabulary rather than hardcoding it into the core governance pattern.
+- **Solid Specifications/Infrastructure Metadata (C2):** Excluded because the CQs focus strictly on the policy and data access request level, not on the low-level server configuration or protocol versions.

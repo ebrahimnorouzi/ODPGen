@@ -1,0 +1,330 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "MQTT and SOSA Integration Ontology Design Pattern" ;
+    rdfs:comment "An OWL ontology design pattern modeling MQTT clients, brokers, connections, topics, control packets, and their integration with SOSA sensors, actuators, and observations." .
+
+#################################################################
+#    Classes
+#################################################################
+
+:MQTTParticipant a owl:Class ;
+    rdfs:label "MQTT Participant" ;
+    rdfs:comment "An entity participating in an MQTT network, such as a Client or Broker." .
+
+:MQTTClient a owl:Class ;
+    rdfs:subClassOf :MQTTParticipant ;
+    rdfs:label "MQTT Client" ;
+    rdfs:comment "An MQTT client that connects to an MQTT broker to publish or subscribe to topics." .
+
+:MQTTBroker a owl:Class ;
+    rdfs:subClassOf :MQTTParticipant ;
+    rdfs:label "MQTT Broker" ;
+    rdfs:comment "An MQTT broker that receives and distributes messages among connected clients." .
+
+:MQTTNetworkConnection a owl:Class ;
+    rdfs:label "MQTT Network Connection" ;
+    rdfs:comment "A network connection established between MQTT participants." .
+
+:Platform a owl:Class ;
+    rdfs:label "Platform" ;
+    rdfs:comment "A SOSA Platform that hosts systems like sensors or actuators." .
+
+:System a owl:Class ;
+    rdfs:label "System" ;
+    rdfs:comment "A SOSA System hosted on a platform." .
+
+:Sensor a owl:Class ;
+    rdfs:subClassOf :System ;
+    rdfs:label "Sensor" ;
+    rdfs:comment "A SOSA Sensor that generates observations." .
+
+:Actuator a owl:Class ;
+    rdfs:subClassOf :System ;
+    rdfs:label "Actuator" ;
+    rdfs:comment "A SOSA Actuator that receives commands to act on the environment." .
+
+:MQTTTopic a owl:Class ;
+    rdfs:label "MQTT Topic" ;
+    rdfs:comment "An MQTT topic used for message routing." .
+
+:MQTTTopicFilter a owl:Class ;
+    rdfs:label "MQTT Topic Filter" ;
+    rdfs:comment "An expression used by subscribers to match one or more MQTT topics." .
+
+:MQTTTopicSubject a owl:Class ;
+    rdfs:label "MQTT Topic Subject" ;
+    rdfs:comment "The semantic subject represented by an MQTT topic." .
+
+:FeatureOfInterest a owl:Class ;
+    rdfs:label "Feature Of Interest" ;
+    rdfs:comment "A SOSA Feature of Interest whose properties are observed or acted upon." .
+
+:Property a owl:Class ;
+    rdfs:label "Property" ;
+    rdfs:comment "A SOSA Property of a Feature of Interest." .
+
+:MQTTControlPacket a owl:Class ;
+    rdfs:label "MQTT Control Packet" ;
+    rdfs:comment "A packet of data sent across the network connection in MQTT." .
+
+:MQTTPublishPacket a owl:Class ;
+    rdfs:subClassOf :MQTTControlPacket ;
+    rdfs:label "MQTT PUBLISH Packet" ;
+    rdfs:comment "An MQTT control packet used to publish a message." .
+
+:MQTTSubscribePacket a owl:Class ;
+    rdfs:subClassOf :MQTTControlPacket ;
+    rdfs:label "MQTT SUBSCRIBE Packet" ;
+    rdfs:comment "An MQTT control packet used to subscribe to topics." .
+
+:MQTTUnsubscribePacket a owl:Class ;
+    rdfs:subClassOf :MQTTControlPacket ;
+    rdfs:label "MQTT UNSUBSCRIBE Packet" ;
+    rdfs:comment "An MQTT control packet used to unsubscribe from topics." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "A SOSA Observation representing a single sensor reading." .
+
+:ObservationCollection a owl:Class ;
+    rdfs:label "Observation Collection" ;
+    rdfs:comment "A collection of SOSA Observations." .
+
+:Actuation a owl:Class ;
+    rdfs:label "Actuation" ;
+    rdfs:comment "A SOSA Actuation representing a command to an actuator." .
+
+:ActuationCollection a owl:Class ;
+    rdfs:label "Actuation Collection" ;
+    rdfs:comment "A collection of SOSA Actuations." .
+
+:MQTTFixedHeader a owl:Class ;
+    rdfs:label "MQTT Fixed Header" ;
+    rdfs:comment "The fixed header present in all MQTT control packets." .
+
+:MQTTVariableHeader a owl:Class ;
+    rdfs:label "MQTT Variable Header" ;
+    rdfs:comment "The variable header present in some MQTT control packets." .
+
+:MQTTPayload a owl:Class ;
+    rdfs:label "MQTT Payload" ;
+    rdfs:comment "The payload content of an MQTT control packet." .
+
+:SubscriptionEntry a owl:Class ;
+    rdfs:label "Subscription Entry" ;
+    rdfs:comment "An entry within a SUBSCRIBE payload detailing a topic filter and QoS." .
+
+:PayloadField a owl:Class ;
+    rdfs:label "Payload Field" ;
+    rdfs:comment "A specific data field encoded within an MQTT payload." .
+
+:QuantityValue a owl:Class ;
+    rdfs:label "Quantity Value" ;
+    rdfs:comment "A QUDT Quantity Value representing a magnitude and unit (e.g., for payload size)." .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+:connectedToBroker a owl:ObjectProperty ;
+    rdfs:label "connected to broker" ;
+    rdfs:comment "Links an MQTT Client to the MQTT Broker it is connected to." ;
+    rdfs:domain :MQTTClient ;
+    rdfs:range :MQTTBroker .
+
+:initiatedConnection a owl:ObjectProperty ;
+    rdfs:label "initiated connection" ;
+    rdfs:comment "Links a participant to the network connection it initiated." ;
+    rdfs:domain :MQTTParticipant ;
+    rdfs:range :MQTTNetworkConnection .
+
+:acceptedConnection a owl:ObjectProperty ;
+    rdfs:label "accepted connection" ;
+    rdfs:comment "Links a participant to the network connection it accepted." ;
+    rdfs:domain :MQTTParticipant ;
+    rdfs:range :MQTTNetworkConnection .
+
+:usesNetworkConnection a owl:ObjectProperty ;
+    rdfs:label "uses network connection" ;
+    rdfs:comment "Links an MQTT participant to a network connection it uses." ;
+    rdfs:domain :MQTTParticipant ;
+    rdfs:range :MQTTNetworkConnection .
+
+:runsOnPlatform a owl:ObjectProperty ;
+    rdfs:label "runs on platform" ;
+    rdfs:comment "Links an MQTT Client to the SOSA Platform it runs on." ;
+    rdfs:domain :MQTTClient ;
+    rdfs:range :Platform .
+
+:hostsSystem a owl:ObjectProperty ;
+    rdfs:label "hosts system" ;
+    rdfs:comment "Links an MQTT Client to the SOSA System (sensor/actuator) it hosts." ;
+    rdfs:domain :MQTTClient ;
+    rdfs:range :System .
+
+:publishesToTopic a owl:ObjectProperty ;
+    rdfs:label "publishes to topic" ;
+    rdfs:comment "Links a SOSA Sensor to the MQTT Topic it publishes observations to." ;
+    rdfs:domain :Sensor ;
+    rdfs:range :MQTTTopic .
+
+:listensToTopic a owl:ObjectProperty ;
+    rdfs:label "listens to topic" ;
+    rdfs:comment "Links a SOSA Actuator to the MQTT Topic it listens to for commands." ;
+    rdfs:domain :Actuator ;
+    rdfs:range :MQTTTopic .
+
+:appearsAsTopicSubject a owl:ObjectProperty ;
+    rdfs:label "appears as topic subject" ;
+    rdfs:comment "Links a SOSA FeatureOfInterest or Property to an MQTT Topic Subject." ;
+    rdfs:range :MQTTTopicSubject .
+
+:hasTopicSubject a owl:ObjectProperty ;
+    rdfs:label "has topic subject" ;
+    rdfs:comment "Links an MQTT Topic to its semantic Topic Subject." ;
+    rdfs:domain :MQTTTopic ;
+    rdfs:range :MQTTTopicSubject .
+
+:matchesTopic a owl:ObjectProperty ;
+    rdfs:label "matches topic" ;
+    rdfs:comment "Links an MQTT Topic Filter to an MQTT Topic it matches." ;
+    rdfs:domain :MQTTTopicFilter ;
+    rdfs:range :MQTTTopic .
+
+:isMatchedByFilter a owl:ObjectProperty ;
+    owl:inverseOf :matchesTopic ;
+    rdfs:label "is matched by filter" ;
+    rdfs:comment "Links an MQTT Topic to an MQTT Topic Filter that matches it." ;
+    rdfs:domain :MQTTTopic ;
+    rdfs:range :MQTTTopicFilter .
+
+:sendsControlPacket a owl:ObjectProperty ;
+    rdfs:label "sends control packet" ;
+    rdfs:comment "Links an MQTT Participant to a Control Packet it sends." ;
+    rdfs:domain :MQTTParticipant ;
+    rdfs:range :MQTTControlPacket .
+
+:sentByClient a owl:ObjectProperty ;
+    owl:inverseOf :sendsControlPacket ;
+    rdfs:label "sent by client" ;
+    rdfs:comment "Links an MQTT Control Packet to the Client that sent it." ;
+    rdfs:domain :MQTTControlPacket ;
+    rdfs:range :MQTTClient .
+
+:receivesControlPacket a owl:ObjectProperty ;
+    rdfs:label "receives control packet" ;
+    rdfs:comment "Links an MQTT Participant to a Control Packet it receives." ;
+    rdfs:domain :MQTTParticipant ;
+    rdfs:range :MQTTControlPacket .
+
+:forwardsControlPacket a owl:ObjectProperty ;
+    rdfs:label "forwards control packet" ;
+    rdfs:comment "Links an MQTT Broker to a Control Packet it forwards." ;
+    rdfs:domain :MQTTBroker ;
+    rdfs:range :MQTTControlPacket .
+
+:carriesObservation a owl:ObjectProperty ;
+    rdfs:label "carries observation" ;
+    rdfs:comment "Links an MQTT PUBLISH Packet to the SOSA Observation it carries." ;
+    rdfs:domain :MQTTPublishPacket ;
+    rdfs:range :Observation .
+
+:hasFeatureOfInterest a owl:ObjectProperty ;
+    rdfs:label "has feature of interest" ;
+    rdfs:comment "Links an Observation to its SOSA Feature of Interest." ;
+    rdfs:domain :Observation ;
+    rdfs:range :FeatureOfInterest .
+
+:observedProperty a owl:ObjectProperty ;
+    rdfs:label "observed property" ;
+    rdfs:comment "Links an Observation to the SOSA Property being observed." ;
+    rdfs:domain :Observation ;
+    rdfs:range :Property .
+
+:requestsFilter a owl:ObjectProperty ;
+    rdfs:label "requests filter" ;
+    rdfs:comment "Links an MQTT SUBSCRIBE Packet to the Topic Filter it requests." ;
+    rdfs:domain :MQTTSubscribePacket ;
+    rdfs:range :MQTTTopicFilter .
+
+:hasFixedHeader a owl:ObjectProperty ;
+    rdfs:label "has fixed header" ;
+    rdfs:comment "Links an MQTT Control Packet to its Fixed Header." ;
+    rdfs:domain :MQTTControlPacket ;
+    rdfs:range :MQTTFixedHeader .
+
+:hasVariableHeader a owl:ObjectProperty ;
+    rdfs:label "has variable header" ;
+    rdfs:comment "Links an MQTT Control Packet to its Variable Header." ;
+    rdfs:domain :MQTTControlPacket ;
+    rdfs:range :MQTTVariableHeader .
+
+:hasPayload a owl:ObjectProperty ;
+    rdfs:label "has payload" ;
+    rdfs:comment "Links an MQTT Control Packet to its Payload." ;
+    rdfs:domain :MQTTControlPacket ;
+    rdfs:range :MQTTPayload .
+
+:containsTopic a owl:ObjectProperty ;
+    rdfs:label "contains topic" ;
+    rdfs:comment "Links an MQTT Variable Header to the MQTT Topic it contains." ;
+    rdfs:domain :MQTTVariableHeader ;
+    rdfs:range :MQTTTopic .
+
+:containsSubscriptionEntry a owl:ObjectProperty ;
+    rdfs:label "contains subscription entry" ;
+    rdfs:comment "Links an MQTT SUBSCRIBE Payload to a Subscription Entry." ;
+    rdfs:domain :MQTTPayload ;
+    rdfs:range :SubscriptionEntry .
+
+:requestsTopicFilter a owl:ObjectProperty ;
+    rdfs:label "requests topic filter" ;
+    rdfs:comment "Links a Subscription Entry to the MQTT Topic Filter it requests." ;
+    rdfs:domain :SubscriptionEntry ;
+    rdfs:range :MQTTTopicFilter .
+
+:removesTopicFilter a owl:ObjectProperty ;
+    rdfs:label "removes topic filter" ;
+    rdfs:comment "Links an MQTT UNSUBSCRIBE Payload to the Topic Filter it removes." ;
+    rdfs:domain :MQTTPayload ;
+    rdfs:range :MQTTTopicFilter .
+
+:encodesObservation a owl:ObjectProperty ;
+    rdfs:label "encodes observation" ;
+    rdfs:comment "Links an MQTT Payload to the SOSA Observation it encodes." ;
+    rdfs:domain :MQTTPayload ;
+    rdfs:range :Observation .
+
+:encodesObservationCollection a owl:ObjectProperty ;
+    rdfs:label "encodes observation collection" ;
+    rdfs:comment "Links an MQTT Payload to the SOSA Observation Collection it encodes." ;
+    rdfs:domain :MQTTPayload ;
+    rdfs:range :ObservationCollection .
+
+:encodesActuation a owl:ObjectProperty ;
+    rdfs:label "encodes actuation" ;
+    rdfs:comment "Links an MQTT Payload to the SOSA Actuation it encodes." ;
+    rdfs:domain :MQTTPayload ;
+    rdfs:range :Actuation .
+
+:encodesActuationCollection a owl:ObjectProperty ;
+    rdfs:label "encodes actuation collection" ;
+    rdfs:comment "Links an MQTT Payload to the SOSA Actuation Collection it encodes." ;
+    rdfs:domain :MQTTPayload ;
+    rdfs:range :ActuationCollection .
+
+:encodesField a owl:ObjectProperty ;
+    rdfs:label "encodes field" ;
+    rdfs:comment "Links an MQTT Payload to a specific field it encodes." ;
+    rdfs:domain :MQTTPayload ;
+    rdfs:range :PayloadField .
+
+:hasPayloadSize a owl:ObjectProperty ;
+    rdfs:label "has payload size" ;
+    rdfs:comment "Links an MQTT Payload to its size expressed as a Q

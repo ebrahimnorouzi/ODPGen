@@ -1,0 +1,122 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Author Pseudonym and River Trajectory Ontology" ;
+    rdfs:comment "An ontology design pattern for modeling authors, their pseudonyms, roles, published works, and a disjoint domain of rivers crossing national parks." .
+
+# Classes
+:Person a owl:Class ;
+    rdfs:label "Person" ;
+    rdfs:comment "A human being, such as an author." ;
+    owl:disjointWith :CreativeWork, :River .
+
+:Name a owl:Class ;
+    rdfs:label "Name" ;
+    rdfs:comment "A designation or appellation used by a person, which can change over time (e.g., after marriage)." .
+
+:Pseudonym a owl:Class ;
+    rdfs:subClassOf :Name ;
+    rdfs:label "Pseudonym" ;
+    rdfs:comment "A fictitious name, especially one used by an author." .
+
+:CreativeWork a owl:Class ;
+    rdfs:label "Creative Work" ;
+    rdfs:comment "A published work such as a book or a collection of poems." ;
+    owl:disjointWith :River .
+
+:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "A function or position assumed by a person, such as a book writer." .
+
+:River a owl:Class ;
+    rdfs:label "River" ;
+    rdfs:comment "A large natural stream of water flowing in a channel." ;
+    owl:disjointWith :NationalPark .
+
+:Trajectory a owl:Class ;
+    rdfs:label "Trajectory" ;
+    rdfs:comment "The path followed by a river." .
+
+:NationalPark a owl:Class ;
+    rdfs:label "National Park" ;
+    rdfs:comment "A scenic or historically important area of countryside protected by the government." .
+
+# Object Properties
+:hasName a owl:ObjectProperty ;
+    rdfs:domain :Person ;
+    rdfs:range :Name ;
+    rdfs:label "has name" ;
+    rdfs:comment "Relates a person to a name they hold or have held." .
+
+:hasPseudonym a owl:ObjectProperty ;
+    rdfs:subPropertyOf :hasName ;
+    rdfs:domain :Person ;
+    rdfs:range :Pseudonym ;
+    rdfs:label "has pseudonym" ;
+    rdfs:comment "Relates a person to a pseudonym they use." .
+
+:publishes a owl:ObjectProperty ;
+    rdfs:domain :Person ;
+    rdfs:range :CreativeWork ;
+    rdfs:label "publishes" ;
+    rdfs:comment "Relates a person to a creative work they have published." .
+
+:publishedUnder a owl:ObjectProperty ;
+    rdfs:domain :CreativeWork ;
+    rdfs:range :Name ;
+    rdfs:label "published under" ;
+    rdfs:comment "Relates a creative work to the specific name (e.g., pseudonym) under which it was published." .
+
+:assumesRole a owl:ObjectProperty ;
+    rdfs:domain :Person ;
+    rdfs:range :Role ;
+    rdfs:label "assumes role" ;
+    rdfs:comment "Relates a person to a role they have taken on, such as a writer." .
+
+:roleName a owl:ObjectProperty ;
+    rdfs:domain :Role ;
+    rdfs:range :Name ;
+    rdfs:label "role name" ;
+    rdfs:comment "Relates a role to the specific name used by the person assuming it." .
+
+:hasTrajectory a owl:ObjectProperty ;
+    rdfs:domain :River ;
+    rdfs:range :Trajectory ;
+    rdfs:label "has trajectory" ;
+    rdfs:comment "Relates a river to its physical path or trajectory." .
+
+:crosses a owl:ObjectProperty ;
+    rdfs:domain :River ;
+    rdfs:range :NationalPark ;
+    rdfs:label "crosses" ;
+    rdfs:comment "Relates a river to a national park that it flows through." .
+
+# Datatype Properties
+:nameString a owl:DatatypeProperty ;
+    rdfs:domain :Name ;
+    rdfs:range xsd:string ;
+    rdfs:label "name string" ;
+    rdfs:comment "The literal string value of a name." .
+```
+
+### Reasoning Summary
+*   **Step 1:** Extracted atomic requirements: Authors adopt pseudonyms, publish works, change names, assume roles, and rivers have trajectories crossing national parks.
+*   **Step 2:** Proposed candidate classes (`Person`, `Name`, `Pseudonym`, `CreativeWork`, `Role`, `River`, `Trajectory`, `NationalPark`) and properties to link them.
+*   **Step 3:** Drafted axioms including domains, ranges, subclass relations, and disjointness to formalize the entities and their relationships.
+*   **Step 4:** Verified CQs against axioms: noted that linking a work to a specific pseudonym and a role to a specific name was necessary to answer CQ1 and CQ2.
+*   **Step 5:** Added `:publishedUnder` and `:roleName` properties to fully cover the competency questions regarding specific name usage in different contexts.
+*   **Step 6:** Removed any extraneous concepts not directly tied to the author/name scenario or the explicitly requested river CQ to maintain minimality.
+
+### Traceability Table
+
+| Requirement / Competency Question | Covering Axioms |
+| :--- | :--- |
+| **Scenario:** An author adopting different names / Name changes (e.g. - after marriage) | `:Person`, `:Name`, `:hasName`, `:nameString` |
+| **CQ1:** Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage? | `:Pseudonym` (subClassOf `:Name`), `:CreativeWork`, `:publishes`, `:publishedUnder`, `:hasPseudonym` |
+| **CQ2:** What alternative did C. S. Lewis used to assume the role of a book writer? | `:Role`, `:assumesRole`, `:roleName` |
+| **CQ3:** Show the trajectories of rivers which cross national parks? | `:River`, `:Trajectory`, `:NationalPark`, `:hasTrajectory`, `:crosses` |

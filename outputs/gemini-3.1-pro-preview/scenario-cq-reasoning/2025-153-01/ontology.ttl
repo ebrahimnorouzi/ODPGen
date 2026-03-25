@@ -1,0 +1,89 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Temporal Indirection Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern for modeling persistent identifiers that dynamically resolve to different referents over time, tracking transitions, rules, and observations." .
+
+# Classes
+
+:PersistentIdentifier a owl:Class ;
+    rdfs:label "Persistent Identifier" ;
+    rdfs:comment "A stable identifier that dynamically resolves to different entities over time (e.g., CL1, UA001)." .
+
+:Referent a owl:Class ;
+    rdfs:label "Referent" ;
+    rdfs:comment "The specific entity that a persistent identifier resolves to during a specific time period (e.g., Feb 2025 contract, specific aircraft)." .
+
+:TemporalBinding a owl:Class ;
+    rdfs:label "Temporal Binding" ;
+    rdfs:comment "An n-ary relationship class representing the time-bound assignment of a persistent identifier to a specific referent." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "Real-time attributes, events, or measurements bound to a specific referent." .
+
+:TransitionRule a owl:Class ;
+    rdfs:label "Transition Rule" ;
+    rdfs:comment "The rule, event, or condition that triggered the transition to a new temporal binding." .
+
+# Object Properties
+
+:hasBinding a owl:ObjectProperty ;
+    rdfs:label "has binding" ;
+    rdfs:comment "Links a persistent identifier to its temporal bindings." ;
+    rdfs:domain :PersistentIdentifier ;
+    rdfs:range :TemporalBinding .
+
+:resolvesTo a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "resolves to" ;
+    rdfs:comment "Links a temporal binding to the specific referent it targets." ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :Referent .
+
+:hasObservation a owl:ObjectProperty ;
+    rdfs:label "has observation" ;
+    rdfs:comment "Links a referent to its specific observations or attributes." ;
+    rdfs:domain :Referent ;
+    rdfs:range :Observation .
+
+:triggeredBy a owl:ObjectProperty ;
+    rdfs:label "triggered by" ;
+    rdfs:comment "Links a temporal binding to the rule or event that caused its creation." ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :TransitionRule .
+
+:nextBinding a owl:ObjectProperty ;
+    rdfs:label "next binding" ;
+    rdfs:comment "Links a temporal binding to the subsequent binding in the sequence." ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :TemporalBinding ;
+    owl:inverseOf :previousBinding .
+
+:previousBinding a owl:ObjectProperty ;
+    rdfs:label "previous binding" ;
+    rdfs:comment "Links a temporal binding to the preceding binding in the sequence." ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :TemporalBinding .
+
+# Datatype Properties
+
+:validFrom a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "valid from" ;
+    rdfs:comment "The start timestamp of the temporal binding." ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range xsd:dateTime .
+
+:validTo a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "valid to" ;
+    rdfs:comment "The end timestamp of the temporal binding. May be empty if currently active." ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range xsd:dateTime .
+
+# Disjointness
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :PersistentIdentifier :Referent :TemporalBinding :Observation :TransitionRule ) .

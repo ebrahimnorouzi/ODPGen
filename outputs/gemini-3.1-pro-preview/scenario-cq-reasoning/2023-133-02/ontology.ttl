@@ -1,0 +1,138 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Asthma Causal Monitoring Ontology" ;
+    rdfs:comment "An ontology design pattern for representing asthma patients, their symptoms, medication intake, environmental exposures, and the weighted causal relations between these factors." .
+
+# --- Classes ---
+
+:Patient a owl:Class ;
+    rdfs:label "Patient" ;
+    rdfs:comment "A person suffering from asthma who is being monitored." .
+
+:AsthmaFactor a owl:Class ;
+    rdfs:label "Asthma Factor" ;
+    rdfs:comment "A superclass representing any factor involved in the asthma causal network, such as symptoms, medications, or environmental features." .
+
+:Symptom a owl:Class ;
+    rdfs:subClassOf :AsthmaFactor ;
+    rdfs:label "Symptom" ;
+    rdfs:comment "A physical or mental feature which is regarded as indicating a condition of disease, specifically asthma symptoms." .
+
+:Cough a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Cough" ;
+    rdfs:comment "A sudden, forceful hacking sound to release air and clear an irritation in the throat or airway." .
+
+:ChestTightness a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Chest Tightness" ;
+    rdfs:comment "A feeling of a heavy weight or band tightening around the chest." .
+
+:Wheezing a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Wheezing" ;
+    rdfs:comment "A high-pitched whistling sound made while breathing." .
+
+:BreathingPattern a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Breathing Pattern" ;
+    rdfs:comment "The rate, volume, and rhythm of inhalation and exhalation." .
+
+:MedicationIntake a owl:Class ;
+    rdfs:subClassOf :AsthmaFactor ;
+    rdfs:label "Medication Intake" ;
+    rdfs:comment "The event or action of a patient taking prescribed asthma medication." .
+
+:EnvironmentFeature a owl:Class ;
+    rdfs:subClassOf :AsthmaFactor ;
+    rdfs:label "Environment Feature" ;
+    rdfs:comment "An outdoor environmental element or condition that a patient is exposed to." .
+
+:Allergen a owl:Class ;
+    rdfs:subClassOf :EnvironmentFeature ;
+    rdfs:label "Allergen" ;
+    rdfs:comment "A substance or environmental feature that causes an allergic reaction." .
+
+:Pollen a owl:Class ;
+    rdfs:subClassOf :Allergen ;
+    rdfs:label "Pollen" ;
+    rdfs:comment "A fine powdery substance discharged from the male part of a flower, acting as an outdoor allergen." .
+
+:AQI a owl:Class ;
+    rdfs:subClassOf :Allergen ;
+    rdfs:label "Air Quality Index (AQI)" ;
+    rdfs:comment "An index for reporting daily air quality, treated in this context as an environmental allergen/feature." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A reified class representing a causal edge between two asthma factors, annotated with an effect weight." ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :hasCause ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] ,
+    [
+        a owl:Restriction ;
+        owl:onProperty :hasEffect ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] ,
+    [
+        a owl:Restriction ;
+        owl:onProperty :hasEffectWeight ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] .
+
+# --- Disjointness Axioms ---
+
+[ a owl:AllDisjointClasses ;
+  owl:members ( :Patient :AsthmaFactor :CausalRelation )
+] .
+
+[ a owl:AllDisjointClasses ;
+  owl:members ( :Symptom :MedicationIntake :EnvironmentFeature )
+] .
+
+# --- Object Properties ---
+
+:hasSymptom a owl:ObjectProperty ;
+    rdfs:domain :Patient ;
+    rdfs:range :Symptom ;
+    rdfs:label "has symptom" ;
+    rdfs:comment "Relates a patient to a symptom they experience." .
+
+:hasMedicationIntake a owl:ObjectProperty ;
+    rdfs:domain :Patient ;
+    rdfs:range :MedicationIntake ;
+    rdfs:label "has medication intake" ;
+    rdfs:comment "Relates a patient to their intake of medication." .
+
+:hasExposure a owl:ObjectProperty ;
+    rdfs:domain :Patient ;
+    rdfs:range :EnvironmentFeature ;
+    rdfs:label "has exposure" ;
+    rdfs:comment "Relates a patient to an outdoor environment feature they are exposed to." .
+
+:hasCause a owl:ObjectProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :AsthmaFactor ;
+    rdfs:label "has cause" ;
+    rdfs:comment "Indicates the source factor (cause) in a causal relation." .
+
+:hasEffect a owl:ObjectProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :AsthmaFactor ;
+    rdfs:label "has effect" ;
+    rdfs:comment "Indicates the target factor (effect) in a causal relation." .
+
+# --- Datatype Properties ---
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:float ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight representing the strength of the causal effect." .

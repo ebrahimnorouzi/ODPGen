@@ -1,0 +1,43 @@
+You are an ontology engineer. Create an OWL ontology design pattern (ODP) in Turtle syntax.
+
+Before writing, reason through these steps internally (do NOT write them out yet):
+1. Extract atomic requirements from the scenario (one sentence each).
+2. Propose candidate classes and properties per requirement.
+3. Draft axioms (subclass, domain, range, cardinality, disjointness).
+4. For each CQ, verify which axioms enable answering it; note gaps.
+5. Add/refine axioms to cover uncovered CQs.
+6. Remove classes/properties not traceable to any requirement or CQ.
+
+Constraints:
+- Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.
+- Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.
+- Add rdfs:label and rdfs:comment to every class and property.
+- Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label "..." ; rdfs:comment "..." .`
+- Keep modeling minimal and reusable; do not assert facts not implied by the scenario or CQs.
+
+Use these standard prefixes (declare all that you use):
+  @prefix owl:  <http://www.w3.org/2002/07/owl#> .
+  @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+  @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+  @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+  @prefix :     <http://example.org/odp#> .
+
+Output format — strictly in this order, nothing before item 1:
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+2. Reasoning summary: one bullet per step 1–6 (keep each to one line).
+3. Traceability table: for each requirement/CQ, list the axiom(s) that cover it.
+
+Scenario:
+Consider financial markets, where generic trading symbols like 'CL1' serve as persistent identifiers for front-month crude oil futures contracts. This identifier provides a paradigmatic example of temporal indirection within financial information systems. A persistent identifier (CL1) serves as a stable referent while dynamically resolving to the front-month crude oil futures contract, thereby ensuring continuity across successive monthly contract rollovers. In January 2025, 'CL1' refers to the February 2025 contract; when that contract approaches expiration, 'CL1' automatically transitions to reference the March 2025 contract. Real-time market attributes—such as last trade price, trading volume, and settlement values—are bound to the current contract instance but exposed through the invariant identifier.
+
+Additional cross-domain examples include: Healthcare ('Primary Oncologist Ward 7' — persistent identifier for individual physicians per shift, for treatment continuity versus malpractice attribution); Environmental ('River Station 1 Primary' — persistent identifier for physical sensors, for regulatory compliance versus calibration and tracking); Digital Payment Services ('API Latest' — persistent identifier for implementation versions, for client stability versus debugging and monitoring); Regulatory ('Current GDPR interpretation' — persistent identifier for specific rulings/guidance updates); Air Transportation (flight numbers like 'UA001' that map to different aircraft and crews daily).
+
+Competency Questions:
+- Which entity does a persistent identifier currently reference?
+- Which entity was referenced at a past timestamp?
+- When did referent transitions occur?
+- What observations are associated with specific referents?
+- What is the full sequence of referents over time?
+- Which rules triggered specific transitions?
+- Are there gaps or overlaps in temporal bindings?
+- Can complete context be rebuilt for any time point?

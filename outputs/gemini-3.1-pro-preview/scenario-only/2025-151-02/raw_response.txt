@@ -1,0 +1,103 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "ODRL Policy Evaluation Context ODP" ;
+    rdfs:comment "An ontology design pattern representing real-world context for evaluating ODRL policies, specifically modeling access requests to specific temporal segments of assets for defined purposes." .
+
+### Classes ###
+
+:AccessRequest a owl:Class ;
+    rdfs:label "Access Request" ;
+    rdfs:comment "A request made by an agent to access a specific asset under certain constraints and for a specific purpose." .
+
+:Agent a owl:Class ;
+    rdfs:label "Agent" ;
+    rdfs:comment "An entity, such as a person (e.g., Bob), who requests access to an asset." .
+
+:Asset a owl:Class ;
+    rdfs:label "Asset" ;
+    rdfs:comment "A resource or piece of content that is the target of an access request." .
+
+:VideoStream a owl:Class ;
+    rdfs:subClassOf :Asset ;
+    rdfs:label "Video Stream" ;
+    rdfs:comment "A specific type of asset representing a continuous sequence of video data." .
+
+:TemporalSegment a owl:Class ;
+    rdfs:label "Temporal Segment" ;
+    rdfs:comment "A specific time-bound portion of an asset, defined by a start and end point." .
+
+:Purpose a owl:Class ;
+    rdfs:label "Purpose" ;
+    rdfs:comment "The underlying reason or intent for which access to an asset is requested." .
+
+:AcademicResearch a owl:Class ;
+    rdfs:subClassOf :Purpose ;
+    rdfs:label "Academic Research" ;
+    rdfs:comment "A specific purpose indicating that the access is required for scholarly or academic investigation." .
+
+### Object Properties ###
+
+:hasRequester a owl:ObjectProperty ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :Agent ;
+    rdfs:label "has requester" ;
+    rdfs:comment "Links an access request to the agent making the request." .
+
+:requestsAccessTo a owl:ObjectProperty ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :Asset ;
+    rdfs:label "requests access to" ;
+    rdfs:comment "Links an access request to the target asset." .
+
+:hasTemporalConstraint a owl:ObjectProperty ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :TemporalSegment ;
+    rdfs:label "has temporal constraint" ;
+    rdfs:comment "Links an access request to a specific temporal segment, restricting the scope of the requested access." .
+
+:hasPurpose a owl:ObjectProperty ;
+    rdfs:domain :AccessRequest ;
+    rdfs:range :Purpose ;
+    rdfs:label "has purpose" ;
+    rdfs:comment "Links an access request to the intended purpose of the access." .
+
+### Datatype Properties ###
+
+:startMinute a owl:DatatypeProperty ;
+    rdfs:domain :TemporalSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:label "start minute" ;
+    rdfs:comment "The starting minute of a temporal segment." .
+
+:endMinute a owl:DatatypeProperty ;
+    rdfs:domain :TemporalSegment ;
+    rdfs:range xsd:integer ;
+    rdfs:label "end minute" ;
+    rdfs:comment "The ending minute of a temporal segment." .
+
+### Disjointness Axioms ###
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :AccessRequest :Agent :Asset :Purpose :TemporalSegment ) .
+```
+
+### Documentation
+
+**Intent:**
+To model the real-world contextual parameters of an access request—including the requesting agent, the target asset, temporal constraints, and the intended purpose—to facilitate the evaluation of ODRL policies.
+
+**Covered requirements:**
+*   Representation of an access request initiated by a user/agent (e.g., Bob).
+*   Identification of the target asset, specifically categorized as a video stream.
+*   Specification of temporal constraints limiting access to a specific segment (e.g., minutes 4 to 9) using start and end minute data properties.
+*   Declaration of the specific purpose for the access request (e.g., academic research).
+
+**Known assumptions and exclusions:**
+*   **Assumptions:** Time constraints are assumed to be measured in discrete integer minutes relative to the start of the media asset. The pattern assumes that the evaluation engine will compare these request parameters against actual ODRL policy rules.
+*   **Exclusions:** The pattern strictly models the *context* of the request to aid evaluation; it excludes the ODRL policy definitions themselves (e.g., `odrl:Permission`, `odrl:Prohibition`, `odrl:Duty`). It also excludes individual instances (like the specific person "Bob" or the specific video file), providing only the schema necessary to instantiate them.

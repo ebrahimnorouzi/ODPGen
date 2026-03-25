@@ -1,0 +1,126 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Solid Governance Logging Pattern" ;
+    rdfs:comment "An ontology design pattern for logging actions, data interactions, and provenance in Solid applications." .
+
+### Classes ###
+
+:Action a owl:Class ;
+    rdfs:label "Action" ;
+    rdfs:comment "An operation performed on data, such as create, update, or erase." .
+
+:CreateAction a owl:Class ;
+    rdfs:subClassOf :Action ;
+    rdfs:label "Create Action" ;
+    rdfs:comment "An action that creates new data." .
+
+:UpdateAction a owl:Class ;
+    rdfs:subClassOf :Action ;
+    rdfs:label "Update Action" ;
+    rdfs:comment "An action that modifies existing data." .
+
+:EraseAction a owl:Class ;
+    rdfs:subClassOf :Action ;
+    rdfs:label "Erase Action" ;
+    rdfs:comment "An action that deletes or erases data." .
+
+:Data a owl:Class ;
+    rdfs:label "Data" ;
+    rdfs:comment "Information that is stored, generated, or interacted with by entities and applications." .
+
+:Entity a owl:Class ;
+    rdfs:label "Entity" ;
+    rdfs:comment "An actor (e.g., user, organization, or service) that interacts with data or publishes logs." .
+
+:Log a owl:Class ;
+    rdfs:label "Log" ;
+    rdfs:comment "A record of an event, action, or provenance metadata." .
+
+:StorageLocation a owl:Class ;
+    rdfs:label "Storage Location" ;
+    rdfs:comment "A place where data is stored." .
+
+:Pod a owl:Class ;
+    rdfs:subClassOf :StorageLocation ;
+    rdfs:label "Pod" ;
+    rdfs:comment "A personal data storage server in the Solid ecosystem." .
+
+:Application a owl:Class ;
+    rdfs:label "Application" ;
+    rdfs:comment "A software program or service that generates or interacts with data." .
+
+### Object Properties ###
+
+:performsAction a owl:ObjectProperty ;
+    rdfs:label "performs action" ;
+    rdfs:comment "Relates an entity to the action it performs." ;
+    rdfs:domain :Entity ;
+    rdfs:range :Action .
+
+:actsOnData a owl:ObjectProperty ;
+    rdfs:label "acts on data" ;
+    rdfs:comment "Relates an action to the data it affects." ;
+    rdfs:domain :Action ;
+    rdfs:range :Data .
+
+:interactsWith a owl:ObjectProperty ;
+    rdfs:label "interacts with" ;
+    rdfs:comment "Relates an entity directly to the data it interacts with." ;
+    rdfs:domain :Entity ;
+    rdfs:range :Data .
+
+:publishesLog a owl:ObjectProperty ;
+    rdfs:label "publishes log" ;
+    rdfs:comment "Relates an entity to the log record it issues or publishes." ;
+    rdfs:domain :Entity ;
+    rdfs:range :Log .
+
+:recordsAction a owl:ObjectProperty ;
+    rdfs:label "records action" ;
+    rdfs:comment "Relates a log to the specific action it documents." ;
+    rdfs:domain :Log ;
+    rdfs:range :Action .
+
+:isStoredIn a owl:ObjectProperty ;
+    rdfs:label "is stored in" ;
+    rdfs:comment "Relates data to its storage location." ;
+    rdfs:domain :Data ;
+    rdfs:range :StorageLocation .
+
+:generatesData a owl:ObjectProperty ;
+    rdfs:label "generates data" ;
+    rdfs:comment "Relates an application or service to the data it produces." ;
+    rdfs:domain :Application ;
+    rdfs:range :Data .
+
+### Datatype Properties ###
+
+:issuedAt a owl:DatatypeProperty ;
+    rdfs:label "issued at" ;
+    rdfs:comment "The date and time when a log was published or issued." ;
+    rdfs:domain :Log ;
+    rdfs:range xsd:dateTime .
+```
+
+### Validation Report
+1. **Turtle syntax is valid:** PASS (All statements are properly terminated with periods, and property lists use semicolons correctly).
+2. **All prefixes used in the body are declared at the top:** PASS (Only `owl:`, `rdf:`, `rdfs:`, `xsd:`, and `:` are used and all are declared).
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS (All domains and ranges use locally defined classes or `xsd:dateTime`).
+4. **No two classes or properties are defined with contradictory restrictions:** PASS (No disjointness axioms or conflicting domain/range restrictions were introduced).
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS (CQ1 maps to `:Action` and its subclasses; CQ2 to `:Entity` and `:interactsWith`; CQ3 to `:publishesLog`; CQ4 to `:issuedAt`; CQ5 to `:isStoredIn` and `:StorageLocation`; CQ6 to `:Application` and `:generatesData`).
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS (All concepts directly answer the CQs or represent core scenario elements like `:Pod`).
+
+### Scope Report
+**a) Requirements from the scenario that are covered:**
+- **C6 (Logging and record-keeping):** Covered extensively through `:Log`, `:Action`, `:issuedAt`, `:recordsAction`, and `:publishesLog` to track provenance and accountability.
+- **C1 (Identity of actors/apps):** Covered via `:Entity` and `:Application` classes.
+- **C3 (Availability/Discovery of data):** Covered via `:StorageLocation`, `:Pod`, and the `:isStoredIn` property to track where data resides.
+
+**b) Scenario concepts explicitly excluded and why:**
+- **C2 (Infrastructure metadata), C4 (Privacy notices), C5 (Privacy policies/preferences), and C7 (Legal compliance/GDPR rights):** These concepts (e.g., consent records, policy expressions, GDPR auditing tools) were excluded because they are not targeted by the provided Competency Questions. To maintain a minimal, reusable, and strictly CQ-driven Ontology Design Pattern, only the logging, provenance, and data interaction aspects were modeled.

@@ -1,0 +1,127 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Maritime Ship and Data Source Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern for representing ships, their technical specifications, propulsion systems, trajectory data, and the heterogeneous data sources that describe them." .
+
+# --- Classes ---
+
+:Ship a owl:Class ;
+    rdfs:label "Ship" ;
+    rdfs:comment "A maritime vessel that is the central entity of fleet management, monitoring, and operations." .
+
+:DataSource a owl:Class ;
+    rdfs:label "Data Source" ;
+    rdfs:comment "A heterogeneous system, feed, or database providing information about ships." .
+
+:AISFeed a owl:Class ;
+    rdfs:subClassOf :DataSource ;
+    rdfs:label "AIS Feed" ;
+    rdfs:comment "Automatic Identification System data feed providing real-time tracking data." .
+
+:ShipRegistry a owl:Class ;
+    rdfs:subClassOf :DataSource ;
+    rdfs:label "Ship Registry" ;
+    rdfs:comment "A database containing official ship registration records." .
+
+:ClassificationSocietyDatabase a owl:Class ;
+    rdfs:subClassOf :DataSource ;
+    rdfs:label "Classification Society Database" ;
+    rdfs:comment "A database maintained by a classification society containing technical and compliance data." .
+
+:OnboardMonitoringPlatform a owl:Class ;
+    rdfs:subClassOf :DataSource ;
+    rdfs:label "Onboard Monitoring Platform" ;
+    rdfs:comment "A platform for monitoring ship systems and operations onboard." .
+
+:TechnicalSpecification a owl:Class ;
+    rdfs:label "Technical Specification" ;
+    rdfs:comment "Standardized technical characteristics and specifications of a ship." .
+
+:TrajectoryData a owl:Class ;
+    rdfs:label "Trajectory Data" ;
+    rdfs:comment "Data representing the movement path or track of a ship, critical for Search and Rescue (SAR)." .
+
+:AISTrack a owl:Class ;
+    rdfs:subClassOf :TrajectoryData ;
+    rdfs:label "AIS Track" ;
+    rdfs:comment "A specific type of trajectory data derived from an AIS feed." .
+
+:PropulsionSystem a owl:Class ;
+    rdfs:label "Propulsion System" ;
+    rdfs:comment "The system providing thrust to move the ship, serving as a structural backbone for digital twins." .
+
+# --- Disjointness Axioms ---
+
+[ a owl:AllDisjointClasses ;
+  owl:members ( :DataSource :PropulsionSystem :Ship :TechnicalSpecification :TrajectoryData )
+] .
+
+# --- Object Properties ---
+
+:describedBy a owl:ObjectProperty ;
+    rdfs:label "described by" ;
+    rdfs:comment "Links a ship to a disparate data source that provides information about it." ;
+    rdfs:domain :Ship ;
+    rdfs:range :DataSource .
+
+:hasTechnicalSpecification a owl:ObjectProperty ;
+    rdfs:label "has technical specification" ;
+    rdfs:comment "Links a ship to its technical specifications and characteristics." ;
+    rdfs:domain :Ship ;
+    rdfs:range :TechnicalSpecification .
+
+:hasTrajectoryData a owl:ObjectProperty ;
+    rdfs:label "has trajectory data" ;
+    rdfs:comment "Links a ship to its trajectory or track data." ;
+    rdfs:domain :Ship ;
+    rdfs:range :TrajectoryData .
+
+:hasPropulsionSystem a owl:ObjectProperty ;
+    rdfs:label "has propulsion system" ;
+    rdfs:comment "Links a ship to its propulsion system for life cycle simulations." ;
+    rdfs:domain :Ship ;
+    rdfs:range :PropulsionSystem .
+
+:interconnectedWith a owl:ObjectProperty ;
+    rdfs:label "interconnected with" ;
+    rdfs:comment "Represents structural interconnections between propulsion systems or their components." ;
+    rdfs:domain :PropulsionSystem ;
+    rdfs:range :PropulsionSystem .
+
+:providedBy a owl:ObjectProperty ;
+    rdfs:label "provided by" ;
+    rdfs:comment "Links trajectory data to the specific AIS feed that provides it." ;
+    rdfs:domain :TrajectoryData ;
+    rdfs:range :AISFeed .
+
+# --- Datatype Properties ---
+
+:propulsionType a owl:DatatypeProperty ;
+    rdfs:label "propulsion type" ;
+    rdfs:comment "Specifies the type or category of the propulsion system." ;
+    rdfs:domain :PropulsionSystem ;
+    rdfs:range xsd:string .
+```
+
+### Documentation
+
+**Intent:**
+This ontology design pattern provides a formalized, extensible semantic layer to integrate heterogeneous maritime data sources, linking ships to their technical specifications, trajectory data, and interconnected propulsion systems to support fleet management, emergency response, and digital twin simulations.
+
+**Covered requirements:**
+*   **Core Entity Modeling:** Establishes `Ship` as the central concept.
+*   **Semantic Data Integration (Use Case 3):** Models disparate data systems (`DataSource`) with specific subclasses for `AISFeed`, `ShipRegistry`, `ClassificationSocietyDatabase`, and `OnboardMonitoringPlatform`.
+*   **Fleet Management (Use Case 1):** Connects ships to standardized `TechnicalSpecification` entities to capture vessel characteristics.
+*   **Search and Rescue (Use Case 2):** Represents `TrajectoryData` and `AISTrack` linked to ships to enable fast semantic querying of movement data.
+*   **Digital Twins (Use Case 4):** Models `PropulsionSystem` entities, their types (via `propulsionType`), and their structural interconnections (via `interconnectedWith`).
+
+**Known assumptions and exclusions:**
+*   **Assumption:** It is assumed that an `AISTrack` is a specialized form of `TrajectoryData` and is inherently provided by an `AISFeed`.
+*   **Assumption:** Interconnections between propulsion systems are modeled as peer-to-peer relationships (`interconnectedWith`) rather than hierarchical part-whole relationships, as the scenario specifically highlights "interconnections".
+*   **Exclusion:** Specific technical measurements (e.g., length, weight, speed) and specific emergency event classes (e.g., SAR incidents) are excluded to strictly adhere to the provided scenario scope, which focuses on the structural backbone and data source integration rather than granular telemetry or event logging.

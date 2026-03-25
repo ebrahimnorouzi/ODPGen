@@ -1,0 +1,156 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Cultural Heritage Survey Ontology Design Pattern" ;
+    rdfs:comment "An OWL ontology design pattern representing scientific survey activities performed on cultural heritage entities, including observations, methods, equipment configurations, and interpretation processes." .
+
+#################################################################
+#    Classes
+#################################################################
+
+:CulturalHeritageEntity a owl:Class ;
+    rdfs:label "Cultural Heritage Entity" ;
+    rdfs:comment "A physical or conceptual entity of cultural heritage significance that is the subject of a scientific survey." .
+
+:EquipmentConfiguration a owl:Class ;
+    rdfs:label "Equipment Configuration" ;
+    rdfs:comment "The specific setup, calibration, or configuration of equipment used during a survey or observation." .
+
+:InterpretationProcess a owl:Class ;
+    rdfs:label "Interpretation Process" ;
+    rdfs:comment "The analytical or cognitive process of interpreting observations or survey results to derive meaning." .
+
+:Method a owl:Class ;
+    rdfs:label "Method" ;
+    rdfs:comment "A systematic procedure, technique, or mode of inquiry employed during a survey, observation, or interpretation." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "A record, measurement, or result obtained from a survey activity." .
+
+:SurveyActivity a owl:Class ;
+    rdfs:label "Survey Activity" ;
+    rdfs:comment "A scientific survey or investigation activity performed on a cultural heritage entity." .
+
+#################################################################
+#    Disjointness Axioms
+#################################################################
+
+[] a owl:AllDisjointClasses ;
+    owl:members (
+        :CulturalHeritageEntity
+        :EquipmentConfiguration
+        :InterpretationProcess
+        :Method
+        :Observation
+        :SurveyActivity
+    ) .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+:investigates a owl:ObjectProperty ;
+    rdfs:label "investigates" ;
+    rdfs:comment "Relates a survey activity to the cultural heritage entity it examines." ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :CulturalHeritageEntity ;
+    owl:inverseOf :isInvestigatedBy .
+
+:isInvestigatedBy a owl:ObjectProperty ;
+    rdfs:label "is investigated by" ;
+    rdfs:comment "Relates a cultural heritage entity to the survey activity that examines it." ;
+    rdfs:domain :CulturalHeritageEntity ;
+    rdfs:range :SurveyActivity .
+
+:producesObservation a owl:ObjectProperty ;
+    rdfs:label "produces observation" ;
+    rdfs:comment "Relates a survey activity to an observation it generates." ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Observation ;
+    owl:inverseOf :isProducedBySurvey .
+
+:isProducedBySurvey a owl:ObjectProperty ;
+    rdfs:label "is produced by survey" ;
+    rdfs:comment "Relates an observation to the survey activity that generated it." ;
+    rdfs:domain :Observation ;
+    rdfs:range :SurveyActivity .
+
+:usesEquipmentConfiguration a owl:ObjectProperty ;
+    rdfs:label "uses equipment configuration" ;
+    rdfs:comment "Relates a survey activity or observation to the equipment configuration used." ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :SurveyActivity :Observation )
+    ] ;
+    rdfs:range :EquipmentConfiguration ;
+    owl:inverseOf :isEquipmentConfigurationUsedBy .
+
+:isEquipmentConfigurationUsedBy a owl:ObjectProperty ;
+    rdfs:label "is equipment configuration used by" ;
+    rdfs:comment "Relates an equipment configuration to the survey activity or observation that employs it." ;
+    rdfs:domain :EquipmentConfiguration ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf ( :SurveyActivity :Observation )
+    ] .
+
+:usesMethod a owl:ObjectProperty ;
+    rdfs:label "uses method" ;
+    rdfs:comment "Relates an activity, observation, or process to the method it employs." ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :SurveyActivity :Observation :InterpretationProcess )
+    ] ;
+    rdfs:range :Method ;
+    owl:inverseOf :isMethodUsedBy .
+
+:isMethodUsedBy a owl:ObjectProperty ;
+    rdfs:label "is method used by" ;
+    rdfs:comment "Relates a method to the activity, observation, or process that employs it." ;
+    rdfs:domain :Method ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf ( :SurveyActivity :Observation :InterpretationProcess )
+    ] .
+
+:interprets a owl:ObjectProperty ;
+    rdfs:label "interprets" ;
+    rdfs:comment "Relates an interpretation process to the observation or survey activity it analyzes." ;
+    rdfs:domain :InterpretationProcess ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf ( :Observation :SurveyActivity )
+    ] ;
+    owl:inverseOf :isInterpretedBy .
+
+:isInterpretedBy a owl:ObjectProperty ;
+    rdfs:label "is interpreted by" ;
+    rdfs:comment "Relates an observation or survey activity to the interpretation process that analyzes it." ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :Observation :SurveyActivity )
+    ] ;
+    rdfs:range :InterpretationProcess .
+```
+
+### Documentation
+
+**Intent:**
+To model the structural relationships of scientific survey activities conducted on cultural heritage entities, capturing the interplay between the surveys, the observations they produce, the methods and equipment configurations they employ, and the subsequent interpretation processes.
+
+**Covered requirements:**
+*   Representation of scientific survey activities and the cultural heritage entities they investigate.
+*   Modeling of observations as distinct entities produced by survey activities.
+*   Association of specific methods and equipment configurations with surveys, observations, and interpretation processes.
+*   Representation of interpretation processes that analyze and derive meaning from observations or surveys.
+
+**Known assumptions and exclusions:**
+*   **Assumptions:** It is assumed that methods can be shared across surveys, observations, and interpretation processes. Similarly, equipment configurations can apply to both the overarching survey activity and individual observations.
+*   **Exclusions:** The pattern strictly excludes specific sub-types of cultural heritage entities (e.g., monuments, artifacts) and specific scientific domains (e.g., photogrammetry, spectroscopy) to remain a generalized design pattern.
+*   **Exclusions:** Temporal and spatial dimensions (e.g., timestamps, geographical coordinates) and literal data values of the observations are excluded to maintain strict adherence to the provided scenario scope.

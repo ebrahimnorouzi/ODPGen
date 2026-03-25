@@ -1,0 +1,122 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "MQTT Process Data Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern modeling automated process data captured and transmitted via MQTT packets, including payload formats and encodings, designed for the EKI project." .
+
+# --- Classes ---
+
+:Process a owl:Class ;
+    rdfs:label "Process" ;
+    rdfs:comment "A process, such as an observation or actuation, that interacts with automated process data." .
+
+:ObservationProcess a owl:Class ;
+    rdfs:subClassOf :Process ;
+    owl:disjointWith :ActuationProcess ;
+    rdfs:label "Observation Process" ;
+    rdfs:comment "A process that captures or observes data." .
+
+:ActuationProcess a owl:Class ;
+    rdfs:subClassOf :Process ;
+    rdfs:label "Actuation Process" ;
+    rdfs:comment "A process that performs an actuation based on data." .
+
+:AutomatedProcessData a owl:Class ;
+    rdfs:label "Automated Process Data" ;
+    rdfs:comment "Data captured and transmitted automatically from processes." .
+
+:MQTTPacket a owl:Class ;
+    rdfs:label "MQTT Packet" ;
+    rdfs:comment "A message packet transmitted via the Message Queuing Telemetry Transport (MQTT) protocol, representing transport semantics." .
+
+:Payload a owl:Class ;
+    rdfs:label "Payload" ;
+    rdfs:comment "The data payload contained within an MQTT packet." .
+
+:PayloadFormat a owl:Class ;
+    rdfs:label "Payload Format" ;
+    rdfs:comment "The structural format of the payload." .
+
+:PlainTextFormat a owl:Class ;
+    rdfs:subClassOf :PayloadFormat ;
+    rdfs:label "Plain Text Format" ;
+    rdfs:comment "A payload format consisting of unformatted plain text." .
+
+:CSVFormat a owl:Class ;
+    rdfs:subClassOf :PayloadFormat ;
+    rdfs:label "CSV Format" ;
+    rdfs:comment "A payload format consisting of comma-separated values." .
+
+:JSONFormat a owl:Class ;
+    rdfs:subClassOf :PayloadFormat ;
+    rdfs:label "JSON Format" ;
+    rdfs:comment "A payload format consisting of structured JavaScript Object Notation (JSON)." .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :PlainTextFormat :CSVFormat :JSONFormat ) .
+
+:CharacterSet a owl:Class ;
+    rdfs:label "Character Set" ;
+    rdfs:comment "The character encoding set used for the payload." .
+
+# --- Object Properties ---
+
+:capturesData a owl:ObjectProperty ;
+    rdfs:domain :Process ;
+    rdfs:range :AutomatedProcessData ;
+    rdfs:label "captures data" ;
+    rdfs:comment "Relates a process to the automated process data it captures or produces." .
+
+:transmittedVia a owl:ObjectProperty ;
+    rdfs:domain :AutomatedProcessData ;
+    rdfs:range :MQTTPacket ;
+    rdfs:label "transmitted via" ;
+    rdfs:comment "Relates automated process data to the MQTT packet used for its transmission." .
+
+:hasTransportSemantics a owl:ObjectProperty ;
+    rdfs:domain :Process ;
+    rdfs:range :MQTTPacket ;
+    rdfs:label "has transport semantics" ;
+    rdfs:comment "Aligns a process description directly with the MQTT transport semantics (packet)." .
+
+:hasPayload a owl:ObjectProperty ;
+    rdfs:domain :MQTTPacket ;
+    rdfs:range :Payload ;
+    rdfs:label "has payload" ;
+    rdfs:comment "Relates an MQTT packet to its contained payload." .
+
+:hasFormat a owl:ObjectProperty ;
+    rdfs:domain :Payload ;
+    rdfs:range :PayloadFormat ;
+    rdfs:label "has format" ;
+    rdfs:comment "Specifies the structural format of a payload." .
+
+:hasEncoding a owl:ObjectProperty ;
+    rdfs:domain :Payload ;
+    rdfs:range :CharacterSet ;
+    rdfs:label "has encoding" ;
+    rdfs:comment "Specifies the character set encoding of a payload." .
+```
+
+### Documentation
+
+**Intent:**
+This ontology design pattern models the capture and transmission of automated process data via MQTT packets, enabling the alignment of observation and actuation processes with transport semantics, payload formats, and character encodings.
+
+**Covered requirements:**
+*   Modeling industrial/IoT processes, specifically distinguishing between observation and actuation processes.
+*   Representing automated process data that is captured by these processes.
+*   Aligning process descriptions with transport semantics (represented by MQTT packets).
+*   Modeling the payload of MQTT packets.
+*   Categorizing payload formats into Plain Text, CSV, and structured JSON.
+*   Associating payloads with specific character sets/encodings.
+
+**Known assumptions and exclusions:**
+*   **Assumption:** The pattern assumes MQTT is the primary transport protocol in focus; other IoT protocols (e.g., CoAP, AMQP) are excluded to strictly adhere to the scenario.
+*   **Exclusion:** Network-level MQTT architecture concepts (such as Brokers, Topics, Quality of Service levels, or Publish/Subscribe events) are excluded as they are not explicitly mentioned in the scenario text.
+*   **Exclusion:** The internal schema or data points within the JSON or CSV payloads are not modeled; the pattern only identifies the format type and encoding of the payload as a whole.

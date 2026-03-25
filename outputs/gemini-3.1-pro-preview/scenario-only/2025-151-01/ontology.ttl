@@ -1,0 +1,178 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Access Request Evaluation Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern for modeling requested actions on target assets by assignees, enriched with contextual information (temporal, spatial, role, and request-capability) to evaluate access permissions." .
+
+# --- Classes ---
+
+:RequestedAction a owl:Class ;
+    rdfs:label "Requested Action" ;
+    rdfs:comment "A formal description of an action requested by an assignee on a target asset." .
+
+:AllowedRequestedAction a owl:Class ;
+    rdfs:subClassOf :RequestedAction ,
+                    [ a owl:Restriction ;
+                      owl:onProperty :hasAssignee ;
+                      owl:allValuesFrom :Employee
+                    ] ,
+                    [ a owl:Restriction ;
+                      owl:onProperty :hasTemporalContext ;
+                      owl:allValuesFrom :Weekday
+                    ] ,
+                    [ a owl:Restriction ;
+                      owl:onProperty :hasSpatialContext ;
+                      owl:allValuesFrom :EU
+                    ] ;
+    rdfs:label "Allowed Requested Action" ;
+    rdfs:comment "A requested action that meets the strict access criteria: permitted only to employees, only on weekdays, and only from the EU." .
+
+:Assignee a owl:Class ;
+    rdfs:label "Assignee" ;
+    rdfs:comment "The actor or entity requesting the action." .
+
+:Employee a owl:Class ;
+    rdfs:subClassOf :Assignee ;
+    rdfs:label "Employee" ;
+    rdfs:comment "An assignee who is formally employed, satisfying the role requirement for access." .
+
+:TargetAsset a owl:Class ;
+    rdfs:label "Target Asset" ;
+    rdfs:comment "The asset on which the requested action is to be performed." .
+
+:Context a owl:Class ;
+    rdfs:label "Context" ;
+    rdfs:comment "Contextual information enriching the requested action for evaluation purposes." .
+
+:TemporalContext a owl:Class ;
+    rdfs:subClassOf :Context ;
+    rdfs:label "Temporal Context" ;
+    rdfs:comment "The time-related context of the requested action." .
+
+:Weekday a owl:Class ;
+    rdfs:subClassOf :TemporalContext ;
+    rdfs:label "Weekday" ;
+    rdfs:comment "A temporal context representing a day of the workweek." .
+
+:SpatialContext a owl:Class ;
+    rdfs:subClassOf :Context ;
+    rdfs:label "Spatial Context" ;
+    rdfs:comment "The location-related context from which the action is requested." .
+
+:EU a owl:Class ;
+    rdfs:subClassOf :SpatialContext ;
+    rdfs:label "EU" ;
+    rdfs:comment "A spatial context representing the European Union." .
+
+:RoleContext a owl:Class ;
+    rdfs:subClassOf :Context ;
+    rdfs:label "Role Context" ;
+    rdfs:comment "The role-based context of the assignee making the request." .
+
+:RequestCapabilityContext a owl:Class ;
+    rdfs:subClassOf :Context ;
+    rdfs:label "Request Capability Context" ;
+    rdfs:comment "The context describing the capabilities or technical means of the request." .
+
+:Evaluation a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+                      owl:onProperty :needsContext ;
+                      owl:someValuesFrom :TemporalContext
+                    ] ,
+                    [ a owl:Restriction ;
+                      owl:onProperty :needsContext ;
+                      owl:someValuesFrom :SpatialContext
+                    ] ,
+                    [ a owl:Restriction ;
+                      owl:onProperty :needsContext ;
+                      owl:someValuesFrom :RoleContext
+                    ] ,
+                    [ a owl:Restriction ;
+                      owl:onProperty :needsContext ;
+                      owl:someValuesFrom :RequestCapabilityContext
+                    ] ;
+    rdfs:label "Evaluation" ;
+    rdfs:comment "The process of assessing a requested action against its contextual information to determine access." .
+
+# --- Disjointness Axioms ---
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :RequestedAction :Assignee :TargetAsset :Context :Evaluation ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :TemporalContext :SpatialContext :RoleContext :RequestCapabilityContext ) .
+
+# --- Object Properties ---
+
+:hasAssignee a owl:ObjectProperty ;
+    rdfs:domain :RequestedAction ;
+    rdfs:range :Assignee ;
+    rdfs:label "has assignee" ;
+    rdfs:comment "Links a requested action to the assignee performing it." .
+
+:hasTargetAsset a owl:ObjectProperty ;
+    rdfs:domain :RequestedAction ;
+    rdfs:range :TargetAsset ;
+    rdfs:label "has target asset" ;
+    rdfs:comment "Links a requested action to the asset it targets." .
+
+:hasContext a owl:ObjectProperty ;
+    rdfs:domain :RequestedAction ;
+    rdfs:range :Context ;
+    rdfs:label "has context" ;
+    rdfs:comment "Enriches a requested action with contextual information." .
+
+:hasTemporalContext a owl:ObjectProperty ;
+    rdfs:subPropertyOf :hasContext ;
+    rdfs:range :TemporalContext ;
+    rdfs:label "has temporal context" ;
+    rdfs:comment "Links a requested action to its temporal context." .
+
+:hasSpatialContext a owl:ObjectProperty ;
+    rdfs:subPropertyOf :hasContext ;
+    rdfs:range :SpatialContext ;
+    rdfs:label "has spatial context" ;
+    rdfs:comment "Links a requested action to its spatial context." .
+
+:hasRoleContext a owl:ObjectProperty ;
+    rdfs:subPropertyOf :hasContext ;
+    rdfs:range :RoleContext ;
+    rdfs:label "has role context" ;
+    rdfs:comment "Links a requested action to its role context." .
+
+:hasRequestCapabilityContext a owl:ObjectProperty ;
+    rdfs:subPropertyOf :hasContext ;
+    rdfs:range :RequestCapabilityContext ;
+    rdfs:label "has request capability context" ;
+    rdfs:comment "Links a requested action to its request capability context." .
+
+:isEvaluatedBy a owl:ObjectProperty ;
+    rdfs:domain :RequestedAction ;
+    rdfs:range :Evaluation ;
+    rdfs:label "is evaluated by" ;
+    rdfs:comment "Links a requested action to the evaluation process assessing it." .
+
+:evaluates a owl:ObjectProperty ;
+    owl:inverseOf :isEvaluatedBy ;
+    rdfs:domain :Evaluation ;
+    rdfs:range :RequestedAction ;
+    rdfs:label "evaluates" ;
+    rdfs:comment "Links an evaluation process to the requested action it assesses." .
+
+:needsContext a owl:ObjectProperty ;
+    rdfs:domain :Evaluation ;
+    rdfs:range :Context ;
+    rdfs:label "needs context" ;
+    rdfs:comment "Indicates the contextual information required by an evaluation." .
+
+# --- Datatype Properties ---
+
+:isAccessGranted a owl:DatatypeProperty ;
+    rdfs:domain :Evaluation ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is access granted" ;
+    rdfs:comment "A boolean flag indicating whether the evaluation resulted in access being granted." .

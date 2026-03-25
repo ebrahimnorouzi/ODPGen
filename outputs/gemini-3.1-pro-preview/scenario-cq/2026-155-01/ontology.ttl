@@ -1,0 +1,158 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Cultural Heritage Survey Ontology Design Pattern" ;
+    rdfs:comment "An ODP modeling the structure of scientific survey activities performed on cultural heritage entities, including observations, methods, equipment configurations, and interpretation processes." .
+
+### Classes ###
+
+:AcquisitionActivity a owl:Class ;
+    rdfs:label "Acquisition Activity" ;
+    rdfs:comment "An activity focused on acquiring data or observations during a survey." .
+
+:AcquisitionParameter a owl:Class ;
+    rdfs:label "Acquisition Parameter" ;
+    rdfs:comment "A parameter or setting (e.g., exposure time, ISO, aperture) that characterizes an acquisition cycle." .
+
+:CulturalProperty a owl:Class ;
+    rdfs:label "Cultural Property" ;
+    rdfs:comment "A cultural heritage entity that is the subject of a survey." .
+
+:Expert a owl:Class ;
+    rdfs:label "Expert" ;
+    rdfs:comment "A person with specialized knowledge participating in a survey." .
+
+:FeatureOfInterest a owl:Class ;
+    rdfs:label "Feature of Interest" ;
+    rdfs:comment "A specific feature or part of a cultural property being investigated." .
+
+:Hardware a owl:Class ;
+    rdfs:label "Hardware" ;
+    rdfs:comment "Physical equipment used to conduct a survey." .
+
+:Interpretation a owl:Class ;
+    rdfs:label "Interpretation" ;
+    rdfs:comment "An interpretation or claim supported by observations." .
+
+:Method a owl:Class ;
+    rdfs:label "Method" ;
+    rdfs:comment "A method or investigation technique adopted in a survey." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "An observation produced during a survey or investigation activity." .
+
+:Participation a owl:Class ;
+    rdfs:label "Participation" ;
+    rdfs:comment "An n-ary relationship class representing the involvement of an expert in a survey under a specific role." .
+
+:PhotographicAcquisitionCycle a owl:Class ;
+    rdfs:subClassOf :AcquisitionActivity ;
+    rdfs:label "Photographic Acquisition Cycle" ;
+    rdfs:comment "A specific type of acquisition activity involving photographic capture within a survey." .
+
+:PostProcessedOutput a owl:Class ;
+    rdfs:label "Post-processed Output" ;
+    rdfs:comment "Outputs such as interactive images, spectra, or datasets derived from acquisition or observation activities." .
+
+:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "The specific function or position an expert assumes during their participation in a survey." .
+
+:Software a owl:Class ;
+    rdfs:label "Software" ;
+    rdfs:comment "Computer programs or applications used to conduct a survey." .
+
+:Survey a owl:Class ;
+    rdfs:label "Survey" ;
+    rdfs:comment "A scientific survey or investigation activity performed on cultural heritage entities." .
+
+:TechnicalConfiguration a owl:Class ;
+    rdfs:label "Technical Configuration" ;
+    rdfs:comment "The technical setup or configuration used to conduct a survey." .
+
+### Object Properties ###
+
+:derivedFrom a owl:ObjectProperty ;
+    rdfs:label "derived from" ;
+    rdfs:comment "Relates a post-processed output to the underlying acquisition activity or observation it was created from." ;
+    rdfs:domain :PostProcessedOutput ;
+    rdfs:range [ a owl:Class ;
+                 owl:unionOf ( :AcquisitionActivity :Observation ) ] .
+
+:hasConfiguration a owl:ObjectProperty ;
+    rdfs:label "has configuration" ;
+    rdfs:comment "Links a survey to the technical configuration used to conduct it." ;
+    rdfs:domain :Survey ;
+    rdfs:range :TechnicalConfiguration .
+
+:hasParameter a owl:ObjectProperty ;
+    rdfs:label "has parameter" ;
+    rdfs:comment "Links a photographic acquisition cycle to its characterizing acquisition parameters." ;
+    rdfs:domain :PhotographicAcquisitionCycle ;
+    rdfs:range :AcquisitionParameter .
+
+:hasParticipant a owl:ObjectProperty ;
+    rdfs:label "has participant" ;
+    rdfs:comment "Links a participation context to the expert involved." ;
+    rdfs:domain :Participation ;
+    rdfs:range :Expert .
+
+:hasParticipation a owl:ObjectProperty ;
+    rdfs:label "has participation" ;
+    rdfs:comment "Links a survey to the participation context of experts." ;
+    rdfs:domain :Survey ;
+    rdfs:range :Participation .
+
+:hasRole a owl:ObjectProperty ;
+    rdfs:label "has role" ;
+    rdfs:comment "Links a participation context to the role assumed by the expert." ;
+    rdfs:domain :Participation ;
+    rdfs:range :Role .
+
+:investigates a owl:ObjectProperty ;
+    rdfs:label "investigates" ;
+    rdfs:comment "Links a survey to the cultural property or feature of interest being investigated." ;
+    rdfs:domain :Survey ;
+    rdfs:range [ a owl:Class ;
+                 owl:unionOf ( :CulturalProperty :FeatureOfInterest ) ] .
+
+:isPartOf a owl:ObjectProperty ;
+    rdfs:label "is part of" ;
+    rdfs:comment "Relates an entity (like an acquisition cycle) to the broader survey it belongs to." ;
+    rdfs:domain :PhotographicAcquisitionCycle ;
+    rdfs:range :Survey .
+
+:producesObservation a owl:ObjectProperty ;
+    rdfs:label "produces observation" ;
+    rdfs:comment "Links a survey or investigation activity to the observations it produces." ;
+    rdfs:domain :Survey ;
+    rdfs:range :Observation .
+
+:supportsInterpretation a owl:ObjectProperty ;
+    rdfs:label "supports interpretation" ;
+    rdfs:comment "Links an observation to the interpretation or claim it supports." ;
+    rdfs:domain :Observation ;
+    rdfs:range :Interpretation .
+
+:usesHardware a owl:ObjectProperty ;
+    rdfs:label "uses hardware" ;
+    rdfs:comment "Links a survey to the hardware used to conduct it." ;
+    rdfs:domain :Survey ;
+    rdfs:range :Hardware .
+
+:usesMethod a owl:ObjectProperty ;
+    rdfs:label "uses method" ;
+    rdfs:comment "Links a survey to the method or investigation technique adopted." ;
+    rdfs:domain :Survey ;
+    rdfs:range :Method .
+
+:usesSoftware a owl:ObjectProperty ;
+    rdfs:label "uses software" ;
+    rdfs:comment "Links a survey to the software used to conduct it." ;
+    rdfs:domain :Survey ;
+    rdfs:range :Software .

@@ -1,0 +1,110 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Legal Tasks and Bad Check Crime Regulations Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern representing legal tasks, unstructured information, court hierarchies, and regulations related to bad check crimes." .
+
+#################################################################
+#    Classes
+#################################################################
+
+:LegalTask a owl:Class ;
+    rdfs:label "Legal Task" ;
+    rdfs:comment "A task or activity performed within a legal context." .
+
+:Information a owl:Class ;
+    rdfs:label "Information" ;
+    rdfs:comment "Data or knowledge managed during legal tasks." .
+
+:UnstructuredInformation a owl:Class ;
+    rdfs:subClassOf :Information ;
+    rdfs:label "Unstructured Information" ;
+    rdfs:comment "Complex information that does not have a pre-defined data model or is not organized in a pre-defined manner." .
+
+:Court a owl:Class ;
+    rdfs:label "Court" ;
+    rdfs:comment "A tribunal presided over by a judge, judges, or a magistrate in civil and criminal cases." .
+
+:Regulation a owl:Class ;
+    rdfs:label "Regulation" ;
+    rdfs:comment "A rule or directive made and maintained by an authority." .
+
+:Crime a owl:Class ;
+    rdfs:label "Crime" ;
+    rdfs:comment "An action or omission that constitutes an offense that may be prosecuted by the state and is punishable by law." .
+
+:BadCheckCrime a owl:Class ;
+    rdfs:subClassOf :Crime ;
+    rdfs:label "Bad Check Crime" ;
+    rdfs:comment "A specific type of crime involving the intentional issuance of a check for which there are insufficient funds." .
+
+#################################################################
+#    Disjointness
+#################################################################
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :LegalTask :Information :Court :Regulation :Crime ) .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+:requiresInformation a owl:ObjectProperty ;
+    rdfs:domain :LegalTask ;
+    rdfs:range :Information ;
+    rdfs:label "requires information" ;
+    rdfs:comment "Indicates the information that is necessary to perform a legal task." .
+
+:capturesCourt a owl:ObjectProperty ;
+    rdfs:domain :Information ;
+    rdfs:range :Court ;
+    rdfs:label "captures court" ;
+    rdfs:comment "Links information to the court entities it describes or captures." .
+
+:capturesRegulation a owl:ObjectProperty ;
+    rdfs:domain :Information ;
+    rdfs:range :Regulation ;
+    rdfs:label "captures regulation" ;
+    rdfs:comment "Links information to the legal regulations it describes or captures." .
+
+:hasSubCourt a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:domain :Court ;
+    rdfs:range :Court ;
+    owl:inverseOf :isSubCourtOf ;
+    rdfs:label "has sub-court" ;
+    rdfs:comment "Establishes a hierarchical relationship where one court is structurally or jurisdictionally above another." .
+
+:isSubCourtOf a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:domain :Court ;
+    rdfs:range :Court ;
+    rdfs:label "is sub-court of" ;
+    rdfs:comment "Establishes a hierarchical relationship where one court is structurally or jurisdictionally below another." .
+
+:regulatesCrime a owl:ObjectProperty ;
+    rdfs:domain :Regulation ;
+    rdfs:range :Crime ;
+    rdfs:label "regulates crime" ;
+    rdfs:comment "Associates a regulation with the specific crime it governs or relates to." .
+```
+
+### Documentation
+
+**Intent:**
+To model the relationship between legal tasks and the unstructured information they require, specifically capturing hierarchical court structures and regulations governing bad check crimes.
+
+**Covered requirements:**
+*   Models `LegalTask` and its dependency on `Information` (specifically `UnstructuredInformation`).
+*   Captures court hierarchies using transitive properties (`hasSubCourt` and `isSubCourtOf`).
+*   Models regulations and their specific relationship to crimes, including the specialized `BadCheckCrime`.
+*   Connects the unstructured information to the domain concepts (courts and regulations) it captures.
+
+**Known assumptions and exclusions:**
+*   **Assumption:** The pronoun "It" in the scenario ("It captures the court hierarchies...") is interpreted to mean the *Information* managed by the legal tasks, rather than the legal task itself.
+*   **Assumption:** Court hierarchies are strictly modeled as transitive relationships between `Court` entities.
+*   **Exclusion:** The pattern excludes specific jurisdictional boundaries, roles of legal personnel, or the specific penalties associated with bad check crimes, as these were not explicitly mentioned in the scenario.
+*   **Exclusion:** Structured information is not explicitly modeled, as the scenario strictly emphasizes the primarily unstructured nature of the information.

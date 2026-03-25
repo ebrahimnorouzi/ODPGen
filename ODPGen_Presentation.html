@@ -2,261 +2,105 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ODPGen — LLM-Based Ontology Design Pattern Generation</title>
 <style>
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d2e;
-    --surface2: #232740;
-    --accent: #6c8ebf;
-    --accent2: #8ab4f8;
-    --green: #4caf7d;
-    --yellow: #f0c060;
-    --red: #e06c6c;
-    --purple: #b39ddb;
-    --text: #e8eaf0;
-    --muted: #8892a4;
-    --border: #2e3350;
-    --font: 'Segoe UI', system-ui, sans-serif;
-    --mono: 'Cascadia Code', 'Fira Code', monospace;
+    --bg:#0f1117;--surface:#1a1d2e;--surface2:#232740;
+    --accent:#6c8ebf;--accent2:#8ab4f8;
+    --green:#4caf7d;--yellow:#f0c060;--red:#e06c6c;--purple:#b39ddb;
+    --text:#e8eaf0;--muted:#8892a4;--border:#2e3350;
+    --font:'Segoe UI',system-ui,sans-serif;
+    --mono:'Cascadia Code','Fira Code',monospace;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-  }
-
-  /* ─── NAV ─── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(15,17,23,0.95);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 24px;
-    display: flex; align-items: center; gap: 12px;
-    backdrop-filter: blur(8px);
-    flex-wrap: wrap;
-  }
-  nav span { font-size: 12px; color: var(--muted); margin-right: 4px; }
-  nav a {
-    font-size: 12px; color: var(--accent2); text-decoration: none;
-    padding: 4px 10px; border-radius: 4px;
-    transition: background .2s;
-  }
-  nav a:hover { background: var(--surface2); }
-
-  /* ─── SLIDES ─── */
-  .slide {
-    min-height: 100vh;
-    padding: 100px 60px 60px;
-    border-bottom: 2px solid var(--border);
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  .slide.full-width { max-width: 100%; padding: 100px 80px 60px; }
-
-  /* ─── TITLE SLIDE ─── */
-  #title {
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: flex-start;
-    min-height: 100vh;
-    background: radial-gradient(ellipse at 30% 50%, #1a2240 0%, var(--bg) 70%);
-  }
-  #title .badge {
-    font-size: 12px; text-transform: uppercase; letter-spacing: 2px;
-    color: var(--accent); border: 1px solid var(--accent);
-    padding: 4px 12px; border-radius: 20px; margin-bottom: 24px;
-  }
-  #title h1 {
-    font-size: 64px; font-weight: 700; line-height: 1.1;
-    background: linear-gradient(135deg, #e8eaf0 40%, var(--accent2));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: 16px;
-  }
-  #title .subtitle {
-    font-size: 22px; color: var(--muted); margin-bottom: 48px;
-  }
-  #title .meta { display: flex; gap: 32px; flex-wrap: wrap; }
-  #title .meta-item { display: flex; flex-direction: column; gap: 4px; }
-  #title .meta-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
-  #title .meta-value { font-size: 16px; color: var(--accent2); }
-
-  /* ─── HEADINGS ─── */
-  .slide-header {
-    display: flex; align-items: center; gap: 16px;
-    margin-bottom: 40px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .slide-num {
-    font-size: 12px; color: var(--muted);
-    background: var(--surface2);
-    padding: 4px 10px; border-radius: 4px;
-    font-family: var(--mono);
-  }
-  h2 { font-size: 36px; color: var(--accent2); }
-  h3 { font-size: 22px; color: var(--accent2); margin-bottom: 12px; }
-  h4 { font-size: 16px; color: var(--yellow); margin-bottom: 8px; }
-
-  /* ─── CARDS & GRIDS ─── */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-  }
-  .card.accent { border-color: var(--accent); }
-  .card.green { border-color: var(--green); }
-  .card.yellow { border-color: var(--yellow); }
-  .card.red { border-color: var(--red); }
-
-  /* ─── TABLE ─── */
-  table {
-    width: 100%; border-collapse: collapse;
-    font-size: 14px;
-  }
-  th {
-    background: var(--surface2);
-    padding: 10px 14px;
-    text-align: left;
-    color: var(--accent2);
-    border-bottom: 2px solid var(--border);
-    font-size: 12px; text-transform: uppercase; letter-spacing: .5px;
-  }
-  td {
-    padding: 9px 14px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--surface2); }
-  .good { color: var(--green); font-weight: 600; }
-  .mid  { color: var(--yellow); font-weight: 600; }
-  .bad  { color: var(--red); font-weight: 600; }
-  .best { background: rgba(76,175,125,0.12); }
-
-  /* ─── STAT BOXES ─── */
-  .stat-box {
-    text-align: center; padding: 24px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-  }
-  .stat-num { font-size: 48px; font-weight: 700; color: var(--accent2); line-height: 1; }
-  .stat-label { font-size: 13px; color: var(--muted); margin-top: 8px; }
-
-  /* ─── BAR CHART ─── */
-  .bar-chart { display: flex; flex-direction: column; gap: 12px; }
-  .bar-row { display: flex; align-items: center; gap: 12px; }
-  .bar-label { width: 240px; font-size: 13px; text-align: right; flex-shrink: 0; }
-  .bar-track {
-    flex: 1; background: var(--surface2);
-    border-radius: 4px; height: 28px; overflow: hidden;
-    position: relative;
-  }
-  .bar-fill {
-    height: 100%; border-radius: 4px;
-    display: flex; align-items: center; padding-left: 10px;
-    font-size: 12px; font-weight: 700; color: #fff;
-    transition: width .5s ease;
-  }
-  .bar-fill.success { background: linear-gradient(90deg, var(--green), #66bb9a); }
-  .bar-fill.warn    { background: linear-gradient(90deg, var(--yellow), #f5d080); color: #222; }
-  .bar-fill.fail    { background: linear-gradient(90deg, var(--red), #e89090); }
-  .bar-fill.blue    { background: linear-gradient(90deg, var(--accent), #8ab4f8); }
-  .bar-fill.purple  { background: linear-gradient(90deg, var(--purple), #ce93d8); }
-
-  /* ─── PROMPT DISPLAY ─── */
-  .prompt-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #c3c8d8;
-    line-height: 1.5;
-    overflow: auto;
-    max-height: 240px;
-  }
-  .prompt-tag { color: var(--yellow); }
-  .prompt-inst { color: var(--accent2); }
-
-  /* ─── CODE ─── */
-  pre {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    font-family: var(--mono);
-    font-size: 12px;
-    overflow-x: auto;
-    color: #c3c8d8;
-    line-height: 1.6;
-  }
-  .kw  { color: #c792ea; }
-  .str { color: #c3e88d; }
-  .cmt { color: #546e7a; }
-  .uri { color: #82aaff; }
-  .cls { color: #ffcb6b; }
-
-  /* ─── BADGE CHIPS ─── */
-  .chip {
-    display: inline-block;
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 12px;
-    margin: 2px;
-    font-weight: 600;
-  }
-  .chip-blue   { background: rgba(108,142,191,.25); color: var(--accent2); }
-  .chip-green  { background: rgba(76,175,125,.25);  color: var(--green); }
-  .chip-yellow { background: rgba(240,192,96,.25);  color: var(--yellow); }
-  .chip-red    { background: rgba(224,108,108,.25); color: var(--red); }
-  .chip-purple { background: rgba(179,157,219,.25); color: var(--purple); }
-
-  /* ─── CALLOUT ─── */
-  .callout {
-    padding: 14px 20px;
-    border-radius: 8px;
-    border-left: 4px solid var(--accent);
-    background: rgba(108,142,191,.1);
-    margin: 16px 0;
-    font-size: 14px;
-  }
-  .callout.green  { border-color: var(--green);  background: rgba(76,175,125,.1); }
-  .callout.yellow { border-color: var(--yellow); background: rgba(240,192,96,.1); }
-  .callout.red    { border-color: var(--red);    background: rgba(224,108,108,.1); }
-
-  /* ─── MISC ─── */
-  p  { margin-bottom: 10px; font-size: 15px; }
-  li { margin-bottom: 6px; font-size: 14px; }
-  ul { padding-left: 20px; }
-  .muted { color: var(--muted); }
-  .small { font-size: 12px; }
-  .mt16 { margin-top: 16px; }
-  .mt24 { margin-top: 24px; }
-  .mt32 { margin-top: 32px; }
-  .mb16 { margin-bottom: 16px; }
-  hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
-
-  /* winner crown */
-  .crown { font-size: 28px; }
-
-  @media print {
-    .slide { page-break-after: always; min-height: unset; }
-    nav { display: none; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;
+      background:rgba(15,17,23,.95);border-bottom:1px solid var(--border);
+      padding:10px 24px;display:flex;align-items:center;gap:12px;
+      backdrop-filter:blur(8px);flex-wrap:wrap;}
+  nav span{font-size:12px;color:var(--muted);margin-right:4px;}
+  nav a{font-size:12px;color:var(--accent2);text-decoration:none;
+        padding:4px 10px;border-radius:4px;transition:background .2s;}
+  nav a:hover{background:var(--surface2);}
+  .slide{min-height:100vh;padding:100px 60px 60px;border-bottom:2px solid var(--border);
+         max-width:1200px;margin:0 auto;}
+  #title{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+         min-height:100vh;background:radial-gradient(ellipse at 30% 50%,#1a2240 0%,var(--bg) 70%);}
+  #title .badge{font-size:12px;text-transform:uppercase;letter-spacing:2px;
+                color:var(--accent);border:1px solid var(--accent);
+                padding:4px 12px;border-radius:20px;margin-bottom:24px;}
+  #title h1{font-size:64px;font-weight:700;line-height:1.1;
+            background:linear-gradient(135deg,#e8eaf0 40%,var(--accent2));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px;}
+  #title .subtitle{font-size:22px;color:var(--muted);margin-bottom:48px;}
+  #title .meta{display:flex;gap:32px;flex-wrap:wrap;}
+  #title .meta-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+  #title .meta-value{font-size:16px;color:var(--accent2);}
+  .slide-header{display:flex;align-items:center;gap:16px;margin-bottom:40px;
+                padding-bottom:16px;border-bottom:1px solid var(--border);}
+  .slide-num{font-size:12px;color:var(--muted);background:var(--surface2);
+             padding:4px 10px;border-radius:4px;font-family:var(--mono);}
+  h2{font-size:36px;color:var(--accent2);}
+  h3{font-size:22px;color:var(--accent2);margin-bottom:12px;}
+  h4{font-size:16px;color:var(--yellow);margin-bottom:8px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .card.accent{border-color:var(--accent);}
+  .card.green{border-color:var(--green);}
+  .card.yellow{border-color:var(--yellow);}
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th{background:var(--surface2);padding:10px 14px;text-align:left;color:var(--accent2);
+     border-bottom:2px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:.5px;}
+  td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:var(--surface2);}
+  .good{color:var(--green);font-weight:600;}
+  .mid{color:var(--yellow);font-weight:600;}
+  .bad{color:var(--red);font-weight:600;}
+  .best{background:rgba(76,175,125,.12);}
+  .stat-box{text-align:center;padding:24px 16px;background:var(--surface);
+            border:1px solid var(--border);border-radius:12px;}
+  .stat-num{font-size:48px;font-weight:700;color:var(--accent2);line-height:1;}
+  .stat-label{font-size:13px;color:var(--muted);margin-top:8px;}
+  .bar-chart{display:flex;flex-direction:column;gap:12px;}
+  .bar-row{display:flex;align-items:center;gap:12px;}
+  .bar-label{width:240px;font-size:13px;text-align:right;flex-shrink:0;}
+  .bar-track{flex:1;background:var(--surface2);border-radius:4px;height:28px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:10px;
+            font-size:12px;font-weight:700;color:#fff;}
+  .bf-green{background:linear-gradient(90deg,var(--green),#66bb9a);}
+  .bf-yellow{background:linear-gradient(90deg,var(--yellow),#f5d080);color:#222;}
+  .bf-red{background:linear-gradient(90deg,var(--red),#e89090);}
+  .bf-blue{background:linear-gradient(90deg,var(--accent),#8ab4f8);}
+  .bf-purple{background:linear-gradient(90deg,var(--purple),#ce93d8);}
+  pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+      padding:16px;font-family:var(--mono);font-size:12px;overflow-x:auto;
+      color:#c3c8d8;line-height:1.6;max-height:220px;overflow-y:auto;}
+  .callout{padding:14px 20px;border-radius:8px;border-left:4px solid var(--accent);
+           background:rgba(108,142,191,.1);margin:16px 0;font-size:14px;}
+  .callout.green{border-color:var(--green);background:rgba(76,175,125,.1);}
+  .callout.yellow{border-color:var(--yellow);background:rgba(240,192,96,.1);}
+  .callout.red{border-color:var(--red);background:rgba(224,108,108,.1);}
+  .chip{display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;margin:2px;font-weight:600;}
+  .chip-blue{background:rgba(108,142,191,.25);color:var(--accent2);}
+  .chip-green{background:rgba(76,175,125,.25);color:var(--green);}
+  .chip-yellow{background:rgba(240,192,96,.25);color:var(--yellow);}
+  .chip-red{background:rgba(224,108,108,.25);color:var(--red);}
+  .chip-purple{background:rgba(179,157,219,.25);color:var(--purple);}
+  p{margin-bottom:10px;font-size:15px;}
+  li{margin-bottom:6px;font-size:14px;}
+  ul{padding-left:20px;}
+  .muted{color:var(--muted);}
+  .small{font-size:12px;}
+  .mt16{margin-top:16px;}.mt24{margin-top:24px;}.mt32{margin-top:32px;}
+  hr{border:none;border-top:1px solid var(--border);margin:24px 0;}
+  @media print{.slide{page-break-after:always;min-height:unset;}nav{display:none;}}
 </style>
 </head>
 <body>
-
-<!-- ═══════════════════════════════════════ NAVIGATION ═══════════════════════════════════════ -->
 <nav>
   <span>ODPGen</span>
   <a href="#title">Title</a>
@@ -267,896 +111,414 @@
   <a href="#evaluation">Evaluation</a>
   <a href="#outputs">Outputs</a>
   <a href="#results">Results</a>
+  <a href="#quality">Quality</a>
+  <a href="#heatmap">Heatmap</a>
+  <a href="#matched">Matched Names</a>
   <a href="#summary">Summary</a>
 </nav>
 
-<!-- ═══════════════════════════════════════ SLIDE 1 — TITLE ═══════════════════════════════════════ -->
+<!-- SLIDE 1 — TITLE -->
 <div class="slide" id="title">
   <div class="badge">Research Presentation</div>
   <h1>ODPGen</h1>
   <p class="subtitle">Benchmarking Large Language Models on<br>Ontology Design Pattern Generation</p>
   <div class="meta">
-    <div class="meta-item">
-      <span class="meta-label">Scope</span>
-      <span class="meta-value">6 LLMs &nbsp;·&nbsp; 5 Prompting Strategies &nbsp;·&nbsp; 14 Scenarios</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Focus</span>
-      <span class="meta-value">ODP generation quality, faithfulness &amp; hallucination</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Total Runs</span>
-      <span class="meta-value">364 evaluated outputs</span>
-    </div>
+    <div><div class="meta-label">Models Evaluated</div><div class="meta-value">6 LLMs</div></div>
+    <div><div class="meta-label">Prompt Strategies</div><div class="meta-value">5 Configurations</div></div>
+    <div><div class="meta-label">ODP Scenarios</div><div class="meta-value">14 Benchmarks</div></div>
+    <div><div class="meta-label">Total Runs</div><div class="meta-value">420 Evaluated · 44 Metrics</div></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 2 — OVERVIEW ═══════════════════════════════════════ -->
+<!-- SLIDE 2 — OVERVIEW -->
 <div class="slide" id="overview">
-  <div class="slide-header">
-    <span class="slide-num">01</span>
-    <h2>Overview &amp; Research Questions</h2>
-  </div>
-
-  <p>ODPGen is an empirical study evaluating how well LLMs can generate <strong>Ontology Design Patterns (ODPs)</strong> from natural-language scenarios and competency questions, and how valid and useful the resulting patterns are.</p>
-
+  <div class="slide-header"><span class="slide-num">01</span><h2>Overview &amp; Research Questions</h2></div>
+  <p>ODPGen evaluates how well LLMs generate <strong>Ontology Design Patterns (ODPs)</strong> — reusable OWL ontology templates — from natural-language scenarios and competency questions.</p>
   <div class="grid2 mt24">
-    <div>
-      <h3>What are ODPs?</h3>
-      <p>Ontology Design Patterns are reusable ontology templates that encode solutions to common modeling problems. They serve as building blocks for ontology engineering — analogous to design patterns in software engineering.</p>
-      <p>An ODP defines a set of classes, properties, and axioms grounded in a real-world scenario, answerable by a set of Competency Questions (CQs).</p>
-    </div>
-    <div>
+    <div class="card accent">
       <h3>Research Questions</h3>
       <ul>
-        <li><strong>RQ1</strong> — How well can LLMs generate valid OWL Turtle from natural-language scenarios?</li>
-        <li><strong>RQ2</strong> — How logically consistent and free from modeling errors are the outputs?</li>
-        <li><strong>RQ3</strong> — What is the impact of prompting strategy (CQs, reasoning, constraints)?</li>
+        <li><strong>RQ1</strong> — How well can LLMs generate valid OWL/Turtle from scenarios?</li>
+        <li><strong>RQ2</strong> — How logically consistent and error-free are the outputs?</li>
+        <li><strong>RQ3</strong> — What is the impact of prompting strategy?</li>
         <li><strong>RQ4</strong> — How faithful are outputs to the ground-truth scenario?</li>
-        <li><strong>RQ5</strong> — Can models generalize to recently published ODPs unseen during training?</li>
+        <li><strong>RQ5</strong> — Can models generalize to recently published ODPs?</li>
       </ul>
     </div>
-  </div>
-
-  <div class="callout mt24">
-    <strong>Core hypothesis:</strong> More structured prompting (with CQs + explicit reasoning or self-validation) should improve output quality — but may trade off with syntactic correctness for weaker models.
-  </div>
-
-  <div class="grid4 mt32">
-    <div class="stat-box">
-      <div class="stat-num">6</div>
-      <div class="stat-label">LLMs Evaluated</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num">5</div>
-      <div class="stat-label">Prompt Configurations</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num">14</div>
-      <div class="stat-label">ODP Scenarios</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num">364</div>
-      <div class="stat-label">Evaluated Outputs</div>
+    <div>
+      <div class="grid2">
+        <div class="stat-box"><div class="stat-num">6</div><div class="stat-label">LLMs Evaluated</div></div>
+        <div class="stat-box"><div class="stat-num">5</div><div class="stat-label">Prompt Configs</div></div>
+        <div class="stat-box"><div class="stat-num">14</div><div class="stat-label">ODP Scenarios</div></div>
+        <div class="stat-box"><div class="stat-num">420</div><div class="stat-label">Total Runs</div></div>
+      </div>
     </div>
   </div>
+  <div class="callout "><strong>Core hypothesis:</strong> Structured prompting (CQs + reasoning or self-validation) improves faithfulness — but may trade off syntactic correctness for weaker models.</div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 3 — DATASET ═══════════════════════════════════════ -->
+<!-- SLIDE 3 — DATASET -->
 <div class="slide" id="dataset">
-  <div class="slide-header">
-    <span class="slide-num">02</span>
-    <h2>Dataset — 14 ODP Scenarios</h2>
-  </div>
-
-  <p>Scenarios are sourced from published ODP papers (2023–2026), each pairing a natural-language domain description with a set of Competency Questions and a ground-truth OWL ontology.</p>
-
+  <div class="slide-header"><span class="slide-num">02</span><h2>Dataset — 14 ODP Scenarios</h2></div>
+  <p>Scenarios sourced from published ODP papers (2023–2026), each with a domain description, Competency Questions, and a ground-truth OWL ontology.</p>
   <table class="mt24">
-    <thead>
-      <tr>
-        <th>Scenario ID</th>
-        <th>Domain</th>
-        <th>CQs</th>
-        <th>Publication Year</th>
-        <th>Unseen Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>2023-133-01</td><td>Causal Bayesian Networks (Sprinkler)</td><td>~8</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
-      <tr><td>2023-133-02</td><td>Causal Bayesian Networks (Asthma)</td><td>~6</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
-      <tr><td>2023-134-01</td><td>Data Governance / SOLID Pods</td><td>~10</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
-      <tr><td>2023-134-02</td><td>GDPR Compliance Policies</td><td>~8</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
-      <tr><td>2023-134-03</td><td>Access Control / ARGOS Database</td><td>~7</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
-      <tr><td>2023-135-01</td><td>Role-Dependent Naming</td><td>~9</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
-      <tr><td>2024-145-01</td><td>Maritime / AISHIP Vessel Data</td><td>~12</td><td>2024</td><td><span class="chip chip-yellow">Borderline</span></td></tr>
-      <tr><td>2025-147-01</td><td>Legal Ontology (Indian Courts)</td><td>~15</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
-      <tr><td>2025-149-01</td><td>Temporal Indirection (Finance)</td><td>~11</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
-      <tr><td>2025-150-01</td><td>MQTT Protocol Semantics</td><td>~9</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
-      <tr><td>2025-151-01</td><td>Circular Economy (Product Lifecycle)</td><td>~14</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
-      <tr><td>2025-151-02</td><td>Causality in Environmental Policy</td><td>~10</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
-      <tr><td>2025-153-01</td><td>Governance Roles &amp; Responsibilities</td><td>~13</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
-      <tr><td>2026-155-01</td><td>State of the World Pattern</td><td>~11</td><td>2026</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
-    </tbody>
+    <thead><tr><th>Scenario ID</th><th>Domain</th><th>CQs</th><th>Year</th><th>Unseen Status</th></tr></thead>
+    <tbody><tr><td>2023-133-01</td><td>—</td><td>~4</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
+<tr><td>2023-133-02</td><td>—</td><td>~6</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
+<tr><td>2023-134-01</td><td>—</td><td>~8</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
+<tr><td>2023-134-02</td><td>—</td><td>~6</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
+<tr><td>2023-134-03</td><td>—</td><td>~5</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
+<tr><td>2023-135-01</td><td>—</td><td>~3</td><td>2023</td><td><span class="chip chip-green">Likely Seen</span></td></tr>
+<tr><td>2024-145-01</td><td>—</td><td>~7</td><td>2024</td><td><span class="chip chip-yellow">Borderline</span></td></tr>
+<tr><td>2025-147-01</td><td>—</td><td>~48</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
+<tr><td>2025-153-01</td><td>—</td><td>~8</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
+<tr><td>2025-149-01</td><td>—</td><td>~25</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
+<tr><td>2025-150-01</td><td>—</td><td>~32</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
+<tr><td>2025-151-01</td><td>—</td><td>~5</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
+<tr><td>2025-151-02</td><td>—</td><td>~10</td><td>2025</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
+<tr><td>2026-155-01</td><td>—</td><td>~8</td><td>2026</td><td><span class="chip chip-red">Plausible Unseen</span></td></tr>
+</tbody>
   </table>
-
-  <div class="callout yellow mt24">
-    <strong>Unseen Detection:</strong> Scenarios are classified as <em>plausible_unseen</em> if the ODP publication date is after the model's training cutoff. 9 of 14 scenarios are likely unseen by most models, enabling generalization testing.
-  </div>
+  <div class="callout yellow">9 of 14 scenarios are <em>plausible_unseen</em> by most models — enabling generalization vs. memorization analysis.</div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 4 — MODELS ═══════════════════════════════════════ -->
+<!-- SLIDE 4 — MODELS -->
 <div class="slide" id="models">
-  <div class="slide-header">
-    <span class="slide-num">03</span>
-    <h2>Models Evaluated</h2>
-  </div>
-
+  <div class="slide-header"><span class="slide-num">03</span><h2>Models Evaluated</h2></div>
   <table>
-    <thead>
-      <tr>
-        <th>Model</th>
-        <th>Family / Provider</th>
-        <th>Parameters</th>
-        <th>Type</th>
-        <th>Training Cutoff</th>
-        <th>Configs Run</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Model</th><th>Provider</th><th>Parameters</th><th>Training Cutoff</th><th>Parse Rate</th></tr></thead>
     <tbody>
-      <tr class="bad">
-        <td><span class="chip chip-red">BLOOM-3B</span><br><span class="small muted">bigscience/bloom-3b</span></td>
-        <td>BigScience</td>
-        <td>3B</td>
-        <td>Base (no RLHF)</td>
-        <td>Jul 2022</td>
-        <td>1 (scenario-cq)</td>
-      </tr>
-      <tr class="bad">
-        <td><span class="chip chip-red">BLOOMZ-7B1</span><br><span class="small muted">bigscience/bloomz-7b1</span></td>
-        <td>BigScience</td>
-        <td>7B</td>
-        <td>Instruction-tuned</td>
-        <td>Jul 2022</td>
-        <td>5 (all)</td>
-      </tr>
-      <tr>
-        <td><span class="chip chip-yellow">Mistral-7B</span><br><span class="small muted">Mistral-7B-Instruct-v0.3</span></td>
-        <td>Mistral AI</td>
-        <td>7B</td>
-        <td>Instruction-tuned</td>
-        <td>~2023</td>
-        <td>5 (all)</td>
-      </tr>
-      <tr class="best">
-        <td><span class="chip chip-green">Llama-3.1-8B</span><br><span class="small muted">Llama-3.1-8B-Instruct</span></td>
-        <td>Meta</td>
-        <td>8B</td>
-        <td>Instruction-tuned</td>
-        <td>Dec 2023</td>
-        <td>5 (all)</td>
-      </tr>
-      <tr>
-        <td><span class="chip chip-blue">Llama-2-70B</span><br><span class="small muted">Llama-2-70b-chat-hf</span></td>
-        <td>Meta</td>
-        <td>70B</td>
-        <td>Chat (RLHF)</td>
-        <td>Sep 2022</td>
-        <td>5 (all)</td>
-      </tr>
-      <tr>
-        <td><span class="chip chip-purple">GPT-5.4</span><br><span class="small muted">OpenAI API</span></td>
-        <td>OpenAI</td>
-        <td>Proprietary</td>
-        <td>RLHF + API</td>
-        <td>~2024</td>
-        <td>5 (all)</td>
-      </tr>
+<tr>
+  <td><span class="chip chip-blue">Gemini 3.1 Pro</span></td>
+  <td class="muted">Google</td>
+  <td class="muted">Proprietary</td>
+  <td class="muted">~2025</td>
+  <td><span class="good">100.0%</span></td>
+</tr><tr>
+  <td><span class="chip chip-green">Llama-3.1-8B</span></td>
+  <td class="muted">Meta</td>
+  <td class="muted">8B</td>
+  <td class="muted">Dec 2023</td>
+  <td><span class="good">75.7%</span></td>
+</tr><tr>
+  <td><span class="chip chip-yellow">Llama-2-70B</span></td>
+  <td class="muted">Meta</td>
+  <td class="muted">70B</td>
+  <td class="muted">Sep 2022</td>
+  <td><span class="mid">65.7%</span></td>
+</tr><tr>
+  <td><span class="chip chip-yellow">Mistral-7B</span></td>
+  <td class="muted">Mistral AI</td>
+  <td class="muted">7B</td>
+  <td class="muted">~2023</td>
+  <td><span class="mid">41.4%</span></td>
+</tr><tr>
+  <td><span class="chip chip-purple">GPT-5.4</span></td>
+  <td class="muted">OpenAI</td>
+  <td class="muted">Proprietary</td>
+  <td class="muted">~2024</td>
+  <td><span class="mid">37.1%</span></td>
+</tr><tr>
+  <td><span class="chip chip-red">BLOOMZ-7B1</span></td>
+  <td class="muted">BigScience</td>
+  <td class="muted">7B</td>
+  <td class="muted">Jul 2022</td>
+  <td><span class="bad">0.0%</span></td>
+</tr>
     </tbody>
   </table>
-
-  <div class="callout mt24">
-    <strong>Execution:</strong> Open-source models run via Hugging Face Transformers on GPU (4-bit quantization for 70B); GPT-5.4 via OpenAI API. Temperature = 0.0, max_new_tokens = 1024 for all runs.
-  </div>
-
-  <div class="grid2 mt24">
-    <div class="card">
-      <h4>Open-Source Models</h4>
-      <p>BLOOM-3B, BLOOMZ-7B1, Llama-2-70B, Llama-3.1-8B, Mistral-7B — all available on Hugging Face. Run locally, fully reproducible. Smaller models struggle with strict Turtle syntax requirements.</p>
-    </div>
-    <div class="card">
-      <h4>Proprietary Model</h4>
-      <p>GPT-5.4 accessed via OpenAI API. Highest quality when parsed, but surprisingly lower parse success rate than Llama-3.1-8B — possibly due to model refusals or JSON wrapping in certain configs.</p>
-    </div>
-  </div>
+  <div class="callout ">All runs use temperature=0.0. Open-source models run via Hugging Face Transformers; GPT-5.4 via OpenAI API; Gemini via Google GenAI SDK.</div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 5 — PROMPTS ═══════════════════════════════════════ -->
+<!-- SLIDE 5 — PROMPTS -->
 <div class="slide" id="prompts">
-  <div class="slide-header">
-    <span class="slide-num">04</span>
-    <h2>Prompting Strategies</h2>
-  </div>
-
-  <p>Five prompt configurations systematically vary the information given to the model and the level of structural guidance. All prompts use standard RDF/OWL prefixes and require valid OWL/Turtle output.</p>
-
-  <div class="grid2 mt24" style="gap:20px">
-
-    <div class="card">
-      <h4>1. scenario-only</h4>
-      <p>Model receives only the domain scenario text. No CQs provided. Must infer modeling scope entirely from the narrative.</p>
-      <ul>
-        <li>Tests pure scenario comprehension</li>
-        <li>Highest scenario coverage among configs</li>
-        <li>No CQ grounding → lower faithfulness</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h4>2. cq-only</h4>
-      <p>Model receives only the Competency Questions (CQs). No scenario text. Must reverse-engineer the domain from requirements.</p>
-      <ul>
-        <li>Highest CQ coverage (0.844 avg)</li>
-        <li>Also highest hallucination ratio (0.548)</li>
-        <li>Low scenario vocabulary coverage (0.182)</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h4>3. scenario-cq <span class="chip chip-blue">Balanced</span></h4>
-      <p>Both scenario text and CQs are provided. Model must map scenario requirements to axioms and trace each CQ to ontology elements.</p>
-      <ul>
-        <li>Best balance of CQ + scenario coverage</li>
-        <li>Requires scenario→axiom &amp; CQ→axiom mapping</li>
-        <li>Second-highest parse success rate (39%)</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h4>4. scenario-cq-constraints <span class="chip chip-yellow">Validation</span></h4>
-      <p>Extends scenario-cq with a 6-item self-validation checklist that the model must complete before outputting the ontology.</p>
-      <ul>
-        <li>Syntax, domain/range, coherence, CQ traceability, scope</li>
-        <li>Lowest hallucination after reasoning (0.392)</li>
-        <li>Lowest parse success (29%) — extra text confuses parsers</li>
-      </ul>
-    </div>
-
-    <div class="card" style="grid-column: span 2;">
-      <h4>5. scenario-cq-reasoning <span class="chip chip-green">Best Hallucination Control</span></h4>
-      <p>Extends scenario-cq with explicit 6-step internal reasoning protocol: (1) extract requirements, (2) propose classes/properties, (3) draft axioms, (4) verify each CQ, (5) remove unsupported elements, (6) output ontology + traceability table.</p>
-      <ul>
-        <li>Lowest hallucination ratio overall: <strong>0.367</strong></li>
-        <li>Good CQ coverage: 0.748 avg on successful parses</li>
-        <li>Best scenario coverage (0.379) among CQ-aware configs</li>
-      </ul>
-    </div>
-
-  </div>
-
-  <div class="mt32">
-    <h3>Prompt Template Placeholders</h3>
-    <div class="prompt-box">
-<span class="prompt-inst">You are an expert ontology engineer. Your task is to generate an Ontology Design Pattern (ODP)</span>
-<span class="prompt-inst">in OWL/Turtle syntax for the following scenario.</span>
-
-<span class="prompt-tag">## Scenario</span>
-<span class="prompt-inst">{{SCENARIO_TEXT}}</span>
-
-<span class="prompt-tag">## Competency Questions</span>
-<span class="prompt-inst">{{CQ_LIST}}</span>
-
-<span class="prompt-tag">## Output Requirements</span>
-<span class="prompt-inst">- Use prefixes: @prefix owl: &lt;...&gt;  @prefix rdfs: &lt;...&gt;  @prefix : &lt;http://example.org/odp/&gt;</span>
-<span class="prompt-inst">- Declare an owl:Ontology with rdfs:label and rdfs:comment</span>
-<span class="prompt-inst">- Only model what is grounded in the scenario — avoid hallucinated domain knowledge</span>
-<span class="prompt-inst">- Provide: scenario-requirement-to-axiom mapping, CQ-to-axiom mapping</span>
-    </div>
+  <div class="slide-header"><span class="slide-num">04</span><h2>Prompting Strategies — 5 Configurations</h2></div>
+  <div class="grid2" style="gap:20px">
+    <div class="card"><h4>1. scenario-only</h4><p>Model receives only the domain scenario text. No CQs. Must infer scope from narrative alone. Highest scenario vocabulary coverage.</p></div>
+    <div class="card"><h4>2. cq-only</h4><p>Model receives only the Competency Questions. No scenario text. Highest CQ coverage but also highest hallucination.</p></div>
+    <div class="card green"><h4>3. scenario-cq &nbsp;<small>[Balanced]</small></h4><p>Both scenario text and CQs. Model must produce scenario→axiom and CQ→axiom mapping tables.</p></div>
+    <div class="card yellow"><h4>4. scenario-cq-constraints &nbsp;<small>[Validation]</small></h4><p>Extends scenario-cq with a 6-item self-validation checklist before output.</p></div>
+    <div class="card" style="grid-column:span 2"><h4>5. scenario-cq-reasoning &nbsp;<small>[Best Faithfulness]</small></h4><p>Explicit 6-step internal reasoning: extract requirements → propose classes → draft axioms → verify CQs → remove unsupported → output ODP. Lowest hallucination overall.</p></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 6 — EVALUATION ═══════════════════════════════════════ -->
+<!-- SLIDE 6 — EVALUATION -->
 <div class="slide" id="evaluation">
-  <div class="slide-header">
-    <span class="slide-num">05</span>
-    <h2>Evaluation Methodology</h2>
-  </div>
-
-  <p>ODPGen uses a <strong>multi-layer automated evaluation pipeline</strong> implemented in Python with RDFLib, covering four orthogonal quality dimensions.</p>
-
-  <div class="grid2 mt24">
-
+  <div class="slide-header"><span class="slide-num">05</span><h2>Evaluation Methodology — 4 Layers</h2></div>
+  <div class="grid2">
     <div class="card accent">
       <h4>Layer 1 — Formal / Syntactic Quality</h4>
       <ul>
-        <li><strong>parse_success</strong> — Can the output be parsed as valid Turtle?</li>
-        <li><strong>triple_count</strong> — Total number of RDF triples</li>
-        <li><strong>ontology_declared</strong> — owl:Ontology header present?</li>
-        <li><strong>label_coverage_ratio</strong> — Fraction of <em>all</em> named entities with rdfs:label</li>
-        <li><strong>class_label_ratio</strong> <span class="chip chip-green">new</span> — Fraction of <code>owl:Class</code> entities with rdfs:label</li>
-        <li><strong>property_label_ratio</strong> <span class="chip chip-green">new</span> — Fraction of Object/Datatype/Annotation properties with rdfs:label</li>
-        <li><strong>comment_coverage_ratio</strong> — Fraction of entities with rdfs:comment</li>
-        <li><strong>domain_range_ratio</strong> — Properties with rdfs:domain &amp; rdfs:range</li>
-        <li><strong>has_prefix_declarations</strong> — Standard OWL/RDF prefixes used?</li>
-        <li><strong>class_count, property_count</strong> — Size of the pattern</li>
+        <li><strong>parse_success</strong> — Valid Turtle syntax?</li>
+        <li><strong>triple_count</strong> — Total RDF triples</li>
+        <li><strong>ontology_declared</strong> — owl:Ontology header?</li>
+        <li><strong>label_coverage_ratio</strong> — All entities with rdfs:label</li>
+        <li><strong>class_label_ratio</strong> <span class="chip chip-green">new</span> — owl:Class entities with rdfs:label</li>
+        <li><strong>property_label_ratio</strong> <span class="chip chip-green">new</span> — Properties with rdfs:label</li>
+        <li><strong>comment_coverage_ratio, domain_range_ratio</strong></li>
       </ul>
-      <div class="callout mt16" style="font-size:12px;">
-        <strong>Why split?</strong> The aggregate <code>label_coverage_ratio</code> was always 1.0 (masking a real gap): classes dominate the count and all models label them. Splitting reveals that <strong>property labelling is inconsistent</strong> — Llama-2-70B leaves 28% of properties unlabelled.
-      </div>
+      <div class="callout "><strong>Why split?</strong> The aggregate label_coverage_ratio was always 1.0 (dominated by classes). Splitting exposes that property labelling is inconsistent — Llama-2-70B leaves 28% of properties unlabelled.</div>
     </div>
-
     <div class="card green">
       <h4>Layer 2 — Scenario Faithfulness</h4>
       <ul>
-        <li><strong>cq_coverage_ratio</strong> — Fraction of CQs answerable by the ontology (token overlap)</li>
-        <li><strong>cq_mean_token_recall</strong> — Average token recall across all CQs</li>
-        <li><strong>scenario_coverage_ratio</strong> — Fraction of scenario vocabulary reflected in ontology</li>
-        <li><strong>hallucination_ratio</strong> — Fraction of generated vocabulary NOT grounded in the scenario</li>
-        <li><strong>ontology_vocab_size</strong> — Generated vocabulary size</li>
+        <li><strong>cq_coverage_ratio</strong> — CQs answerable (token overlap)</li>
+        <li><strong>cq_mean_token_recall</strong> — Avg token recall per CQ</li>
+        <li><strong>scenario_coverage_ratio</strong> — Scenario vocab in ontology</li>
+        <li><strong>hallucination_ratio</strong> — Unsupported vocabulary fraction</li>
       </ul>
     </div>
-
     <div class="card yellow">
-      <h4>Layer 3 — Semantic Similarity to Ground Truth</h4>
+      <h4>Layer 3 — Semantic Similarity (vs Ground Truth)</h4>
       <ul>
-        <li><strong>class_name_precision/recall/F1</strong> — Name match of generated vs. ground-truth classes (case-folded, space-normalised)</li>
-        <li><strong>property_name_precision/recall/F1</strong> — Same for Object/Datatype/Annotation properties</li>
-        <li><strong>class_jaccard, property_jaccard</strong> — Set-theoretic overlap (|A∩B| / |A∪B|)</li>
-        <li><strong>combined_f1</strong> — Macro average of class_name_f1 and property_name_f1</li>
-        <li><strong>matched_class_names</strong> — List of class name strings present in both generated and ground-truth ontology</li>
-        <li><strong>matched_property_names</strong> — Same for properties; e.g. <em>"event", "has effect", "relational database"</em></li>
+        <li><strong>class_name_F1</strong> — Name match vs ground-truth classes</li>
+        <li><strong>property_name_F1</strong> — Same for properties</li>
+        <li><strong>combined_f1</strong> — Macro avg F1</li>
+        <li><strong>matched_class_names</strong> — Classes in both generated &amp; GT</li>
+        <li><strong>matched_property_names</strong> — Properties in both</li>
       </ul>
-      <div class="callout mt16" style="font-size:12px;">
-        Matching is done on the <em>local name</em> after splitting CamelCase / snake_case into tokens, so <code>:hasCause</code> ↔ <code>"has cause"</code> will match.
-      </div>
+      <div class="callout ">Matching: local name extracted, CamelCase split, case-folded. :hasCause ↔ "has cause".</div>
     </div>
-
-    <div class="card" style="border-color: var(--purple);">
+    <div class="card" style="border-color:var(--purple)">
       <h4>Layer 4 — Feasibility &amp; Unseen Analysis</h4>
       <ul>
-        <li>Each (ODP, model) pair is classified as <span class="chip chip-red">plausible_unseen</span> or <span class="chip chip-green">likely_seen</span> by comparing ODP publication date to model training cutoff</li>
-        <li>Confidence levels: high / medium / low based on known cutoff precision</li>
-        <li>Enables analysis of generalization vs. memorization</li>
+        <li>Each (ODP, model) pair classified: <em>plausible_unseen</em> vs <em>likely_seen</em></li>
+        <li>Compares ODP pub date vs model training cutoff</li>
+        <li>Confidence: high / medium / low</li>
+        <li>Future: human eval — Correctness, Completeness, Clarity (1–5)</li>
       </ul>
-      <div class="callout mt16" style="font-size:13px;">
-        <strong>Layer 4 (Human Evaluation)</strong> — Planned: expert raters score Correctness, Completeness, Clarity (1–5 scale) via generated evaluation sheets. Data collection in progress.
-      </div>
     </div>
-
   </div>
-
-  <div class="callout mt24">
-    <strong>Pipeline:</strong> <code>evaluate_outputs.py</code> → <code>eval/formal_quality.py</code> + <code>eval/faithfulness.py</code> + <code>eval/similarity.py</code> → <code>results/summary.csv</code> (350 rows × 44 columns, including <strong>class_label_ratio</strong> &amp; <strong>property_label_ratio</strong>)
-  </div>
+  <div class="callout ">Pipeline: evaluate_outputs.py → eval/formal_quality.py + faithfulness.py + similarity.py → results/summary.csv  (420 rows × 44 columns)</div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 7 — OUTPUTS ═══════════════════════════════════════ -->
+<!-- SLIDE 7 — OUTPUTS -->
 <div class="slide" id="outputs">
-  <div class="slide-header">
-    <span class="slide-num">06</span>
-    <h2>Raw Output Examples — Scenario 2023-133-01</h2>
-  </div>
+  <div class="slide-header"><span class="slide-num">06</span><h2>Raw Output Examples — Scenario 2023-133-01 (Causal Bayesian Network)</h2></div>
+  <p class="muted small mb16">Scenario: "Model a causal Bayesian network over events with weighted causal edges and mediators as an ODP."</p>
+  
+<div class="card" style="margin-bottom:16px">
+  <h4><span class="chip chip-blue">Gemini 3.1 Pro</span> — scenario-cq — <span class="good">SUCCESS</span></h4>
+  <pre>@prefix owl:  &lt;http://www.w3.org/2002/07/owl#&gt; .
+@prefix rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@prefix xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+@prefix :     &lt;http://example.org/odp#&gt; .
 
-  <p class="mb16">Scenario: <em>"Given a causal Bayesian network over events (RainySeason, SprinklerOn, Raining, WetPavement, SlipperyPavement) with weighted causal edges and possible mediators, model the causal structure and effect weights as an ODP."</em></p>
+:Ontology a owl:Ontology ;
+    rdfs:label "Causal Bayesian Network (CBN) Sprinkler Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern representing events, causal relations, and effect weights in</pre>
+</div>
+<div class="card" style="margin-bottom:16px">
+  <h4><span class="chip chip-green">Llama-3.1-8B</span> — scenario-cq — <span class="good">SUCCESS</span></h4>
+  <pre>@prefix owl:  &lt;http://www.w3.org/2002/07/owl#&gt;.
+@prefix rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;.
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;.
+@prefix xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt;.
+@prefix :     &lt;http://example.org/odp#&gt;.
 
-  <div class="grid2" style="gap:20px">
+:Ontology a owl:Ontology ;
+  rdfs:label "Sprinkler Use Case Ontology" ;
+  rdfs:comment "Reasoning about the cause of a slippery pavement".
 
-    <div>
-      <h4 class="mb16"><span class="chip chip-purple">GPT-5.4</span> — scenario-cq — Parse: <span class="good">SUCCESS</span></h4>
-      <pre><span class="kw">@prefix</span> <span class="uri">owl:</span> &lt;http://www.w3.org/2002/07/owl#&gt; .
-<span class="kw">@prefix</span> <span class="uri">rdfs:</span> &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
-<span class="kw">@prefix</span> <span class="uri">:</span> &lt;http://example.org/odp/&gt; .
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An event in t</pre>
+</div>
+<div class="card" style="margin-bottom:16px">
+  <h4><span class="chip chip-yellow">Llama-2-70B</span> — scenario-cq — <span class="good">SUCCESS</span></h4>
+  <pre>Turtle Ontology:
+@prefix owl:  &lt;http://www.w3.org/2002/07/owl#&gt;.
+@prefix rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;.
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;.
+@prefix xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt;.
+@prefix :     &lt;http://example.org/odp#&gt;.
 
-<span class="uri">:</span> <span class="kw">a</span> <span class="cls">owl:Ontology</span> ;
-  <span class="uri">rdfs:</span>label <span class="str">"Causal Bayesian Network ODP"</span> ;
-  <span class="uri">rdfs:</span>comment <span class="str">"Models causal events with weighted edges."</span> .
+:Ontology a owl:Ontology ;
+rdfs:label "Sprinkler Use Case Ontology" ;
+rdfs:comment "An ontology for representing the causal relations between events in the sprinkler use case.".
 
-<span class="cls">:Event</span> <span class="kw">a</span> <span class="cls">owl:Class</span> .
-<span class="cls">:CausalRelation</span> <span class="kw">a</span> <span class="cls">owl:Class</span> .
-<span class="cls">:MediatedCausalRelation</span> <span class="kw">a</span> <span class="cls">owl:Class</span> ;
-  <span class="uri">rdfs:</span>subClassOf <span class="cls">:CausalRelation</span> .
-<span class="cls">:RainySeasonEvent</span> <span class="kw">a</span> <span class="cls">owl:Class</span> ;
-  <span class="uri">rdfs:</span>subClassOf <span class="cls">:Event</span> .
-<span class="cls">:SprinklerOnEvent</span> <span class="kw">a</span> <span class="cls">owl:Class</span> ;
-  <span class="uri">rdfs:</span>subClassOf <span class="cls">:Event</span> .
+:Event a owl:Clas</pre>
+</div>
+<div class="card" style="margin-bottom:16px">
+  <h4><span class="chip chip-yellow">Mistral-7B</span> — scenario-cq — <span class="good">SUCCESS</span></h4>
+  <pre>1. :Ontology a owl:Ontology ;
+  rdfs:label "Sprinkler Use Case Ontology" ;
+  rdfs:comment "An ontology for the sprinkler use case, modeling events and causal relationships.".
 
-<span class="cls">:hasCause</span> <span class="kw">a</span> <span class="cls">owl:ObjectProperty</span> .
-<span class="cls">:hasEffect</span> <span class="kw">a</span> <span class="cls">owl:ObjectProperty</span> .
-<span class="cls">:effectWeight</span> <span class="kw">a</span> <span class="cls">owl:DatatypeProperty</span> .</pre>
-      <p class="small muted mt16">✓ Valid Turtle · Ontology header · Full class hierarchy · CQ→axiom mapping included</p>
-    </div>
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "A general event in the scenario.".
 
-    <div>
-      <h4 class="mb16"><span class="chip chip-green">Llama-3.1-8B</span> — scenario-cq — Parse: <span class="good">SUCCESS</span></h4>
-      <pre><span class="kw">@prefix</span> <span class="uri">owl:</span> &lt;http://www.w3.org/2002/07/owl#&gt; .
-<span class="kw">@prefix</span> <span class="uri">:</span> &lt;http://example.org/odp/&gt; .
+:RainySeason a :Event ;
+  rdfs:label "Rainy Season" ;
+  rdfs:comment "The event representing the rainy season.".
 
-<span class="uri">:</span> <span class="kw">a</span> <span class="cls">owl:Ontology</span> ;
-  <span class="uri">rdfs:</span>label <span class="str">"Causal BN Pattern"</span> ;
-  <span class="uri">rdfs:</span>comment <span class="str">"Causal events with weights."</span> .
+:SprinklerOn a :Event ;
+  rdfs:label "Sprinkler On" ;
+  rdfs:comment "The event representing the sprinkler being o</pre>
+</div>
+<div class="card" style="margin-bottom:16px">
+  <h4><span class="chip chip-purple">GPT-5.4</span> — scenario-cq — <span class="good">SUCCESS</span></h4>
+  <pre>@prefix owl:  &lt;http://www.w3.org/2002/07/owl#&gt; .
+@prefix rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ndf-syntax-ns#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@prefix xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+@prefix :     &lt;http://example.org/odp#&gt; .
 
-<span class="cls">:Event</span> <span class="kw">a</span> <span class="cls">owl:Class</span> .
-<span class="cls">:RainySeasonEvent</span> <span class="kw">a</span> <span class="cls">owl:Class</span> ;
-  <span class="uri">rdfs:</span>subClassOf <span class="cls">:Event</span> .
-<span class="cls">:Raining</span> <span class="kw">a</span> <span class="cls">owl:Class</span> ;
-  <span class="uri">rdfs:</span>subClassOf <span class="cls">:Event</span> .
-<span class="cls">:WetPavement</span> <span class="kw">a</span> <span class="cls">owl:Class</span> ;
-  <span class="uri">rdfs:</span>subClassOf <span class="cls">:Event</span> .
-
-<span class="cls">:Cause</span>  <span class="kw">a</span> <span class="cls">owl:ObjectProperty</span> .
-<span class="cls">:Effect</span> <span class="kw">a</span> <span class="cls">owl:ObjectProperty</span> .
-<span class="cls">:Weight</span> <span class="kw">a</span> <span class="cls">owl:DatatypeProperty</span> .
-<span class="cmt"># instances with causal links and weights (0.6, 0.8, 0.9, 0.7)</span></pre>
-      <p class="small muted mt16">✓ Valid Turtle · Good class coverage · Includes instance-level causal chain</p>
-    </div>
-
-    <div>
-      <h4 class="mb16"><span class="chip chip-blue">Llama-2-70B</span> — scenario-cq — Parse: <span class="good">SUCCESS</span></h4>
-      <pre><span class="kw">@prefix</span> <span class="uri">owl:</span> &lt;http://www.w3.org/2002/07/owl#&gt; .
-<span class="kw">@prefix</span> <span class="uri">:</span> &lt;http://example.org/odp/&gt; .
-
-<span class="uri">:</span> <span class="kw">a</span> <span class="cls">owl:Ontology</span> .
-
-<span class="cls">:Event</span> <span class="kw">a</span> <span class="cls">owl:Class</span> .
-<span class="cls">:RainySeason</span> <span class="kw">a</span> <span class="cls">owl:Class</span> ;
-  <span class="uri">rdfs:</span>subClassOf <span class="cls">:Event</span> .
-<span class="cls">:SprinklerOn</span> <span class="kw">a</span> <span class="cls">owl:Class</span> ;
-  <span class="uri">rdfs:</span>subClassOf <span class="cls">:Event</span> .
-
-<span class="cls">:CausalRelation</span> <span class="kw">a</span> <span class="cls">owl:ObjectProperty</span> .
-<span class="cls">:EffectWeight</span>   <span class="kw">a</span> <span class="cls">owl:DatatypeProperty</span> ;
-  <span class="kw">rdfs:</span>range <span class="uri">xsd:</span>decimal .
-<span class="cmt"># causal link instances with weights provided</span></pre>
-      <p class="small muted mt16">✓ Valid Turtle · Simpler structure · Includes scenario mapping section</p>
-    </div>
-
-    <div>
-      <h4 class="mb16"><span class="chip chip-yellow">Mistral-7B</span> — scenario-cq — Parse: <span class="mid">PARTIAL</span></h4>
-      <pre><span class="kw">@prefix</span> <span class="uri">owl:</span> &lt;http://www.w3.org/2002/07/owl#&gt; .
-<span class="kw">@prefix</span> <span class="uri">:</span> &lt;http://example.org/odp/&gt; .
-
-<span class="cls">:Event</span> <span class="kw">a</span> <span class="cls">owl:Class</span> .
-<span class="cls">:CausalLink</span> <span class="kw">a</span> <span class="cls">owl:Class</span> .
-
-<span class="cls">:causes</span>     <span class="kw">a</span> <span class="cls">owl:ObjectProperty</span> .
-<span class="cls">:mediatedBy</span> <span class="kw">a</span> <span class="cls">owl:ObjectProperty</span> .
-<span class="cls">:effectWeight</span> <span class="kw">a</span> <span class="cls">owl:DatatypeProperty</span> .
-
-<span class="cmt"># Uses "some" restriction (not valid Turtle syntax)</span>
-<span class="cmt"># Parser fails on some runs due to Manchester-style axioms</span></pre>
-      <p class="small muted mt16">⚠ Sometimes mixes Manchester syntax in Turtle → parse failures on 71% of scenario-cq runs</p>
-    </div>
-
-    <div>
-      <h4 class="mb16"><span class="chip chip-red">BLOOMZ-7B1</span> — scenario-cq — Parse: <span class="bad">FAIL</span></h4>
-      <pre><span class="cmt">-- Raw model output (not Turtle) --</span>
-<span class="str">"What if the pavement is wet, how would it
-effect the pavement being slippery?"</span>
-
-<span class="cmt">-- No ontology generated --</span>
-<span class="cmt">-- Model rephrases the CQ instead of</span>
-<span class="cmt">   generating an ontology --</span></pre>
-      <p class="small muted mt16">✗ Model outputs natural language, not Turtle. Fails to follow structured output instructions.</p>
-    </div>
-
-    <div>
-      <h4 class="mb16"><span class="chip chip-red">BLOOM-3B</span> — scenario-cq — Parse: <span class="bad">FAIL</span></h4>
-      <pre><span class="cmt">-- Raw model output (degenerate) --</span>
-<span class="str">"If the pavement is wet, the pavement is wet.
-If the pavement is wet, the pavement is not wet.
-If the pavement is not wet, the pavement is wet..."</span>
-
-<span class="cmt">-- Repetitive hallucinations --</span>
-<span class="cmt">-- Base model with no instruction following --</span></pre>
-      <p class="small muted mt16">✗ Base model (no RLHF): repetitive degenerate output. Not suitable for structured tasks.</p>
-    </div>
-
-  </div>
+:Ontology a owl:Ontology ;
+    rdfs:label "Sprinkler Causal Bayesian Network ODP" ;
+    rdfs:comment "An ontology design pattern for representing the sprinkler causal Bayesian network use case, inc</pre>
+</div>
+<div class="card" style="margin-bottom:16px">
+  <h4><span class="chip chip-red">BLOOMZ-7B1</span> — scenario-cq — <span class="bad">FAIL</span></h4>
+  <pre>- What if the pavement is wet, how would it effect the pavement being slippery?</pre>
+</div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 8 — RESULTS ═══════════════════════════════════════ -->
+<!-- SLIDE 8 — PARSE RESULTS -->
 <div class="slide" id="results">
-  <div class="slide-header">
-    <span class="slide-num">07</span>
-    <h2>Results — Parse Success Rate</h2>
-  </div>
-
-  <p>Parse success is the primary gate metric — an ontology must be valid Turtle before any quality metrics apply. Across 364 total runs:</p>
-
-  <div class="bar-chart mt32">
-    <div class="bar-row">
-      <span class="bar-label">Llama-3.1-8B-Instruct</span>
-      <div class="bar-track">
-        <div class="bar-fill success" style="width:75.7%">75.7% (53/70)</div>
-      </div>
+  <div class="slide-header"><span class="slide-num">07</span><h2>Results — Parse Success Rate</h2></div>
+  <div class="grid2">
+    <div>
+      <h3>By Model</h3>
+      <div class="bar-chart mt16"><div class="bar-row"><span class="bar-label">Gemini 3.1 Pro</span><div class="bar-track"><div class="bar-fill bf-green" style="width:100%">100.0%  (70/70)</div></div></div>
+<div class="bar-row"><span class="bar-label">Llama-3.1-8B</span><div class="bar-track"><div class="bar-fill bf-green" style="width:75%">75.7%  (53/70)</div></div></div>
+<div class="bar-row"><span class="bar-label">Llama-2-70B</span><div class="bar-track"><div class="bar-fill bf-yellow" style="width:65%">65.7%  (46/70)</div></div></div>
+<div class="bar-row"><span class="bar-label">Mistral-7B</span><div class="bar-track"><div class="bar-fill bf-yellow" style="width:41%">41.4%  (29/70)</div></div></div>
+<div class="bar-row"><span class="bar-label">GPT-5.4</span><div class="bar-track"><div class="bar-fill bf-yellow" style="width:37%">37.1%  (26/70)</div></div></div>
+<div class="bar-row"><span class="bar-label">BLOOMZ-7B1</span><div class="bar-track"><div class="bar-fill bf-red" style="width:1%">0.0%  (0/70)</div></div></div></div>
     </div>
-    <div class="bar-row">
-      <span class="bar-label">Llama-2-70B-chat</span>
-      <div class="bar-track">
-        <div class="bar-fill success" style="width:65.7%">65.7% (46/70)</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">Mistral-7B-Instruct</span>
-      <div class="bar-track">
-        <div class="bar-fill warn" style="width:41.4%">41.4% (29/70)</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">GPT-5.4</span>
-      <div class="bar-track">
-        <div class="bar-fill warn" style="width:37.1%">37.1% (26/70)</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">BLOOMZ-7B1</span>
-      <div class="bar-track">
-        <div class="bar-fill fail" style="width:1%">0% (0/70)</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">BLOOM-3B</span>
-      <div class="bar-track">
-        <div class="bar-fill fail" style="width:1%">0% (0/14)</div>
-      </div>
+    <div>
+      <h3>By Configuration</h3>
+      <div class="bar-chart mt16"><div class="bar-row"><span class="bar-label">cq-only</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:66%">66.7%  (56/84)</div></div></div>
+<div class="bar-row"><span class="bar-label">scenario-cq</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:55%">56.0%  (47/84)</div></div></div>
+<div class="bar-row"><span class="bar-label">scenario-cq-constraints</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:40%">40.5%  (34/84)</div></div></div>
+<div class="bar-row"><span class="bar-label">scenario-cq-reasoning</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:44%">44.0%  (37/84)</div></div></div>
+<div class="bar-row"><span class="bar-label">scenario-only</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:59%">59.5%  (50/84)</div></div></div></div>
     </div>
   </div>
-
-  <hr>
-  <h3 class="mt24">Parse Success by Prompting Configuration</h3>
-  <div class="bar-chart mt16">
-    <div class="bar-row">
-      <span class="bar-label">cq-only</span>
-      <div class="bar-track">
-        <div class="bar-fill success" style="width:60%">60.0% (42/70)</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">scenario-only</span>
-      <div class="bar-track">
-        <div class="bar-fill blue" style="width:51.4%">51.4% (36/70)</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">scenario-cq</span>
-      <div class="bar-track">
-        <div class="bar-fill blue" style="width:39.3%">39.3% (33/84)</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">scenario-cq-reasoning</span>
-      <div class="bar-track">
-        <div class="bar-fill warn" style="width:32.9%">32.9% (23/70)</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">scenario-cq-constraints</span>
-      <div class="bar-track">
-        <div class="bar-fill warn" style="width:28.6%">28.6% (20/70)</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout yellow mt24">
-    <strong>Insight:</strong> Complex prompts (constraints, reasoning) reduce parse success — especially for smaller models — because the extra output structure (validation report, reasoning steps) interferes with Turtle extraction. GPT-5.4 completely fails to parse under constraint/reasoning configs (0/14), while Llama-3.1-8B maintains 64–71% even under those configs.
-  </div>
+  <div class="callout green"><strong>Gemini 3.1 Pro</strong> achieves <strong>100%</strong> parse success across all 5 configurations — the only model to do so. Llama-3.1-8B is the best open-source model at 75.7%.</div>
+  <div class="callout yellow">GPT-5.4 paradox: 86% on cq-only but 0% on reasoning/constraints configs — complex prompts break its Turtle extraction.</div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 9 — QUALITY METRICS ═══════════════════════════════════════ -->
-<div class="slide" id="results2">
-  <div class="slide-header">
-    <span class="slide-num">08</span>
-    <h2>Results — Quality Metrics (Successful Parses)</h2>
-  </div>
-
-  <p class="mb16">Metrics computed only when parse_success = True. Averages across all scenarios and successful configurations. Total: 350 evaluated runs × 44 metrics.</p>
-
+<!-- SLIDE 9 — QUALITY METRICS -->
+<div class="slide" id="quality">
+  <div class="slide-header"><span class="slide-num">08</span><h2>Results — Quality Metrics (Successful Parses)</h2></div>
+  <p class="muted small mb16">Averages over successful parses only. 420 total runs · 44 metrics.</p>
   <table>
     <thead>
-      <tr>
-        <th>Model</th>
-        <th>Parse Rate</th>
-        <th>CQ Coverage</th>
-        <th>Scenario Cov.</th>
-        <th>Hallucination</th>
-        <th>Class Label ★</th>
-        <th>Prop Label ★</th>
-        <th>Combined F1</th>
-      </tr>
+      <tr><th>Model</th><th>Parse Rate</th><th>CQ Coverage</th><th>Scenario Cov.</th><th>Hallucination</th><th>Class Label ★</th><th>Prop Label ★</th><th>Combined F1</th></tr>
     </thead>
-    <tbody>
-      <tr>
-        <td><span class="chip chip-purple">GPT-5.4</span></td>
-        <td><span class="mid">37.1%</span></td>
-        <td><span class="good">0.804</span></td>
-        <td>0.444</td>
-        <td><span class="bad">0.585</span></td>
-        <td><span class="good">1.000</span></td>
-        <td><span class="mid">0.885</span></td>
-        <td><span class="good">0.110</span></td>
-      </tr>
-      <tr class="best">
-        <td><span class="chip chip-green">Llama-3.1-8B</span></td>
-        <td><span class="good">75.7%</span></td>
-        <td>0.729</td>
-        <td><span class="mid">0.335</span></td>
-        <td><span class="good">0.345</span></td>
-        <td><span class="good">1.000</span></td>
-        <td>0.830</td>
-        <td>0.071</td>
-      </tr>
-      <tr>
-        <td><span class="chip chip-blue">Llama-2-70B</span></td>
-        <td><span class="mid">65.7%</span></td>
-        <td>0.689</td>
-        <td>0.258</td>
-        <td>0.489</td>
-        <td><span class="good">1.000</span></td>
-        <td><span class="bad">0.717</span></td>
-        <td>0.072</td>
-      </tr>
-      <tr>
-        <td><span class="chip chip-yellow">Mistral-7B</span></td>
-        <td><span class="mid">41.4%</span></td>
-        <td>0.615</td>
-        <td>0.279</td>
-        <td>0.459</td>
-        <td><span class="good">1.000</span></td>
-        <td><span class="good">0.966</span></td>
-        <td>0.059</td>
-      </tr>
-      <tr>
-        <td><span class="chip chip-red">BLOOMZ-7B1</span></td>
-        <td><span class="bad">0%</span></td>
-        <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
-      </tr>
-    </tbody>
+    <tbody><tr><td><span class="chip chip-blue">Gemini 3.1 Pro</span></td><td><span class="good">100.0%</span></td><td><span class="good">0.821</span></td><td><span class="good">0.436</span></td><td><span class="bad">0.623</span></td><td><span class="bad">1.000</span></td><td><span class="good">0.914</span></td><td><span class="good">0.125</span></td></tr>
+<tr><td><span class="chip chip-green">Llama-3.1-8B</span></td><td><span class="good">75.7%</span></td><td><span class="mid">0.729</span></td><td><span class="mid">0.335</span></td><td><span class="good">0.345</span></td><td><span class="bad">1.000</span></td><td><span class="mid">0.830</span></td><td><span class="bad">0.071</span></td></tr>
+<tr><td><span class="chip chip-yellow">Llama-2-70B</span></td><td><span class="mid">65.7%</span></td><td><span class="mid">0.689</span></td><td><span class="bad">0.258</span></td><td><span class="mid">0.489</span></td><td><span class="bad">1.000</span></td><td><span class="bad">0.717</span></td><td><span class="bad">0.072</span></td></tr>
+<tr><td><span class="chip chip-yellow">Mistral-7B</span></td><td><span class="mid">41.4%</span></td><td><span class="bad">0.615</span></td><td><span class="bad">0.279</span></td><td><span class="mid">0.459</span></td><td><span class="bad">1.000</span></td><td><span class="good">0.966</span></td><td><span class="bad">0.059</span></td></tr>
+<tr><td><span class="chip chip-purple">GPT-5.4</span></td><td><span class="mid">37.1%</span></td><td><span class="good">0.804</span></td><td><span class="good">0.444</span></td><td><span class="bad">0.585</span></td><td><span class="bad">1.000</span></td><td><span class="good">0.885</span></td><td><span class="good">0.110</span></td></tr>
+<tr><td><span class="chip chip-red">BLOOMZ-7B1</span></td><td><span class="bad">0.0%</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody>
   </table>
-
-  <div class="callout yellow mt16">
-    <strong>★ Label coverage insight:</strong> <code>class_label_ratio = 1.000</code> for every model — all classes are always annotated. But <code>property_label_ratio</code> varies significantly: <strong>Llama-2-70B leaves 28% of properties unlabelled</strong> (0.717), while Mistral-7B is the most diligent at 0.966. The old aggregate <code>label_coverage_ratio</code> (always 1.0) was masking this gap because classes dominate the term count.
-  </div>
-
-  <div class="grid3 mt24">
-    <div class="card green">
-      <h4>CQ Coverage</h4>
-      <p>GPT-5.4 covers the most CQs when parsed (0.804). Llama-3.1-8B follows at 0.729. Token-overlap against each CQ's text.</p>
-    </div>
-    <div class="card yellow">
-      <h4>Hallucination</h4>
-      <p>Llama-3.1-8B: fewest hallucinations (0.345). GPT-5.4 worst at 0.585 despite top CQ coverage — adds domain knowledge not in the scenario.</p>
-    </div>
-    <div class="card">
-      <h4>Ground-Truth Match (F1 + matched names)</h4>
-      <p>Combined F1 is low (0.06–0.11) due to naming divergence. Matched names examples: <em>"event", "has effect", "relational database", "temporal binding", "evaluation request"</em>. Even low-F1 outputs share key conceptual terms.</p>
-    </div>
-  </div>
-
+  <div class="callout yellow"><strong>class_label_ratio = 1.000</strong> for every model — classes always annotated. <strong>property_label_ratio</strong> reveals the gap: Llama-2-70B 0.717 (worst), Mistral 0.966 (best). Old aggregate label_coverage_ratio masked this.</div>
   <hr>
-  <h3 class="mt24">Quality Metrics by Configuration (avg, successful parses)</h3>
+  <h3 class="mt24">By Configuration</h3>
   <table class="mt16">
     <thead>
-      <tr>
-        <th>Config</th>
-        <th>CQ Coverage</th>
-        <th>Scenario Cov.</th>
-        <th>Hallucination</th>
-        <th>Class Label</th>
-        <th>Prop Label ★</th>
-        <th>Combined F1</th>
-      </tr>
+      <tr><th>Config</th><th>CQ Coverage</th><th>Scenario Cov.</th><th>Hallucination</th><th>Class Label ★</th><th>Prop Label ★</th><th>Combined F1</th></tr>
     </thead>
-    <tbody>
-      <tr><td>cq-only</td><td><span class="good">0.844</span></td><td><span class="bad">0.182</span></td><td><span class="bad">0.548</span></td><td><span class="good">1.000</span></td><td>0.833</td><td>0.088</td></tr>
-      <tr><td>scenario-cq</td><td>0.819</td><td>0.346</td><td>0.416</td><td><span class="good">1.000</span></td><td><span class="bad">0.788</span></td><td>0.086</td></tr>
-      <tr><td>scenario-cq-constraints</td><td>0.836</td><td>0.282</td><td>0.392</td><td><span class="good">1.000</span></td><td>0.850</td><td>0.056</td></tr>
-      <tr class="best"><td>scenario-cq-reasoning ★</td><td>0.748</td><td><span class="good">0.379</span></td><td><span class="good">0.367</span></td><td><span class="good">1.000</span></td><td>0.826</td><td>0.082</td></tr>
-      <tr><td>scenario-only</td><td><span class="bad">0.352</span></td><td><span class="good">0.440</span></td><td>0.451</td><td><span class="good">1.000</span></td><td><span class="good">0.861</span></td><td>0.059</td></tr>
-    </tbody>
+    <tbody><tr><td><strong>cq-only</strong></td><td><span class="good">0.858</span></td><td><span class="bad">0.197</span></td><td><span class="bad">0.586</span></td><td><span class="bad">1.000</span></td><td><span class="mid">0.839</span></td><td><span class="good">0.099</span></td></tr>
+<tr><td><strong>scenario-cq</strong></td><td><span class="good">0.850</span></td><td><span class="good">0.397</span></td><td><span class="mid">0.469</span></td><td><span class="bad">1.000</span></td><td><span class="mid">0.830</span></td><td><span class="good">0.103</span></td></tr>
+<tr><td><strong>scenario-cq-constraints</strong></td><td><span class="good">0.854</span></td><td><span class="mid">0.332</span></td><td><span class="mid">0.465</span></td><td><span class="bad">1.000</span></td><td><span class="mid">0.853</span></td><td><span class="mid">0.089</span></td></tr>
+<tr><td><strong>scenario-cq-reasoning</strong></td><td><span class="good">0.795</span></td><td><span class="good">0.385</span></td><td><span class="mid">0.461</span></td><td><span class="bad">1.000</span></td><td><span class="mid">0.865</span></td><td><span class="good">0.106</span></td></tr>
+<tr><td><strong>scenario-only</strong></td><td><span class="bad">0.402</span></td><td><span class="good">0.491</span></td><td><span class="mid">0.503</span></td><td><span class="bad">1.000</span></td><td><span class="good">0.900</span></td><td><span class="bad">0.062</span></td></tr></tbody>
   </table>
+</div>
 
-  <div class="callout mt16">
-    <strong>Property label pattern:</strong> <code>scenario-cq</code> produces the <em>lowest</em> property label ratio (0.788) — adding both inputs may push the model to focus on axioms rather than annotations. <code>scenario-only</code> yields the <em>best</em> property labelling (0.861), suggesting unconstrained generation leads to more complete annotation.
-  </div>
-
-  <hr>
-  <h3 class="mt24">Matched Class &amp; Property Names — Examples</h3>
-  <p class="small muted mb16">Names found in both the generated and ground-truth ontology (case-folded, CamelCase split). Low F1 does not mean zero overlap — models do capture core concepts.</p>
-  <table class="mt8">
+<!-- SLIDE 10 — HEATMAP -->
+<div class="slide" id="heatmap">
+  <div class="slide-header"><span class="slide-num">09</span><h2>Model × Config Parse Success Heatmap</h2></div>
+  <table>
     <thead>
-      <tr><th>Model / Config / Scenario</th><th>Matched Classes</th><th>Matched Properties</th></tr>
+      <tr><th>Model</th><th>cq-only</th><th>scenario-cq</th><th>scenario-cq-constraints</th><th>scenario-cq-reasoning</th><th>scenario-only</th><th>Average</th></tr>
     </thead>
+    <tbody><tr><td><span class="chip chip-blue">Gemini 3.1 Pro</span></td><td><span class="good">100.0%</span></td><td><span class="good">100.0%</span></td><td><span class="good">100.0%</span></td><td><span class="good">100.0%</span></td><td><span class="good">100.0%</span></td><td><strong><span class="good">100.0%</span></strong></td></tr>
+<tr><td><span class="chip chip-green">Llama-3.1-8B</span></td><td><span class="good">78.6%</span></td><td><span class="good">85.7%</span></td><td><span class="mid">64.3%</span></td><td><span class="good">71.4%</span></td><td><span class="good">78.6%</span></td><td><strong><span class="good">75.7%</span></strong></td></tr>
+<tr><td><span class="chip chip-yellow">Llama-2-70B</span></td><td><span class="good">85.7%</span></td><td><span class="good">71.4%</span></td><td><span class="good">71.4%</span></td><td><span class="mid">50.0%</span></td><td><span class="mid">50.0%</span></td><td><strong><span class="mid">65.7%</span></strong></td></tr>
+<tr><td><span class="chip chip-yellow">Mistral-7B</span></td><td><span class="mid">50.0%</span></td><td><span class="mid">28.6%</span></td><td><span class="mid">7.1%</span></td><td><span class="mid">42.9%</span></td><td><span class="good">78.6%</span></td><td><strong><span class="mid">41.4%</span></strong></td></tr>
+<tr><td><span class="chip chip-purple">GPT-5.4</span></td><td><span class="good">85.7%</span></td><td><span class="mid">50.0%</span></td><td><span class="bad">0.0%</span></td><td><span class="bad">0.0%</span></td><td><span class="mid">50.0%</span></td><td><strong><span class="mid">37.1%</span></strong></td></tr>
+<tr><td><span class="chip chip-red">BLOOMZ-7B1</span></td><td><span class="bad">0.0%</span></td><td><span class="bad">0.0%</span></td><td><span class="bad">0.0%</span></td><td><span class="bad">0.0%</span></td><td><span class="bad">0.0%</span></td><td><strong><span class="bad">0.0%</span></strong></td></tr>
+</tbody>
+  </table>
+  <div class="callout green">Gemini 3.1 Pro: 100% across every single config — the only model with perfect reliability.</div>
+  <div class="callout red">BLOOMZ-7B1: 0% across all configs — instruction-tuned BLOOM still cannot produce valid Turtle.</div>
+</div>
+
+<!-- SLIDE 11 — MATCHED NAMES -->
+<div class="slide" id="matched">
+  <div class="slide-header"><span class="slide-num">10</span><h2>Matched Class &amp; Property Names vs. Ground Truth</h2></div>
+  <p>Names found in both generated ontology and ground truth (CamelCase split, case-folded). Low F1 does not mean zero conceptual overlap.</p>
+  <div class="callout yellow mt16">Matching: local name from URI → split CamelCase → lowercase → exact string match vs ground truth vocabulary.</div>
+  <table class="mt24">
+    <thead><tr><th>Model / Config / Scenario</th><th>Matched Classes</th><th>Matched Properties</th></tr></thead>
     <tbody>
       <tr><td>GPT-5.4 / cq-only / 2023-133-01</td><td>event</td><td>has effect, has outcome</td></tr>
       <tr><td>GPT-5.4 / cq-only / 2023-135-01</td><td>name usage</td><td>has name usage</td></tr>
       <tr><td>GPT-5.4 / cq-only / 2025-149-01</td><td>relational database, table, column</td><td>—</td></tr>
-      <tr><td>GPT-5.4 / cq-only / 2025-151-01</td><td>evaluation request</td><td>requested action, issued by</td></tr>
-      <tr><td>GPT-5.4 / cq-only / 2025-153-01</td><td>entity, temporal binding, transition rule</td><td>has temporal binding, binds identifier, has transition</td></tr>
+      <tr><td>Gemini 3.1 Pro / scenario-cq / 2023-133-01</td><td>event</td><td>—</td></tr>
+      <tr><td>Gemini 3.1 Pro / cq-only / 2025-151-01</td><td>evaluation request</td><td>requested action, issued by</td></tr>
     </tbody>
   </table>
-</div>
-
-<!-- ═══════════════════════════════════════ SLIDE 10 — HEATMAP ═══════════════════════════════════════ -->
-<div class="slide" id="heatmap">
-  <div class="slide-header">
-    <span class="slide-num">09</span>
-    <h2>Model × Config Parse Success Heatmap</h2>
-  </div>
-
-  <p class="mb16">Parse success rate for each (model, config) combination (out of 14 scenarios each). BLOOM-3B excluded from this run.</p>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Model</th>
-        <th>cq-only</th>
-        <th>scenario-cq</th>
-        <th>scenario-cq-constraints</th>
-        <th>scenario-cq-reasoning</th>
-        <th>scenario-only</th>
-        <th>Average</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>BLOOMZ-7B1</strong></td>
-        <td><span class="bad">0%</span></td>
-        <td><span class="bad">0%</span></td>
-        <td><span class="bad">0%</span></td>
-        <td><span class="bad">0%</span></td>
-        <td><span class="bad">0%</span></td>
-        <td><span class="bad">0%</span></td>
-      </tr>
-      <tr>
-        <td><strong>GPT-5.4</strong></td>
-        <td><span class="good">86%</span></td>
-        <td><span class="mid">50%</span></td>
-        <td><span class="bad">0%</span></td>
-        <td><span class="bad">0%</span></td>
-        <td><span class="mid">50%</span></td>
-        <td><span class="mid">37%</span></td>
-      </tr>
-      <tr>
-        <td><strong>Llama-2-70B</strong></td>
-        <td><span class="good">86%</span></td>
-        <td><span class="good">71%</span></td>
-        <td><span class="good">71%</span></td>
-        <td><span class="mid">50%</span></td>
-        <td><span class="mid">50%</span></td>
-        <td><span class="mid">66%</span></td>
-      </tr>
-      <tr class="best">
-        <td><strong>Llama-3.1-8B ★</strong></td>
-        <td><span class="good">79%</span></td>
-        <td><span class="good">86%</span></td>
-        <td><span class="mid">64%</span></td>
-        <td><span class="good">71%</span></td>
-        <td><span class="good">79%</span></td>
-        <td><span class="good">76%</span></td>
-      </tr>
-      <tr>
-        <td><strong>Mistral-7B</strong></td>
-        <td><span class="mid">50%</span></td>
-        <td><span class="bad">29%</span></td>
-        <td><span class="bad">7%</span></td>
-        <td><span class="mid">43%</span></td>
-        <td><span class="good">79%</span></td>
-        <td><span class="mid">41%</span></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="callout green mt24">
-    <strong>Key insight:</strong> <strong>Llama-3.1-8B</strong> is the only model that maintains parse success above 60% across ALL 5 configurations — including the difficult constraint and reasoning configs. GPT-5.4 completely fails at generating parseable Turtle under constraint and reasoning configs (0%), likely because its structured output wraps the ontology in non-Turtle formatting.
-  </div>
-
-  <div class="callout yellow mt16">
-    <strong>GPT paradox:</strong> GPT-5.4 achieves <strong>86%</strong> parse success on cq-only (highest among all models for that config), and the best quality metrics when parsed — but scores only 37% overall because complex prompts break its output format.
+  <hr>
+  <h3 class="mt24">Property Label Ratio — Llama-3.1-8B has best hallucination control</h3>
+  <div class="bar-chart mt16">
+<div class="bar-row"><span class="bar-label">Gemini 3.1 Pro</span><div class="bar-track"><div class="bar-fill bf-green" style="width:91%">0.914</div></div></div><div class="bar-row"><span class="bar-label">Llama-3.1-8B</span><div class="bar-track"><div class="bar-fill bf-green" style="width:83%">0.830</div></div></div><div class="bar-row"><span class="bar-label">Llama-2-70B</span><div class="bar-track"><div class="bar-fill bf-green" style="width:71%">0.717</div></div></div><div class="bar-row"><span class="bar-label">Mistral-7B</span><div class="bar-track"><div class="bar-fill bf-green" style="width:96%">0.966</div></div></div><div class="bar-row"><span class="bar-label">GPT-5.4</span><div class="bar-track"><div class="bar-fill bf-green" style="width:88%">0.885</div></div></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ SLIDE 11 — SUMMARY ═══════════════════════════════════════ -->
+<!-- SLIDE 12 — SUMMARY -->
 <div class="slide" id="summary">
-  <div class="slide-header">
-    <span class="slide-num">10</span>
-    <h2>Summary &amp; Winner Analysis</h2>
-  </div>
-
+  <div class="slide-header"><span class="slide-num">11</span><h2>Summary &amp; Best Performing Model</h2></div>
   <div class="grid2">
     <div>
-      <h3 class="mb16">Which LLM Performs Best?</h3>
-
-      <div class="card green mb16">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <span class="crown">★</span>
-          <h4 style="margin:0">Best Overall: Llama-3.1-8B-Instruct</h4>
-        </div>
+      <div class="card green" style="margin-bottom:16px">
+        <h4>★ Best Overall Reliability: Gemini 3.1 Pro</h4>
         <ul>
-          <li>Highest parse success: <strong>75.7%</strong> across all configs</li>
-          <li>Lowest hallucination rate: <strong>0.345</strong></li>
-          <li>Consistently parseable even with complex prompts</li>
-          <li>Good CQ coverage: 0.729 on successful outputs</li>
-          <li>Most <em>reliable</em> and <em>trustworthy</em> open-source model</li>
+          <li>Parse success: 100.0% — highest across all configs</li>
+          <li>100% parse on every single configuration</li>
+          <li>Best CQ coverage and Combined F1 when successful</li>
+          <li>Trade-off: highest hallucination ratio (adds unsupported domain knowledge)</li>
         </ul>
       </div>
-
-      <div class="card yellow mb16">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <span style="font-size:22px">🥈</span>
-          <h4 style="margin:0">Best Quality When Parsed: GPT-5.4</h4>
-        </div>
+      <div class="card yellow" style="margin-bottom:16px">
+        <h4>🥈 Best Faithfulness: Llama-3.1-8B</h4>
         <ul>
-          <li>Highest CQ coverage: <strong>0.804</strong></li>
-          <li>Best combined F1: <strong>0.110</strong></li>
-          <li>Perfect label/comment coverage: <strong>1.0</strong></li>
-          <li>But: 0% parse rate on reasoning/constraints configs</li>
-          <li>High hallucination (0.585) offsets quality gains</li>
+          <li>Lowest hallucination: 0.345</li>
+          <li>Best open-source model for scenario-faithful generation</li>
+          <li>Recommended config: scenario-cq-reasoning</li>
         </ul>
       </div>
-
-      <div class="card mb16">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <span style="font-size:22px">🥉</span>
-          <h4 style="margin:0">Best Runner-Up: Llama-2-70B</h4>
-        </div>
+      <div class="card" style="margin-bottom:16px">
+        <h4>🥉 Best Ground-Truth Match: Gemini 3.1 Pro</h4>
         <ul>
-          <li>Second highest parse rate: <strong>65.7%</strong></li>
-          <li>Good consistency across configs</li>
-          <li>Decent CQ coverage: 0.689</li>
-          <li>More parameters don't beat Llama-3.1-8B's efficiency</li>
+          <li>Combined F1: 0.125</li>
+          <li>Closest to expert-authored ontology vocabulary</li>
         </ul>
       </div>
     </div>
-
     <div>
-      <h3 class="mb16">Key Findings</h3>
-
-      <div class="callout mt16">
-        <strong>F1.</strong> Model size alone does not predict performance. Llama-3.1-8B (8B params) outperforms both Llama-2-70B (70B) and GPT-5.4 (proprietary large model) on parse reliability.
-      </div>
-
-      <div class="callout green mt16">
-        <strong>F2.</strong> Instruction following quality matters more than raw capacity for structured output tasks like Turtle generation. Llama-3.1-8B's instruction tuning is superior to older 7B-class models.
-      </div>
-
-      <div class="callout yellow mt16">
-        <strong>F3.</strong> The CQ-only prompt maximizes CQ coverage (0.844) but introduces the most hallucination (0.548). Adding the scenario context reduces hallucinations by 24% (cq-only → scenario-cq).
-      </div>
-
-      <div class="callout mt16">
-        <strong>F4.</strong> Reasoning-guided prompts (scenario-cq-reasoning) achieve the lowest hallucination (0.367) while maintaining good CQ coverage — the best faithfulness-quality tradeoff.
-      </div>
-
-      <div class="callout red mt16">
-        <strong>F5.</strong> BLOOM-family models (3B, 7B) fail entirely — 0% parse success. Base language models without instruction tuning are not suitable for ODP generation tasks.
-      </div>
-
-      <div class="callout yellow mt16">
-        <strong>F6.</strong> Ground-truth F1 scores are universally low (0.06–0.11), suggesting LLMs diverge significantly in naming conventions from expert ontologists, even when semantically correct.
-      </div>
+      <h3>Key Findings</h3>
+      <div class="callout "><strong>F1.</strong> Model size alone does not predict performance. Llama-3.1-8B (8B) outperforms Llama-2-70B (70B) on parse reliability.</div>
+      <div class="callout yellow"><strong>F2.</strong> Gemini 3.1 Pro is the only model with 100% parse success across all configurations — but also the highest hallucinator (0.623).</div>
+      <div class="callout yellow"><strong>F3.</strong> class_label_ratio = 1.0 for all models. property_label_ratio reveals hidden gaps — Llama-2-70B labels only 71.7% of properties.</div>
+      <div class="callout green"><strong>F4.</strong> scenario-cq-reasoning achieves the lowest hallucination (0.461 avg) and best scenario coverage — best faithfulness-quality trade-off.</div>
+      <div class="callout red"><strong>F5.</strong> BLOOMZ-7B1: 0% parse rate across all configs. Instruction-tuned BLOOM-family models still cannot produce valid OWL Turtle.</div>
+      <div class="callout "><strong>F6.</strong> Combined F1 is universally low (0.06–0.13) — LLMs diverge in naming conventions from expert ontologists even when semantically correct.</div>
     </div>
   </div>
-
-  <hr>
-  <h3 class="mt24 mb16">Recommended Configuration per Use Case</h3>
-  <table>
-    <thead><tr><th>Use Case</th><th>Best Config</th><th>Best Model</th><th>Reason</th></tr></thead>
-    <tbody>
-      <tr><td>Rapid prototyping (need valid Turtle fast)</td><td>cq-only</td><td>Llama-3.1-8B</td><td>Highest parse rate + CQ coverage</td></tr>
-      <tr><td>Maximum scenario faithfulness</td><td>scenario-cq-reasoning</td><td>Llama-3.1-8B</td><td>Lowest hallucination, balanced coverage</td></tr>
-      <tr><td>Highest quality when Turtle is required</td><td>cq-only</td><td>GPT-5.4</td><td>Best F1 + CQ coverage on parsed outputs</td></tr>
-      <tr><td>Constrained self-validation</td><td>scenario-cq-constraints</td><td>Llama-2-70B</td><td>Only model &gt;60% parse rate in this config</td></tr>
-    </tbody>
-  </table>
-
-  <div class="callout green mt32">
-    <strong>Conclusion:</strong> For reliable, open-source, deployment-ready ODP generation, <strong>Llama-3.1-8B-Instruct</strong> with the <strong>scenario-cq-reasoning</strong> prompt is the recommended configuration — delivering the best balance of syntactic validity, scenario faithfulness, and hallucination control.
-  </div>
+  <div class="callout green"><strong>Recommendation:</strong> For deployment-ready results, use <strong>Gemini 3.1 Pro + scenario-cq-reasoning</strong> (best quality + faithfulness). For open-source/local deployment, use <strong>Llama-3.1-8B + scenario-cq-reasoning</strong> (lowest hallucination, 71% parse rate).</div>
 </div>
 
-<!-- ═══════════════════════════════════════ FOOTER ═══════════════════════════════════════ -->
-<div style="text-align:center; padding:40px; color: var(--muted); font-size:12px; border-top:1px solid var(--border);">
-  ODPGen Research Presentation &nbsp;·&nbsp; 5 Models &nbsp;·&nbsp; 5 Configs &nbsp;·&nbsp; 14 Scenarios &nbsp;·&nbsp; 350 Runs &nbsp;·&nbsp; 44 Metrics
+<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);">
+  ODPGen Research Presentation &nbsp;·&nbsp; 6 Models &nbsp;·&nbsp;
+  5 Configs &nbsp;·&nbsp; 14 Scenarios &nbsp;·&nbsp;
+  420 Runs &nbsp;·&nbsp; 44 Metrics
 </div>
-
-</body>
-</html>
+</body></html>

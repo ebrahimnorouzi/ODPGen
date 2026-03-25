@@ -1,0 +1,103 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Asthma Medication and Environmental Allergen Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern modeling the effects of environmental allergens and asthma symptoms on patient medication intake." .
+
+### Classes ###
+
+:Patient a owl:Class ;
+    rdfs:label "Patient" ;
+    rdfs:comment "A person receiving medical care or experiencing health symptoms." .
+
+:MedicationIntake a owl:Class ;
+    rdfs:label "Medication Intake" ;
+    rdfs:comment "The event or action of a patient consuming or being administered medication." .
+
+:OutdoorEnvironmentalAllergen a owl:Class ;
+    rdfs:label "Outdoor Environmental Allergen" ;
+    rdfs:comment "A substance or factor in the outdoor environment that triggers an allergic reaction or asthma." .
+
+:Pollen a owl:Class ;
+    rdfs:subClassOf :OutdoorEnvironmentalAllergen ;
+    rdfs:label "Pollen" ;
+    rdfs:comment "A fine powder produced by plants, acting as a specific outdoor environmental allergen." .
+
+:AQI a owl:Class ;
+    rdfs:subClassOf :OutdoorEnvironmentalAllergen ;
+    rdfs:label "AQI" ;
+    rdfs:comment "Air Quality Index, modeled here as an environmental factor or allergen affecting patient health." .
+
+:AsthmaSymptom a owl:Class ;
+    rdfs:label "Asthma Symptom" ;
+    rdfs:comment "A physical manifestation or symptom associated with asthma." .
+
+:Cough a owl:Class ;
+    rdfs:subClassOf :AsthmaSymptom ;
+    rdfs:label "Cough" ;
+    rdfs:comment "A sudden, forceful hacking sound, modeled as a specific asthma symptom." .
+
+:OutdoorEnvironment a owl:Class ;
+    rdfs:label "Outdoor Environment" ;
+    rdfs:comment "The external physical environment where allergens may be present." .
+
+### Object Properties ###
+
+:takesMedication a owl:ObjectProperty ;
+    rdfs:label "takes medication" ;
+    rdfs:comment "Relates a patient to their medication intake event." ;
+    rdfs:domain :Patient ;
+    rdfs:range :MedicationIntake .
+
+:causedBy a owl:ObjectProperty ;
+    rdfs:label "caused by" ;
+    rdfs:comment "Relates an event (like medication intake) or symptom to its underlying cause (like an allergen)." .
+
+:affects a owl:ObjectProperty ;
+    rdfs:label "affects" ;
+    rdfs:comment "Relates a factor (like an allergen or symptom) to what it influences (like a patient or medication intake)." .
+
+:experiences a owl:ObjectProperty ;
+    rdfs:label "experiences" ;
+    rdfs:comment "Relates a patient to a symptom they are suffering from." ;
+    rdfs:domain :Patient ;
+    rdfs:range :AsthmaSymptom .
+
+:hasProbableCause a owl:ObjectProperty ;
+    rdfs:label "has probable cause" ;
+    rdfs:comment "Relates a symptom to its likely environmental or physiological cause." ;
+    rdfs:domain :AsthmaSymptom .
+
+:isPresentIn a owl:ObjectProperty ;
+    rdfs:label "is present in" ;
+    rdfs:comment "Relates an entity like an allergen to the environment it is located in." ;
+    rdfs:range :OutdoorEnvironment .
+
+### Datatype Properties ###
+
+:effectMagnitude a owl:DatatypeProperty ;
+    rdfs:label "effect magnitude" ;
+    rdfs:comment "Quantifies or describes the degree to which a factor affects something else." ;
+    rdfs:range xsd:string .
+
+:isPresent a owl:DatatypeProperty ;
+    rdfs:label "is present" ;
+    rdfs:comment "A boolean flag indicating whether a factor (like an allergen or symptom) is currently present or experienced." ;
+    rdfs:range xsd:boolean .
+```
+
+### CQ-to-Axiom Mapping Table
+
+| Competency Question | Classes | Properties |
+| :--- | :--- | :--- |
+| Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI? | `:Patient`, `:MedicationIntake`, `:OutdoorEnvironmentalAllergen`, `:Pollen`, `:AQI` | `:takesMedication`, `:causedBy`, `:isPresent` |
+| How much does the presence of an asthma symptom effect the intake of medication? | `:AsthmaSymptom`, `:MedicationIntake` | `:affects`, `:effectMagnitude`, `:isPresent` |
+| How does an outdoor environmental allergen affect the patient? | `:OutdoorEnvironmentalAllergen`, `:Patient` | `:affects` |
+| What is the probable cause of the cough experienced by the patient? | `:Patient`, `:Cough` | `:experiences`, `:hasProbableCause` |
+| What if pollen (or AQI) allergen was not present in the outdoor environment, how would it effect the intake of medication? | `:Pollen`, `:AQI`, `:OutdoorEnvironment`, `:MedicationIntake` | `:isPresentIn`, `:isPresent`, `:affects` |
+| What if the patient did not experience a cough, how would it effect the intake of medication? | `:Patient`, `:Cough`, `:MedicationIntake` | `:experiences`, `:affects` |

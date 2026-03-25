@@ -1,0 +1,157 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Cultural Heritage Survey ODP" ;
+    rdfs:comment "An ontology design pattern representing scientific survey activities performed on cultural heritage entities, including methods, observations, equipment, and interpretations." .
+
+### Classes ###
+
+:SurveyActivity a owl:Class ;
+    rdfs:label "Survey Activity" ;
+    rdfs:comment "A scientific survey or investigation activity performed on a cultural heritage entity." .
+
+:CulturalProperty a owl:Class ;
+    rdfs:label "Cultural Property" ;
+    rdfs:comment "A cultural heritage entity being surveyed or investigated." .
+
+:FeatureOfInterest a owl:Class ;
+    rdfs:label "Feature of Interest" ;
+    rdfs:comment "A specific feature or part of a cultural property being investigated." .
+
+:Method a owl:Class ;
+    rdfs:label "Method" ;
+    rdfs:comment "An investigation technique or method adopted in a survey." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "An observation produced during a survey or investigation activity." .
+
+:Expert a owl:Class ;
+    rdfs:label "Expert" ;
+    rdfs:comment "A person or expert participating in the survey activity." .
+
+:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "The specific role an expert plays during a survey activity." .
+
+:Participation a owl:Class ;
+    rdfs:label "Participation" ;
+    rdfs:comment "An n-ary relationship class representing the participation of an expert in a specific role during a survey." .
+
+:Hardware a owl:Class ;
+    rdfs:label "Hardware" ;
+    rdfs:comment "Hardware equipment used to conduct a survey activity." .
+
+:Software a owl:Class ;
+    rdfs:label "Software" ;
+    rdfs:comment "Software used to conduct a survey activity." .
+
+:TechnicalConfiguration a owl:Class ;
+    rdfs:label "Technical Configuration" ;
+    rdfs:comment "The technical configuration used during a survey activity." .
+
+:Interpretation a owl:Class ;
+    rdfs:label "Interpretation" ;
+    rdfs:comment "An interpretation or claim supported by observations." .
+
+:PostProcessedOutput a owl:Class ;
+    rdfs:label "Post-Processed Output" ;
+    rdfs:comment "Outputs such as interactive images, spectra, or datasets derived from acquisition activities." .
+
+:AcquisitionActivity a owl:Class ;
+    rdfs:subClassOf :SurveyActivity ;
+    rdfs:label "Acquisition Activity" ;
+    rdfs:comment "An activity focused on acquiring data or observations; a specific type of survey activity." .
+
+:PhotographicAcquisition a owl:Class ;
+    rdfs:subClassOf :AcquisitionActivity ;
+    rdfs:label "Photographic Acquisition" ;
+    rdfs:comment "A specific photographic acquisition cycle within a survey." .
+
+:AcquisitionParameter a owl:Class ;
+    rdfs:label "Acquisition Parameter" ;
+    rdfs:comment "A parameter characterizing an acquisition (e.g., exposure time, ISO, aperture)." .
+
+### Object Properties ###
+
+:investigates a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf ( :CulturalProperty :FeatureOfInterest )
+    ] ;
+    rdfs:label "investigates" ;
+    rdfs:comment "Links a survey activity to the cultural property or feature of interest it investigates." .
+
+:usesMethod a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Method ;
+    rdfs:label "uses method" ;
+    rdfs:comment "Links a survey activity to the method or technique adopted." .
+
+:producesObservation a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Observation ;
+    rdfs:label "produces observation" ;
+    rdfs:comment "Links a survey activity to the observations it produces." .
+
+:hasParticipation a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Participation ;
+    rdfs:label "has participation" ;
+    rdfs:comment "Links a survey activity to a participation context to describe who was involved and how." .
+
+:hasExpert a owl:ObjectProperty ;
+    rdfs:domain :Participation ;
+    rdfs:range :Expert ;
+    rdfs:label "has expert" ;
+    rdfs:comment "Links a participation context to the participating expert." .
+
+:hasRole a owl:ObjectProperty ;
+    rdfs:domain :Participation ;
+    rdfs:range :Role ;
+    rdfs:label "has role" ;
+    rdfs:comment "Links a participation context to the role played by the expert." .
+
+:usesHardware a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Hardware ;
+    rdfs:label "uses hardware" ;
+    rdfs:comment "Links a survey activity to the hardware used." .
+
+:usesSoftware a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :Software ;
+    rdfs:label "uses software" ;
+    rdfs:comment "Links a survey activity to the software used." .
+
+:hasConfiguration a owl:ObjectProperty ;
+    rdfs:domain :SurveyActivity ;
+    rdfs:range :TechnicalConfiguration ;
+    rdfs:label "has configuration" ;
+    rdfs:comment "Links a survey activity to its technical configuration." .
+
+:supportsInterpretation a owl:ObjectProperty ;
+    rdfs:domain :Observation ;
+    rdfs:range :Interpretation ;
+    rdfs:label "supports interpretation" ;
+    rdfs:comment "Links an observation to the interpretation or claim it supports." .
+
+:derivedFrom a owl:ObjectProperty ;
+    rdfs:domain :PostProcessedOutput ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf ( :AcquisitionActivity :Observation )
+    ] ;
+    rdfs:label "derived from" ;
+    rdfs:comment "Links a post-processed output to its underlying acquisition activity or observation." .
+
+:hasParameter a owl:ObjectProperty ;
+    rdfs:domain :PhotographicAcquisition ;
+    rdfs:range :AcquisitionParameter ;
+    rdfs:label "has parameter" ;
+    rdfs:comment "Links a photographic acquisition to its specific acquisition parameters." .

@@ -1,0 +1,93 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Causal Bayesian Network (CBN) Sprinkler Pattern" ;
+    rdfs:comment "An ontology design pattern representing events, causal relations, effect weights, and mediation in a Causal Bayesian Network, based on the sprinkler use case." .
+
+### Classes ###
+
+:Event a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "A node in the Causal Bayesian Network representing an occurrence or state." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A directed edge between nodes in the network representing a causal link from a source event to a target event." ;
+    owl:disjointWith :Event .
+
+:RainySeasonEvent a owl:Class ;
+    rdfs:subClassOf :Event ;
+    rdfs:label "Rainy Season Event" ;
+    rdfs:comment "An event representing that it is the rainy season." .
+
+:SprinklerOnEvent a owl:Class ;
+    rdfs:subClassOf :Event ;
+    rdfs:label "Sprinkler On Event" ;
+    rdfs:comment "An event representing that the sprinkler is turned on." .
+
+:RainingEvent a owl:Class ;
+    rdfs:subClassOf :Event ;
+    rdfs:label "Raining Event" ;
+    rdfs:comment "An event representing that it is raining." .
+
+:PavementWetEvent a owl:Class ;
+    rdfs:subClassOf :Event ;
+    rdfs:label "Pavement Wet Event" ;
+    rdfs:comment "An event representing that the pavement is wet." .
+
+:PavementSlipperyEvent a owl:Class ;
+    rdfs:subClassOf :Event ;
+    rdfs:label "Pavement Slippery Event" ;
+    rdfs:comment "An event representing that the pavement is slippery." .
+
+### Object Properties ###
+
+:hasSourceEvent a owl:ObjectProperty ;
+    rdfs:label "has source event" ;
+    rdfs:comment "Links a causal relation to its originating (cause) event." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:hasTargetEvent a owl:ObjectProperty ;
+    rdfs:label "has target event" ;
+    rdfs:comment "Links a causal relation to its resulting (effect) event." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:isMediatedBy a owl:ObjectProperty ;
+    rdfs:label "is mediated by" ;
+    rdfs:comment "Indicates that a causal relation between a source and target event is mediated by another intermediate event." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+### Datatype Properties ###
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight of the causal effect between events." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:decimal .
+```
+
+### Documentation
+
+**Intent:**
+To model the structure of a Causal Bayesian Network (CBN) by representing events as nodes, directed causal relations as edges with numerical effect weights, and the ability for causal relations to be mediated by intermediate events.
+
+**Covered requirements:**
+*   Representation of network nodes as `Event` concepts.
+*   Inclusion of the five specific scenario events (Rainy Season, Sprinkler On, Raining, Pavement Wet, Pavement Slippery) modeled as subclasses of `Event` to adhere to the schema-only constraint.
+*   Representation of directed edges as a reified `CausalRelation` class, linking a source event to a target event.
+*   Assignment of effect weights to causal relations using the `hasEffectWeight` datatype property.
+*   Representation of indirect causality where a relation is mediated by an intermediate event, captured by the `isMediatedBy` object property.
+
+**Known assumptions and exclusions:**
+*   **Schema-only constraint:** Because individual instances are forbidden by the prompt, the specific events (e.g., "it is raining") are modeled as subclasses of `Event` rather than instances of an `Event` class. In a populated knowledge graph, actual occurrences would be instantiated from these classes.
+*   **Reification:** Causal relations are modeled as a class (`CausalRelation`) rather than a simple object property. This is necessary because the scenario requires edges to have their own properties (effect weights and mediators).
+*   **Mathematical computation excluded:** The ontology captures the structural and descriptive metadata of the CBN (nodes, edges, weights) but does not include axioms for calculating probabilities or executing Bayesian inference.
+*   **Datatype assumption:** The effect weight is assumed to be a decimal (`xsd:decimal`), which accommodates the "0.6" example provided in the text.

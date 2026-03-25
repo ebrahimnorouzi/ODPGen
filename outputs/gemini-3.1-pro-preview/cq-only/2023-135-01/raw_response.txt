@@ -1,0 +1,110 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Author and River Trajectory Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern to model authors, their pseudonyms, roles, published works, as well as rivers, their trajectories, and the national parks they cross." .
+
+### Classes
+
+:AlternativeName a owl:Class ;
+    rdfs:label "Alternative Name" ;
+    rdfs:comment "A name used by a person that is different from their legal or primary name." .
+
+:Author a owl:Class ;
+    rdfs:label "Author" ;
+    rdfs:comment "A person who writes and publishes books, poems, or other literary works." .
+
+:BookWriterRole a owl:Class ;
+    rdfs:subClassOf :Role ;
+    rdfs:label "Book Writer Role" ;
+    rdfs:comment "The specific role of writing a book." .
+
+:NationalPark a owl:Class ;
+    rdfs:label "National Park" ;
+    rdfs:comment "A protected area of land designated as a national park." .
+
+:PoemCollection a owl:Class ;
+    rdfs:label "Poem Collection" ;
+    rdfs:comment "A published book or collection consisting of poems." .
+
+:Pseudonym a owl:Class ;
+    rdfs:subClassOf :AlternativeName ;
+    rdfs:label "Pseudonym" ;
+    rdfs:comment "A fictitious name, especially one used by an author to publish works." .
+
+:River a owl:Class ;
+    rdfs:label "River" ;
+    rdfs:comment "A large natural stream of water flowing in a channel." .
+
+:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "A function or position assumed by a person or entity." .
+
+:Trajectory a owl:Class ;
+    rdfs:label "Trajectory" ;
+    rdfs:comment "The physical path or course followed by a river." .
+
+### Object Properties
+
+:crosses a owl:ObjectProperty ;
+    rdfs:domain :River ;
+    rdfs:range :NationalPark ;
+    rdfs:label "crosses" ;
+    rdfs:comment "Relates a river to a national park that it flows through or intersects." .
+
+:hasAlternativeName a owl:ObjectProperty ;
+    rdfs:domain :Author ;
+    rdfs:range :AlternativeName ;
+    rdfs:label "has alternative name" ;
+    rdfs:comment "Relates an author to an alternative name they use." .
+
+:hasTrajectory a owl:ObjectProperty ;
+    rdfs:domain :River ;
+    rdfs:range :Trajectory ;
+    rdfs:label "has trajectory" ;
+    rdfs:comment "Relates a river to its physical trajectory or path." .
+
+:published a owl:ObjectProperty ;
+    rdfs:domain :Author ;
+    rdfs:range :PoemCollection ;
+    rdfs:label "published" ;
+    rdfs:comment "Relates an author to a collection of poems they have published." .
+
+:publishedUnder a owl:ObjectProperty ;
+    rdfs:domain :PoemCollection ;
+    rdfs:range :Pseudonym ;
+    rdfs:label "published under" ;
+    rdfs:comment "Relates a published work to the pseudonym under which it was released." .
+
+:usedToAssumeRole a owl:ObjectProperty ;
+    rdfs:domain :AlternativeName ;
+    rdfs:range :Role ;
+    rdfs:label "used to assume role" ;
+    rdfs:comment "Relates an alternative name to the role it is used to assume." .
+
+### Datatype Properties
+
+:hasName a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "has name" ;
+    rdfs:comment "The string representation of the name of an entity (e.g., an author, pseudonym, or river)." .
+
+:hasTitle a owl:DatatypeProperty ;
+    rdfs:domain :PoemCollection ;
+    rdfs:range xsd:string ;
+    rdfs:label "has title" ;
+    rdfs:comment "The string representation of the title of a creative work." .
+```
+
+### CQ-to-Axiom Mapping Table
+
+| Competency Question | Classes Used | Properties Used |
+| :--- | :--- | :--- |
+| **CQ1:** Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage? | `:Author`<br>`:PoemCollection`<br>`:Pseudonym` | `:published`<br>`:publishedUnder`<br>`:hasName`<br>`:hasTitle` |
+| **CQ2:** What alternative did C. S. Lewis used to assume the role of a book writer? | `:Author`<br>`:AlternativeName`<br>`:Role`<br>`:BookWriterRole` | `:hasAlternativeName`<br>`:usedToAssumeRole`<br>`:hasName` |
+| **CQ3:** Show the trajectories of rivers which cross national parks? | `:River`<br>`:Trajectory`<br>`:NationalPark` | `:hasTrajectory`<br>`:crosses` |

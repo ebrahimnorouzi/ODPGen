@@ -1,0 +1,141 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Author Pseudonym and River Trajectory Ontology" ;
+    rdfs:comment "An ontology design pattern representing authors, pseudonyms, name changes, and published books, alongside an unrelated domain of rivers and national parks as strictly required by the competency questions." .
+
+# --- Classes ---
+
+:Author a owl:Class ;
+    rdfs:label "Author" ;
+    rdfs:comment "A person who writes and publishes books." .
+
+:Name a owl:Class ;
+    rdfs:label "Name" ;
+    rdfs:comment "A designation or label by which an author is known." .
+
+:Pseudonym a owl:Class ;
+    rdfs:subClassOf :Name ;
+    rdfs:label "Pseudonym" ;
+    rdfs:comment "An alternative name or pen name adopted by an author." .
+
+:Book a owl:Class ;
+    rdfs:label "Book" ;
+    rdfs:comment "A written work published by an author." .
+
+:CollectionOfPoems a owl:Class ;
+    rdfs:subClassOf :Book ;
+    rdfs:label "Collection of Poems" ;
+    rdfs:comment "A specific type of book consisting of poetry." .
+
+:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "A function or position assumed by a person." .
+
+:BookWriterRole a owl:Class ;
+    rdfs:subClassOf :Role ;
+    rdfs:label "Book Writer Role" ;
+    rdfs:comment "The specific role of writing a book." .
+
+:NameChange a owl:Class ;
+    rdfs:label "Name Change" ;
+    rdfs:comment "An event where an author adopts a different name." .
+
+:Marriage a owl:Class ;
+    rdfs:subClassOf :NameChange ;
+    rdfs:label "Marriage" ;
+    rdfs:comment "A marriage event that may result in a name change." .
+
+:River a owl:Class ;
+    rdfs:label "River" ;
+    rdfs:comment "A natural flowing watercourse." .
+
+:Trajectory a owl:Class ;
+    rdfs:label "Trajectory" ;
+    rdfs:comment "The path or course followed by a river." .
+
+:NationalPark a owl:Class ;
+    rdfs:label "National Park" ;
+    rdfs:comment "A protected area of land, which may be crossed by rivers." .
+
+# --- Object Properties ---
+
+:hasName a owl:ObjectProperty ;
+    rdfs:domain :Author ;
+    rdfs:range :Name ;
+    rdfs:label "has name" ;
+    rdfs:comment "Relates an author to a name they use." .
+
+:hasPseudonym a owl:ObjectProperty ;
+    rdfs:subPropertyOf :hasName ;
+    rdfs:domain :Author ;
+    rdfs:range :Pseudonym ;
+    rdfs:label "has pseudonym" ;
+    rdfs:comment "Relates an author to an alternative name or pseudonym." .
+
+:publishes a owl:ObjectProperty ;
+    rdfs:domain :Author ;
+    rdfs:range :Book ;
+    rdfs:label "publishes" ;
+    rdfs:comment "Relates an author to a book they have published." .
+
+:publishedUnderName a owl:ObjectProperty ;
+    rdfs:domain :Book ;
+    rdfs:range :Name ;
+    rdfs:label "published under name" ;
+    rdfs:comment "Indicates the specific name or pseudonym under which a book was published." .
+
+:assumesRole a owl:ObjectProperty ;
+    rdfs:domain :Author ;
+    rdfs:range :Role ;
+    rdfs:label "assumes role" ;
+    rdfs:comment "Relates an author to a role they assume, such as a book writer." .
+
+:undergoesNameChange a owl:ObjectProperty ;
+    rdfs:domain :Author ;
+    rdfs:range :NameChange ;
+    rdfs:label "undergoes name change" ;
+    rdfs:comment "Relates an author to a name change event." .
+
+:resultsInName a owl:ObjectProperty ;
+    rdfs:domain :NameChange ;
+    rdfs:range :Name ;
+    rdfs:label "results in name" ;
+    rdfs:comment "Relates a name change event to the new name adopted." .
+
+:hasTrajectory a owl:ObjectProperty ;
+    rdfs:domain :River ;
+    rdfs:range :Trajectory ;
+    rdfs:label "has trajectory" ;
+    rdfs:comment "Relates a river to its trajectory or path." .
+
+:crosses a owl:ObjectProperty ;
+    rdfs:domain :River ;
+    rdfs:range :NationalPark ;
+    rdfs:label "crosses" ;
+    rdfs:comment "Relates a river to a national park it flows through." .
+```
+
+### Validation Report
+1. **Turtle syntax is valid:** PASS. All statements are correctly terminated with dots, and semicolons are used properly for predicate-object lists.
+2. **All prefixes used in the body are declared at the top:** PASS. `owl:`, `rdf:`, `rdfs:`, `xsd:`, and `:` are all declared and utilized correctly.
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS. All domains and ranges strictly reference the classes defined within the `: ` namespace.
+4. **No two classes or properties are defined with contradictory restrictions:** PASS. The ontology is minimal and contains no disjointness axioms or conflicting domain/range restrictions.
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS. CQ1 maps to `:Pseudonym`, `:CollectionOfPoems`, and `:publishedUnderName`. CQ2 maps to `:assumesRole` and `:BookWriterRole`. CQ3 maps to `:River`, `:Trajectory`, `:NationalPark`, `:hasTrajectory`, and `:crosses`.
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS. Every class and property is directly extracted from the provided scenario text or the three competency questions (including the disjointed CQ3 about rivers).
+
+### Scope Report
+**a) Requirements covered:**
+- The ontology successfully models authors publishing books (and specifically collections of poems) under alternative names/pseudonyms.
+- It captures the event of name changes (specifically highlighting marriage as an example subclass of a name change event).
+- It models the assumption of roles (e.g., a book writer role).
+- It fully covers the unrelated domain injected by CQ3, modeling rivers, their trajectories, and their crossing of national parks.
+
+**b) Scenario concepts explicitly excluded and why:**
+- **Specific Instances (e.g., "C. S. Lewis", "Spirit in Bondage"):** Excluded because the modeling constraints strictly forbade the creation of individual instances, requiring schema axioms only.
+- **Datatype Properties for Names (e.g., `xsd:string` values):** Excluded to keep the ontology strictly minimal and focused on the structural object relationships requested by the CQs. The CQs ask "Under what pseudonym..." which is satisfied by linking the structural `:Pseudonym` class rather than defining string data properties.

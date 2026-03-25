@@ -1,0 +1,105 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Evaluation Request Context Ontology Design Pattern" ;
+    rdfs:comment "An ODP representing evaluation requests, their target assets, actions, assignees, issuers, and associated contextual constraints (temporal, spatial, role, capability)." .
+
+# --- Classes ---
+
+:EvaluationRequest a owl:Class ;
+    rdfs:label "Evaluation Request" ;
+    rdfs:comment "A formal request for an action to be evaluated against contextual constraints." .
+
+:Action a owl:Class ;
+    rdfs:label "Action" ;
+    rdfs:comment "The requested action to be performed on a target asset." .
+
+:Party a owl:Class ;
+    rdfs:label "Party" ;
+    rdfs:comment "An entity, such as an assignee or issuer, involved in the evaluation request." .
+
+:Asset a owl:Class ;
+    rdfs:label "Asset" ;
+    rdfs:comment "The target asset upon which the requested action is to be performed." .
+
+:Context a owl:Class ;
+    rdfs:label "Context" ;
+    rdfs:comment "Contextual information used to further constrain the evaluation request." .
+
+:TemporalContext a owl:Class ;
+    rdfs:subClassOf :Context ;
+    rdfs:label "Temporal Context" ;
+    rdfs:comment "Time-based constraints for the evaluation request (e.g., weekdays)." .
+
+:SpatialContext a owl:Class ;
+    rdfs:subClassOf :Context ;
+    rdfs:label "Spatial Context" ;
+    rdfs:comment "Location-based constraints for the evaluation request (e.g., EU)." .
+
+:RoleContext a owl:Class ;
+    rdfs:subClassOf :Context ;
+    rdfs:label "Role Context" ;
+    rdfs:comment "Role-based constraints for the evaluation request (e.g., employee)." .
+
+:CapabilityContext a owl:Class ;
+    rdfs:subClassOf :Context ;
+    rdfs:label "Capability Context" ;
+    rdfs:comment "Request-capability constraints for the evaluation request." .
+
+# --- Object Properties ---
+
+:hasAction a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :Action ;
+    rdfs:label "has action" ;
+    rdfs:comment "Links an evaluation request to the specific action being requested." .
+
+:hasIssuer a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :Party ;
+    rdfs:label "has issuer" ;
+    rdfs:comment "Links an evaluation request to the party that issued it." .
+
+:hasAssignee a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :Party ;
+    rdfs:label "has assignee" ;
+    rdfs:comment "Links an evaluation request to the party assigned to perform the action." .
+
+:hasTargetAsset a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :Asset ;
+    rdfs:label "has target asset" ;
+    rdfs:comment "Links an evaluation request to the asset targeted by the action." .
+
+:hasContext a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :Context ;
+    rdfs:label "has context" ;
+    rdfs:comment "Links an evaluation request to its contextual constraints." .
+
+# --- Datatype Properties ---
+
+:issuedAt a owl:DatatypeProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "issued at" ;
+    rdfs:comment "The date and time when the evaluation request was issued." .
+```
+
+### Validation Report
+1. **Turtle syntax is valid:** PASS. All statements are properly terminated with periods, and property-object lists use semicolons correctly.
+2. **All prefixes used in the body are declared at the top:** PASS. `owl:`, `rdf:`, `rdfs:`, `xsd:`, and `:` are all declared and utilized.
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS. Domains and ranges strictly use the locally defined classes (e.g., `:EvaluationRequest`, `:Party`) or standard datatypes (`xsd:dateTime`).
+4. **No two classes or properties are defined with contradictory restrictions:** PASS. The ontology is kept minimal with basic domain/range and subclass axioms; no disjointness or complex restrictions were introduced that could cause inconsistencies.
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS. CQ1 maps to `:hasAction`, CQ2 to `:hasIssuer`, CQ3 to `:hasTargetAsset`, CQ4 to `:issuedAt`, and CQ5 to `:hasContext` and the `:Context` class hierarchy.
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS. Every class and property directly reflects the entities and relationships explicitly mentioned in the scenario and CQs.
+
+### Scope Report
+* **(a) Requirements covered:** The ontology successfully models the core structure of an evaluation request, including the requested action (`:Action`), the target asset (`:Asset`), the involved parties (`:Party` acting as issuer or assignee), the issuance timestamp (`:issuedAt`), and the contextual constraints (`:Context` with subclasses for temporal, spatial, role, and capability contexts).
+* **(b) Excluded concepts:** Specific instances or highly specific subclasses such as "Employee", "Weekday", or "EU" were explicitly excluded. *Reason:* The scenario uses these as examples to justify the need for broader contextual categories ("evaluation *therefore* needs temporal, spatial, role... context"). Excluding the specific examples keeps the Ontology Design Pattern abstract, minimal, and highly reusable for other specific rulesets.

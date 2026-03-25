@@ -1,0 +1,217 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Solid App Governance Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern representing governance, privacy, and metadata for Solid apps and Pods." .
+
+# --- Classes ---
+
+:SolidActor a owl:Class ;
+    rdfs:label "Solid Actor" ;
+    rdfs:comment "An entity (user, provider, authority) participating in the Solid ecosystem." .
+
+:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "The role assumed by a Solid actor." .
+
+:Pod a owl:Class ;
+    rdfs:label "Pod" ;
+    rdfs:comment "A Solid personal data store." .
+
+:SolidApp a owl:Class ;
+    rdfs:label "Solid App" ;
+    rdfs:comment "An application that interacts with Solid Pods." .
+
+:SolidSpecification a owl:Class ;
+    rdfs:label "Solid Specification" ;
+    rdfs:comment "The technical specification a Pod is running on." .
+
+:Functionality a owl:Class ;
+    rdfs:label "Functionality" ;
+    rdfs:comment "A specific functionality installed within a Pod." .
+
+:Data a owl:Class ;
+    rdfs:label "Data" ;
+    rdfs:comment "Information stored within a Pod." .
+
+:DataType a owl:Class ;
+    rdfs:label "Data Type" ;
+    rdfs:comment "A category or type of data." .
+
+:PrivacyNotice a owl:Class ;
+    rdfs:label "Privacy Notice" ;
+    rdfs:comment "A machine-readable declaration of data handling practices." .
+
+:PrivacyPolicy a owl:Class ;
+    rdfs:label "Privacy Policy" ;
+    rdfs:comment "A set of privacy preferences and requirements expressed by a user." .
+
+:DataRequest a owl:Class ;
+    rdfs:label "Data Request" ;
+    rdfs:comment "An incoming request for the use of data." .
+
+:DataDecision a owl:Class ;
+    rdfs:label "Data Decision" ;
+    rdfs:comment "A decision made regarding a data request." .
+
+:ProvenanceRecord a owl:Class ;
+    rdfs:label "Provenance Record" ;
+    rdfs:comment "A log or record kept for accountability, such as consent or access records." .
+
+:GDPRRight a owl:Class ;
+    rdfs:label "GDPR Right" ;
+    rdfs:comment "A legal right exercised by a user, such as withdrawing consent." .
+
+:AuditingInformation a owl:Class ;
+    rdfs:label "Auditing Information" ;
+    rdfs:comment "Information provided to authorities to perform investigations." .
+
+:Registry a owl:Class ;
+    rdfs:label "Registry" ;
+    rdfs:comment "A system or catalog maintaining metadata about available data types and their locations." .
+
+# --- Object Properties ---
+
+:hasRole a owl:ObjectProperty ;
+    rdfs:label "has role" ;
+    rdfs:comment "Associates a Solid actor with their role." ;
+    rdfs:domain :SolidActor ;
+    rdfs:range :Role .
+
+:provides a owl:ObjectProperty ;
+    rdfs:label "provides" ;
+    rdfs:comment "Indicates that a Solid actor provides a Pod or Solid App." ;
+    rdfs:domain :SolidActor ;
+    rdfs:range [ a owl:Class ; owl:unionOf ( :Pod :SolidApp ) ] .
+
+:runsOnSpecification a owl:ObjectProperty ;
+    rdfs:label "runs on specification" ;
+    rdfs:comment "Links a Pod to the Solid specification it runs on." ;
+    rdfs:domain :Pod ;
+    rdfs:range :SolidSpecification .
+
+:hasFunctionality a owl:ObjectProperty ;
+    rdfs:label "has functionality" ;
+    rdfs:comment "Links a Pod to its installed functionalities." ;
+    rdfs:domain :Pod ;
+    rdfs:range :Functionality .
+
+:hasDataType a owl:ObjectProperty ;
+    rdfs:label "has data type" ;
+    rdfs:comment "Categorizes data into a specific data type." ;
+    rdfs:domain :Data ;
+    rdfs:range :DataType .
+
+:isStoredIn a owl:ObjectProperty ;
+    rdfs:label "is stored in" ;
+    rdfs:comment "Indicates the Pod where data or a data type is stored." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Data :DataType ) ] ;
+    rdfs:range :Pod .
+
+:hasPrivacyNotice a owl:ObjectProperty ;
+    rdfs:label "has privacy notice" ;
+    rdfs:comment "Links a Pod or App to its privacy notice." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Pod :SolidApp ) ] ;
+    rdfs:range :PrivacyNotice .
+
+:requiresDataType a owl:ObjectProperty ;
+    rdfs:label "requires data type" ;
+    rdfs:comment "Indicates the types of data an app needs to function." ;
+    rdfs:domain :SolidApp ;
+    rdfs:range :DataType .
+
+:hasPrivacyPolicy a owl:ObjectProperty ;
+    rdfs:label "has privacy policy" ;
+    rdfs:comment "Associates data or a data type with a privacy policy." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Data :DataType ) ] ;
+    rdfs:range :PrivacyPolicy .
+
+:expressesPolicy a owl:ObjectProperty ;
+    rdfs:label "expresses policy" ;
+    rdfs:comment "Links a user to the privacy policies they express." ;
+    rdfs:domain :SolidActor ;
+    rdfs:range :PrivacyPolicy .
+
+:managesRequest a owl:ObjectProperty ;
+    rdfs:label "manages request" ;
+    rdfs:comment "Links a user to the data requests they manage." ;
+    rdfs:domain :SolidActor ;
+    rdfs:range :DataRequest .
+
+:hasDecision a owl:ObjectProperty ;
+    rdfs:label "has decision" ;
+    rdfs:comment "Links a data request to the decision made about it." ;
+    rdfs:domain :DataRequest ;
+    rdfs:range :DataDecision .
+
+:hasProvenanceRecord a owl:ObjectProperty ;
+    rdfs:label "has provenance record" ;
+    rdfs:comment "Links a Pod or Data to its provenance and accountability logs." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Pod :Data ) ] ;
+    rdfs:range :ProvenanceRecord .
+
+:exercisesRight a owl:ObjectProperty ;
+    rdfs:label "exercises right" ;
+    rdfs:comment "Links a user to the GDPR rights they exercise." ;
+    rdfs:domain :SolidActor ;
+    rdfs:range :GDPRRight .
+
+:providesAuditingInfo a owl:ObjectProperty ;
+    rdfs:label "provides auditing info" ;
+    rdfs:comment "Links a Pod or App to the auditing information it provides." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Pod :SolidApp ) ] ;
+    rdfs:range :AuditingInformation .
+
+:maintains a owl:ObjectProperty ;
+    rdfs:label "maintains" ;
+    rdfs:comment "Indicates the actor responsible for maintaining a registry." ;
+    rdfs:domain :SolidActor ;
+    rdfs:range :Registry .
+
+:registers a owl:ObjectProperty ;
+    rdfs:label "registers" ;
+    rdfs:comment "Links a registry to the data types it makes available/discoverable." ;
+    rdfs:domain :Registry ;
+    rdfs:range :DataType .
+
+# --- Datatype Properties ---
+
+:createdAt a owl:DatatypeProperty ;
+    rdfs:label "created at" ;
+    rdfs:comment "The timestamp when the registry was created." ;
+    rdfs:domain :Registry ;
+    rdfs:range xsd:dateTime .
+
+:updatedAt a owl:DatatypeProperty ;
+    rdfs:label "updated at" ;
+    rdfs:comment "The timestamp when the registry was last updated." ;
+    rdfs:domain :Registry ;
+    rdfs:range xsd:dateTime .
+```
+
+### 2. Scenario-requirement-to-axiom mapping
+*   **C1 (Identity/Roles):** Encoded via `:SolidActor`, `:Role`, `:Pod`, `:SolidApp`, and the properties `:hasRole` and `:provides`.
+*   **C2 (Infrastructure Metadata):** Encoded via `:Pod`, `:SolidSpecification`, `:Functionality`, and the properties `:runsOnSpecification` and `:hasFunctionality`.
+*   **C3 (Data Categories/Discovery):** Encoded via `:Data`, `:DataType`, `:Pod`, and the properties `:hasDataType` and `:isStoredIn`.
+*   **C4 (Data Handling Practices):** Encoded via `:PrivacyNotice`, `:DataType`, and the properties `:hasPrivacyNotice` (linking Pods/Apps to notices) and `:requiresDataType` (declaring what data apps need).
+*   **C5 (Privacy Policies):** Encoded via `:PrivacyPolicy`, `:DataRequest`, `:DataDecision`, and the properties `:expressesPolicy`, `:managesRequest`, and `:hasDecision`.
+*   **C6 (Logging/Record-keeping):** Encoded via `:ProvenanceRecord` and the property `:hasProvenanceRecord` (linking Pods/Data to their logs).
+*   **C7 (Legal Compliance):** Encoded via `:GDPRRight`, `:AuditingInformation`, and the properties `:exercisesRight` and `:providesAuditingInfo`.
+
+### 3. CQ-to-axiom mapping
+*   **Who is maintaining the registry?** Answered using `:SolidActor`, `:Registry`, and the `:maintains` object property.
+*   **When was the registry created/updated?** Answered using `:Registry` and the datatype properties `:createdAt` and `:updatedAt`.
+*   **What types of data are available?** Answered using `:Registry`, `:DataType`, and the `:registers` object property.
+*   **Where is a specific type of data being stored?** Answered using `:DataType`, `:Pod`, and the `:isStoredIn` object property.
+*   **What policy is associated with the data?** Answered using `:Data` (or `:DataType`), `:PrivacyPolicy`, and the `:hasPrivacyPolicy` object property.
+
+### 4. Intentionally excluded concepts
+*   **Specific Sub-types of Provenance Records (e.g., Consent Records, Access Records, Policy Change Records):** Excluded as distinct classes to maintain a generalized ontology design pattern. They are subsumed under the broader `:ProvenanceRecord` class.
+*   **Specific Sub-types of GDPR Rights (e.g., Right to withdraw consent):** Excluded as distinct classes for the same reason; they are subsumed under the broader `:GDPRRight` class.
+*   **"Machine-readable":** Excluded as a distinct concept or property. In the context of Semantic Web and OWL, the ontology itself inherently makes the `:PrivacyNotice` machine-readable.
+*   **"Authorities":** Excluded as a distinct class. Authorities are implicitly modeled as a type of `:SolidActor` who would consume the `:AuditingInformation`. Adding a specific class for them without unique structural properties would overcomplicate the pattern.

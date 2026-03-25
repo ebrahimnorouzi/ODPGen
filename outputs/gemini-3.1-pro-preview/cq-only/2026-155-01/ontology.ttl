@@ -1,0 +1,194 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Cultural Heritage Survey and Investigation Ontology Design Pattern"@en ;
+    rdfs:comment "An ontology design pattern to model survey and investigation activities on cultural properties, including methods, observations, expert participation, technical configurations, and post-processed outputs."@en .
+
+### Classes ###
+
+:SurveyOrInvestigationActivity a owl:Class ;
+    rdfs:label "Survey or Investigation Activity"@en ;
+    rdfs:comment "An activity conducted to survey or investigate a cultural property or feature of interest."@en .
+
+:CulturalProperty a owl:Class ;
+    rdfs:label "Cultural Property"@en ;
+    rdfs:comment "A physical artifact, building, or site of cultural, historical, or artistic significance."@en .
+
+:FeatureOfInterest a owl:Class ;
+    rdfs:label "Feature of Interest"@en ;
+    rdfs:comment "A specific part, aspect, or feature of a cultural property that is the focus of an investigation."@en .
+
+:MethodOrTechnique a owl:Class ;
+    rdfs:label "Method or Technique"@en ;
+    rdfs:comment "A specific method or technique adopted during a survey or investigation activity."@en .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation"@en ;
+    rdfs:comment "An observation produced during a survey, investigation, or acquisition activity."@en .
+
+:Expert a owl:Class ;
+    rdfs:label "Expert"@en ;
+    rdfs:comment "A person with specialized knowledge who participates in a survey or investigation."@en .
+
+:Role a owl:Class ;
+    rdfs:label "Role"@en ;
+    rdfs:comment "The specific function or position an expert assumes during their participation in an activity."@en .
+
+:Participation a owl:Class ;
+    rdfs:label "Participation"@en ;
+    rdfs:comment "An n-ary relationship class representing the involvement of an expert in a specific role during an activity."@en .
+
+:Hardware a owl:Class ;
+    rdfs:label "Hardware"@en ;
+    rdfs:comment "Physical equipment or devices used to conduct an activity."@en .
+
+:Software a owl:Class ;
+    rdfs:label "Software"@en ;
+    rdfs:comment "Computer programs or applications used to conduct an activity."@en .
+
+:TechnicalConfiguration a owl:Class ;
+    rdfs:label "Technical Configuration"@en ;
+    rdfs:comment "The specific setup or configuration of hardware and software used during an activity."@en .
+
+:InterpretationOrClaim a owl:Class ;
+    rdfs:label "Interpretation or Claim"@en ;
+    rdfs:comment "A conclusion, interpretation, or claim supported by observations."@en .
+
+:AcquisitionOrObservationActivity a owl:Class ;
+    rdfs:label "Acquisition or Observation Activity"@en ;
+    rdfs:comment "An activity focused on acquiring data or making observations, which may be part of a broader survey."@en .
+
+:PostProcessedOutput a owl:Class ;
+    rdfs:label "Post-Processed Output"@en ;
+    rdfs:comment "The result of processing data acquired during an observation or acquisition activity."@en .
+
+:InteractiveImage a owl:Class ;
+    rdfs:subClassOf :PostProcessedOutput ;
+    rdfs:label "Interactive Image"@en ;
+    rdfs:comment "A post-processed output in the form of an interactive image."@en .
+
+:Spectrum a owl:Class ;
+    rdfs:subClassOf :PostProcessedOutput ;
+    rdfs:label "Spectrum"@en ;
+    rdfs:comment "A post-processed output representing a spectrum."@en .
+
+:Dataset a owl:Class ;
+    rdfs:subClassOf :PostProcessedOutput ;
+    rdfs:label "Dataset"@en ;
+    rdfs:comment "A post-processed output in the form of a structured dataset."@en .
+
+:PhotographicAcquisitionCycle a owl:Class ;
+    rdfs:subClassOf :AcquisitionOrObservationActivity ;
+    rdfs:label "Photographic Acquisition Cycle"@en ;
+    rdfs:comment "A specific type of acquisition activity involving photographic capture."@en .
+
+:AcquisitionParameter a owl:Class ;
+    rdfs:label "Acquisition Parameter"@en ;
+    rdfs:comment "A parameter characterizing an acquisition cycle, such as exposure time, ISO, or aperture."@en .
+
+:ExposureTime a owl:Class ;
+    rdfs:subClassOf :AcquisitionParameter ;
+    rdfs:label "Exposure Time"@en ;
+    rdfs:comment "The duration of time the camera sensor is exposed to light."@en .
+
+:ISO a owl:Class ;
+    rdfs:subClassOf :AcquisitionParameter ;
+    rdfs:label "ISO"@en ;
+    rdfs:comment "The sensitivity of the camera sensor to light."@en .
+
+:Aperture a owl:Class ;
+    rdfs:subClassOf :AcquisitionParameter ;
+    rdfs:label "Aperture"@en ;
+    rdfs:comment "The opening in a lens through which light passes."@en .
+
+### Object Properties ###
+
+:performedOn a owl:ObjectProperty ;
+    rdfs:label "performed on"@en ;
+    rdfs:comment "Links an activity to the cultural property or feature of interest it investigates."@en ;
+    rdfs:domain :SurveyOrInvestigationActivity ;
+    rdfs:range [ a owl:Class ; owl:unionOf ( :CulturalProperty :FeatureOfInterest ) ] .
+
+:adoptsMethod a owl:ObjectProperty ;
+    rdfs:label "adopts method"@en ;
+    rdfs:comment "Links an activity to the method or technique it adopts."@en ;
+    rdfs:domain :SurveyOrInvestigationActivity ;
+    rdfs:range :MethodOrTechnique .
+
+:producesObservation a owl:ObjectProperty ;
+    rdfs:label "produces observation"@en ;
+    rdfs:comment "Links an activity to the observation it produces."@en ;
+    rdfs:domain :SurveyOrInvestigationActivity ;
+    rdfs:range :Observation .
+
+:hasParticipation a owl:ObjectProperty ;
+    rdfs:label "has participation"@en ;
+    rdfs:comment "Links an activity to a participation context (n-ary relation) to describe who took part and how."@en ;
+    rdfs:domain :SurveyOrInvestigationActivity ;
+    rdfs:range :Participation .
+
+:hasParticipant a owl:ObjectProperty ;
+    rdfs:label "has participant"@en ;
+    rdfs:comment "Links a participation context to the expert involved."@en ;
+    rdfs:domain :Participation ;
+    rdfs:range :Expert .
+
+:hasRole a owl:ObjectProperty ;
+    rdfs:label "has role"@en ;
+    rdfs:comment "Links a participation context to the role played by the expert."@en ;
+    rdfs:domain :Participation ;
+    rdfs:range :Role .
+
+:usesHardware a owl:ObjectProperty ;
+    rdfs:label "uses hardware"@en ;
+    rdfs:comment "Links an activity to the hardware used."@en ;
+    rdfs:domain :SurveyOrInvestigationActivity ;
+    rdfs:range :Hardware .
+
+:usesSoftware a owl:ObjectProperty ;
+    rdfs:label "uses software"@en ;
+    rdfs:comment "Links an activity to the software used."@en ;
+    rdfs:domain :SurveyOrInvestigationActivity ;
+    rdfs:range :Software .
+
+:hasConfiguration a owl:ObjectProperty ;
+    rdfs:label "has configuration"@en ;
+    rdfs:comment "Links an activity to its technical configuration."@en ;
+    rdfs:domain :SurveyOrInvestigationActivity ;
+    rdfs:range :TechnicalConfiguration .
+
+:supportsInterpretation a owl:ObjectProperty ;
+    rdfs:label "supports interpretation"@en ;
+    rdfs:comment "Links an observation to the interpretation or claim it supports."@en ;
+    rdfs:domain :Observation ;
+    rdfs:range :InterpretationOrClaim .
+
+:derivedFromActivity a owl:ObjectProperty ;
+    rdfs:label "derived from activity"@en ;
+    rdfs:comment "Links a post-processed output to its underlying acquisition or observation activity."@en ;
+    rdfs:domain :PostProcessedOutput ;
+    rdfs:range :AcquisitionOrObservationActivity .
+
+:isPartOfSurvey a owl:ObjectProperty ;
+    rdfs:label "is part of survey"@en ;
+    rdfs:comment "Links an acquisition cycle or activity to the broader survey it belongs to."@en ;
+    rdfs:domain :AcquisitionOrObservationActivity ;
+    rdfs:range :SurveyOrInvestigationActivity .
+
+:hasAcquisitionParameter a owl:ObjectProperty ;
+    rdfs:label "has acquisition parameter"@en ;
+    rdfs:comment "Links a photographic acquisition cycle to its parameters."@en ;
+    rdfs:domain :PhotographicAcquisitionCycle ;
+    rdfs:range :AcquisitionParameter .
+
+### Datatype Properties ###
+
+:hasParameterValue a owl:DatatypeProperty ;
+    rdfs:label "has parameter value"@en ;
+    rdfs:comment "The literal value of an acquisition parameter (e.g., '1/200s', '400', 'f/8')."@en ;
+    rdfs:domain :AcquisitionParameter ;
+    rdfs:range xsd:string .

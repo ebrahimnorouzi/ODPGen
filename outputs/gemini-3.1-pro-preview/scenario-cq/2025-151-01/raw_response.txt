@@ -1,0 +1,113 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Evaluation Request Context Ontology Design Pattern" ;
+    rdfs:comment "An ODP representing an evaluation request for an action on a target asset, enriched with temporal, spatial, role, and capability contexts." .
+
+### Classes ###
+
+:EvaluationRequest a owl:Class ;
+    rdfs:label "Evaluation Request" ;
+    rdfs:comment "A formal request for an action to be evaluated or performed on a target asset." .
+
+:RequestedAction a owl:Class ;
+    rdfs:label "Requested Action" ;
+    rdfs:comment "The specific action requested to be performed." .
+
+:Assignee a owl:Class ;
+    rdfs:label "Assignee" ;
+    rdfs:comment "The entity assigned to perform the requested action." .
+
+:TargetAsset a owl:Class ;
+    rdfs:label "Target Asset" ;
+    rdfs:comment "The asset that is the target of the requested action." .
+
+:Issuer a owl:Class ;
+    rdfs:label "Issuer" ;
+    rdfs:comment "The party issuing the evaluation request." .
+
+:ContextualInformation a owl:Class ;
+    rdfs:label "Contextual Information" ;
+    rdfs:comment "Additional contextual information to constrain or enrich the evaluation request." .
+
+:TemporalContext a owl:Class ;
+    rdfs:subClassOf :ContextualInformation ;
+    rdfs:label "Temporal Context" ;
+    rdfs:comment "Contextual information regarding time constraints." .
+
+:SpatialContext a owl:Class ;
+    rdfs:subClassOf :ContextualInformation ;
+    rdfs:label "Spatial Context" ;
+    rdfs:comment "Contextual information regarding location constraints." .
+
+:RoleContext a owl:Class ;
+    rdfs:subClassOf :ContextualInformation ;
+    rdfs:label "Role Context" ;
+    rdfs:comment "Contextual information regarding role constraints." .
+
+:RequestCapabilityContext a owl:Class ;
+    rdfs:subClassOf :ContextualInformation ;
+    rdfs:label "Request Capability Context" ;
+    rdfs:comment "Contextual information regarding the capabilities required or provided for the request." .
+
+### Object Properties ###
+
+:hasAction a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :RequestedAction ;
+    rdfs:label "has action" ;
+    rdfs:comment "Links an evaluation request to the action being requested." .
+
+:hasAssignee a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :Assignee ;
+    rdfs:label "has assignee" ;
+    rdfs:comment "Links an evaluation request to the assignee responsible for the action." .
+
+:hasTargetAsset a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :TargetAsset ;
+    rdfs:label "has target asset" ;
+    rdfs:comment "Links an evaluation request to the asset targeted by the action." .
+
+:issuedBy a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :Issuer ;
+    rdfs:label "issued by" ;
+    rdfs:comment "Links an evaluation request to the party that issued it." .
+
+:hasContext a owl:ObjectProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range :ContextualInformation ;
+    rdfs:label "has context" ;
+    rdfs:comment "Links an evaluation request to its contextual information." .
+
+### Datatype Properties ###
+
+:issuedAt a owl:DatatypeProperty ;
+    rdfs:domain :EvaluationRequest ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "issued at" ;
+    rdfs:comment "The date and time when the evaluation request was issued." .
+```
+
+### 2. Scenario-requirement-to-axiom mapping
+*   **"Formal description of a requested action by an assignee on a target asset"**: Encoded by the classes `:EvaluationRequest`, `:RequestedAction`, `:Assignee`, and `:TargetAsset`, connected via the object properties `:hasAction`, `:hasAssignee`, and `:hasTargetAsset`.
+*   **"which can be enriched with further contextual information"**: Encoded by the class `:ContextualInformation` and the object property `:hasContext` linking it to the `:EvaluationRequest`.
+*   **"evaluation therefore needs temporal, spatial, role, and request-capability context"**: Encoded by creating specific subclasses of `:ContextualInformation`: `:TemporalContext`, `:SpatialContext`, `:RoleContext`, and `:RequestCapabilityContext`.
+
+### 3. CQ-to-axiom mapping
+*   **What is the requested action?**: Answered using the `:EvaluationRequest` class, the `:hasAction` object property, and the `:RequestedAction` class.
+*   **Who is the party issuing the evaluation request?**: Answered using the `:EvaluationRequest` class, the `:issuedBy` object property, and the `:Issuer` class.
+*   **What is the target asset of the evaluation request?**: Answered using the `:EvaluationRequest` class, the `:hasTargetAsset` object property, and the `:TargetAsset` class.
+*   **When was the evaluation request issued?**: Answered using the `:EvaluationRequest` class and the `:issuedAt` datatype property (with range `xsd:dateTime`).
+*   **What additional contextual information can be included in the evaluation request to further constrain it?**: Answered using the `:EvaluationRequest` class, the `:hasContext` object property, and the `:ContextualInformation` class (along with its specific subclasses).
+
+### 4. Intentionally excluded concepts
+*   **"employees", "weekdays", "EU"**: These are intentionally excluded from the schema because they represent specific *instances* or *data values* of the context classes (Role, Temporal, and Spatial contexts, respectively). Including them would violate the requirement to output schema axioms only and not create individual instances.
+*   **"access"**: Excluded as a standalone class. In the context of the scenario, "access" is simply an example of a specific `:RequestedAction`. Creating a dedicated class for it would overfit the schema to the example rather than providing a generalized pattern for requested actions.

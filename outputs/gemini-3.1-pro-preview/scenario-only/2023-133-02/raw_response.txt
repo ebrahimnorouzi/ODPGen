@@ -1,0 +1,136 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "kHealth-Asthma Causal Relation Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern representing pediatric asthma patients, their symptoms, medication intake, outdoor environmental features, and the weighted causal relations between the environment and patient conditions." .
+
+### Classes ###
+
+:PediatricAsthmaPatient a owl:Class ;
+    rdfs:label "Pediatric Asthma Patient" ;
+    rdfs:comment "A child patient diagnosed with asthma who is participating in the continuous self-monitoring project." .
+
+:Symptom a owl:Class ;
+    rdfs:label "Symptom" ;
+    rdfs:comment "A physical or mental feature indicating a condition of disease, specifically asthma symptoms in this context." .
+
+:Cough a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Cough" ;
+    rdfs:comment "An asthma symptom characterized by expelling air from the lungs with a sudden sharp sound." .
+
+:ChestTightness a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Chest Tightness" ;
+    rdfs:comment "An asthma symptom characterized by a feeling of constriction or pressure in the chest." .
+
+:Wheezing a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Wheezing" ;
+    rdfs:comment "An asthma symptom characterized by a high-pitched whistling sound made while breathing." .
+
+:BreathingPattern a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Breathing Pattern" ;
+    rdfs:comment "An asthma symptom or observation related to the rate, depth, and rhythm of a patient's breathing." .
+
+:MedicationIntake a owl:Class ;
+    rdfs:label "Medication Intake" ;
+    rdfs:comment "The event or record of a patient consuming or being administered asthma medication." .
+
+:OutdoorEnvironmentFeature a owl:Class ;
+    rdfs:label "Outdoor Environment Feature" ;
+    rdfs:comment "A characteristic or measurement of the outdoor environment, such as allergens or air quality, that may affect asthma." .
+
+:Pollen a owl:Class ;
+    rdfs:subClassOf :OutdoorEnvironmentFeature ;
+    rdfs:label "Pollen" ;
+    rdfs:comment "A fine powdery substance consisting of pollen grains, acting as an outdoor environmental allergen." .
+
+:AirQualityIndex a owl:Class ;
+    rdfs:subClassOf :OutdoorEnvironmentFeature ;
+    rdfs:label "Air Quality Index" ;
+    rdfs:comment "A quantitative measure (AQI) used to report daily air quality and pollution levels." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "An n-ary relation representing a weighted causal link (edge) between an environmental cause and a patient's symptom or medication intake." .
+
+### Disjointness ###
+
+[ a owl:AllDisjointClasses ;
+  owl:members ( 
+      :CausalRelation 
+      :MedicationIntake 
+      :OutdoorEnvironmentFeature 
+      :PediatricAsthmaPatient 
+      :Symptom 
+  )
+] .
+
+### Object Properties ###
+
+:hasSymptom a owl:ObjectProperty ;
+    rdfs:domain :PediatricAsthmaPatient ;
+    rdfs:range :Symptom ;
+    rdfs:label "has symptom" ;
+    rdfs:comment "Relates a pediatric asthma patient to a symptom they experience." .
+
+:hasMedicationIntake a owl:ObjectProperty ;
+    rdfs:domain :PediatricAsthmaPatient ;
+    rdfs:range :MedicationIntake ;
+    rdfs:label "has medication intake" ;
+    rdfs:comment "Relates a pediatric asthma patient to their intake of medication." .
+
+:hasEnvironmentFeature a owl:ObjectProperty ;
+    rdfs:domain :PediatricAsthmaPatient ;
+    rdfs:range :OutdoorEnvironmentFeature ;
+    rdfs:label "has environment feature" ;
+    rdfs:comment "Relates a pediatric asthma patient to the outdoor environment features they are exposed to." .
+
+:hasCause a owl:ObjectProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :OutdoorEnvironmentFeature ;
+    rdfs:label "has cause" ;
+    rdfs:comment "Indicates the environmental feature that acts as the cause in a causal relation." .
+
+:hasEffect a owl:ObjectProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range [ 
+        a owl:Class ;
+        owl:unionOf ( :Symptom :MedicationIntake )
+    ] ;
+    rdfs:label "has effect" ;
+    rdfs:comment "Indicates the resulting symptom or medication intake in a causal relation." .
+
+### Datatype Properties ###
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:float ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight representing the strength of the causal effect between the environment and the patient's condition." .
+```
+
+### Documentation
+
+**Intent:** 
+To model the continuous self-monitoring data of pediatric asthma patients, capturing their symptoms, medication intake, environmental exposures, and the weighted causal relationships between the environment and the patients' health conditions.
+
+**Covered requirements:**
+*   Representation of pediatric asthma patients.
+*   Representation of specific asthma symptoms (cough, chest tightness, wheezing, breathing patterns).
+*   Representation of medication intake events.
+*   Representation of outdoor environment features (pollen, AQI).
+*   Modeling of causal relations (edges) with specific effect weights (e.g., 0.8, 0.4) linking environmental features to symptoms or medication intake.
+
+**Known assumptions and exclusions:**
+*   **Assumption (N-ary Relation):** Because OWL does not natively support properties on properties (e.g., adding a weight directly to a `causes` object property), the causal edges are modeled using an n-ary relation pattern via the `CausalRelation` class. This allows the assignment of a specific `hasEffectWeight` to the relationship.
+*   **Assumption (Effect Range):** The scenario states that environmental allergens affect "the patient's symptoms and their medication intake." Therefore, the range of the `hasEffect` property is modeled as a union of `Symptom` and `MedicationIntake`.
+*   **Exclusion (Temporal Data):** Although the scenario mentions "continuous self-monitoring," specific temporal concepts (like timestamps or observation periods) were excluded to strictly adhere to the provided scope without inventing unmentioned classes.
+*   **Exclusion (Instances):** As requested, no individual patients, specific weight instances, or specific symptom occurrences are instantiated; the output is strictly the schema/pattern.

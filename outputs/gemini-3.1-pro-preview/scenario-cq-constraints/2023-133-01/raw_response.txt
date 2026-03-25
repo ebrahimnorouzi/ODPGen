@@ -1,0 +1,73 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Causal Bayesian Network Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern for representing events, their causal relations, effect weights, and states in a Causal Bayesian Network." .
+
+:Event a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "A node in the causal network representing an occurrence or state of affairs, such as raining or a sprinkler being on." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A reified directed causal link between a source event and a target event, allowing the assignment of an effect weight." .
+
+:hasSourceEvent a owl:ObjectProperty ;
+    rdfs:label "has source event" ;
+    rdfs:comment "Links a causal relation to its originating (cause) event." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:hasTargetEvent a owl:ObjectProperty ;
+    rdfs:label "has target event" ;
+    rdfs:comment "Links a causal relation to its resulting (effect) event." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:causes a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "causes" ;
+    rdfs:comment "A transitive property linking an event directly or indirectly to another event it causes, useful for tracing mediated effects." ;
+    rdfs:domain :Event ;
+    rdfs:range :Event .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight or strength of the causal relation." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:decimal .
+
+:hasEventState a owl:DatatypeProperty ;
+    rdfs:label "has event state" ;
+    rdfs:comment "The boolean state of the event (e.g., true for 'on' or 'wet', false for 'off' or 'not wet')." ;
+    rdfs:domain :Event ;
+    rdfs:range xsd:boolean .
+```
+
+### Validation Report
+1. **Turtle syntax is valid:** PASS. All statements are correctly terminated with periods, and property lists use semicolons and commas appropriately.
+2. **All prefixes used in the body are declared at the top:** PASS. `owl:`, `rdf:`, `rdfs:`, `xsd:`, and `:` are all declared and used correctly.
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS. Domains and ranges strictly use `:Event`, `:CausalRelation`, `xsd:decimal`, and `xsd:boolean`.
+4. **No two classes or properties are defined with contradictory restrictions:** PASS. The ontology is minimal and contains no disjointness axioms or complex restrictions that could cause logical inconsistencies.
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS. 
+   - CQ1 (responsible events) traces to `:causes` (transitive).
+   - CQ2 (outcome of turning on/off) traces to `:hasEventState` and `:hasTargetEvent`.
+   - CQ3 (strength of causal link) traces to `:CausalRelation` and `:hasEffectWeight`.
+   - CQ4 (effect of not being wet) traces to `:hasEventState` and `:hasTargetEvent`.
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS. All classes and properties directly map to the scenario's nodes (Events), directed edges (CausalRelations), effect weights, mediated effects, and on/off states.
+
+### Scope Report
+**a) Requirements from the scenario that are covered:**
+- **Nodes representing events:** Covered by the `:Event` class.
+- **Directed edges representing causal relations:** Covered by the reified `:CausalRelation` class, linked via `:hasSourceEvent` and `:hasTargetEvent`.
+- **Effect weights:** Covered by the `:hasEffectWeight` datatype property attached to the reified causal relation.
+- **Mediated causal relations:** Covered by the transitive `:causes` object property, allowing reasoning over indirect causes (e.g., rain -> wet -> slippery).
+- **Event states (on/off, wet/not wet):** Covered by the `:hasEventState` datatype property (boolean).
+
+**b) Scenario concepts explicitly excluded and why:**
+- **Specific instances (e.g., Sprinkler, Rain, Pavement):** Excluded to comply with the strict constraint of not creating individual instances. The ontology provides the schema (ODP) to instantiate these later.
+- **Probabilistic/Bayesian mathematical calculations:** Excluded because OWL is a Description Logic language designed for structural and semantic reasoning, not for executing mathematical probability calculations. The ontology captures the *structure* and *weights* of the network, leaving the actual Bayesian computation to an external reasoning engine.

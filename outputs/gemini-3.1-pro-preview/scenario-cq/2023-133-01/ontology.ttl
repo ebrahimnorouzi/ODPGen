@@ -1,0 +1,55 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Causal Bayesian Network (CBN) Sprinkler Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern representing events, causal relations, and effect weights in a Causal Bayesian Network, based on the classic sprinkler use case." .
+
+:Event a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "An occurrence or state in the domain, such as raining, a sprinkler being on, or a pavement being wet." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A reified causal link between two events, representing the directed edge in a Causal Bayesian Network and carrying the effect weight." .
+
+:hasCause a owl:ObjectProperty ;
+    rdfs:label "has cause" ;
+    rdfs:comment "Links a causal relation to the event that acts as the origin or cause." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:hasEffect a owl:ObjectProperty ;
+    rdfs:label "has effect" ;
+    rdfs:comment "Links a causal relation to the event that acts as the outcome or effect." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:causes a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "causes" ;
+    rdfs:comment "A transitive property linking an event to another event it causes, either directly or indirectly (mediated)." ;
+    rdfs:domain :Event ;
+    rdfs:range :Event .
+
+:directlyCauses a owl:ObjectProperty ;
+    rdfs:label "directly causes" ;
+    rdfs:comment "Links an event to another event it causes directly, without mediating events." ;
+    rdfs:subPropertyOf :causes ;
+    rdfs:domain :Event ;
+    rdfs:range :Event .
+
+:isCausedBy a owl:ObjectProperty ;
+    rdfs:label "is caused by" ;
+    rdfs:comment "Inverse of causes. Indicates the events responsible for a given event." ;
+    owl:inverseOf :causes ;
+    rdfs:domain :Event ;
+    rdfs:range :Event .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight or strength of the causal relation between two events." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:decimal .

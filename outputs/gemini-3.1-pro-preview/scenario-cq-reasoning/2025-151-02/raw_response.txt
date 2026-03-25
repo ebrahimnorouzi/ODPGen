@@ -1,0 +1,184 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "ODRL Policy Evaluation Context Ontology" ;
+    rdfs:comment "An ontology design pattern representing real-world context information for evaluating ODRL policies, including parties, assets, rules, events, and actions." .
+
+### Classes ###
+
+:Policy a owl:Class ;
+    rdfs:label "Policy" ;
+    rdfs:comment "An ODRL policy being evaluated." .
+
+:AssetCollection a owl:Class ;
+    rdfs:label "Asset Collection" ;
+    rdfs:comment "A collection of assets governed by a policy." .
+
+:Asset a owl:Class ;
+    rdfs:label "Asset" ;
+    rdfs:comment "A resource, such as a video stream, targeted by a policy." .
+
+:PartyCollection a owl:Class ;
+    rdfs:label "Party Collection" ;
+    rdfs:comment "A collection of parties associated with a policy." .
+
+:Party a owl:Class ;
+    rdfs:label "Party" ;
+    rdfs:comment "An entity, such as a person or organization, involved in a policy." .
+
+:Location a owl:Class ;
+    rdfs:label "Location" ;
+    rdfs:comment "A physical or virtual location of a party." .
+
+:Action a owl:Class ;
+    rdfs:label "Action" ;
+    rdfs:comment "An operation performed or attempted on an asset." .
+
+:Rule a owl:Class ;
+    rdfs:label "Rule" ;
+    rdfs:comment "A statement within a policy that dictates permissions, prohibitions, or duties." .
+
+:Event a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "An occurrence in the real world that may trigger or affect policy evaluation." .
+
+:Recipient a owl:Class ;
+    rdfs:label "Recipient" ;
+    rdfs:comment "An entity or category of entities receiving the result of an exercised rule." .
+
+:Payment a owl:Class ;
+    rdfs:label "Payment" ;
+    rdfs:comment "A financial transaction made in relation to a policy." .
+
+:Purpose a owl:Class ;
+    rdfs:label "Purpose" ;
+    rdfs:comment "The intent or reason for an action, such as academic research." .
+
+:Context a owl:Class ;
+    rdfs:label "Context" ;
+    rdfs:comment "The environmental state, such as the current time, during policy evaluation." .
+
+### Object Properties ###
+
+:hasAssetCollection a owl:ObjectProperty ;
+    rdfs:label "has asset collection" ;
+    rdfs:comment "Links a policy to its collection of assets." ;
+    rdfs:domain :Policy ;
+    rdfs:range :AssetCollection .
+
+:hasAsset a owl:ObjectProperty ;
+    rdfs:label "has asset" ;
+    rdfs:comment "Links an asset collection to an individual asset." ;
+    rdfs:domain :AssetCollection ;
+    rdfs:range :Asset .
+
+:hasPartyCollection a owl:ObjectProperty ;
+    rdfs:label "has party collection" ;
+    rdfs:comment "Links a policy to its collection of parties." ;
+    rdfs:domain :Policy ;
+    rdfs:range :PartyCollection .
+
+:hasParty a owl:ObjectProperty ;
+    rdfs:label "has party" ;
+    rdfs:comment "Links a party collection to an individual party." ;
+    rdfs:domain :PartyCollection ;
+    rdfs:range :Party .
+
+:hasLocation a owl:ObjectProperty ;
+    rdfs:label "has location" ;
+    rdfs:comment "Specifies the location of a party." ;
+    rdfs:domain :Party ;
+    rdfs:range :Location .
+
+:hasRecipient a owl:ObjectProperty ;
+    rdfs:label "has recipient" ;
+    rdfs:comment "Links a rule to the recipient of its result." ;
+    rdfs:domain :Rule ;
+    rdfs:range :Recipient .
+
+:hasPurpose a owl:ObjectProperty ;
+    rdfs:label "has purpose" ;
+    rdfs:comment "Specifies the purpose for which an action is performed." ;
+    rdfs:domain :Action ;
+    rdfs:range :Purpose .
+
+### Datatype Properties ###
+
+:currentTime a owl:DatatypeProperty ;
+    rdfs:label "current time" ;
+    rdfs:comment "The current time in the evaluation context." ;
+    rdfs:domain :Context ;
+    rdfs:range xsd:dateTime .
+
+:actionStatus a owl:DatatypeProperty ;
+    rdfs:label "action status" ;
+    rdfs:comment "The status of an action, such as 'performed' or 'attempted'." ;
+    rdfs:domain :Action ;
+    rdfs:range xsd:string .
+
+:exercisedCount a owl:DatatypeProperty ;
+    rdfs:label "exercised count" ;
+    rdfs:comment "The number of times a rule has been exercised." ;
+    rdfs:domain :Rule ;
+    rdfs:range xsd:integer .
+
+:exercisedDuration a owl:DatatypeProperty ;
+    rdfs:label "exercised duration" ;
+    rdfs:comment "The total duration for which a rule has been exercised." ;
+    rdfs:domain :Rule ;
+    rdfs:range xsd:duration .
+
+:eventInformation a owl:DatatypeProperty ;
+    rdfs:label "event information" ;
+    rdfs:comment "Available information or logs regarding an event that has occurred." ;
+    rdfs:domain :Event ;
+    rdfs:range xsd:string .
+
+:isPaid a owl:DatatypeProperty ;
+    rdfs:label "is paid" ;
+    rdfs:comment "Indicates whether a financial payment has been successfully made." ;
+    rdfs:domain :Payment ;
+    rdfs:range xsd:boolean .
+
+:paymentAmount a owl:DatatypeProperty ;
+    rdfs:label "payment amount" ;
+    rdfs:comment "The monetary amount paid in a financial transaction." ;
+    rdfs:domain :Payment ;
+    rdfs:range xsd:decimal .
+
+:temporalFragment a owl:DatatypeProperty ;
+    rdfs:label "temporal fragment" ;
+    rdfs:comment "A specific time segment of an asset, such as 'minutes 4 to 9'." ;
+    rdfs:domain :Asset ;
+    rdfs:range xsd:string .
+```
+
+### Reasoning Summary
+*   **Step 1:** Extracted atomic requirements: ODRL policy evaluation context, party requesting asset access, temporal fragment restrictions, and specific access purposes.
+*   **Step 2:** Proposed candidate classes (`Policy`, `Party`, `Asset`, `Rule`, `Event`, `Payment`, `Context`, etc.) and properties (`hasLocation`, `currentTime`, `exercisedCount`, etc.) based on requirements and CQs.
+*   **Step 3:** Drafted axioms defining domains and ranges to link policies to collections, rules to recipients, and context to time.
+*   **Step 4:** Verified axioms against CQs, ensuring coverage for time, location, collections, action statuses, rule metrics, event info, and payments.
+*   **Step 5:** Added `hasPurpose` and `temporalFragment` to cover the scenario's specific requirements (academic research purpose, minutes 4 to 9).
+*   **Step 6:** Reviewed the model to ensure no extraneous classes or properties were included, keeping the design minimal and strictly traceable.
+
+### Traceability Table
+
+| Requirement / Competency Question | Covering Axioms (Classes & Properties) |
+| :--- | :--- |
+| **Req:** Access to a certain video stream restricted to minutes 4 to 9. | `:Asset`, `:temporalFragment` |
+| **Req:** Access for the purposes of an academic research project. | `:Action`, `:Purpose`, `:hasPurpose` |
+| **CQ1:** What is the current time? | `:Context`, `:currentTime` |
+| **CQ2:** What is the location of a party? | `:Party`, `:Location`, `:hasLocation` |
+| **CQ3:** What assets are part of the asset collection of the policy...? | `:Policy`, `:AssetCollection`, `:Asset`, `:hasAssetCollection`, `:hasAsset` |
+| **CQ4:** Which parties are part of the party collection of the policy...? | `:Policy`, `:PartyCollection`, `:Party`, `:hasPartyCollection`, `:hasParty` |
+| **CQ5:** What actions were already performed or attempted? | `:Action`, `:actionStatus` |
+| **CQ6:** How many times has a rule been exercised? | `:Rule`, `:exercisedCount` |
+| **CQ7:** What information is available about an event that has occurred? | `:Event`, `:eventInformation` |
+| **CQ8:** How long has a rule been exercised? | `:Rule`, `:exercisedDuration` |
+| **CQ9:** Which recipients or categories of recipients can receive the result...? | `:Rule`, `:Recipient`, `:hasRecipient` |
+| **CQ10:** Has a financial payment been made? What was the amount paid? | `:Payment`, `:isPaid`, `:paymentAmount` |

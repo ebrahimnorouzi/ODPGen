@@ -1,0 +1,85 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Causal Bayesian Network Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern for representing events, their states, and weighted causal relations (direct and mediated) in a Causal Bayesian Network." .
+
+:Event a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "A node in a Causal Bayesian Network representing an occurrence or condition." .
+
+:EventState a owl:Class ;
+    rdfs:label "Event State" ;
+    rdfs:comment "The specific state or value of an event (e.g., on, off, wet, not wet)." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A directed edge in a Causal Bayesian Network representing a causal link between a cause event and an effect event." ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :hasCause ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] ,
+    [
+        a owl:Restriction ;
+        owl:onProperty :hasEffect ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] .
+
+:hasCause a owl:ObjectProperty ;
+    rdfs:label "has cause" ;
+    rdfs:comment "Links a causal relation to the event that acts as the cause." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:hasEffect a owl:ObjectProperty ;
+    rdfs:label "has effect" ;
+    rdfs:comment "Links a causal relation to the event that acts as the effect." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:hasMediator a owl:ObjectProperty ;
+    rdfs:label "has mediator" ;
+    rdfs:comment "Links a causal relation to an event that mediates the effect of the cause on the effect." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:hasState a owl:ObjectProperty ;
+    rdfs:label "has state" ;
+    rdfs:comment "Links an event to its current or possible state." ;
+    rdfs:domain :Event ;
+    rdfs:range :EventState .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight or strength of the causal relation." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:float .
+```
+
+### Reasoning Summary
+* **Step 1:** Extracted requirements: events exist, causal relations connect events, relations have weights, relations can be mediated, and events have states.
+* **Step 2:** Proposed classes (`Event`, `CausalRelation`, `EventState`) and properties (`hasCause`, `hasEffect`, `hasMediator`, `hasState`, `hasEffectWeight`).
+* **Step 3:** Drafted domain/range axioms for properties and cardinality restrictions ensuring each causal relation has exactly one cause and one effect.
+* **Step 4:** Verified CQs against drafted axioms; found that querying specific states (on/off, wet) required explicitly modeling event states.
+* **Step 5:** Added `EventState` class and `hasState` property to fully cover CQ2, CQ3, and CQ4 which ask about specific event conditions.
+* **Step 6:** Confirmed all classes and properties are directly traceable to the scenario's CBN structure and CQs; no extraneous elements remain.
+
+### Traceability Table
+
+| Requirement / CQ | Covering Axiom(s) |
+| :--- | :--- |
+| **R1:** A CBN models events. | `:Event a owl:Class .` |
+| **R2:** Directed edges represent causal relations between events. | `:CausalRelation a owl:Class .`<br>`:hasCause rdfs:domain :CausalRelation ; rdfs:range :Event .`<br>`:hasEffect rdfs:domain :CausalRelation ; rdfs:range :Event .` |
+| **R3:** Causal relations have effect weights. | `:hasEffectWeight rdfs:domain :CausalRelation ; rdfs:range xsd:float .` |
+| **R4:** Causal relations can be mediated by other events. | `:hasMediator rdfs:domain :CausalRelation ; rdfs:range :Event .` |
+| **R5:** Events can have states (on/off, wet/not wet). | `:EventState a owl:Class .`<br>`:hasState rdfs:domain :Event ; rdfs:range :EventState .` |
+| **CQ1:** What events are responsible for the pavement being slippery? | `:CausalRelation`, `:hasCause`, `:hasEffect` |
+| **CQ2:** What would be the outcome of turning the sprinkler system on(off)? | `:Event`, `:hasState`, `:CausalRelation`, `:hasCause`, `:hasEffect` |
+| **CQ3:** How strong is the causal link between the sprinkler being on and the pavement being wet? | `:CausalRelation`, `:hasCause`, `:hasEffect`, `:hasEffectWeight`, `:hasState` |
+| **CQ4:** What if the pavement is not wet, how would it effect the pavement being slippery? | `:Event`, `:hasState`, `:CausalRelation`, `:hasMediator`, `:hasEffect` |

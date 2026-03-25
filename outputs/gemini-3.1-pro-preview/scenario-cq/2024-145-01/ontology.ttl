@@ -1,0 +1,88 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Legal Court and Bad Check Ontology" ;
+    rdfs:comment "An ontology design pattern capturing court hierarchies and bad check crime regulations." .
+
+# --- Classes ---
+
+:Court a owl:Class ;
+    rdfs:label "Court" ;
+    rdfs:comment "A tribunal presided over by a judge, judges, or a magistrate in civil and criminal cases." .
+
+:DistrictCourt a owl:Class ;
+    rdfs:subClassOf :Court ;
+    rdfs:label "District Court" ;
+    rdfs:comment "A court that has jurisdiction over a specific district." .
+
+:State a owl:Class ;
+    rdfs:label "State" ;
+    rdfs:comment "A principal administrative division of a country." .
+
+:District a owl:Class ;
+    rdfs:label "District" ;
+    rdfs:comment "An administrative division of a state." .
+
+:Check a owl:Class ;
+    rdfs:label "Check" ;
+    rdfs:comment "A written, dated, and signed instrument that directs a bank to pay a specific sum of money to the bearer." .
+
+:BadCheck a owl:Class ;
+    rdfs:subClassOf :Check ;
+    rdfs:label "Bad Check" ;
+    rdfs:comment "A check drawn on a nonexistent account or on an account with insufficient funds." .
+
+:CheckTransactionType a owl:Class ;
+    rdfs:label "Check Transaction Type" ;
+    rdfs:comment "The type or category of a check transaction." .
+
+:CheckPayment a owl:Class ;
+    rdfs:label "Check Payment" ;
+    rdfs:comment "The event or record of a payment made using a check." .
+
+:TransactionStatus a owl:Class ;
+    rdfs:label "Transaction Status" ;
+    rdfs:comment "The current status of a check payment transaction." .
+
+# --- Object Properties ---
+
+:locatedInState a owl:ObjectProperty ;
+    rdfs:label "located in state" ;
+    rdfs:comment "Relates an entity, such as a district or district court, to the state it is located in." ;
+    rdfs:range :State .
+
+:hasAuthorityOver a owl:ObjectProperty ;
+    rdfs:label "has authority over" ;
+    rdfs:comment "Relates a higher court to a lower court over which it has jurisdiction or authority." ;
+    rdfs:domain :Court ;
+    rdfs:range :Court .
+
+:hasTransactionType a owl:ObjectProperty ;
+    rdfs:label "has transaction type" ;
+    rdfs:comment "Relates a check (such as a bad check) to its transaction type." ;
+    rdfs:domain :Check ;
+    rdfs:range :CheckTransactionType .
+
+:isPaymentOf a owl:ObjectProperty ;
+    rdfs:label "is payment of" ;
+    rdfs:comment "Relates a check payment event to the specific check it pertains to." ;
+    rdfs:domain :CheckPayment ;
+    rdfs:range :Check .
+
+:hasTransactionStatus a owl:ObjectProperty ;
+    rdfs:label "has transaction status" ;
+    rdfs:comment "Relates a check payment to its current transaction status." ;
+    rdfs:domain :CheckPayment ;
+    rdfs:range :TransactionStatus .
+
+# --- Datatype Properties ---
+
+:paymentDate a owl:DatatypeProperty ;
+    rdfs:label "payment date" ;
+    rdfs:comment "The date and time when a check payment occurred." ;
+    rdfs:domain :CheckPayment ;
+    rdfs:range xsd:dateTime .

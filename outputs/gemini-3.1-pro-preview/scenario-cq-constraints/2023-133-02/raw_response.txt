@@ -1,0 +1,121 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Asthma Causal Relation Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern for modeling the causal relationships and effect weights between outdoor environmental features, asthma symptoms, and medication intake." .
+
+# --- Classes ---
+
+:Patient a owl:Class ;
+    rdfs:label "Patient" ;
+    rdfs:comment "A pediatric asthma patient participating in the continuous self-monitoring project." .
+
+:Symptom a owl:Class ;
+    rdfs:label "Symptom" ;
+    rdfs:comment "An asthma-related symptom experienced by the patient." .
+
+:Cough a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Cough" ;
+    rdfs:comment "A symptom characterized by coughing." .
+
+:ChestTightness a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Chest Tightness" ;
+    rdfs:comment "A symptom characterized by a feeling of tightness in the chest." .
+
+:Wheezing a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Wheezing" ;
+    rdfs:comment "A symptom characterized by a whistling sound while breathing." .
+
+:BreathingPattern a owl:Class ;
+    rdfs:subClassOf :Symptom ;
+    rdfs:label "Breathing Pattern" ;
+    rdfs:comment "A symptom or observable characteristic related to the patient's pattern of breathing." .
+
+:MedicationIntake a owl:Class ;
+    rdfs:label "Medication Intake" ;
+    rdfs:comment "The event or record of a patient taking asthma medication." .
+
+:OutdoorEnvironmentFeature a owl:Class ;
+    rdfs:label "Outdoor Environment Feature" ;
+    rdfs:comment "A feature of the outdoor environment, such as an allergen or air quality metric, that may affect the patient." .
+
+:Pollen a owl:Class ;
+    rdfs:subClassOf :OutdoorEnvironmentFeature ;
+    rdfs:label "Pollen" ;
+    rdfs:comment "Pollen present in the outdoor environment, acting as an allergen." .
+
+:AQI a owl:Class ;
+    rdfs:subClassOf :OutdoorEnvironmentFeature ;
+    rdfs:label "Air Quality Index (AQI)" ;
+    rdfs:comment "A metric representing the air quality in the outdoor environment, treated as an environmental factor." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "An n-ary relation representing a causal link between a cause (e.g., allergen, symptom) and an effect (e.g., symptom, medication intake), along with its causal effect weight." .
+
+# --- Object Properties ---
+
+:experiences a owl:ObjectProperty ;
+    rdfs:domain :Patient ;
+    rdfs:range :Symptom ;
+    rdfs:label "experiences" ;
+    rdfs:comment "Relates a patient to a symptom they experience." .
+
+:hasMedicationIntake a owl:ObjectProperty ;
+    rdfs:domain :Patient ;
+    rdfs:range :MedicationIntake ;
+    rdfs:label "has medication intake" ;
+    rdfs:comment "Relates a patient to their intake of medication." .
+
+:isExposedTo a owl:ObjectProperty ;
+    rdfs:domain :Patient ;
+    rdfs:range :OutdoorEnvironmentFeature ;
+    rdfs:label "is exposed to" ;
+    rdfs:comment "Relates a patient to an outdoor environmental feature they are exposed to." .
+
+:hasCause a owl:ObjectProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:label "has cause" ;
+    rdfs:comment "Relates a causal relation to the entity that acts as the cause (e.g., an environmental feature or a symptom)." .
+
+:hasEffect a owl:ObjectProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:label "has effect" ;
+    rdfs:comment "Relates a causal relation to the entity that acts as the effect (e.g., a symptom or medication intake)." .
+
+# --- Datatype Properties ---
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight representing the strength of the causal effect." .
+```
+
+### Validation Report
+1. **Turtle syntax is valid:** PASS (All statements are properly terminated with periods, and semicolons are correctly used for predicate-object lists).
+2. **All prefixes used in the body are declared at the top:** PASS (Standard prefixes `owl:`, `rdf:`, `rdfs:`, `xsd:`, and the custom `:` prefix are declared and used appropriately).
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS (All domains and ranges point to classes explicitly defined in the ontology or to `xsd:decimal`).
+4. **No two classes or properties are defined with contradictory restrictions:** PASS (The ontology uses a simple, flat hierarchy with no disjointness axioms or conflicting domain/range restrictions).
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS (CQs regarding causes, effects, and weights are fully traceable to the n-ary `:CausalRelation` class and its properties `:hasCause`, `:hasEffect`, and `:hasEffectWeight`).
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS (Every class and property directly maps to the provided text, including specific symptoms, environmental features, and causal weights).
+
+### Scope Report
+**Requirements Covered:**
+- **Patient Data:** Modeled via the `:Patient` class and properties linking to symptoms (`:experiences`), medication (`:hasMedicationIntake`), and environment (`:isExposedTo`).
+- **Symptoms:** Modeled as `:Symptom` with specific subclasses explicitly mentioned in the text (`:Cough`, `:ChestTightness`, `:Wheezing`, `:BreathingPattern`).
+- **Medication Intake:** Modeled as the `:MedicationIntake` class.
+- **Outdoor Environment Features:** Modeled as `:OutdoorEnvironmentFeature` with subclasses for `:Pollen` and `:AQI`.
+- **Causal Relations & Weights:** Modeled using an n-ary relation pattern (`:CausalRelation`) to allow edges to have both source (`:hasCause`), target (`:hasEffect`), and a quantitative weight (`:hasEffectWeight`), which is necessary to answer the "how much" and "what if" competency questions.
+
+**Concepts Explicitly Excluded:**
+- **Time-series / Temporal Data:** While the scenario mentions "continuous self-monitoring", specific temporal concepts (e.g., timestamps, durations) were excluded because the CQs focus entirely on the causal schema and effect weights rather than querying specific points in time.
+- **Counterfactual Calculation Logic:** The CQs ask "What if..." (counterfactuals). The ontology provides the structural schema (the causal weights) to enable these queries, but the mathematical calculation of counterfactuals is excluded as it belongs to the application/reasoning layer, not the structural OWL schema.

@@ -1,0 +1,118 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Temporal Indirection Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern representing temporal indirection, where persistent identifiers dynamically resolve to different referents over time through temporal bindings, transitions, and rules." .
+
+### Classes ###
+
+:PersistentIdentifier a owl:Class ;
+    rdfs:label "Persistent Identifier" ;
+    rdfs:comment "A stable, invariant referent or symbol (e.g., 'CL1', 'Primary Oncologist Ward 7') that provides continuity across successive underlying entities." .
+
+:Referent a owl:Class ;
+    rdfs:label "Referent" ;
+    rdfs:comment "The specific, underlying entity (e.g., February 2025 contract, specific physician, specific sensor) that the persistent identifier resolves to at a given time." .
+
+:TemporalBinding a owl:Class ;
+    rdfs:label "Temporal Binding" ;
+    rdfs:comment "A reified relationship representing the period during which a Persistent Identifier resolves to a specific Referent." .
+
+:Transition a owl:Class ;
+    rdfs:label "Transition" ;
+    rdfs:comment "An event representing the rollover or change from one Temporal Binding to another for a given Persistent Identifier." .
+
+:Rule a owl:Class ;
+    rdfs:label "Rule" ;
+    rdfs:comment "The condition, policy, or trigger (e.g., contract expiration, shift change) that causes a Transition to occur." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "Real-time attributes, measurements, or events (e.g., last trade price, calibration) bound to a specific Referent." .
+
+### Object Properties ###
+
+:hasBinding a owl:ObjectProperty ;
+    rdfs:domain :PersistentIdentifier ;
+    rdfs:range :TemporalBinding ;
+    rdfs:label "has binding" ;
+    rdfs:comment "Links a persistent identifier to its temporal bindings over time." .
+
+:bindsTo a owl:ObjectProperty ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :Referent ;
+    rdfs:label "binds to" ;
+    rdfs:comment "Links a temporal binding to the specific referent active during that period." .
+
+:hasObservation a owl:ObjectProperty ;
+    rdfs:domain :Referent ;
+    rdfs:range :Observation ;
+    rdfs:label "has observation" ;
+    rdfs:comment "Associates real-time attributes or observations with the specific referent instance." .
+
+:startsBinding a owl:ObjectProperty ;
+    rdfs:domain :Transition ;
+    rdfs:range :TemporalBinding ;
+    rdfs:label "starts binding" ;
+    rdfs:comment "Indicates the new temporal binding that becomes active as a result of a transition." .
+
+:endsBinding a owl:ObjectProperty ;
+    rdfs:domain :Transition ;
+    rdfs:range :TemporalBinding ;
+    rdfs:label "ends binding" ;
+    rdfs:comment "Indicates the previous temporal binding that is terminated by a transition." .
+
+:triggeredBy a owl:ObjectProperty ;
+    rdfs:domain :Transition ;
+    rdfs:range :Rule ;
+    rdfs:label "triggered by" ;
+    rdfs:comment "Links a transition event to the rule or condition that caused it." .
+
+:nextBinding a owl:ObjectProperty ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :TemporalBinding ;
+    rdfs:label "next binding" ;
+    rdfs:comment "Establishes the sequence of bindings by linking to the chronologically subsequent binding." .
+
+:previousBinding a owl:ObjectProperty ;
+    owl:inverseOf :nextBinding ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range :TemporalBinding ;
+    rdfs:label "previous binding" ;
+    rdfs:comment "Establishes the sequence of bindings by linking to the chronologically preceding binding." .
+
+### Datatype Properties ###
+
+:hasStartTime a owl:DatatypeProperty ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "has start time" ;
+    rdfs:comment "The timestamp when a temporal binding becomes active." .
+
+:hasEndTime a owl:DatatypeProperty ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "has end time" ;
+    rdfs:comment "The timestamp when a temporal binding ceases to be active." .
+
+:isCurrentBinding a owl:DatatypeProperty ;
+    rdfs:domain :TemporalBinding ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is current binding" ;
+    rdfs:comment "A boolean flag indicating whether the temporal binding is the currently active one." .
+
+:transitionTime a owl:DatatypeProperty ;
+    rdfs:domain :Transition ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "transition time" ;
+    rdfs:comment "The exact timestamp when the transition between referents occurred." .
+
+:observationTime a owl:DatatypeProperty ;
+    rdfs:domain :Observation ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "observation time" ;
+    rdfs:comment "The timestamp at which an observation or attribute measurement was recorded." .

@@ -1,0 +1,88 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Solid App Governance Pattern" ;
+    rdfs:comment "An ontology design pattern for governing Solid apps, focusing on data registries, storage locations, and privacy policies." .
+
+:SolidActor a owl:Class ;
+    rdfs:label "Solid Actor" ;
+    rdfs:comment "An entity (such as a user, app provider, or Pod provider) participating in the Solid ecosystem." .
+
+:DataRegistry a owl:Class ;
+    rdfs:label "Data Registry" ;
+    rdfs:comment "A registry used to discover categories of data, their locations, and associated policies." .
+
+:DataCategory a owl:Class ;
+    rdfs:label "Data Category" ;
+    rdfs:comment "A specific type or category of data available within the Solid ecosystem." .
+
+:Pod a owl:Class ;
+    rdfs:label "Pod" ;
+    rdfs:comment "A personal online data store in the Solid ecosystem where data is stored." .
+
+:Policy a owl:Class ;
+    rdfs:label "Policy" ;
+    rdfs:comment "A policy expressing privacy preferences, requirements, or data handling practices." .
+
+:maintainedBy a owl:ObjectProperty ;
+    rdfs:label "maintained by" ;
+    rdfs:comment "Indicates the Solid Actor responsible for maintaining the registry." ;
+    rdfs:domain :DataRegistry ;
+    rdfs:range :SolidActor .
+
+:createdAt a owl:DatatypeProperty ;
+    rdfs:label "created at" ;
+    rdfs:comment "The date and time when the registry was created." ;
+    rdfs:domain :DataRegistry ;
+    rdfs:range xsd:dateTime .
+
+:updatedAt a owl:DatatypeProperty ;
+    rdfs:label "updated at" ;
+    rdfs:comment "The date and time when the registry was last updated." ;
+    rdfs:domain :DataRegistry ;
+    rdfs:range xsd:dateTime .
+
+:hasDataCategory a owl:ObjectProperty ;
+    rdfs:label "has data category" ;
+    rdfs:comment "Links a registry to the categories of data it makes available for discovery." ;
+    rdfs:domain :DataRegistry ;
+    rdfs:range :DataCategory .
+
+:storedAt a owl:ObjectProperty ;
+    rdfs:label "stored at" ;
+    rdfs:comment "Indicates the Pod or storage location where a specific category of data is stored." ;
+    rdfs:domain :DataCategory ;
+    rdfs:range :Pod .
+
+:hasPolicy a owl:ObjectProperty ;
+    rdfs:label "has policy" ;
+    rdfs:comment "Associates a data category or resource with a specific privacy policy." ;
+    rdfs:domain :DataCategory ;
+    rdfs:range :Policy .
+```
+
+### Validation Report
+1. **Turtle syntax is valid:** PASS - All statements are correctly terminated with dots, and semicolons are used properly for predicate-object lists.
+2. **All prefixes used in the body are declared at the top:** PASS - `owl:`, `rdf:`, `rdfs:`, `xsd:`, and `:` are all declared and utilized correctly.
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS - Domains and ranges strictly use the locally defined classes or the standard `xsd:dateTime` datatype.
+4. **No two classes or properties are defined with contradictory restrictions:** PASS - The ontology is minimal and avoids disjointness axioms or complex restrictions, ensuring logical consistency.
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS - CQ1 maps to `:maintainedBy`, CQ2 to `:createdAt`/`:updatedAt`, CQ3 to `:hasDataCategory`, CQ4 to `:storedAt`, and CQ5 to `:hasPolicy`.
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS - Every class and property directly addresses the provided CQs and the corresponding scenario challenges (C1, C3, C4, C5).
+
+### Scope Report
+**(a) Requirements from the scenario that are covered:**
+*   **C1 (Identity of actors):** Covered by the `:SolidActor` class.
+*   **C3 (Availability/Discovery of categories of data and location):** Covered by `:DataRegistry`, `:DataCategory`, `:Pod`, `:hasDataCategory`, and `:storedAt`.
+*   **C4 & C5 (Privacy policies and data handling):** Covered by the `:Policy` class and the `:hasPolicy` property.
+*   **Competency Questions 1-5:** Fully covered by the registry metadata properties (`:maintainedBy`, `:createdAt`, `:updatedAt`) and the structural mapping properties linking registries, data categories, pods, and policies.
+
+**(b) Scenario concepts explicitly excluded and why:**
+*   **C2 (Solid infrastructure metadata, specifications, functionalities):** Excluded because no CQs require querying infrastructure specifications or installed functionalities.
+*   **C6 (Logging, record-keeping, provenance, consent records):** Excluded to maintain a minimal ODP. None of the CQs ask about logs, provenance, or consent history.
+*   **C7 (Legal compliance checks, GDPR rights, auditing):** Excluded because the CQs focus purely on data discovery, location, and policy association, not on compliance auditing or rights execution.
+*   **Specific actor subtypes (App Providers, Pod Providers):** Excluded in favor of a generalized `:SolidActor` to keep the pattern minimal, as CQ1 only asks "Who" without requiring specific role differentiation.

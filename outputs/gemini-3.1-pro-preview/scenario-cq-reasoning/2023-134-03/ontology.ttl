@@ -1,0 +1,90 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Solid Data Registry Ontology Pattern"@en ;
+    rdfs:comment "An ontology design pattern for representing registries of data categories, their storage locations, associated policies, and maintainers in Solid environments."@en .
+
+#################################################################
+#    Classes
+#################################################################
+
+:Actor a owl:Class ;
+    rdfs:label "Actor"@en ;
+    rdfs:comment "An entity (e.g., user, Pod provider, app provider) that maintains or interacts with the registry."@en .
+
+:DataCategory a owl:Class ;
+    rdfs:label "Data Category"@en ;
+    rdfs:comment "A specific type or category of data available within the Solid ecosystem."@en .
+
+:Policy a owl:Class ;
+    rdfs:label "Policy"@en ;
+    rdfs:comment "A privacy policy, data handling practice, or consent record associated with data."@en .
+
+:Registry a owl:Class ;
+    rdfs:label "Registry"@en ;
+    rdfs:comment "A catalog or registry that keeps track of available data categories, their locations, and metadata."@en ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :maintainedBy ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] ,
+    [
+        a owl:Restriction ;
+        owl:onProperty :createdAt ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] .
+
+:StorageLocation a owl:Class ;
+    rdfs:label "Storage Location"@en ;
+    rdfs:comment "The physical or logical location (e.g., a Solid Pod URI) where a category of data is stored."@en .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :Actor :DataCategory :Policy :Registry :StorageLocation ) .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+:hasPolicy a owl:ObjectProperty ;
+    rdfs:label "has policy"@en ;
+    rdfs:comment "Associates a data category with its governing privacy or access policy."@en ;
+    rdfs:domain :DataCategory ;
+    rdfs:range :Policy .
+
+:isStoredAt a owl:ObjectProperty ;
+    rdfs:label "is stored at"@en ;
+    rdfs:comment "Indicates the storage location where a specific data category is kept."@en ;
+    rdfs:domain :DataCategory ;
+    rdfs:range :StorageLocation .
+
+:maintainedBy a owl:ObjectProperty ;
+    rdfs:label "maintained by"@en ;
+    rdfs:comment "Links a registry to the actor responsible for maintaining it."@en ;
+    rdfs:domain :Registry ;
+    rdfs:range :Actor .
+
+:registersDataCategory a owl:ObjectProperty ;
+    rdfs:label "registers data category"@en ;
+    rdfs:comment "Links a registry to the categories of data it makes discoverable."@en ;
+    rdfs:domain :Registry ;
+    rdfs:range :DataCategory .
+
+#################################################################
+#    Datatype Properties
+#################################################################
+
+:createdAt a owl:DatatypeProperty ;
+    rdfs:label "created at"@en ;
+    rdfs:comment "The date and time when the registry was created."@en ;
+    rdfs:domain :Registry ;
+    rdfs:range xsd:dateTime .
+
+:updatedAt a owl:DatatypeProperty ;
+    rdfs:label "updated at"@en ;
+    rdfs:comment "The date and time when the registry was last updated."@en ;
+    rdfs:domain :Registry ;
+    rdfs:range xsd:dateTime .

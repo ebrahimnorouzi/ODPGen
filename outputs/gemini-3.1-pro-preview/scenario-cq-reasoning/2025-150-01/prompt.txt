@@ -1,0 +1,65 @@
+You are an ontology engineer. Create an OWL ontology design pattern (ODP) in Turtle syntax.
+
+Before writing, reason through these steps internally (do NOT write them out yet):
+1. Extract atomic requirements from the scenario (one sentence each).
+2. Propose candidate classes and properties per requirement.
+3. Draft axioms (subclass, domain, range, cardinality, disjointness).
+4. For each CQ, verify which axioms enable answering it; note gaps.
+5. Add/refine axioms to cover uncovered CQs.
+6. Remove classes/properties not traceable to any requirement or CQ.
+
+Constraints:
+- Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.
+- Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.
+- Add rdfs:label and rdfs:comment to every class and property.
+- Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label "..." ; rdfs:comment "..." .`
+- Keep modeling minimal and reusable; do not assert facts not implied by the scenario or CQs.
+
+Use these standard prefixes (declare all that you use):
+  @prefix owl:  <http://www.w3.org/2002/07/owl#> .
+  @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+  @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+  @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+  @prefix :     <http://example.org/odp#> .
+
+Output format — strictly in this order, nothing before item 1:
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+2. Reasoning summary: one bullet per step 1–6 (keep each to one line).
+3. Traceability table: for each requirement/CQ, list the axiom(s) that cover it.
+
+Scenario:
+Message Queuing Telemetry Transport (MQTT) is a widely adopted message protocol in industrial and Internet of Things (IoT) settings for its lightweight, publish-subscribe-based architecture. It should enable seamless alignment between observation and actuation process descriptions with transport semantics. A further challenge arises from the various payload formats and encodings used in MQTT message protocols. Payloads may contain plain text, comma-separated values, or structured JSON as format, possibly encoded in various character sets. The ontology was designed to model automated process data captured and transmitted via MQTT packets in the context of the EKI project.
+
+Competency Questions:
+- Which MQTT Clients are connected to which Broker?
+- Which MQTT NetworkConnections exist, are they TLS-secured, and who initiated/accepted them?
+- Which MQTT participants (Clients/Brokers) use which MQTT NetworkConnections?
+- Which MQTT Clients with which ClientIDs run on which SOSA platforms?
+- Which MQTT Clients are hosting which SOSA systems (sensors/actuators)?
+- What host/port is a MQTT Broker configured with?
+- Which SOSA sensors publish to which MQTT Topics (observations)?
+- Which SOSA actuators listen to which MQTT Topics (commands)?
+- Which SOSA FeaturesOfInterest, Properties etc. appear as MQTT TopicSubjects and on which MQTT Topics?
+- Which MQTT Topic Filters match a given MQTT Topic?
+- Which MQTT Topics are matched by a given MQTT Topic Filter?
+- Which MQTT filter patterns (with wildcards) are stored?
+- Which MQTT Clients send which MQTT Control Packets?
+- Which MQTT PUBLISH/SUBSCRIBE/UNSUBSCRIBE packets were sent (specializations)?
+- Which MQTT Brokers receive/forward which MQTT Control Packets?
+- Which MQTT Control Packets were sent by which Client (inverse)?
+- Which MQTT Publish packets carry Observations for a specific SOSA FeatureOfInterest or Property?
+- Which MQTT SUBSCRIBE packets request QoS=2 and for which filters?
+- Which MQTT UNSUBSCRIBE packets remove all filters under a certain path (e.g. 'factory/centering/#')?
+- Which MQTT Control Packet has which Fixed Header / Variable Header / Payload?
+- Which MQTT PUBLISH packet has which MQTT Topic (name) in the Variable Header?
+- Which QoS levels are set (in PUBLISH Fixed Header or SubscriptionEntry)?
+- Are RETAIN/DUP flags set in PUBLISH?
+- Which MQTT Control Packets have which PacketIdentifier?
+- Which MQTT SUBSCRIBE payloads contain which SubscriptionEntries?
+- Which MQTT Topic Filters (with QoS) are requested by a SubscriptionEntry?
+- Which MQTT UNSUBSCRIBE payloads remove which MQTT TopicFilters?
+- Which MQTT PUBLISH payloads encode SOSA Observations (or Observation Collections)?
+- Which MQTT PUBLISH payloads encode SOSA Actuations (or Actuation Collections)?
+- Which fields are encoded in a MQTT payload?
+- What content, content type, encoding and delimiter does a MQTT PUBLISH payload have?
+- What is the size of a MQTT payload (as QUDT QuantityValue with unit)?

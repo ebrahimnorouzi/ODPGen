@@ -1,0 +1,202 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Relational Database Security Policy Ontology" ;
+    rdfs:comment "An ontology design pattern for securing access to a relational database queried via SQL, representing schema, policies, and AST-based query semantics." .
+
+# --- Schema Entities ---
+
+:Database a owl:Class ;
+    rdfs:label "Database" ;
+    rdfs:comment "A relational database." .
+
+:Table a owl:Class ;
+    rdfs:label "Table" ;
+    rdfs:comment "A table within a relational database." .
+
+:Column a owl:Class ;
+    rdfs:label "Column" ;
+    rdfs:comment "A column within a table." .
+
+# --- Policy & Security Entities ---
+
+:Agent a owl:Class ;
+    rdfs:label "Agent" ;
+    rdfs:comment "An entity that executes queries and is subject to policies." .
+
+:Policy a owl:Class ;
+    rdfs:label "Policy" ;
+    rdfs:comment "An access control policy." .
+
+:Prohibition a owl:Class ;
+    rdfs:subClassOf :Policy ;
+    rdfs:label "Prohibition" ;
+    rdfs:comment "A policy that explicitly denies an action." .
+
+:Action a owl:Class ;
+    rdfs:label "Action" ;
+    rdfs:comment "A high-level operation type." .
+
+:ReadAction a owl:Class ;
+    rdfs:subClassOf :Action ;
+    rdfs:label "Read Action" ;
+    rdfs:comment "An action that reads data." .
+
+:ModifyAction a owl:Class ;
+    rdfs:subClassOf :Action ;
+    rdfs:label "Modify Action" ;
+    rdfs:comment "An action that modifies data." .
+
+:ActionScope a owl:Class ;
+    rdfs:label "Action Scope" ;
+    rdfs:comment "The operational scope of an action." .
+
+:ViewActionScope a owl:Class ;
+    rdfs:subClassOf :ActionScope ;
+    rdfs:label "View Action Scope" ;
+    rdfs:comment "Scope for viewing data." .
+
+:ProcessActionScope a owl:Class ;
+    rdfs:subClassOf :ActionScope ;
+    rdfs:label "Process Action Scope" ;
+    rdfs:comment "Scope for processing data." .
+
+:Condition a owl:Class ;
+    rdfs:label "Condition" ;
+    rdfs:comment "A condition for row-level policy enforcement." .
+
+# --- Query & AST Entities ---
+
+:SQLQuery a owl:Class ;
+    rdfs:label "SQL Query" ;
+    rdfs:comment "A SQL query represented as a semantic graph." .
+
+:ASTNode a owl:Class ;
+    rdfs:label "AST Node" ;
+    rdfs:comment "A node in the Abstract Syntax Tree of a SQL query." .
+
+:SQLStatement a owl:Class ;
+    rdfs:subClassOf :ASTNode ;
+    rdfs:label "SQL Statement" ;
+    rdfs:comment "A SQL statement node." .
+
+:SelectStatement a owl:Class ;
+    rdfs:subClassOf :SQLStatement ;
+    rdfs:label "Select Statement" ;
+    rdfs:comment "A SQL SELECT statement." .
+
+:UpdateStatement a owl:Class ;
+    rdfs:subClassOf :SQLStatement ;
+    rdfs:label "Update Statement" ;
+    rdfs:comment "A SQL UPDATE statement." .
+
+:SQLClause a owl:Class ;
+    rdfs:subClassOf :ASTNode ;
+    rdfs:label "SQL Clause" ;
+    rdfs:comment "A clause within a SQL statement." .
+
+:ReferenceNode a owl:Class ;
+    rdfs:subClassOf :ASTNode ;
+    rdfs:label "Reference Node" ;
+    rdfs:comment "An AST node that references a schema entity." .
+
+:TableRef a owl:Class ;
+    rdfs:subClassOf :ReferenceNode ;
+    rdfs:label "Table Reference" ;
+    rdfs:comment "A reference to a table in a query." .
+
+:ColumnRef a owl:Class ;
+    rdfs:subClassOf :ReferenceNode ;
+    rdfs:label "Column Reference" ;
+    rdfs:comment "A reference to a column in a query." .
+
+# --- Inference & Enforcement Entities ---
+
+:Violated a owl:Class ;
+    rdfs:subClassOf :ReferenceNode ;
+    rdfs:label "Violated" ;
+    rdfs:comment "A reference node inferred to violate an access policy." .
+
+:RowTag a owl:Class ;
+    rdfs:subClassOf :ReferenceNode ;
+    rdfs:label "Row Tag" ;
+    rdfs:comment "A reference node inferred to require row-level condition enforcement." .
+
+# --- Object Properties ---
+
+:belongsToDatabase a owl:ObjectProperty ;
+    rdfs:domain :Table ;
+    rdfs:range :Database ;
+    rdfs:label "belongs to database" ;
+    rdfs:comment "Links a table to its database." .
+
+:belongsToTable a owl:ObjectProperty ;
+    rdfs:domain :Column ;
+    rdfs:range :Table ;
+    rdfs:label "belongs to table" ;
+    rdfs:comment "Links a column to its table." .
+
+:isPrimaryKeyOf a owl:ObjectProperty ;
+    rdfs:domain :Column ;
+    rdfs:range :Table ;
+    rdfs:label "is primary key of" ;
+    rdfs:comment "Indicates a column is the primary key of a table." .
+
+:referencesColumn a owl:ObjectProperty ;
+    rdfs:domain :Column ;
+    rdfs:range :Column ;
+    rdfs:label "references column" ;
+    rdfs:comment "Indicates a foreign key relationship between columns, distinguishing same-named columns by explicit linkage." .
+
+:hasAgent a owl:ObjectProperty ;
+    rdfs:domain :Policy ;
+    rdfs:range :Agent ;
+    rdfs:label "has agent" ;
+    rdfs:comment "The agent to which the policy applies." .
+
+:hasAction a owl:ObjectProperty ;
+    rdfs:domain :Policy ;
+    rdfs:range :Action ;
+    rdfs:label "has action" ;
+    rdfs:comment "The action governed by the policy." .
+
+:hasActionScope a owl:ObjectProperty ;
+    rdfs:domain :Policy ;
+    rdfs:range :ActionScope ;
+    rdfs:label "has action scope" ;
+    rdfs:comment "The scope governed by the policy." .
+
+:targetsTable a owl:ObjectProperty ;
+    rdfs:domain :Policy ;
+    rdfs:range :Table ;
+    rdfs:label "targets table" ;
+    rdfs:comment "The table targeted by the policy." .
+
+:targetsColumn a owl:ObjectProperty ;
+    rdfs:domain :Policy ;
+    rdfs:range :Column ;
+    rdfs:label "targets column" ;
+    rdfs:comment "The column targeted by the policy." .
+
+:hasRowCondition a owl:ObjectProperty ;
+    rdfs:domain :Policy ;
+    rdfs:range :Condition ;
+    rdfs:label "has row condition" ;
+    rdfs:comment "The row-level condition of the policy." .
+
+:hasASTNode a owl:ObjectProperty ;
+    rdfs:domain :SQLQuery ;
+    rdfs:range :ASTNode ;
+    rdfs:label "has AST node" ;
+    rdfs:comment "Links a SQL query to its AST nodes." .
+
+:hasChildNode a owl:ObjectProperty ;
+    rdfs:domain :ASTNode ;
+    rdfs:range :ASTNode ;
+    rdfs:label "has child node" ;
+    rdfs:comment "Links

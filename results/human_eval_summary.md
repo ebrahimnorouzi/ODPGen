@@ -1,8 +1,8 @@
 # Human/LLM Evaluation Summary
 
 Evaluator type: **mixed**
-Scored rows: **350**
-Unique outputs: **350**
+Scored rows: **420**
+Unique outputs: **420**
 Unique evaluators: **1**
 
 ## Mean / Median by Model + Config
@@ -14,6 +14,11 @@ Unique evaluators: **1**
 | bigscience_bloomz-7b1 | scenario-cq-constraints | / | / | / |
 | bigscience_bloomz-7b1 | scenario-cq-reasoning | / | / | / |
 | bigscience_bloomz-7b1 | scenario-only | / | / | / |
+| gemini-3.1-pro-preview | cq-only | / | / | / |
+| gemini-3.1-pro-preview | scenario-cq | / | / | / |
+| gemini-3.1-pro-preview | scenario-cq-constraints | / | / | / |
+| gemini-3.1-pro-preview | scenario-cq-reasoning | / | / | / |
+| gemini-3.1-pro-preview | scenario-only | / | / | / |
 | gpt-5.4 | cq-only | / | / | / |
 | gpt-5.4 | scenario-cq | / | / | / |
 | gpt-5.4 | scenario-cq-constraints | / | / | / |

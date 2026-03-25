@@ -1,0 +1,137 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Solid Governance Policy Pattern" ;
+    rdfs:comment "An ontology design pattern for representing privacy policies, data access, and governance in Solid applications." .
+
+# Classes
+
+:Policy a owl:Class ;
+    rdfs:label "Policy" ;
+    rdfs:comment "A privacy policy or data access preference expressed by a user or requested by an application." .
+
+:Actor a owl:Class ;
+    rdfs:label "Actor" ;
+    rdfs:comment "An entity (e.g., user, organization) that creates or is assigned to a policy." .
+
+:Application a owl:Class ;
+    rdfs:label "Application" ;
+    rdfs:comment "A software application or service used to access data." .
+
+:AccessMode a owl:Class ;
+    rdfs:label "Access Mode" ;
+    rdfs:comment "The mode of access requested or granted (e.g., Read, Write, Append, Control)." .
+
+:PersonalData a owl:Class ;
+    rdfs:label "Personal Data" ;
+    rdfs:comment "A category or specific instance of personal data stored in a Pod." .
+
+:Purpose a owl:Class ;
+    rdfs:label "Purpose" ;
+    rdfs:comment "The specific reason or purpose for which data access is requested or granted." .
+
+:Pod a owl:Class ;
+    rdfs:label "Pod" ;
+    rdfs:comment "A personal online data store where personal data is kept." .
+
+:ConsentRecord a owl:Class ;
+    rdfs:label "Consent Record" ;
+    rdfs:comment "A log or record of consent given for data access, used for accountability and compliance." .
+
+# Object Properties
+
+:hasCreator a owl:ObjectProperty ;
+    rdfs:label "has creator" ;
+    rdfs:comment "Links a policy to the actor who created or issued it." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Actor .
+
+:hasAssignee a owl:ObjectProperty ;
+    rdfs:label "has assignee" ;
+    rdfs:comment "Links a policy to the actor to whom the policy applies or is assigned." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Actor .
+
+:usesApplication a owl:ObjectProperty ;
+    rdfs:label "uses application" ;
+    rdfs:comment "Indicates the application or service being used to access the data under a policy." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Application .
+
+:hasAccessMode a owl:ObjectProperty ;
+    rdfs:label "has access mode" ;
+    rdfs:comment "Specifies the access mode (e.g., read, write) requested or granted by the policy." ;
+    rdfs:domain :Policy ;
+    rdfs:range :AccessMode .
+
+:accessesData a owl:ObjectProperty ;
+    rdfs:label "accesses data" ;
+    rdfs:comment "Identifies the personal data that is being accessed or governed by the policy." ;
+    rdfs:domain :Policy ;
+    rdfs:range :PersonalData .
+
+:hasPurpose a owl:ObjectProperty ;
+    rdfs:label "has purpose" ;
+    rdfs:comment "Defines the purpose for which the data is being accessed." ;
+    rdfs:domain :Policy ;
+    rdfs:range :Purpose .
+
+:storedIn a owl:ObjectProperty ;
+    rdfs:label "stored in" ;
+    rdfs:comment "Indicates the Pod where the personal data is stored." ;
+    rdfs:domain :PersonalData ;
+    rdfs:range :Pod .
+
+:generatesRecord a owl:ObjectProperty ;
+    rdfs:label "generates record" ;
+    rdfs:comment "Links a policy or data access event to its corresponding consent or access record." ;
+    rdfs:domain :Policy ;
+    rdfs:range :ConsentRecord .
+
+# Datatype Properties
+
+:hasIdentifier a owl:DatatypeProperty ;
+    rdfs:label "has identifier" ;
+    rdfs:comment "The unique identifier of the policy." ;
+    rdfs:domain :Policy ;
+    rdfs:range xsd:string .
+
+:issuedAt a owl:DatatypeProperty ;
+    rdfs:label "issued at" ;
+    rdfs:comment "The date and time when the policy was issued or created." ;
+    rdfs:domain :Policy ;
+    rdfs:range xsd:dateTime .
+```
+
+### Reasoning Summary
+*   **Step 1:** Extracted atomic requirements from the 7 Solid governance challenges (actors, metadata, data discovery, privacy notices, policies, logging, compliance).
+*   **Step 2:** Proposed candidate classes (`Policy`, `Actor`, `Application`, `PersonalData`, `Purpose`, `AccessMode`, `Pod`, `ConsentRecord`) and properties based on requirements and CQs.
+*   **Step 3:** Drafted axioms defining domains, ranges, and data types to formally link policies to their creators, assignees, data, and purposes.
+*   **Step 4:** Verified CQs against the drafted axioms, ensuring every question (identifier, creator, date, assignee, app, mode, data, purpose) has a direct property mapping.
+*   **Step 5:** Refined axioms to ensure alignment between the broader scenario (Pods, ConsentRecords) and the specific policy-centric CQs without over-engineering.
+*   **Step 6:** Removed extraneous concepts (e.g., specific GDPR articles or low-level infrastructure specs) not directly queryable by the CQs or strictly mandated by the scenario text.
+
+### Traceability Table
+
+| Requirement / CQ | Covered By Axiom(s) |
+| :--- | :--- |
+| **C1** (Identity/Roles) | `:Actor` class; `:hasCreator`, `:hasAssignee` properties. |
+| **C2** (Infrastructure metadata) | `:Pod`, `:Application` classes. |
+| **C3** (Data discovery) | `:PersonalData`, `:Pod` classes; `:storedIn` property. |
+| **C4** (Data handling/privacy notices) | `:Policy`, `:Application` classes; `:usesApplication`, `:accessesData` properties. |
+| **C5** (Privacy policies) | `:Policy` class; `:hasAccessMode`, `:hasPurpose` properties. |
+| **C6** (Logging/record-keeping) | `:ConsentRecord` class; `:generatesRecord` property. |
+| **C7** (Legal compliance checks) | `:ConsentRecord`, `:Policy` classes (enabling auditing and consent withdrawal). |
+| **CQ1** (Unique identifier?) | `:hasIdentifier` (Domain: `:Policy`, Range: `xsd:string`). |
+| **CQ2** (Creator of policy?) | `:hasCreator` (Domain: `:Policy`, Range: `:Actor`). |
+| **CQ3** (When issued?) | `:issuedAt` (Domain: `:Policy`, Range: `xsd:dateTime`). |
+| **CQ4** (Assignee of policy?) | `:hasAssignee` (Domain: `:Policy`, Range: `:Actor`). |
+| **CQ5** (Application/service used?) | `:usesApplication` (Domain: `:Policy`, Range: `:Application`). |
+| **CQ6** (Access mode requested?) | `:hasAccessMode` (Domain: `:Policy`, Range: `:AccessMode`). |
+| **CQ7** (Personal data accessed?) | `:accessesData` (Domain: `:Policy`, Range: `:PersonalData`). |
+| **CQ8** (Purpose for accessing?) | `:hasPurpose` (Domain: `:Policy`, Range: `:Purpose`). |

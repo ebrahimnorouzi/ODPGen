@@ -1,0 +1,47 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Causal Bayesian Network Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern for representing events, their causal relations, effect weights, and states in a Causal Bayesian Network." .
+
+:Event a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "A node in the causal network representing an occurrence or state of affairs, such as raining or a sprinkler being on." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A reified directed causal link between a source event and a target event, allowing the assignment of an effect weight." .
+
+:hasSourceEvent a owl:ObjectProperty ;
+    rdfs:label "has source event" ;
+    rdfs:comment "Links a causal relation to its originating (cause) event." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:hasTargetEvent a owl:ObjectProperty ;
+    rdfs:label "has target event" ;
+    rdfs:comment "Links a causal relation to its resulting (effect) event." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:causes a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "causes" ;
+    rdfs:comment "A transitive property linking an event directly or indirectly to another event it causes, useful for tracing mediated effects." ;
+    rdfs:domain :Event ;
+    rdfs:range :Event .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight or strength of the causal relation." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:decimal .
+
+:hasEventState a owl:DatatypeProperty ;
+    rdfs:label "has event state" ;
+    rdfs:comment "The boolean state of the event (e.g., true for 'on' or 'wet', false for 'off' or 'not wet')." ;
+    rdfs:domain :Event ;
+    rdfs:range xsd:boolean .

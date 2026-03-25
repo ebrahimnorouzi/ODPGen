@@ -353,6 +353,79 @@ def generate_with_openai(
 
     return response.output_text.strip() if response.output_text else ""
 
+
+_GEMINI_MIN_OUTPUT_TOKENS = 8192   # Thinking models need far more than 1024
+
+
+def generate_with_gemini(
+    prompt: str,
+    model: str,
+    temperature: float,
+    max_new_tokens: int,
+    thinking_budget: int | None = None,
+) -> str:
+    """
+    Generate text with the Google Gemini API (google-genai SDK).
+
+    Notes
+    -----
+    * Gemini 2.5-family "thinking" models (e.g. gemini-2.5-pro-preview,
+      gemini-3.1-pro-preview) reason internally before producing output.
+      The thinking tokens do NOT count against max_output_tokens, but the
+      thinking budget itself can be large, so max_output_tokens < 4096 often
+      results in the model running out of tokens before finishing the Turtle block.
+      We enforce a minimum of 8 192 output tokens.
+    * temperature=0 is valid for all Gemini models; no clamping required.
+    * thinking_budget=0 disables the thinking phase entirely (faster, cheaper,
+      but lower quality). Leave as None to use the model's default budget.
+    """
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "Gemini backend requires the GEMINI_API_KEY environment variable to be set."
+        )
+
+    try:
+        import google.genai as genai
+        from google.genai import types
+    except ImportError as exc:
+        raise RuntimeError(
+            "Gemini backend requires the 'google-genai' package. "
+            "Install with: pip install google-genai"
+        ) from exc
+
+    effective_tokens = max(max_new_tokens, _GEMINI_MIN_OUTPUT_TOKENS)
+    if max_new_tokens < _GEMINI_MIN_OUTPUT_TOKENS:
+        print(
+            f"  [gemini] WARNING: --max-new-tokens {max_new_tokens} is too low for a "
+            f"thinking model; raising to {effective_tokens}."
+        )
+
+    gen_config_kwargs: dict = dict(
+        temperature=temperature,
+        max_output_tokens=effective_tokens,
+    )
+    if thinking_budget is not None:
+        gen_config_kwargs["thinking_config"] = types.ThinkingConfig(
+            thinking_budget=thinking_budget
+        )
+
+    client = genai.Client(api_key=api_key)
+    response = client.models.generate_content(
+        model=model,
+        contents=prompt,
+        config=types.GenerateContentConfig(**gen_config_kwargs),
+    )
+
+    # Surface finish reason so the caller can spot MAX_TOKENS truncations
+    if response.candidates:
+        finish = response.candidates[0].finish_reason
+        if str(finish) not in ("FinishReason.STOP", "STOP", "1"):
+            print(f"  [gemini] WARNING: finish_reason={finish} — output may be truncated.")
+
+    return response.text.strip() if response.text else ""
+
+
 # ---------------------------------------------------------------------------
 # Config / template map
 # ---------------------------------------------------------------------------
@@ -393,12 +466,13 @@ def main() -> None:
     )
     parser.add_argument(
         "--backend",
-        choices=["huggingface", "openai"],
+        choices=["huggingface", "openai", "gemini"],
         required=True,
         help=(
             "Generation backend. "
             "'huggingface' for open-source LLMs from Hugging Face Hub. "
-            "'openai' for OpenAI models (requires OPENAI_API_KEY env var)."
+            "'openai' for OpenAI models (requires OPENAI_API_KEY env var). "
+            "'gemini' for Google Gemini models (requires GEMINI_API_KEY env var)."
         ),
     )
     parser.add_argument("--config", choices=list(CONFIG_TEMPLATE.keys()) + ["all"], default="all")
@@ -426,6 +500,17 @@ def main() -> None:
         "--fix-common-turtle-issues",
         action="store_true",
         help="Apply conservative cleanup for common QName predicate mistakes like '; has_method' -> '; :has_method'.",
+    )
+    parser.add_argument(
+        "--thinking-budget",
+        type=int,
+        default=None,
+        metavar="N",
+        help=(
+            "Gemini only. Set the thinking token budget (0 = disable thinking, "
+            "e.g. 8192 = default budget). Leave unset to use the model's default. "
+            "Useful for gemini-2.5-pro / gemini-3.1-pro-preview thinking models."
+        ),
     )
     args = parser.parse_args()
 
@@ -473,6 +558,14 @@ def main() -> None:
                         temperature=args.temperature,
                         max_new_tokens=args.max_new_tokens,
                     )
+                elif args.backend == "gemini":
+                    response = generate_with_gemini(
+                        prompt=prompt,
+                        model=args.model,
+                        temperature=args.temperature,
+                        max_new_tokens=args.max_new_tokens,
+                        thinking_budget=args.thinking_budget,
+                    )
                 else:
                     response = generate_with_openai(
                         prompt=prompt,
@@ -501,6 +594,7 @@ def main() -> None:
                     "response_hash": response_hash,
                     "ontology_hash": ontology_hash,
                     "quantize": args.quantize if args.backend == "huggingface" else "n/a",
+                    "thinking_budget": args.thinking_budget if args.backend == "gemini" else "n/a",
                 }
 
                 (output_dir / "prompt.txt").write_text(prompt, encoding="utf-8")

@@ -1,0 +1,79 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Causal Bayesian Network (CBN) Sprinkler Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern representing events, causal relations, and effect weights in a Causal Bayesian Network, based on the classic sprinkler use case." .
+
+:Event a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "An occurrence or state in the domain, such as raining, a sprinkler being on, or a pavement being wet." .
+
+:CausalRelation a owl:Class ;
+    rdfs:label "Causal Relation" ;
+    rdfs:comment "A reified causal link between two events, representing the directed edge in a Causal Bayesian Network and carrying the effect weight." .
+
+:hasCause a owl:ObjectProperty ;
+    rdfs:label "has cause" ;
+    rdfs:comment "Links a causal relation to the event that acts as the origin or cause." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:hasEffect a owl:ObjectProperty ;
+    rdfs:label "has effect" ;
+    rdfs:comment "Links a causal relation to the event that acts as the outcome or effect." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range :Event .
+
+:causes a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "causes" ;
+    rdfs:comment "A transitive property linking an event to another event it causes, either directly or indirectly (mediated)." ;
+    rdfs:domain :Event ;
+    rdfs:range :Event .
+
+:directlyCauses a owl:ObjectProperty ;
+    rdfs:label "directly causes" ;
+    rdfs:comment "Links an event to another event it causes directly, without mediating events." ;
+    rdfs:subPropertyOf :causes ;
+    rdfs:domain :Event ;
+    rdfs:range :Event .
+
+:isCausedBy a owl:ObjectProperty ;
+    rdfs:label "is caused by" ;
+    rdfs:comment "Inverse of causes. Indicates the events responsible for a given event." ;
+    owl:inverseOf :causes ;
+    rdfs:domain :Event ;
+    rdfs:range :Event .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "The numerical weight or strength of the causal relation between two events." ;
+    rdfs:domain :CausalRelation ;
+    rdfs:range xsd:decimal .
+```
+
+### 2. Scenario-requirement-to-axiom mapping
+*   **"nodes representing the following events"**: Encoded by `:Event a owl:Class`.
+*   **"directed edges between nodes represent the causal relations"**: Encoded by reifying the relation into `:CausalRelation a owl:Class`, connected to events via `:hasCause` and `:hasEffect`.
+*   **"effect weights (e.g., 0.6)"**: Encoded by `:hasEffectWeight a owl:DatatypeProperty` with a range of `xsd:decimal`.
+*   **"rain does not directly cause... mediated by"**: Encoded by distinguishing between direct and indirect causality. `:causes` is declared as an `owl:TransitiveProperty` to handle mediated (indirect) effects, while `:directlyCauses` is a sub-property used for immediate causal links.
+
+### 3. CQ-to-axiom mapping
+*   **What events are responsible for the pavement being slippery?**
+    *   Enabled by: `:Event`, `:isCausedBy` (allows querying all events that transitively or directly lead to the target event).
+*   **What would be the outcome of turning the sprinkler system on(off)?**
+    *   Enabled by: `:Event`, `:causes` (allows querying all downstream events/outcomes originating from the sprinkler event).
+*   **How strong is the causal link between the sprinkler being on and the pavement being wet?**
+    *   Enabled by: `:CausalRelation`, `:hasCause`, `:hasEffect`, `:hasEffectWeight` (allows finding the specific reified relation between the two events and retrieving its numerical weight).
+*   **What if the pavement is not wet, how would it effect the pavement being slippery?**
+    *   Enabled by: `:Event`, `:directlyCauses`, `:causes`. By traversing the causal pathways, a reasoner or query can identify that the path from rain/sprinkler to slippery pavement is strictly mediated by the "wet" event. Removing or negating the "wet" event breaks the `:directlyCauses` chain.
+
+### 4. Intentionally excluded concepts
+*   **`Node` and `DirectedEdge`**: Excluded because they are graph data-structure artifacts of a Bayesian Network. The competency questions strictly ask about the semantic domain (events, outcomes, causal links, weights). Modeling the graph explicitly (e.g., `Node represents Event`) would add unnecessary meta-modeling complexity not required to answer the CQs.
+*   **`CausalBayesianNetwork` (as a Class)**: Excluded because the ontology itself acts as the schema for the network. No CQs ask about the network as a whole entity (e.g., "How many nodes are in the network?").
+*   **Specific Instances (e.g., `RainySeason`, `SprinklerOn`, `WetPavement`)**: Excluded to strictly comply with the prompt's instruction to output schema axioms only and avoid creating individual instances.
+*   **Negative Events / States (e.g., "not wet", "off")**: Excluded as explicit schema classes. In OWL, specific states or their negations are typically handled at the instance level (e.g., instantiating a `SprinklerOff` event, or using negative object property assertions) rather than creating a schema-level class for every possible negated state.

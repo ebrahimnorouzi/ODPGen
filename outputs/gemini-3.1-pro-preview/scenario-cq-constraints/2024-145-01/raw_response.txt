@@ -1,0 +1,108 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Legal Court Hierarchy and Bad Check Crime ODP" ;
+    rdfs:comment "An ontology design pattern representing court hierarchies, state-district locations, and bad check crime regulations." .
+
+### Classes ###
+
+:Court a owl:Class ;
+    rdfs:label "Court" ;
+    rdfs:comment "A tribunal presided over by a judge, judges, or a magistrate in civil and criminal cases." .
+
+:DistrictCourt a owl:Class ;
+    rdfs:subClassOf :Court ;
+    rdfs:label "District Court" ;
+    rdfs:comment "A court that has jurisdiction over a specific district." .
+
+:State a owl:Class ;
+    rdfs:label "State" ;
+    rdfs:comment "A principal administrative division of a country." .
+
+:District a owl:Class ;
+    rdfs:label "District" ;
+    rdfs:comment "An administrative division or geographical region." .
+
+:Check a owl:Class ;
+    rdfs:label "Check" ;
+    rdfs:comment "A written, dated, and signed instrument that directs a bank to pay a specific sum of money." .
+
+:BadCheck a owl:Class ;
+    rdfs:subClassOf :Check ;
+    rdfs:label "Bad Check" ;
+    rdfs:comment "A check drawn on a nonexistent account or on an account with insufficient funds." .
+
+:CheckTransactionType a owl:Class ;
+    rdfs:label "Check Transaction Type" ;
+    rdfs:comment "The classification or type of a check transaction." .
+
+:CheckPayment a owl:Class ;
+    rdfs:label "Check Payment" ;
+    rdfs:comment "The act of paying or the transaction associated with a check." .
+
+:TransactionStatus a owl:Class ;
+    rdfs:label "Transaction Status" ;
+    rdfs:comment "The current state or status of a transaction." .
+
+### Object Properties ###
+
+:locatedInState a owl:ObjectProperty ;
+    rdfs:label "located in state" ;
+    rdfs:comment "Relates an entity, such as a district or district court, to the state it is located in." ;
+    rdfs:range :State .
+
+:hasAuthorityOver a owl:ObjectProperty ;
+    rdfs:label "has authority over" ;
+    rdfs:comment "Relates a court to another court over which it has legal or hierarchical authority." ;
+    rdfs:domain :Court ;
+    rdfs:range :Court .
+
+:hasTransactionType a owl:ObjectProperty ;
+    rdfs:label "has transaction type" ;
+    rdfs:comment "Relates a check to its transaction type." ;
+    rdfs:domain :Check ;
+    rdfs:range :CheckTransactionType .
+
+:isPaymentOf a owl:ObjectProperty ;
+    rdfs:label "is payment of" ;
+    rdfs:comment "Relates a check payment to the specific check it pays." ;
+    rdfs:domain :CheckPayment ;
+    rdfs:range :Check .
+
+:hasTransactionStatus a owl:ObjectProperty ;
+    rdfs:label "has transaction status" ;
+    rdfs:comment "Relates a check payment to its current status." ;
+    rdfs:domain :CheckPayment ;
+    rdfs:range :TransactionStatus .
+
+### Datatype Properties ###
+
+:paymentDate a owl:DatatypeProperty ;
+    rdfs:label "payment date" ;
+    rdfs:comment "The date and time when a check payment occurred." ;
+    rdfs:domain :CheckPayment ;
+    rdfs:range xsd:dateTime .
+```
+
+### Validation Report
+1. **Turtle syntax is valid:** PASS (All statements are properly terminated with periods, and semicolons are used correctly for predicate-object lists).
+2. **All prefixes used in the body are declared at the top:** PASS (Only `owl:`, `rdf:`, `rdfs:`, `xsd:`, and `:` are used, and all are declared).
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS (All domains and ranges map to locally defined classes or `xsd:dateTime`).
+4. **No two classes or properties are defined with contradictory restrictions:** PASS (The ontology uses a simple, consistent hierarchy without disjointness axioms that could cause conflicts).
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS (e.g., "Which court has authority over a given court?" maps to `:Court` and `:hasAuthorityOver`; "When is a check payment..." maps to `:paymentDate`).
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS (Every class and property directly answers a specific competency question or scenario requirement).
+
+### Scope Report
+**a) Requirements from the scenario that are covered:**
+- **Court Hierarchies:** Modeled via `:Court`, `:DistrictCourt`, and the `:hasAuthorityOver` property.
+- **Geographical/Administrative Locations:** Modeled via `:State`, `:District`, and the `:locatedInState` property to answer CQs about districts and courts within states.
+- **Bad Check Regulations:** Modeled via `:Check`, `:BadCheck`, `:CheckPayment`, `:CheckTransactionType`, and `:TransactionStatus`, along with their connecting properties (`:hasTransactionType`, `:isPaymentOf`, `:hasTransactionStatus`, `:paymentDate`).
+
+**b) Scenario concepts explicitly excluded and why:**
+- **"India" (from CQ 3):** Excluded as a specific class or entity because the prompt strictly forbids creating individual instances. It is implicitly supported by the generic `:State` and `:District` schema.
+- **"Unstructured information":** Excluded because this describes the format of the source data in the legal domain, rather than a conceptual entity that needs to be modeled within the ontology's schema.
