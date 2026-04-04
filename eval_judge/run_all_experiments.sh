@@ -10,11 +10,14 @@
 #
 # Prerequisites:
 #   1. Copy .env.sample to .env and fill in your API keys
-#   2. pip install -r requirements_judge.txt
+#   2. uv pip install -r requirements_judge.txt
 #
 # Usage:
 #   chmod +x eval_judge/run_all_experiments.sh
 #   ./eval_judge/run_all_experiments.sh
+#
+# Background with logging:
+#   nohup ./eval_judge/run_all_experiments.sh > judge.log 2>&1 &
 #
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -36,14 +39,27 @@ echo " Started     : $(date -Iseconds)"
 echo "══════════════════════════════════════════════════════════════════════"
 echo ""
 
-# ── Preflight checks ────────────────────────────────────────────────────────
+# ── Load .env ────────────────────────────────────────────────────────────────
 if [ ! -f ".env" ]; then
     echo "ERROR: .env file not found. Copy .env.sample to .env and fill in API keys."
     exit 1
 fi
 
+set -a
+source .env
+set +a
+echo " Loaded .env"
+
+# ── Install dependencies via uv ──────────────────────────────────────────────
+echo " Installing dependencies with uv..."
+uv pip install -r requirements_judge.txt --quiet || {
+    echo "ERROR: uv pip install failed. Ensure uv is installed: https://docs.astral.sh/uv/"
+    exit 1
+}
+
+# Verify imports
 python -c "import dotenv, anthropic" 2>/dev/null || {
-    echo "ERROR: Missing dependencies. Run: pip install -r requirements_judge.txt"
+    echo "ERROR: Import check failed after install."
     exit 1
 }
 
