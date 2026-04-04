@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+# ══════════════════════════════════════════════════════════════════════════════
+# LLM-as-a-Judge Evaluation Pipeline — Run All Experiments
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# This script runs the complete evaluation pipeline:
+#   Step 1: Single-candidate evaluation (every ODP against its ground truth)
+#   Step 2: Pairwise evaluation (selected model pairs with position-swap debiasing)
+#   Step 3: Aggregate results into summary tables and a Markdown report
+#
+# Prerequisites:
+#   1. Copy .env.sample to .env and fill in your API keys
+#   2. pip install -r requirements_judge.txt
+#
+# Usage:
+#   chmod +x eval_judge/run_all_experiments.sh
+#   ./eval_judge/run_all_experiments.sh
+#
+# ══════════════════════════════════════════════════════════════════════════════
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_ROOT"
+
+# ── Configuration ────────────────────────────────────────────────────────────
+RESULTS_DIR="eval_judge_results"
+JUDGE_MODEL="${JUDGE_MODEL:-claude-sonnet-4-6}"  # override via env var
+
+echo "══════════════════════════════════════════════════════════════════════"
+echo " LLM-as-a-Judge Evaluation Pipeline"
+echo " Judge model : $JUDGE_MODEL"
+echo " Results dir : $RESULTS_DIR"
+echo " Started     : $(date -Iseconds)"
+echo "══════════════════════════════════════════════════════════════════════"
+echo ""
+
+# ── Preflight checks ────────────────────────────────────────────────────────
+if [ ! -f ".env" ]; then
+    echo "ERROR: .env file not found. Copy .env.sample to .env and fill in API keys."
+    exit 1
+fi
+
+python -c "import dotenv, anthropic" 2>/dev/null || {
+    echo "ERROR: Missing dependencies. Run: pip install -r requirements_judge.txt"
+    exit 1
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+# STEP 1: Single-candidate evaluation
+# ══════════════════════════════════════════════════════════════════════════════
+echo "────────────────────────────────────────────────────────────────────"
+echo " STEP 1: Single-candidate evaluation (all models × configs × scenarios)"
+echo "────────────────────────────────────────────────────────────────────"
+echo ""
+
+python -m eval_judge.run_evaluation \
+    --mode single \
+    --judge-model "$JUDGE_MODEL" \
+    --results-dir "$RESULTS_DIR"
+
+echo ""
+echo " Step 1 complete."
+echo ""
+
+# ══════════════════════════════════════════════════════════════════════════════
+# STEP 2: Pairwise evaluation (selected model pairs)
+# ══════════════════════════════════════════════════════════════════════════════
+echo "────────────────────────────────────────────────────────────────────"
+echo " STEP 2: Pairwise evaluation with position-swap debiasing"
+echo "────────────────────────────────────────────────────────────────────"
+echo ""
+
+# Define the model pairs to compare pairwise.
+# These are the most scientifically interesting comparisons:
+#   - Large proprietary vs large proprietary
+#   - Large proprietary vs best open-source
+#   - Open-source vs open-source (size comparison)
+PAIRS=(
+    "gpt-5.4|gemini-3.1-pro-preview"
+    "gpt-5.4|meta-llama_Llama-3.1-8B-Instruct"
+    "gemini-3.1-pro-preview|meta-llama_Llama-3.1-8B-Instruct"
+    "meta-llama_Llama-3.1-8B-Instruct|mistralai_Mistral-7B-Instruct-v0.3"
+    "meta-llama_Llama-2-70b-chat-hf|meta-llama_Llama-3.1-8B-Instruct"
+)
+
+for pair in "${PAIRS[@]}"; do
+    IFS='|' read -r MODEL_A MODEL_B <<< "$pair"
+    echo "  Comparing: $MODEL_A  vs  $MODEL_B"
+    python -m eval_judge.run_evaluation \
+        --mode pairwise \
+        --judge-model "$JUDGE_MODEL" \
+        --model-a "$MODEL_A" \
+        --model-b "$MODEL_B" \
+        --results-dir "$RESULTS_DIR"
+    echo ""
+done
+
+echo " Step 2 complete."
+echo ""
+
+# ══════════════════════════════════════════════════════════════════════════════
+# STEP 3: Aggregate results
+# ══════════════════════════════════════════════════════════════════════════════
+echo "────────────────────────────────────────────────────────────────────"
+echo " STEP 3: Aggregating results and generating report"
+echo "────────────────────────────────────────────────────────────────────"
+echo ""
+
+python -m eval_judge.aggregate_results \
+    --results-dir "$RESULTS_DIR"
+
+echo ""
+echo "══════════════════════════════════════════════════════════════════════"
+echo " Pipeline complete!"
+echo " Results   : $RESULTS_DIR/"
+echo " Report    : $RESULTS_DIR/aggregated/judge_report.md"
+echo " Finished  : $(date -Iseconds)"
+echo "══════════════════════════════════════════════════════════════════════"

@@ -208,3 +208,101 @@ Candidate model families mentioned in notes:
 - studying pattern evolution/lifecycle/versioning and adoption over time
 - annotating ontology repositories with pattern usage metadata (e.g., OPLA-X style)
 
+---
+
+## 9) Pilot study results (March 2026)
+
+### 9.1 Structural evaluation — top configurations
+
+**Proprietary models (top 4 overall):**
+1. Gemini 3.1 Pro — scenario-only (OOPS score 0.9643, structural score 0.9821)
+2. Gemini 3.1 Pro — scenario-cq-reasoning (OOPS 0.7143, structural 0.8571)
+3. GPT-5.4 — scenario-only (structural 0.4643)
+4. GPT-5.4 — scenario-cq-constraints (structural 0.2929 overall, but top GPT config)
+
+**Open-source models (top 3):**
+1. Llama-3.1-8B — scenario-cq (structural 0.6161, parse rate 85.7%) 
+2. Llama-3.1-8B — scenario-only (structural 0.5952, parse rate 78.6%) ← **creativity track winner**
+3. Llama-2-70B — cq-only (structural 0.5893, parse rate 85.7%)
+
+**Anomaly detected:** One Llama-3.1-8B output for scenario 2025-151-01 (scenario-cq config) repeated the same triples 22 times — degenerate output, retained in dataset as an edge case.
+
+### 9.2 Functional evaluation (pilot)
+
+Functional evaluation measures practical utility: whether generated ODPs answer competency questions without over-committing to unsupported ontological elements.
+
+**Scoring formula:**
+```
+superfluous_penalty  = numbnoscen × 1.0 + (numb − numbnoscen) × 0.3
+manual_score         = 1 / (1 + 0.5 × superfluous_penalty)    [0–1, higher = fewer superfluous elements]
+functional_score     = 0.5 × manual_score + 0.5 × cq_pass_rate
+```
+
+- `numb`: total elements added beyond ground truth
+- `numbnoscen`: extra elements with no grounding in the scenario (weighted ×1.0)
+- Scenario-justified extra elements weighted ×0.3 (defensible over-specificity)
+
+**Results (4 configurations evaluated):**
+
+| Model | Config | Avg Extra | Manual Score | CQ Pass Rate | Functional Score |
+|-------|--------|-----------|-------------|-------------|-----------------|
+| Llama-2-70B | cq-only | 0.79 | 0.866 | 0.202 | **0.534** ← winner |
+| GPT-5.4 | scenario-cq-constraints | 1.00 | 0.862 | 0.191 | 0.527 |
+| Llama-3.1-8B | scenario-cq | 4.50 | 0.719 | 0.133 | 0.426 |
+| Gemini 3.1 Pro | scenario-cq-reasoning | 2.21 | 0.774 | 0.023 | 0.399 |
+
+### 9.3 Evaluation gap identified
+
+Llama-2-70B (cq-only) achieves the highest functional score despite being described as "incredibly bad modeling" (low OOPS score 0.2476, structural score 0.4524 overall). It wins because it produces extremely minimal ontologies (avg_numb=0.79) with almost no unsupported additions, yielding high manual_score.
+
+**Implication:** Automated functional scores reward parsimony but cannot detect ontological modeling deficiencies (incorrect domain/range, missing restrictions, semantically incoherent axioms). Expert evaluation is necessary to determine whether these outputs are actually usable.
+
+---
+
+## 10) Open-source model selection for human evaluation
+
+### Decision
+
+Two open-source model/configuration pairs selected for the human evaluation phase, each representing a distinct quality dimension:
+
+| Track | Model | Config | Rationale |
+|-------|-------|--------|-----------|
+| **Scenario-only (Structural)** | Llama-3.1-8B | scenario-only | Creativity track winner; best structural quality for 8B model without CQ guidance; tests scenario sufficiency |
+| **CQ-only (Functional)** | Llama-2-70B | cq-only | Functional evaluation winner (score 0.534); highest CQ pass rate among open-source; minimal unsupported additions |
+
+### Rationale for configuration scope reduction
+
+Reducing from 5 configurations to 2 for open-source models:
+- Makes human evaluation feasible without overburdening participants
+- The two selected configs represent opposite ends of the prompt spectrum (scenario-only vs CQ-only)
+- Each is a clear winner in its respective quality dimension
+- The structural/functional divergence in winners makes this an informative comparison
+
+### Research value
+
+The Llama-70B case presents a natural experiment: human experts can assess whether its functional metric advantage (0.534 score, 0.87 manual score) survives real-world scrutiny despite known structural weaknesses. This will help calibrate the validity of automated functional metrics.
+
+---
+
+## 11) Human evaluation plan (in progress)
+
+### Participant pool
+- Pattern authors: ~2 (incl. 1 who is also a student)
+- Ontology engineering experts: ~5 (some are also pattern authors)
+- MSc/PhD students: ~2
+- ISWC workshop participants: ~8
+- Target: ~38 participants (experts) + ~38 (students)
+- Each evaluator assesses ~3 ontologies; pattern authors: ~2
+
+### Evaluation forms (3 types)
+
+**Pattern authors:** Author role, intent match (1–5), scope appropriateness (1–5), reuse readiness (1–5), adoption threshold (Yes/Maybe/No + justification), time saved (0%/1–25%/26–50%/51–75%/76–100%), missing core elements (free text)
+
+**Experts:** Overall helpfulness (1–5), reusability (1–5), clarity/documentation (1–5), adoption threshold (Yes/Maybe/No + justification), time saved, free text observations
+
+**Students:** Academic level (MSc/PhD), time to understand (minutes), documentation clarity (1–5), naming clarity (1–5), adoption (Yes/Maybe/No + justification), time saved
+
+### Notes and open questions
+- Very long CQ lists may discourage participation — consider trimming to representative subset (~3 CQs)
+- Whether to evaluate ground truth ODPs alongside generated ones
+- Evaluation platform: https://github.com/ebrahimnorouzi/odp-platform
