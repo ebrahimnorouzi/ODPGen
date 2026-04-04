@@ -176,23 +176,27 @@ class JudgeLLM:
                 if self.backend == "anthropic":
                     response = client.messages.create(
                         model=self.model,
-                        max_tokens=4096,
+                        max_tokens=8192,
                         temperature=self.temperature,
                         system=system,
                         messages=[{"role": "user", "content": user}],
                     )
+                    if response.stop_reason == "max_tokens":
+                        print("\n    [judge] WARNING: response truncated (max_tokens)")
                     return response.content[0].text
 
                 elif self.backend == "openai":
                     response = client.chat.completions.create(
                         model=self.model,
                         temperature=self.temperature,
-                        max_tokens=4096,
+                        max_tokens=8192,
                         messages=[
                             {"role": "system", "content": system},
                             {"role": "user", "content": user},
                         ],
                     )
+                    if response.choices[0].finish_reason == "length":
+                        print("\n    [judge] WARNING: response truncated (max_tokens)")
                     return response.choices[0].message.content
 
             except Exception as e:
@@ -304,8 +308,8 @@ class JudgeLLM:
 
 def _parse_json_response(raw: str) -> dict:
     """
-    Extract JSON from LLM response, handling markdown fences and
-    trailing text outside the JSON block.
+    Extract JSON from LLM response, handling markdown fences,
+    trailing text, and truncated responses.
     """
     # Try direct parse first
     try:
@@ -329,6 +333,17 @@ def _parse_json_response(raw: str) -> dict:
             return json.loads(raw[start : end + 1])
         except json.JSONDecodeError:
             pass
+
+    # Handle truncated JSON: find partial object and try to close it
+    json_start = raw.find("{")
+    if json_start != -1:
+        fragment = raw[json_start:]
+        # Try adding closing brace(s)
+        for suffix in ["\"}", "\n}", "}", "0}", "\"\"}"]:
+            try:
+                return json.loads(fragment + suffix)
+            except json.JSONDecodeError:
+                continue
 
     print(f"    [judge] WARNING: could not parse JSON from response ({len(raw)} chars)")
     return {}
