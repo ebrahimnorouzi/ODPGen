@@ -52,7 +52,7 @@ echo " Loaded .env"
 
 # ── Install dependencies via uv ──────────────────────────────────────────────
 echo " Installing dependencies with uv..."
-uv pip install -r requirements_judge.txt --quiet || {
+uv pip install -r requirements_judge.txt --system --quiet || {
     echo "ERROR: uv pip install failed. Ensure uv is installed: https://docs.astral.sh/uv/"
     exit 1
 }
