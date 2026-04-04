@@ -79,7 +79,7 @@ def _aggregate_group(rows: list[dict], group_key: str) -> list[dict]:
     table = []
     for key in sorted(groups.keys()):
         group = groups[key]
-        entry = {group_key: key, "n": len(group)}
+        entry: dict[str, str | int | float | None] = {group_key: key, "n": len(group)}
         for field in SCORE_FIELDS:
             vals = [r[field] for r in group if isinstance(r.get(field), (int, float))]
             if vals:
@@ -234,27 +234,45 @@ def main() -> None:
     )
     args = p.parse_args()
 
-    rows = load_single_results(args.results_dir)
-    if not rows:
-        print("[aggregate] Nothing to aggregate.")
+    # Discover all judge-specific subdirectories
+    base = args.results_dir
+    judge_dirs = sorted(
+        d for d in base.iterdir()
+        if d.is_dir() and (d / "single").exists()
+    ) if base.exists() else []
+
+    if not judge_dirs:
+        print("[aggregate] No judge result directories found.")
         return
 
-    out = args.results_dir / "aggregated"
-    out.mkdir(parents=True, exist_ok=True)
+    # Aggregate each judge separately
+    for judge_dir in judge_dirs:
+        judge_name = judge_dir.name
+        print(f"\n{'='*60}")
+        print(f"[aggregate] Judge: {judge_name}")
+        print(f"{'='*60}")
 
-    print("\n[aggregate] Writing aggregation CSVs:")
-    write_aggregation_csv(aggregate_by_model(rows), out / "by_model.csv")
-    write_aggregation_csv(aggregate_by_config(rows), out / "by_config.csv")
-    write_aggregation_csv(aggregate_by_scenario(rows), out / "by_scenario.csv")
+        rows = load_single_results(judge_dir)
+        if not rows:
+            print(f"[aggregate] No results for {judge_name}, skipping.")
+            continue
 
-    report = generate_report(rows, args.results_dir)
-    report_path = out / "judge_report.md"
-    report_path.write_text(report, encoding="utf-8")
-    print(f"  → {report_path}")
+        out = judge_dir / "aggregated"
+        out.mkdir(parents=True, exist_ok=True)
 
-    # Also print report to stdout
-    print("\n" + "=" * 72)
-    print(report)
+        print("\n[aggregate] Writing aggregation CSVs:")
+        write_aggregation_csv(aggregate_by_model(rows), out / "by_model.csv")
+        write_aggregation_csv(aggregate_by_config(rows), out / "by_config.csv")
+        write_aggregation_csv(aggregate_by_scenario(rows), out / "by_scenario.csv")
+
+        report = generate_report(rows, judge_dir)
+        report_path = out / "judge_report.md"
+        report_path.write_text(report, encoding="utf-8")
+        print(f"  → {report_path}")
+
+        # Also print report to stdout
+        print("\n" + "-" * 60)
+        print(report)
 
     print("\n[aggregate] Done.")
 

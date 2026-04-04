@@ -284,6 +284,11 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
+def _sanitize_model_name(model: str) -> str:
+    """Sanitize model name for use as directory name."""
+    return model.replace("/", "_").replace(":", "_")
+
+
 def main() -> None:
     args = parse_args()
 
@@ -292,20 +297,24 @@ def main() -> None:
         temperature=args.temperature,
     )
 
+    # Namespace results under judge model name for separate storage
+    results_dir = args.results_dir / _sanitize_model_name(judge.model)
+    print(f"[pipeline] Results directory: {results_dir}")
+
     if args.mode == "single":
         rows = run_single_evaluation(
             judge=judge,
             scenarios_path=args.data,
             gt_dir=args.ground_truth_dir,
             outputs_dir=args.outputs_dir,
-            results_dir=args.results_dir,
+            results_dir=results_dir,
             configs_filter=args.configs,
             scenarios_filter=args.scenarios,
             skip_existing=not args.no_skip_existing,
         )
         write_summary_csv(
             rows,
-            args.results_dir / "single_summary.csv",
+            results_dir / "single_summary.csv",
         )
 
     elif args.mode == "pairwise":
@@ -319,14 +328,14 @@ def main() -> None:
             scenarios_path=args.data,
             gt_dir=args.ground_truth_dir,
             outputs_dir=args.outputs_dir,
-            results_dir=args.results_dir,
+            results_dir=results_dir,
             configs_filter=args.configs,
             scenarios_filter=args.scenarios,
             skip_existing=not args.no_skip_existing,
         )
         write_summary_csv(
             rows,
-            args.results_dir / f"pairwise_{args.model_a}_vs_{args.model_b}.csv",
+            results_dir / f"pairwise_{args.model_a}_vs_{args.model_b}.csv",
         )
 
     print("\n[pipeline] Done.")

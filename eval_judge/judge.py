@@ -114,6 +114,8 @@ def _judge_backend(judge_model: str) -> str:
         return "anthropic"
     if "gpt" in judge_model.lower() or "o1" in judge_model.lower():
         return "openai"
+    if "gemini" in judge_model.lower():
+        return "google"
     raise ValueError(f"Unknown judge model backend: {judge_model}")
 
 
@@ -130,7 +132,7 @@ def check_judge_independence(judge_model: str, generating_model: str) -> bool:
 class JudgeLLM:
     """
     Wrapper around LLM API calls for evaluation.
-    Supports Anthropic (Claude) and OpenAI (GPT) backends.
+    Supports Anthropic (Claude), OpenAI (GPT), and Google (Gemini) backends.
     """
 
     def __init__(
@@ -165,6 +167,11 @@ class JudgeLLM:
             self._client = openai.OpenAI(
                 api_key=os.getenv("OPENAI_API_KEY"),
             )
+        elif self.backend == "google":
+            from google import genai
+            self._client = genai.Client(
+                api_key=os.getenv("GOOGLE_API_KEY"),
+            )
         return self._client
 
     def _call_llm(self, system: str, user: str) -> str:
@@ -198,6 +205,20 @@ class JudgeLLM:
                     if response.choices[0].finish_reason == "length":
                         print("\n    [judge] WARNING: response truncated (max_tokens)")
                     return response.choices[0].message.content
+
+                elif self.backend == "google":
+                    from google.genai import types
+                    response = client.models.generate_content(
+                        model=self.model,
+                        contents=f"{system}\n\n{user}",
+                        config=types.GenerateContentConfig(
+                            temperature=self.temperature,
+                            max_output_tokens=8192,
+                        ),
+                    )
+                    if response.candidates[0].finish_reason.name == "MAX_TOKENS":
+                        print("\n    [judge] WARNING: response truncated (max_tokens)")
+                    return response.text
 
             except Exception as e:
                 print(f"    [judge] API error (attempt {attempt+1}/{self.max_retries}): {e}")
