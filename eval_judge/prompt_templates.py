@@ -68,7 +68,7 @@ Evaluate the following Candidate Ontology Design Pattern against the Ground Trut
 
 === OUTPUT FORMAT ===
 Respond strictly as a JSON object — no markdown fences, no extra text:
-{
+{{
   "syntactic_correctness_analysis": "<reasoning>",
   "syntactic_correctness_score": <int 1-10>,
   "semantic_accuracy_analysis": "<reasoning>",
@@ -79,7 +79,7 @@ Respond strictly as a JSON object — no markdown fences, no extra text:
   "functional_adequacy_score": <int 1-10>,
   "overall_analysis": "<1-2 sentence summary>",
   "overall_score": <int 1-10>
-}"""
+}}"""
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Pairwise evaluation template (with position-swap bias mitigation)
@@ -120,9 +120,9 @@ Evaluate two candidate Ontology Design Patterns (Candidate A and Candidate B) ag
 
 === OUTPUT FORMAT ===
 Respond strictly as a JSON object — no markdown fences, no extra text:
-{
+{{
   "Candidate_A_Analysis": "<step-by-step reasoning for A>",
   "Candidate_A_Score": <int 1-10>,
   "Candidate_B_Analysis": "<step-by-step reasoning for B>",
   "Candidate_B_Score": <int 1-10>
-}"""
+}}"""
