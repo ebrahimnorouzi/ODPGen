@@ -49,18 +49,23 @@ echo " Started     : $(date -Iseconds)"
 echo "══════════════════════════════════════════════════════════════════════"
 echo ""
 
-# ── Install dependencies via uv ──────────────────────────────────────────────
-PYTHON="$(which python3)"
-echo " Python: $PYTHON ($(python3 --version 2>&1))"
+# ── Create venv and install dependencies ─────────────────────────────────────
+VENV_DIR="$PROJECT_ROOT/.venv_judge"
+if [ ! -d "$VENV_DIR" ]; then
+    echo " Creating virtual environment at $VENV_DIR ..."
+    uv venv "$VENV_DIR" --python python3
+fi
+source "$VENV_DIR/bin/activate"
+echo " Python: $(which python3) ($(python3 --version 2>&1))"
 echo " Installing dependencies with uv..."
-uv pip install -r requirements_judge.txt --system --python "$PYTHON" --quiet || {
+uv pip install -r requirements_judge.txt --quiet || {
     echo "ERROR: uv pip install failed. Ensure uv is installed: https://docs.astral.sh/uv/"
     exit 1
 }
 
 # Verify imports
 python3 -c "import dotenv, google.genai" 2>/dev/null || {
-    echo "ERROR: Import check failed. Packages not visible to $PYTHON."
+    echo "ERROR: Import check failed."
     exit 1
 }
 
