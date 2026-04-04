@@ -138,7 +138,9 @@ def run_single_evaluation(
             )
 
         except Exception as e:
-            print(f"ERROR: {e}")
+            import traceback
+            print(f"ERROR: {e!r}")
+            traceback.print_exc()
             continue
 
     return summary_rows
