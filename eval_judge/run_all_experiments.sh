@@ -58,15 +58,10 @@ uv pip install -r requirements_judge.txt --system --quiet || {
 }
 
 # Verify imports
-echo " Python: $(which python) ($(python --version 2>&1))"
-echo " uv target: $(uv pip show anthropic 2>/dev/null | grep Location || echo 'not found')"
-python -c "import dotenv, anthropic" 2>/dev/null || {
-    echo "ERROR: Import check failed. Trying with python3..."
-    python3 -c "import dotenv, anthropic" 2>/dev/null || {
-        echo "ERROR: Import check failed. Check that uv installs to the same Python on PATH."
-        echo "  Try: uv pip install -r requirements_judge.txt --system --python $(which python)"
-        exit 1
-    }
+echo " Python: $(which python3) ($(python3 --version 2>&1))"
+python3 -c "import dotenv, anthropic" 2>/dev/null || {
+    echo "ERROR: Import check failed. Check that uv installs to the same Python on PATH."
+    exit 1
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -77,7 +72,7 @@ echo " STEP 1: Single-candidate evaluation (all models × configs × scenarios)"
 echo "────────────────────────────────────────────────────────────────────"
 echo ""
 
-python -m eval_judge.run_evaluation \
+python3 -m eval_judge.run_evaluation \
     --mode single \
     --judge-model "$JUDGE_MODEL" \
     --results-dir "$RESULTS_DIR"
@@ -110,7 +105,7 @@ PAIRS=(
 for pair in "${PAIRS[@]}"; do
     IFS='|' read -r MODEL_A MODEL_B <<< "$pair"
     echo "  Comparing: $MODEL_A  vs  $MODEL_B"
-    python -m eval_judge.run_evaluation \
+    python3 -m eval_judge.run_evaluation \
         --mode pairwise \
         --judge-model "$JUDGE_MODEL" \
         --model-a "$MODEL_A" \
@@ -130,7 +125,7 @@ echo " STEP 3: Aggregating results and generating report"
 echo "────────────────────────────────────────────────────────────────────"
 echo ""
 
-python -m eval_judge.aggregate_results \
+python3 -m eval_judge.aggregate_results \
     --results-dir "$RESULTS_DIR"
 
 echo ""
