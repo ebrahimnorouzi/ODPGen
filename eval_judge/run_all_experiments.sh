@@ -58,9 +58,15 @@ uv pip install -r requirements_judge.txt --system --quiet || {
 }
 
 # Verify imports
+echo " Python: $(which python) ($(python --version 2>&1))"
+echo " uv target: $(uv pip show anthropic 2>/dev/null | grep Location || echo 'not found')"
 python -c "import dotenv, anthropic" 2>/dev/null || {
-    echo "ERROR: Import check failed after install."
-    exit 1
+    echo "ERROR: Import check failed. Trying with python3..."
+    python3 -c "import dotenv, anthropic" 2>/dev/null || {
+        echo "ERROR: Import check failed. Check that uv installs to the same Python on PATH."
+        echo "  Try: uv pip install -r requirements_judge.txt --system --python $(which python)"
+        exit 1
+    }
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
