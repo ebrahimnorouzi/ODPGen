@@ -27,18 +27,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_ROOT"
 
-# ── Configuration ────────────────────────────────────────────────────────────
-RESULTS_DIR="eval_judge_results"
-JUDGE_MODEL="${JUDGE_MODEL:-claude-sonnet-4-6}"  # override via env var
-
-echo "══════════════════════════════════════════════════════════════════════"
-echo " LLM-as-a-Judge Evaluation Pipeline"
-echo " Judge model : $JUDGE_MODEL"
-echo " Results dir : $RESULTS_DIR"
-echo " Started     : $(date -Iseconds)"
-echo "══════════════════════════════════════════════════════════════════════"
-echo ""
-
 # ── Load .env ────────────────────────────────────────────────────────────────
 if [ ! -f ".env" ]; then
     echo "ERROR: .env file not found. Copy .env.sample to .env and fill in API keys."
@@ -48,19 +36,31 @@ fi
 set -a
 source .env
 set +a
-echo " Loaded .env"
+
+# ── Configuration ────────────────────────────────────────────────────────────
+RESULTS_DIR="eval_judge_results"
+JUDGE_MODEL="${JUDGE_MODEL:-gemini-2.5-flash}"
+
+echo "══════════════════════════════════════════════════════════════════════"
+echo " LLM-as-a-Judge Evaluation Pipeline"
+echo " Judge model : $JUDGE_MODEL"
+echo " Results dir : $RESULTS_DIR"
+echo " Started     : $(date -Iseconds)"
+echo "══════════════════════════════════════════════════════════════════════"
+echo ""
 
 # ── Install dependencies via uv ──────────────────────────────────────────────
+PYTHON="$(which python3)"
+echo " Python: $PYTHON ($(python3 --version 2>&1))"
 echo " Installing dependencies with uv..."
-uv pip install -r requirements_judge.txt --system --quiet || {
+uv pip install -r requirements_judge.txt --system --python "$PYTHON" --quiet || {
     echo "ERROR: uv pip install failed. Ensure uv is installed: https://docs.astral.sh/uv/"
     exit 1
 }
 
 # Verify imports
-echo " Python: $(which python3) ($(python3 --version 2>&1))"
-python3 -c "import dotenv, anthropic" 2>/dev/null || {
-    echo "ERROR: Import check failed. Check that uv installs to the same Python on PATH."
+python3 -c "import dotenv, google.genai" 2>/dev/null || {
+    echo "ERROR: Import check failed. Packages not visible to $PYTHON."
     exit 1
 }
 
