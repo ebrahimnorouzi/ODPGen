@@ -219,7 +219,7 @@ def write_aggregation_csv(table: list[dict], path: Path) -> None:
         writer = csv.DictWriter(f, fieldnames=list(table[0].keys()))
         writer.writeheader()
         writer.writerows(table)
-    print(f"  → {path}")
+    print(f"  -> {path}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -268,7 +268,7 @@ def main() -> None:
         report = generate_report(rows, judge_dir)
         report_path = out / "judge_report.md"
         report_path.write_text(report, encoding="utf-8")
-        print(f"  → {report_path}")
+        print(f"  -> {report_path}")
 
         # Also print report to stdout
         print("\n" + "-" * 60)
