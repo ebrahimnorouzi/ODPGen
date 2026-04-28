@@ -37,6 +37,12 @@ SCENARIOS_JSON = REPO_ROOT / "data" / "scenarios" / "pattern_scenarios.json"
 EXPERT_CSV = THIS_DIR / "expert-evaluation-responses.csv"
 US_CSV = THIS_DIR / "us-responses.csv"
 STUDENTS_CSV = THIS_DIR / "students-responses.csv"
+AUTHOR_CSVS = sorted(THIS_DIR.glob("author_*-responses.csv"))
+
+# A submission is treated as a test/empty session if it took less than this
+# many milliseconds. Only used when folding author-extra rows into the
+# expert pool (see load_expert_responses).
+AUTHOR_MIN_DURATION_MS = 30_000
 
 OUT_TEX = PAPER_SECTIONS / "odp-platform-results.tex"
 TAB_LIKERT = PAPER_TABLES / "tab_expert_likert.tex"
@@ -155,33 +161,60 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
 
 
 def load_expert_responses() -> list[Response]:
-    """Merge external experts + paper-author CSVs as the single expert pool."""
+    """Merge external experts, paper-author CSVs, and author-extra rows as
+    a single expert pool. Author CSVs use a hybrid schema: rows where the
+    author rated their own pattern (intent_match populated) are excluded
+    here, while rows where they rated a randomly assigned extra pattern
+    (helpfulness populated) are included because they share the expert
+    questionnaire."""
     out: list[Response] = []
+
+    def _push(row: dict) -> None:
+        try:
+            model, config, scen = _parse_pattern_url(row["pattern_link"])
+        except (ValueError, KeyError):
+            return
+        track = _classify_track(model, config)
+        if track is None:
+            return
+        ts_label = _normalize_time_saved(row.get("q_q_time_saved", ""))
+        out.append(
+            Response(
+                evaluator=row["evaluator_token"],
+                scenario_id=scen,
+                track=track,
+                helpfulness=_parse_int(row.get("q_q_overall_helpfulness", "")),
+                reusability=_parse_int(row.get("q_q_reusability", "")),
+                clarity=_parse_int(row.get("q_q_clarity_documentation", "")),
+                adoption=row.get("q_q_adoption_threshold", "").strip(),
+                time_saved_label=ts_label,
+                time_saved_pct=TIME_SAVED_MIDPOINT.get(ts_label),
+                justification=row.get("q_q_adoption_justification", "").strip(),
+                observations=row.get("q_q_additional_observations", "").strip(),
+            )
+        )
+
     for path in (EXPERT_CSV, US_CSV):
         for row in _read_csv(path):
+            _push(row)
+
+    # Fold the author-extra rows into the expert pool: skip rows where the
+    # author was rating their own pattern (intent_match populated) or where
+    # the submission looks like a test session (duration too short).
+    for path in AUTHOR_CSVS:
+        for row in _read_csv(path):
+            if (row.get("q_q_intent_match", "") or "").strip():
+                continue
             try:
-                model, config, scen = _parse_pattern_url(row["pattern_link"])
-            except (ValueError, KeyError):
+                duration = int(row.get("duration_ms", "0") or 0)
+            except ValueError:
+                duration = 0
+            if duration < AUTHOR_MIN_DURATION_MS:
                 continue
-            track = _classify_track(model, config)
-            if track is None:
+            if not (row.get("q_q_overall_helpfulness", "") or "").strip():
                 continue
-            ts_label = _normalize_time_saved(row.get("q_q_time_saved", ""))
-            out.append(
-                Response(
-                    evaluator=row["evaluator_token"],
-                    scenario_id=scen,
-                    track=track,
-                    helpfulness=_parse_int(row.get("q_q_overall_helpfulness", "")),
-                    reusability=_parse_int(row.get("q_q_reusability", "")),
-                    clarity=_parse_int(row.get("q_q_clarity_documentation", "")),
-                    adoption=row.get("q_q_adoption_threshold", "").strip(),
-                    time_saved_label=ts_label,
-                    time_saved_pct=TIME_SAVED_MIDPOINT.get(ts_label),
-                    justification=row.get("q_q_adoption_justification", "").strip(),
-                    observations=row.get("q_q_additional_observations", "").strip(),
-                )
-            )
+            _push(row)
+
     return out
 
 
@@ -475,14 +508,14 @@ def _likert_table(likert: dict, mw: dict) -> str:
             "\\caption{Expert evaluation: Likert ratings (1--5) by track. "
             "Creativity = \\textit{Llama-3.1-8B} (\\textit{scenario-only}); "
             "Functionality = \\textit{Llama-2-70B} (\\textit{cq-only}). "
-            "$U$ and $p$ denote the Mann--Whitney $U$ statistic and "
-            "two-sided $p$-value comparing tracks within each dimension.}"
+            "$p$ is the two-sided $p$-value of the Mann--Whitney $U$ test "
+            "comparing tracks within each dimension.}"
         ),
         "\\label{tab:expert-likert}",
         "\\small",
-        "\\begin{tabular}{l l c c c c c c}",
+        "\\begin{tabular}{l l c c c c c}",
         "\\toprule",
-        "Dimension & Track & $N$ & Mean & Median & SD & $U$ & $p$ \\\\",
+        "Dimension & Track & $N$ & Mean & Median & SD & $p$ \\\\",
         "\\midrule",
     ]
     for dim, label in (
@@ -492,11 +525,7 @@ def _likert_table(likert: dict, mw: dict) -> str:
     ):
         for i, track in enumerate((CREATIVITY, FUNCTIONALITY)):
             s = likert[dim][track]
-            mw_cell = (
-                f"{_fmt(mw[dim]['U'], 1)} & {_fmt(mw[dim]['p'], 3)}"
-                if i == 0
-                else "& "
-            )
+            mw_cell = _fmt(mw[dim]["p"], 3) if i == 0 else ""
             first = label if i == 0 else ""
             rows.append(
                 f"{first} & {track} & {s['n']} & {_fmt(s['mean'])} & "
@@ -585,16 +614,16 @@ def _per_pattern_table(pp: list[dict]) -> str:
         "\\label{tab:expert-per-pattern}",
         "\\scriptsize",
         "\\setlength{\\tabcolsep}{4pt}",
-        "\\begin{tabular}{l l c c c c c | c c c c c}",
+        "\\begin{tabular}{l c c c c c | c c c c c}",
         "\\toprule",
         (
-            "& & \\multicolumn{5}{c}{Creativity (\\textit{Llama-3.1-8B} / "
-            "\\textit{scenario-only})} & \\multicolumn{5}{c}{Functionality "
-            "(\\textit{Llama-2-70B} / \\textit{cq-only})} \\\\"
+            "& \\multicolumn{5}{c}{Creativity "
+            "(\\textit{scenario-only})} & \\multicolumn{5}{c}{Functionality "
+            "(\\textit{cq-only})} \\\\"
         ),
-        "\\cmidrule(lr){3-7} \\cmidrule(lr){8-12}",
+        "\\cmidrule(lr){2-6} \\cmidrule(lr){7-11}",
         (
-            "ID & Pattern & $N$ & Help & Reuse & Yes\\% & Time & "
+            "Pattern & $N$ & Help & Reuse & Yes\\% & Time & "
             "$N$ & Help & Reuse & Yes\\% & Time \\\\"
         ),
         "\\midrule",
@@ -603,7 +632,7 @@ def _per_pattern_table(pp: list[dict]) -> str:
         c = row[CREATIVITY]
         f = row[FUNCTIONALITY]
         rows.append(
-            f"{row['scenario_id']} & {_esc(row['title'])} & "
+            f"{_esc(row['title'])} & "
             f"{c['n']} & {_fmt(c['help'])} & {_fmt(c['reuse'])} & "
             f"{_fmt(c['adopt_yes_pct'], 0)} & {_fmt(c['time_saved'], 0)} & "
             f"{f['n']} & {_fmt(f['help'])} & {_fmt(f['reuse'])} & "
