@@ -26,7 +26,7 @@ from analyze_user_eval import (
 
 THIS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = THIS_DIR.parent
-PAPER_DIR = REPO_ROOT / "paper"
+PAPER_DIR = REPO_ROOT / "ISWC2026_ODP_paper"
 OUT_TEX = PAPER_DIR / "sections" / "recommendations.tex"
 TAB_THEMES = PAPER_DIR / "tables" / "tab_rec_themes.tex"
 

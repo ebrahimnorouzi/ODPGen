@@ -29,7 +29,7 @@ from scipy import stats
 
 THIS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = THIS_DIR.parent
-PAPER_DIR = REPO_ROOT / "paper"
+PAPER_DIR = REPO_ROOT / "ISWC2026_ODP_paper"
 PAPER_SECTIONS = PAPER_DIR / "sections"
 PAPER_TABLES = PAPER_DIR / "tables"
 SCENARIOS_JSON = REPO_ROOT / "data" / "scenarios" / "pattern_scenarios.json"
