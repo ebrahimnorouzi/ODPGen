@@ -5,7 +5,7 @@ Reads expert + paper-author + student CSVs exported from the ODP evaluation
 platform (https://github.com/ebrahimnorouzi/odp-platform), parses the pattern
 URL into (model, configuration, scenario_id), assigns a track (Creativity =
 Llama-3.1-8B / scenario-only, Functionality = Llama-2-70B / cq-only), computes
-descriptive statistics, Mann--Whitney U tests, Krippendorff's alpha, and
+descriptive statistics, paired Wilcoxon signed-rank tests, Krippendorff's alpha, and
 per-pattern means, and writes a LaTeX subsection at
 paper/sections/odp-platform-results.tex.
 
@@ -347,20 +347,82 @@ def likert_summary(responses: list[Response]) -> dict[str, dict[str, dict]]:
     return out
 
 
-def mann_whitney(responses: list[Response]) -> dict[str, dict]:
+def wilcoxon_paired(responses: list[Response]) -> dict[str, dict]:
+    """Paired Wilcoxon signed-rank test comparing the Functionality and
+    Creativity tracks within each (evaluator, scenario) pair, plus the
+    rank-biserial effect size $r_{rb}$. The pairing is the appropriate
+    design here because each evaluator rates both tracks for every
+    pattern they are assigned, so the two track-level samples are not
+    independent."""
+    pairs_by_dim: dict[str, list[tuple[float, float]]] = {
+        "helpfulness": [],
+        "reusability": [],
+        "clarity": [],
+    }
+    by_key: dict[tuple[str, str], dict[str, dict[str, float]]] = {}
+    for r in responses:
+        key = (r.evaluator, r.scenario_id)
+        by_key.setdefault(key, {CREATIVITY: {}, FUNCTIONALITY: {}})
+        for dim, attr in (
+            ("helpfulness", "helpfulness"),
+            ("reusability", "reusability"),
+            ("clarity", "clarity"),
+        ):
+            v = getattr(r, attr)
+            if v is not None:
+                by_key[key][r.track][dim] = float(v)
+
+    for cells in by_key.values():
+        for dim in pairs_by_dim:
+            if dim in cells[CREATIVITY] and dim in cells[FUNCTIONALITY]:
+                pairs_by_dim[dim].append(
+                    (cells[CREATIVITY][dim], cells[FUNCTIONALITY][dim])
+                )
+
     out: dict[str, dict] = {}
-    for dim, attr in (
-        ("helpfulness", "helpfulness"),
-        ("reusability", "reusability"),
-        ("clarity", "clarity"),
-    ):
-        a = [getattr(r, attr) for r in responses if r.track == CREATIVITY and getattr(r, attr) is not None]
-        b = [getattr(r, attr) for r in responses if r.track == FUNCTIONALITY and getattr(r, attr) is not None]
-        if not a or not b:
-            out[dim] = {"U": float("nan"), "p": float("nan")}
+    for dim, pairs in pairs_by_dim.items():
+        if len(pairs) < 2:
+            out[dim] = {
+                "n_pairs": len(pairs),
+                "W": float("nan"),
+                "p": float("nan"),
+                "rb": float("nan"),
+            }
             continue
-        u, p = stats.mannwhitneyu(a, b, alternative="two-sided")
-        out[dim] = {"U": float(u), "p": float(p)}
+        diffs = [b - a for (a, b) in pairs]
+        nonzero = [d for d in diffs if d != 0]
+        if not nonzero:
+            out[dim] = {
+                "n_pairs": len(pairs),
+                "W": 0.0,
+                "p": 1.0,
+                "rb": 0.0,
+            }
+            continue
+        try:
+            res = stats.wilcoxon(
+                [b for (_, b) in pairs],
+                [a for (a, _) in pairs],
+                zero_method="wilcox",
+                alternative="two-sided",
+                method="auto",
+            )
+            w_stat = float(res.statistic)
+            p_val = float(res.pvalue)
+        except ValueError:
+            w_stat, p_val = float("nan"), float("nan")
+        # Rank-biserial correlation, computed manually for robustness.
+        abs_ranks = stats.rankdata([abs(d) for d in nonzero])
+        w_plus = sum(r for r, d in zip(abs_ranks, nonzero) if d > 0)
+        w_minus = sum(r for r, d in zip(abs_ranks, nonzero) if d < 0)
+        denom = w_plus + w_minus
+        rb = (w_plus - w_minus) / denom if denom else float("nan")
+        out[dim] = {
+            "n_pairs": len(pairs),
+            "W": w_stat,
+            "p": p_val,
+            "rb": rb,
+        }
     return out
 
 
@@ -499,7 +561,7 @@ def _esc(s: str) -> str:
     )
 
 
-def _likert_table(likert: dict, mw: dict) -> str:
+def _likert_table(likert: dict, wx: dict) -> str:
     rows: list[str] = [
         AUTOGEN_BANNER,
         "\\begin{table}[t]",
@@ -508,14 +570,20 @@ def _likert_table(likert: dict, mw: dict) -> str:
             "\\caption{Expert evaluation: Likert ratings (1--5) by track. "
             "Creativity = \\textit{Llama-3.1-8B} (\\textit{scenario-only}); "
             "Functionality = \\textit{Llama-2-70B} (\\textit{cq-only}). "
-            "$p$ is the two-sided $p$-value of the Mann--Whitney $U$ test "
-            "comparing tracks within each dimension.}"
+            "$n$ is the number of paired (evaluator, pattern) observations; "
+            "$p$ is the two-sided $p$-value of the Wilcoxon signed-rank test "
+            "comparing the two tracks within each dimension; "
+            "$r_{rb}$ is the rank-biserial effect size, with positive values "
+            "indicating higher Functionality scores.}"
         ),
         "\\label{tab:expert-likert}",
         "\\small",
-        "\\begin{tabular}{l l c c c c c}",
+        "\\begin{tabular}{l l c c c c c c c}",
         "\\toprule",
-        "Dimension & Track & $N$ & Mean & Median & SD & $p$ \\\\",
+        (
+            "Dimension & Track & $N$ & Mean & Median & SD & "
+            "$n_{\\text{pairs}}$ & $p$ & $r_{rb}$ \\\\"
+        ),
         "\\midrule",
     ]
     for dim, label in (
@@ -525,11 +593,17 @@ def _likert_table(likert: dict, mw: dict) -> str:
     ):
         for i, track in enumerate((CREATIVITY, FUNCTIONALITY)):
             s = likert[dim][track]
-            mw_cell = _fmt(mw[dim]["p"], 3) if i == 0 else ""
+            if i == 0:
+                w = wx[dim]
+                test_cells = (
+                    f"{w['n_pairs']} & {_fmt(w['p'], 3)} & {_fmt(w['rb'], 2)}"
+                )
+            else:
+                test_cells = "& & "
             first = label if i == 0 else ""
             rows.append(
                 f"{first} & {track} & {s['n']} & {_fmt(s['mean'])} & "
-                f"{_fmt(s['median'], 1)} & {_fmt(s['sd'])} & {mw_cell} \\\\"
+                f"{_fmt(s['median'], 1)} & {_fmt(s['sd'])} & {test_cells} \\\\"
             )
         if dim != "clarity":
             rows.append("\\midrule")
@@ -613,7 +687,6 @@ def _per_pattern_table(pp: list[dict]) -> str:
         ),
         "\\label{tab:expert-per-pattern}",
         "\\scriptsize",
-        "\\setlength{\\tabcolsep}{4pt}",
         "\\begin{tabular}{l c c c c c | c c c c c}",
         "\\toprule",
         (
@@ -741,9 +814,12 @@ def render_section(
                 "whereas the Creativity track (\\textit{Llama-3.1-8B}, "
                 "\\textit{scenario-only}) is rated more evenly on clarity. "
                 "None of the three Likert dimensions exhibits a statistically "
-                "significant difference between tracks (Mann--Whitney $U$, "
-                "all $p > 0.05$), suggesting that, from the expert "
-                "perspective, neither prompting strategy clearly dominates."
+                "significant paired difference between tracks (Wilcoxon "
+                "signed-rank, all $p > 0.1$); the rank-biserial effect sizes "
+                "are small and positive ($r_{rb}$ between $0.18$ and "
+                "$0.25$), so the descriptive Functionality lead is consistent "
+                "but modest, and from the expert perspective neither "
+                "prompting strategy clearly dominates."
             ),
             "",
             "\\subsubsection{Adoption threshold and estimated time saved.}",
@@ -811,7 +887,7 @@ def main() -> None:
 
     cov = coverage_summary(expert_responses)
     likert = likert_summary(expert_responses)
-    mw = mann_whitney(expert_responses)
+    wx = wilcoxon_paired(expert_responses)
     adoption = adoption_summary(expert_responses)
     iaa_data = iaa(expert_responses)
     pp = per_pattern(expert_responses)
@@ -826,9 +902,12 @@ def main() -> None:
         for track, s in blocks.items():
             print(f"  {dim:14s} | {track:13s} | n={s['n']:3d} | "
                   f"mean={s['mean']:.2f} | median={s['median']:.1f} | sd={s['sd']:.2f}")
-    print("\n=== Mann-Whitney U (Creativity vs Functionality) ===")
-    for dim, v in mw.items():
-        print(f"  {dim:14s} | U={v['U']:.1f} | p={v['p']:.4f}")
+    print("\n=== Wilcoxon signed-rank (Functionality - Creativity, paired by evaluator+pattern) ===")
+    for dim, v in wx.items():
+        print(
+            f"  {dim:14s} | n_pairs={v['n_pairs']:3d} | W={v['W']:.1f} | "
+            f"p={v['p']:.4f} | r_rb={v['rb']:+.2f}"
+        )
     print("\n=== Adoption / time saved ===")
     for track, a in adoption.items():
         print(
@@ -845,7 +924,7 @@ def main() -> None:
     OUT_TEX.parent.mkdir(parents=True, exist_ok=True)
     PAPER_TABLES.mkdir(parents=True, exist_ok=True)
 
-    TAB_LIKERT.write_text(_likert_table(likert, mw), encoding="utf-8")
+    TAB_LIKERT.write_text(_likert_table(likert, wx), encoding="utf-8")
     TAB_ADOPTION.write_text(_adoption_table(adoption), encoding="utf-8")
     TAB_IAA.write_text(_iaa_table(iaa_data), encoding="utf-8")
     TAB_PER_PATTERN.write_text(_per_pattern_table(pp), encoding="utf-8")
