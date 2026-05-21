@@ -1,0 +1,129 @@
+{
+  "id": "2023-133-01",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 78,
+    "classes_count": 9,
+    "object_properties_count": 4,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 6,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.1111111111111111,
+    "relationship_richness": 0.8,
+    "avg_subclass_per_class": 0.6666666666666666
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 78,
+    "triples_after": 311,
+    "inferred_triples": 233,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 3,
+    "cqs_failed": 4,
+    "pass_rate": 0.4286,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?event ?pavement ?raining ?rainySeason ?slipperyPavement ?sprinkler ?sprinklerOn ?wetPavement WHERE {\n  ?event a odp:Event.\n  OPTIONAL { ?event odp:Cause ?pavement. }\n  OPTIONAL { ?event odp:Effect ?raining. }\n  OPTIONAL { ?event odp:Effect ?rainySeason. }\n  OPTIONAL { ?event odp:Effect ?slipperyPavement. }\n  OPTIONAL { ?event odp:Effect ?sprinkler. }\n  OPTIONAL { ?event odp:Effect ?sprinklerOn. }\n  OPTIONAL { ?event odp:Effect ?wetPavement. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can effectively answer the competency question regarding events and their effects related to pavement conditions and weather, consider the following additions:\n\n1. **Define Classes**:\n   - Create a class `odp:WeatherCondition` to represent different weather states (e.g., `odp:Raining`, `odp:RainySeason`).\n   - Create a class `odp:PavementCondition` to represent various pavement states (e.g., `odp:SlipperyPavement`, `odp:WetPavement`).\n\n2. **Add Properties**:\n   - Introduce a property `odp:hasWeatherCondition` to link an `odp:Event` to its associated `odp:WeatherCondition`.\n   - Introduce a property `odp:hasPavementCondition` to link an `odp:Event` to its associated `odp:PavementCondition`.\n\n3. **Define Relationships**:\n   - Establish relationships between `odp:WeatherCondition` and `odp:PavementCondition` to indicate how certain weather conditions affect pavement conditions (e.g., `odp:causes`).\n\n4. **Include Instances**:\n   - Add instances of `odp:WeatherCondition` (e.g., `odp:Raining`, `odp:RainySeason`) and `odp:PavementCondition` (e.g., `odp:SlipperyPavement`, `odp:WetPavement`) to ensure there are data points to query against.\n\n5."
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?pavement ?raining ?rainySeason ?slipperyPavement ?sprinkler ?sprinklerOn ?wetPavement WHERE {\n  ?event a odp:Event.\n  OPTIONAL { ?event odp:Cause ?pavement. }\n  OPTIONAL { ?event odp:Effect ?raining. }\n  OPTIONAL { ?event odp:Effect ?rainySeason. }\n  OPTIONAL { ?event odp:Effect ?slipperyPavement. }\n  OPTIONAL { ?event odp:Effect ?sprinkler. }\n  OPTIONAL { ?event odp:Effect ?sprinklerOn. }\n  OPTIONAL { ?event odp:Effect ?wetPavement. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding events and their causes/effects, consider adding the following classes and properties:\n\n1. **Classes**:\n   - **Event**: Define a class for events that can encapsulate various occurrences.\n   - **Pavement**: Create a class to represent different types of pavement surfaces.\n   - **WeatherCondition**: Introduce a class to represent weather conditions, including rain and seasons.\n\n2. **Properties**:\n   - **hasCause**: Define a property (e.g., `odp:hasCause`) to link an event to its cause (e.g., pavement type).\n   - **hasEffect**: Define a property (e.g., `odp:hasEffect`) to link an event to its effects (e.g., raining, slippery pavement, wet pavement).\n   - **isPartOf**: Optionally, create a property (e.g., `odp:isPartOf`) to relate events to broader categories or contexts (e.g., seasonal events).\n\n3. **Axioms**:\n   - Add axioms to specify that certain weather conditions (e.g., raining) can lead to specific effects (e.g., slippery pavement) and that certain pavements can be affected by these conditions.\n\nBy implementing these additions, the ontology will be better equipped to answer the competency question regarding the relationships between events, their causes, and their effects."
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?cause ?effect ?mediated ?outcome ?weight WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:Cause ?cause . }\n  OPTIONAL { ?event odp:Effect ?effect . }\n  OPTIONAL { ?event odp:Mediated ?mediated . }\n  OPTIONAL { ?event odp:Outcome ?outcome . }\n  OPTIONAL { ?event odp:Weight ?weight . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `Event` Class**: Ensure that the `Event` class is properly defined in the ontology with relevant instances that represent actual events.\n\n2. **Add Properties**: \n   - `odp:Cause`: Define this property to link an event to its cause.\n   - `odp:Effect`: Define this property to link an event to its effect.\n   - `odp:Mediated`: Define this property to indicate any mediation involved in the event.\n   - `odp:Outcome`: Define this property to represent the outcome of the event.\n   - `odp:Weight`: Define this property to quantify the significance or impact of the event.\n\n3. **Create Instances**: Populate the ontology with instances of `Event` and provide values for the properties (e.g., specific causes, effects, mediations, outcomes, and weights) to ensure that the query can retrieve meaningful results.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question effectively."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property WHERE {\n  { \n    ?class a owl:Class .\n  } UNION {\n    ?property a owl:ObjectProperty .\n  } UNION {\n    ?property a owl:DatatypeProperty .\n  } \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?cause ?effect ?mediated ?outcome ?weight WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:Cause ?cause . }\n  OPTIONAL { ?event odp:Effect ?effect . }\n  OPTIONAL { ?event odp:Mediated ?mediated . }\n  OPTIONAL { ?event odp:Outcome ?outcome . }\n  OPTIONAL { ?event odp:Weight ?weight . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `Event` Class**: Ensure that the `Event` class is defined in the ontology with appropriate characteristics. For example:\n   ```turtle\n   :Event a rdfs:Class .\n   ```\n\n2. **Define Properties**: Add the necessary properties to relate events to their causes, effects, mediators, outcomes, and weights. For example:\n   ```turtle\n   :Cause a rdf:Property ; rdfs:domain :Event ; rdfs:range :CauseType .\n   :Effect a rdf:Property ; rdfs:domain :Event ; rdfs:range :EffectType .\n   :Mediated a rdf:Property ; rdfs:domain :Event ; rdfs:range :MediatorType .\n   :Outcome a rdf:Property ; rdfs:domain :Event ; rdfs:range :OutcomeType .\n   :Weight a rdf:Property ; rdfs:domain :Event ; rdfs:range xsd:float .\n   ```\n\n3. **Define Related Classes**: Create classes for `CauseType`, `EffectType`, `MediatorType`, and `OutcomeType` to specify the types of causes, effects, mediators, and outcomes associated with events:\n   ```turtle\n   :CauseType a rdfs:Class .\n   :EffectType"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:Event .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a odp:Cause .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a odp:Effect .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a odp:Mediated .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a odp:Outcome .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 6
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P34",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://example.org/odp#Mediated"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

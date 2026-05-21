@@ -1,0 +1,126 @@
+{
+  "id": "2025-151-02",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 94,
+    "classes_count": 14,
+    "object_properties_count": 9,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.07142857142857142,
+    "relationship_richness": 0.9,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 94,
+    "triples_after": 368,
+    "inferred_triples": 274,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 0,
+    "cqs_failed": 6,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "SELECT ?action ?asset ?event ?location ?party ?policy ?recipient ?rule ?ruleExercise WHERE {\n  ?action a <http://example.org/odp#Action> .\n  OPTIONAL { ?action <http://example.org/odp#hasAsset> ?asset . }\n  OPTIONAL { ?action <http://example.org/odp#hasEvent> ?event . }\n  OPTIONAL { ?action <http://example.org/odp#hasLocation> ?location . }\n  OPTIONAL { ?action <http://example.org/odp#hasParty> ?party . }\n  OPTIONAL { ?action <http://example.org/odp#hasPolicy> ?policy . }\n  OPTIONAL { ?action <http://example.org/odp#hasRecipient> ?recipient . }\n  OPTIONAL { ?action <http://example.org/odp#hasRule> ?rule . }\n  OPTIONAL { ?action <http://example.org/odp#hasRuleExercise> ?ruleExercise . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Define the `Action` Class**: Ensure that the `Action` class is properly defined in the ontology with necessary properties that relate to the other concepts.\n\n2. **Add Object Properties**: \n   - Define the properties used in the query, such as:\n     - `hasAsset` (domain: Action, range: Asset)\n     - `hasEvent` (domain: Action, range: Event)\n     - `hasLocation` (domain: Action, range: Location)\n     - `hasParty` (domain: Action, range: Party)\n     - `hasPolicy` (domain: Action, range: Policy)\n     - `hasRecipient` (domain: Action, range: Recipient)\n     - `hasRule` (domain: Action, range: Rule)\n     - `hasRuleExercise` (domain: Action, range: RuleExercise)\n\n3. **Create Relevant Classes**: Ensure that the classes referenced in the properties (Asset, Event, Location, Party, Policy, Recipient, Rule, RuleExercise) are defined in the ontology.\n\n4. **Add Instances**: Populate the ontology with instances of the `Action` class and related classes to ensure that there are actual data entries that can be queried.\n\n5. **Check for Consistency**: Ensure that the ontology is consistent and that there are no conflicting definitions or missing relationships"
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?action ?asset ?event ?location ?party ?policy ?recipient ?rule ?ruleExercise WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:hasAsset ?asset . }\n  OPTIONAL { ?action odp:hasEvent ?event . }\n  OPTIONAL { ?action odp:hasLocation ?location . }\n  OPTIONAL { ?action odp:hasParty ?party . }\n  OPTIONAL { ?action odp:hasPolicy ?policy . }\n  OPTIONAL { ?action odp:hasRecipient ?recipient . }\n  OPTIONAL { ?action odp:hasRule ?rule . }\n  OPTIONAL { ?action odp:hasRuleExercise ?ruleExercise . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Action` Class**: Ensure that the `Action` class is properly defined in the ontology with relevant instances that can be queried. For example, create instances like `odp:Action1`, `odp:Action2`, etc.\n\n2. **Add Properties with Instances**: Ensure that the properties used in the query (e.g., `hasAsset`, `hasEvent`, `hasLocation`, etc.) are defined and that there are instances of `Action` that utilize these properties. For example:\n   - `odp:hasAsset` should link `Action` instances to specific `Asset` instances.\n   - Create instances of `Asset`, `Event`, `Location`, `Party`, `Policy`, `Recipient`, `Rule`, and `RuleExercise` that can be associated with the `Action` instances.\n\n3. **Create Example Instances**: Populate the ontology with example instances for each class and property. For instance:\n   - `odp:Action1` has properties like `odp:hasAsset odp:Asset1`, `odp:hasEvent odp:Event1`, etc.\n\n4. **Check for Consistency**: Ensure that the ontology is consistent and that there are no logical errors preventing the relationships from being established. Use reasoning tools to validate the ontology.\n\n5. **Use Descriptive Names**: Ensure that class and"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { \n    ?class a <http://example.org/odp#Action> .\n  } UNION {\n    ?class a <http://example.org/odp#Asset> .\n  } UNION {\n    ?class a <http://example.org/odp#AssetCollection> .\n  } UNION {\n    ?class a <http://example.org/odp#Category> .\n  } UNION {\n    ?class a <http://example.org/odp#Event> .\n  } UNION {\n    ?class a <http://example.org/odp#FinancialPayment> .\n  } UNION {\n    ?class a <http://example.org/odp#Location> .\n  } UNION {\n    ?class a <http://example.org/odp#Party> .\n  } UNION {\n    ?class a <http://example.org/odp#PartyCollection> .\n  } UNION {\n    ?class a <http://example.org/odp#Policy> .\n  } UNION {\n    ?class a <http://example.org/odp#Recipient> .\n  } UNION {\n    ?class a <http://example.org/odp#Rule> .\n  } UNION {\n    ?class a <http://example.org/odp#RuleExercise> .\n  } UNION {\n    ?class a <http://example.org/odp#Time> .\n  }\n  OPTIONAL {\n    { \n      ?property a <http://example.org/odp#hasAction> .\n    } UNION {\n      ?property a <http://example.org/odp#hasAsset> .\n    } UNION {\n      ?property a <http://example.org/odp#hasEvent> .\n    } UNION {\n      ?property a <http://example.org/odp#hasLocation> .\n    } UNION {\n      ?property a <http://example.org/odp#hasParty> .\n    } UNION {\n      ?property a <http://example.org/odp#hasPolicy> .",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'OPTIONAL'  (at char 891), (line:31, col:3)",
+        "suggestion": "To address the competency question and correct the SPARQL query, consider the following suggestions:\n\n1. **Refactor the SPARQL Query**: Instead of using `OPTIONAL`, use a `BIND` or a `UNION` to combine the results for classes and properties. This will ensure that both classes and properties are retrieved in a single query.\n\n2. **Add Missing Properties**: Ensure that all relevant properties are declared in the ontology. For example, if there are properties related to the classes that are not included in your current query, such as `hasRecipient`, `hasRule`, or `hasRuleExercise`, they should be added.\n\n3. **Declare Additional Classes**: If there are other classes that are relevant to your domain but not currently included in the ontology, consider adding them. For instance, if there are subclasses or related concepts that are important for your application, they should be defined.\n\n4. **Use OWL Constructs**: Ensure that the ontology uses appropriate OWL constructs for defining relationships and constraints between classes and properties, such as `rdfs:subClassOf` for class hierarchies and `owl:FunctionalProperty` for properties that should have unique values.\n\n5. **Documentation and Annotations**: Add `rdfs:label` and `rdfs:comment` annotations to classes and properties to improve clarity and usability of the ontology, making it easier for users to understand the purpose of each element.\n\nBy implementing these suggestions, you"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?action ?asset ?event ?location ?party ?policy ?recipient ?rule ?ruleExercise WHERE {\n  ?action a <http://example.org/odp#Action> .\n  OPTIONAL { ?action <http://example.org/odp#hasAsset> ?asset . }\n  OPTIONAL { ?action <http://example.org/odp#hasEvent> ?event . }\n  OPTIONAL { ?action <http://example.org/odp#hasLocation> ?location . }\n  OPTIONAL { ?action <http://example.org/odp#hasParty> ?party . }\n  OPTIONAL { ?action <http://example.org/odp#hasPolicy> ?policy . }\n  OPTIONAL { ?action <http://example.org/odp#hasRecipient> ?recipient . }\n  OPTIONAL { ?action <http://example.org/odp#hasRule> ?rule . }\n  OPTIONAL { ?action <http://example.org/odp#hasRuleExercise> ?ruleExercise . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can support the SPARQL query, consider adding the following classes, properties, and axioms:\n\n1. **Classes**:\n   - Define classes for each of the entities involved in the action, such as `Action`, `Asset`, `Event`, `Location`, `Party`, `Policy`, `Recipient`, `Rule`, and `RuleExercise`.\n\n2. **Object Properties**:\n   - Create object properties to establish relationships between the `Action` class and the other classes:\n     - `hasAsset` (domain: Action, range: Asset)\n     - `hasEvent` (domain: Action, range: Event)\n     - `hasLocation` (domain: Action, range: Location)\n     - `hasParty` (domain: Action, range: Party)\n     - `hasPolicy` (domain: Action, range: Policy)\n     - `hasRecipient` (domain: Action, range: Recipient)\n     - `hasRule` (domain: Action, range: Rule)\n     - `hasRuleExercise` (domain: Action, range: RuleExercise)\n\n3. **Domain and Range Axioms**:\n   - Ensure that each property has appropriate domain and range axioms to enforce the relationships:\n     - For example, `:hasAsset a owl:ObjectProperty; rdfs:domain :Action; rdfs:range :Asset .`\n\n4. **Subclasses or Hierarchies** (if applicable"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:Action .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Asset .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:AssetCollection .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Category .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Event .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:FinancialPayment .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Location .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Party .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:PartyCollection .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment }",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1225), (line:51, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define a Standard Annotation Property**: Ensure that all classes and properties in your ontology have a consistent way to include `rdfs:label` and `rdfs:comment`. This can be done by creating a set of annotation properties if they do not already exist.\n\n2. **Add Annotations for Each Class**: For each class (e.g., `odp:Action`, `odp:Asset`, `odp:Event`, etc.), add an `rdfs:label` that provides a human-readable name and an `rdfs:comment` that describes the purpose or role of the class in the ontology.\n\n3. **Add Annotations for Each Property**: Similarly, for every property in the ontology, include an `rdfs:label` and `rdfs:comment` to clarify what the property represents and how it should be used.\n\n4. **Use a SPARQL Update Query**: Construct a SPARQL Update query to programmatically add these annotations to each class and property. This can streamline the process and ensure consistency across the ontology.\n\n5. **Documentation and Guidelines**: Create documentation that outlines the expected format and content for `rdfs:label` and `rdfs:comment` to guide future ontology development and ensure that all contributors adhere to the same standards."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Policy> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology header can be declared and queried successfully, you should consider adding the following elements to your ontology:\n\n1. **Declare the Ontology Class**: Define the ontology itself as an instance of `owl:Ontology`:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label and rdfs:comment Properties**: Include the mandatory properties `rdfs:label` and `rdfs:comment` for the ontology:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Label\" .\n   :Ontology rdfs:comment \"A description of your ontology.\" .\n   ```\n\n3. **Define the Namespace**: Ensure that the namespace for your ontology is correctly defined at the beginning of your ontology file:\n   ```turtle\n   @prefix : <http://example.org/odp#> .\n   ```\n\n4. **Use the Correct Class in SPARQL**: Update your SPARQL query to check for the correct ontology class:\n   ```sparql\n   SELECT ?ontology ?label ?comment WHERE {\n     ?ontology a owl:Ontology .\n     OPTIONAL { ?ontology rdfs:label ?label . }\n     OPTIONAL { ?ontology rdfs:comment ?comment . }\n   } LIMIT 10\n   ```\n\n5. **Ensure Data is Loaded**: Make sure that the ontology data is correctly loaded into your RDF store or triplestore, so that"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#Amount"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

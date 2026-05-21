@@ -1,0 +1,141 @@
+{
+  "id": "2025-149-01",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 54,
+    "classes_count": 8,
+    "object_properties_count": 9,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 54,
+    "triples_after": 268,
+    "inferred_triples": 214,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 0,
+    "cqs_failed": 7,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "SELECT ?database ?table ?column ?rowLevelPolicy ?tableLevelPolicy ?columnLevelPolicy WHERE {\n  ?database a <http://example.org/odp#Database> .\n  ?table a <http://example.org/odp#Table> .\n  ?column a <http://example.org/odp#Column> .\n  ?rowLevelPolicy a <http://example.org/odp#RowLevelPolicy> .\n  ?tableLevelPolicy a <http://example.org/odp#TableLevelPolicy> .\n  ?columnLevelPolicy a <http://example.org/odp#ColumnLevelPolicy> .\n  \n  OPTIONAL { ?table <http://example.org/odp#ForeignKey> ?column . }\n  OPTIONAL { ?table <http://example.org/odp#PrimaryKey> ?column . }\n  OPTIONAL { ?table <http://example.org/odp#ModifyAction> ?rowLevelPolicy . }\n  OPTIONAL { ?table <http://example.org/odp#ProhibitedModifyAction> ?rowLevelPolicy . }\n  OPTIONAL { ?table <http://example.org/odp#ReadAction> ?rowLevelPolicy . }\n  OPTIONAL { ?table <http://example.org/odp#ViewActionScope> ?tableLevelPolicy . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the SPARQL query returns results and aligns with the competency question regarding semantic faithfulness to the scenario, consider the following additions to the ontology:\n\n1. **Define Relationships Between Classes**:\n   - Add properties to establish relationships between `Database`, `Table`, `Column`, `RowLevelPolicy`, `TableLevelPolicy`, and `ColumnLevelPolicy`. For example:\n     - `:hasTable` (Domain: Database, Range: Table)\n     - `:hasColumn` (Domain: Table, Range: Column)\n     - `:hasRowLevelPolicy` (Domain: Table, Range: RowLevelPolicy)\n     - `:hasTableLevelPolicy` (Domain: Table, Range: TableLevelPolicy)\n     - `:hasColumnLevelPolicy` (Domain: Table, Range: ColumnLevelPolicy)\n\n2. **Add Instances of Classes**:\n   - Ensure that there are instances of `Database`, `Table`, `Column`, `RowLevelPolicy`, `TableLevelPolicy`, and `ColumnLevelPolicy` in the ontology. For example:\n     - Create instances like `:db1`, `:table1`, `:column1`, etc., and link them using the properties defined above.\n\n3. **Define Action Properties**:\n   - Introduce properties to represent actions associated with policies, such as:\n     - `:allowsModifyAction` (Domain: RowLevelPolicy, Range: ActionType)\n     - `:prohibitsModify"
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?database ?table ?column ?rowLevelPolicy ?tableLevelPolicy ?columnLevelPolicy WHERE {\n  ?database a odp:Database.\n  ?table a odp:Table.\n  ?column a odp:Column.\n  OPTIONAL { ?table odp:RowLevelPolicy ?rowLevelPolicy. }\n  OPTIONAL { ?table odp:TableLevelPolicy ?tableLevelPolicy. }\n  OPTIONAL { ?column odp:ColumnLevelPolicy ?columnLevelPolicy. }\n  ?table odp:ForeignKey ?column.\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding the presence of necessary classes and properties, consider adding the following:\n\n1. **Classes**:\n   - **odp:Database**: Represents a database entity.\n   - **odp:Table**: Represents a table within a database.\n   - **odp:Column**: Represents a column within a table.\n   - **odp:RowLevelPolicy**: Represents policies that apply to individual rows in a table.\n   - **odp:TableLevelPolicy**: Represents policies that apply to the entire table.\n   - **odp:ColumnLevelPolicy**: Represents policies that apply to individual columns.\n\n2. **Properties**:\n   - **odp:hasTable**: A property linking a database to its tables (e.g., `?database odp:hasTable ?table`).\n   - **odp:hasColumn**: A property linking a table to its columns (e.g., `?table odp:hasColumn ?column`).\n   - **odp:hasRowLevelPolicy**: A property linking a table to its row-level policies (e.g., `?table odp:hasRowLevelPolicy ?rowLevelPolicy`).\n   - **odp:hasTableLevelPolicy**: A property linking a table to its table-level policies (e.g., `?table odp:hasTableLevelPolicy ?tableLevelPolicy`).\n   - **odp:hasColumnLevelPolicy**"
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?database ?table ?column ?rowLevelPolicy ?tableLevelPolicy ?columnLevelPolicy WHERE {\n  ?database a odp:Database .\n  ?table a odp:Table .\n  ?column a odp:Column .\n  OPTIONAL { ?table odp:RowLevelPolicy ?rowLevelPolicy . }\n  OPTIONAL { ?table odp:TableLevelPolicy ?tableLevelPolicy . }\n  OPTIONAL { ?column odp:ColumnLevelPolicy ?columnLevelPolicy . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - Define the classes `Database`, `Table`, and `Column` if they are not already defined. Ensure they are subclasses of a more general class, such as `DataEntity`.\n\n2. **Properties**:\n   - Add the property `odp:hasTable` to link `Database` to `Table`.\n   - Add the property `odp:hasColumn` to link `Table` to `Column`.\n   - Ensure the properties `odp:RowLevelPolicy`, `odp:TableLevelPolicy`, and `odp:ColumnLevelPolicy` are defined and correctly associated with their respective classes.\n\n3. **Instances**:\n   - Create instances of `Database`, `Table`, and `Column` in the ontology to provide concrete examples that can be queried.\n\n4. **Axioms**:\n   - Establish axioms that define the relationships between instances, such as a specific `Database` containing specific `Table` instances, and those `Table` instances containing specific `Column` instances.\n\n5. **Data Population**:\n   - Populate the ontology with sample data that includes instances of `Database`, `Table`, and `Column`, along with their associated policies to ensure the query can retrieve meaningful results."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#Column> }\n  UNION { ?class a <http://example.org/odp#ColumnLevelPolicy> }\n  UNION { ?class a <http://example.org/odp#Database> }\n  UNION { ?class a <http://example.org/odp#Policy> }\n  UNION { ?class a <http://example.org/odp#RelationalDatabase> }\n  UNION { ?class a <http://example.org/odp#RowLevelPolicy> }\n  UNION { ?class a <http://example.org/odp#Table> }\n  UNION { ?class a <http://example.org/odp#TableLevelPolicy> }\n  UNION { ?property a <http://example.org/odp#ForeignKey> }\n  UNION { ?property a <http://example.org/odp#ModifyAction> }\n  UNION { ?property a <http://example.org/odp#PrimaryKey> }\n  UNION { ?property a <http://example.org/odp#ProcessActionScope> }\n  UNION { ?property a <http://example.org/odp#ProhibitedModifyAction> }\n  UNION { ?property a <http://example.org/odp#ReadAction> }\n  UNION { ?property a <http://example.org/odp#ReadProhibitionForProcessing> }\n  UNION { ?property a <http://example.org/odp#ReadProhibitionForViewing> }\n  UNION { ?property a <http://example.org/odp#ViewActionScope> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can return results for classes and properties, consider the following concrete suggestions:\n\n1. **Declare Classes**: Ensure that each class is declared with `a owl:Class`. For example:\n   ```turtle\n   :Column a owl:Class .\n   :ColumnLevelPolicy a owl:Class .\n   :Database a owl:Class .\n   :Policy a owl:Class .\n   :RelationalDatabase a owl:Class .\n   :RowLevelPolicy a owl:Class .\n   :Table a owl:Class .\n   :TableLevelPolicy a owl:Class .\n   ```\n\n2. **Declare Object Properties**: Ensure that each property is declared with `a owl:ObjectProperty`. For example:\n   ```turtle\n   :ForeignKey a owl:ObjectProperty .\n   :ModifyAction a owl:ObjectProperty .\n   :PrimaryKey a owl:ObjectProperty .\n   :ProcessActionScope a owl:ObjectProperty .\n   :ProhibitedModifyAction a owl:ObjectProperty .\n   :ReadAction a owl:ObjectProperty .\n   :ReadProhibitionForProcessing a owl:ObjectProperty .\n   :ReadProhibitionForViewing a owl:ObjectProperty .\n   :ViewActionScope a owl:ObjectProperty .\n   ```\n\n3. **Check Namespace**: Ensure that the namespace `<http://example.org/odp#>` is correctly defined in your ontology and that the URIs used in the SPARQL query match those in the ontology.\n\n4. **Add Datatype"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?table ?column ?rowLevelPolicy ?tableLevelPolicy ?columnLevelPolicy WHERE {\n  ?table a <http://example.org/odp#Table> .\n  ?column a <http://example.org/odp#Column> .\n  OPTIONAL { ?table <http://example.org/odp#RowLevelPolicy> ?rowLevelPolicy . }\n  OPTIONAL { ?table <http://example.org/odp#TableLevelPolicy> ?tableLevelPolicy . }\n  OPTIONAL { ?column <http://example.org/odp#ColumnLevelPolicy> ?columnLevelPolicy . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the classes `:Table` and `:Column` are properly defined in the ontology with appropriate subclass relationships if necessary.\n\n2. **Add Properties**:\n   - Define the properties `:RowLevelPolicy`, `:TableLevelPolicy`, and `:ColumnLevelPolicy` as object properties that relate `:Table` and `:Column` to their respective policy classes.\n\n3. **Create Policy Classes**:\n   - Introduce classes for the policies, such as `:RowLevelPolicyClass`, `:TableLevelPolicyClass`, and `:ColumnLevelPolicyClass`, to represent the types of policies that can be associated with tables and columns.\n\n4. **Establish Relationships**:\n   - Create axioms that specify the relationships between tables, columns, and their policies, e.g., `:Table` has a `:RowLevelPolicy` that is a member of `:RowLevelPolicyClass`.\n\n5. **Add Instances (if needed for testing)**:\n   - While the request is to avoid individual instances, consider adding a few example instances of `:Table`, `:Column`, and the policy classes to facilitate testing and ensure the query can return results.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question and provide meaningful results in"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:Column .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:ColumnLevelPolicy .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:Database .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:Policy .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:RelationalDatabase .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:RowLevelPolicy .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:Table .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:TableLevelPolicy .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?property a odp:ForeignKey .\n    OPTIONAL { ?property rdfs:label ?label }\n    OPTIONAL { ?property rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?property a odp",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1367), (line:57, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class in your ontology (e.g., `odp:Column`, `odp:Database`, `odp:Policy`, etc.), add `rdfs:label` and `rdfs:comment` properties that provide a human-readable name and a description of the class's purpose.\n\n   Example:\n   ```turtle\n   odp:Column rdfs:label \"Column\" .\n   odp:Column rdfs:comment \"Represents a column in a database table.\" .\n   ```\n\n2. **Define Annotations for Each Property**: Similarly, for each property (e.g., `odp:ForeignKey`, etc.), add `rdfs:label` and `rdfs:comment` to describe the property.\n\n   Example:\n   ```turtle\n   odp:ForeignKey rdfs:label \"Foreign Key\" .\n   odp:ForeignKey rdfs:comment \"A property that establishes a link between data in two tables.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels and comments follow a consistent naming convention and style to maintain clarity and coherence across the ontology.\n\n4. **Automate Annotation Process**: If the ontology is large, consider writing a script or using a tool that can automatically"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Policy> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider adding the following classes, properties, and axioms to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is defined as an instance of `owl:Ontology`. You can do this by adding an ontology declaration like:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include the `rdfs:label` property to provide a human-readable name for the ontology. For example:\n   ```turtle\n   :Ontology rdfs:label \"My Ontology\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include the `rdfs:comment` property to provide a description of the ontology. For example:\n   ```turtle\n   :Ontology rdfs:comment \"This ontology describes the policies related to data management.\" .\n   ```\n\n4. **Define Namespace**: Ensure that the namespace for your ontology is properly defined at the beginning of your ontology file, such as:\n   ```turtle\n   @prefix : <http://example.org/odp#> .\n   ```\n\n5. **Use Correct URI for Ontology**: Make sure that the URI used in your SPARQL query matches the one defined in your ontology. For example, if your ontology is defined as `http://example.org/odp#Ontology`, ensure that your SPARQL query references"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 9
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P11",
+        "affected_elements_count": 9,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#ReadProhibitionForProcessing",
+          "http://example.org/odp#ModifyAction",
+          "http://example.org/odp#PrimaryKey",
+          "http://example.org/odp#ForeignKey",
+          "http://example.org/odp#ProhibitedModifyAction",
+          "http://example.org/odp#ReadAction",
+          "http://example.org/odp#ProcessActionScope",
+          "http://example.org/odp#ViewActionScope",
+          "http://example.org/odp#ReadProhibitionForViewing"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

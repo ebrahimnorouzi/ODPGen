@@ -1,0 +1,136 @@
+{
+  "id": "2023-135-01",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 53,
+    "classes_count": 6,
+    "object_properties_count": 5,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.16666666666666666,
+    "relationship_richness": 0.8333333333333334,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 53,
+    "triples_after": 254,
+    "inferred_triples": 201,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 6,
+    "cqs_failed": 0,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?book ?title ?author ?pseudonym WHERE {\n  ?book a <http://example.org/odp#Book> .\n  OPTIONAL { ?book <http://example.org/odp#book-title> ?title }\n  OPTIONAL { ?book <http://example.org/odp#book-author> ?author }\n  OPTIONAL { ?author <http://example.org/odp#author-pseudonym> ?pseudonym }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#Author> }\n  UNION\n  { ?class a <http://example.org/odp#Book> }\n  UNION\n  { ?class a <http://example.org/odp#Pseudonym> }\n  UNION\n  { ?class a <http://example.org/odp#national-park> }\n  UNION\n  { ?class a <http://example.org/odp#river> }\n  UNION\n  { ?class a <http://example.org/odp#trajectory> }\n  OPTIONAL { ?property a <http://example.org/odp#alternative-name> }\n  OPTIONAL { ?property a <http://example.org/odp#author-pseudonym> }\n  OPTIONAL { ?property a <http://example.org/odp#book-author> }\n  OPTIONAL { ?property a <http://example.org/odp#crosses> }\n  OPTIONAL { ?property a <http://example.org/odp#show-trajectory> }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 5
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?author ?pseudonym ?bookTitle WHERE {\n  ?author a odp:Author.\n  OPTIONAL { ?author odp:author-pseudonym ?pseudonym. }\n  OPTIONAL { ?book a odp:Book; odp:book-author ?author; odp:book-title ?bookTitle. }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a ?type .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a ?type .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  VALUES ?type { \n    <http://example.org/odp#Author> \n    <http://example.org/odp#Book> \n    <http://example.org/odp#Pseudonym> \n    <http://example.org/odp#national-park> \n    <http://example.org/odp#river> \n    <http://example.org/odp#trajectory> \n    <http://example.org/odp#alternative-name> \n    <http://example.org/odp#author-pseudonym> \n    <http://example.org/odp#book-author> \n    <http://example.org/odp#crosses> \n    <http://example.org/odp#show-trajectory> \n  }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?ontologyLabel }\n  OPTIONAL { ?ontology rdfs:comment ?ontologyComment }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?author ?pseudonym ?bookTitle WHERE {\n  ?author a odp:Author.\n  OPTIONAL { ?author odp:author-pseudonym ?pseudonym. }\n  OPTIONAL { ?book a odp:Book; odp:book-author ?author; odp:book-title ?bookTitle. }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11",
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1,
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 6,
+      "P34": 1
+    },
+    "pitfalls_total": 3,
+    "pitfalls": [
+      {
+        "code": "P34",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://example.org/odp#alternative-name"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P11",
+        "affected_elements_count": 6,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#crosses",
+          "http://example.org/odp#author-pseudonym",
+          "http://example.org/odp#show-trajectory",
+          "http://example.org/odp#book-author",
+          "http://example.org/odp#book-title",
+          "http://example.org/odp#alternative-name"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 3,
+    "important_count": 3,
+    "critical_count": 0
+  }
+}

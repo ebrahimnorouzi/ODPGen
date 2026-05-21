@@ -1,0 +1,123 @@
+{
+  "id": "2025-149-01",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 61,
+    "classes_count": 6,
+    "object_properties_count": 8,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 61,
+    "triples_after": 269,
+    "inferred_triples": 208,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?policy ?action ?table ?foreignKey WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasAction ?action . }\n  OPTIONAL { ?policy odp:appliesTo ?table . }\n  OPTIONAL { ?policy odp:hasForeignKey ?foreignKey . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes and properties to the ontology:\n\n1. **Class Definitions**:\n   - Define a class `odp:Policy` to represent policies.\n   - Define a class `odp:Action` to represent actions associated with policies.\n   - Define a class `odp:Table` to represent tables that policies apply to.\n   - Define a class `odp:ForeignKey` to represent foreign keys related to policies.\n\n2. **Property Definitions**:\n   - Create a property `odp:hasAction` to link `odp:Policy` to `odp:Action`.\n   - Create a property `odp:appliesTo` to link `odp:Policy` to `odp:Table`.\n   - Create a property `odp:hasForeignKey` to link `odp:Policy` to `odp:ForeignKey`.\n\n3. **Instance Creation**:\n   - Add instances of `odp:Policy`, `odp:Action`, `odp:Table`, and `odp:ForeignKey` to the ontology to ensure there are actual data points for the query to retrieve.\n\nBy implementing these suggestions, the ontology will be structured to support the SPARQL query and return meaningful results."
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?policy ?action ?table ?foreignKey WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasAction ?action . }\n  OPTIONAL { ?policy odp:appliesTo ?table . }\n  OPTIONAL { ?policy odp:hasForeignKey ?foreignKey . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Policy` Class**: Ensure that the `odp:Policy` class is properly defined in the ontology with relevant instances that represent actual policies.\n\n2. **Add `hasAction` Property**: Confirm that the `odp:hasAction` property is defined and that there are instances of actions associated with the policies. This property should link `Policy` instances to `Action` instances.\n\n3. **Introduce `appliesTo` Property**: Ensure that the `odp:appliesTo` property is defined and that it connects `Policy` instances to relevant `Table` instances, representing the tables to which the policies apply.\n\n4. **Define `hasForeignKey` Property**: Verify that the `odp:hasForeignKey` property is defined and that it links `Policy` instances to `ForeignKey` instances, indicating any foreign key relationships relevant to the policies.\n\n5. **Create Instances**: Populate the ontology with instances of `Policy`, `Action`, `Table`, and `ForeignKey` to ensure that there are actual data entries that the query can retrieve.\n\nBy implementing these suggestions, the ontology will be better equipped to provide meaningful results for the given SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?database ?table ?foreignKey ?policy WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:hasAction ?action . }\n  OPTIONAL { ?action odp:appliesTo ?database . }\n  OPTIONAL { ?database odp:hasTable ?table . }\n  OPTIONAL { ?table odp:hasForeignKey ?foreignKey . }\n  OPTIONAL { ?action odp:appliesTo ?policy . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the classes `:Action`, `:Database`, `:Table`, `:ForeignKey`, and `:Policy` are defined in the ontology.\n\n2. **Define Object Properties**:\n   - Add the following object properties:\n     - `odp:hasAction` (domain: `:Action`, range: `:Action`)\n     - `odp:appliesTo` (domain: `:Action`, range: `:Database`)\n     - `odp:hasTable` (domain: `:Database`, range: `:Table`)\n     - `odp:hasForeignKey` (domain: `:Table`, range: `:ForeignKey`)\n     - `odp:appliesToPolicy` (domain: `:Action`, range: `:Policy`)\n\n3. **Add Axioms**:\n   - Create axioms that establish relationships between these classes and properties, ensuring that they are properly linked. For example:\n     - `:Database rdfs:subClassOf :Entity` (if applicable)\n     - `:Table rdfs:subClassOf :Entity` (if applicable)\n\n4. **Ensure Data Population**:\n   - Populate the ontology with instances of these classes to ensure that the query can retrieve meaningful results. For example, create"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:Action .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Database .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:ForeignKey .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Policy .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:ReadAction .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Table .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:appliesTo .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasAction .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasColumn .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1246), (line:51, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class (e.g., `Action`, `Database`, `ForeignKey`, `Policy`, `ReadAction`, `Table`), add specific `rdfs:label` and `rdfs:comment` annotations that describe the purpose and functionality of the class. For example:\n   - `rdfs:label` for `odp:Action`: \"Action\"\n   - `rdfs:comment` for `odp:Action`: \"Represents an operation that can be performed on a database.\"\n\n2. **Define Annotations for Each Property**: Similarly, for each property (e.g., `appliesTo`, `hasAction`, `hasColumn`), provide `rdfs:label` and `rdfs:comment` annotations that clarify their roles. For example:\n   - `rdfs:label` for `odp:appliesTo`: \"Applies To\"\n   - `rdfs:comment` for `odp:appliesTo`: \"Indicates the target of a policy or action.\"\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels and comments follow a consistent naming convention and style, making it easier for users to understand the ontology.\n\n4. **Include Examples**: If applicable, provide examples"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P34",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://example.org/odp#Column"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "id": "2023-134-03",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 51,
+    "classes_count": 9,
+    "object_properties_count": 4,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 51,
+    "triples_after": 259,
+    "inferred_triples": 208,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Who is maintaining the registry?",
+    "When was the registry created/updated?",
+    "What types of data are available?",
+    "Where is a specific type of data being stored?",
+    "What policy is associated with the data?"
+  ],
+  "cqs_count": 5,
+  "cq_verification": {
+    "cqs_total": 5,
+    "cqs_passed": 2,
+    "cqs_failed": 3,
+    "pass_rate": 0.4,
+    "results": [
+      {
+        "cq": "Who is maintaining the registry?",
+        "sparql": "SELECT ?solidActor WHERE { \n  ?solidActor a <http://example.org/odp#SolidActor> .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      },
+      {
+        "cq": "When was the registry created/updated?",
+        "sparql": "SELECT ?registryCreation ?registryUpdate WHERE { \n  OPTIONAL { ?registry a <http://example.org/odp#PrivacyPolicy>; <http://example.org/odp#SolidAppProvidesPrivacyNotice> ?registryCreation. }\n  OPTIONAL { ?registry a <http://example.org/odp#PrivacyPolicy>; <http://example.org/odp#SolidAppUsesDataHandlingPractices> ?registryUpdate. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the creation and update dates of the registry, consider adding the following elements to the ontology:\n\n1. **Classes**:\n   - Ensure that there is a class for `Registry` (if not already present) to represent the registry entity.\n\n2. **Properties**:\n   - Add a property `hasCreationDate` (e.g., `http://example.org/odp#hasCreationDate`) to link a `Registry` instance to its creation date.\n   - Add a property `hasUpdateDate` (e.g., `http://example.org/odp#hasUpdateDate`) to link a `Registry` instance to its last update date.\n\n3. **Data Types**:\n   - Define the data type for the `hasCreationDate` and `hasUpdateDate` properties as `xsd:dateTime` to ensure proper date handling.\n\n4. **Axioms**:\n   - Create axioms that specify that a `Registry` must have at least one `hasCreationDate` and optionally a `hasUpdateDate` to ensure that these properties are utilized in instances.\n\nBy implementing these suggestions, you will be able to query for the creation and update dates of the registry effectively."
+      },
+      {
+        "cq": "What types of data are available?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?dataCategoryType WHERE {\n  ?solidPod odp:SolidPodHasDataCategory ?dataCategory .\n  ?dataCategory odp:DataCategoryType ?dataCategoryType .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the types of data available, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure there is a class for `DataCategory` if it doesn't already exist. This class should represent different categories of data.\n\n2. **Property Definition**: Define a property `hasDataCategory` (or similar) that relates `SolidPod` to `DataCategory`. This property should be a direct relationship indicating which data categories are associated with a specific Solid Pod.\n\n3. **Data Category Type Property**: Ensure that the `DataCategory` class has a property `hasDataCategoryType` (or similar) that links to a `DataCategoryType` class or datatype, which specifies the type of data (e.g., text, image, video).\n\n4. **DataCategoryType Class**: If not already present, create a `DataCategoryType` class to categorize the types of data (e.g., structured, unstructured, semi-structured).\n\n5. **Axioms for Relationships**: Add axioms that define the relationships between `SolidPod`, `DataCategory`, and `DataCategoryType` to ensure that the ontology can infer the types of data available based on the relationships established.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding the types of data available."
+      },
+      {
+        "cq": "Where is a specific type of data being stored?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?solidPod ?dataCategory WHERE {\n  ?solidPod a odp:SolidPods .\n  OPTIONAL { ?solidPod odp:SolidPodHasDataCategory ?dataCategory . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "What policy is associated with the data?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?policy WHERE {\n  ?dataCategory odp:SolidPodHasDataCategory ?policy .\n  OPTIONAL { ?policy odp:SolidAppProvidesPrivacyNotice ?privacyNotice }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the association of policies with data, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a class `Policy` to represent different policies related to data management and privacy.\n\n2. **Property Addition**: Define a property `odp:hasPolicy` to link `DataCategory` instances to their associated `Policy` instances. This will allow for direct relationships between data categories and policies.\n\n3. **Property Addition**: Add a property `odp:providesPrivacyNotice` to the `Policy` class to indicate whether a policy includes a privacy notice, linking it to relevant privacy notice resources.\n\n4. **Axiom Addition**: Create an axiom that states that every `DataCategory` must have at least one associated `Policy`, ensuring that the ontology enforces this relationship.\n\n5. **Data Category Class**: Ensure that the `DataCategory` class is properly defined and linked to the `Policy` class through the `odp:hasPolicy` property to facilitate querying.\n\nThese additions will enable the SPARQL query to retrieve policies associated with data categories effectively."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 4
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 4,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#SolidAppProvidesPrivacyNotice",
+          "http://example.org/odp#DataCategoryType",
+          "http://example.org/odp#SolidAppUsesDataHandlingPractices",
+          "http://example.org/odp#SolidPodHasDataCategory"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

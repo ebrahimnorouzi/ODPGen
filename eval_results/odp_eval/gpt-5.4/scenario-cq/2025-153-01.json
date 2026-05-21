@@ -1,0 +1,134 @@
+{
+  "id": "2025-153-01",
+  "model": "gpt-5.4",
+  "config": "scenario-cq",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 63,
+    "classes_count": 7,
+    "object_properties_count": 8,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 63,
+    "triples_after": 282,
+    "inferred_triples": 219,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 0,
+    "cqs_failed": 7,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "SELECT ?contextSnapshot ?observation ?referentEntity ?transitionRule WHERE {\n  ?contextSnapshot a <http://example.org/odp#ContextSnapshot> .\n  OPTIONAL { ?contextSnapshot <http://example.org/odp#hasObservation> ?observation . }\n  OPTIONAL { ?observation <http://example.org/odp#forIdentifier> ?referentEntity . }\n  OPTIONAL { ?contextSnapshot <http://example.org/odp#hasTransition> ?transitionRule . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns meaningful results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `ContextSnapshot` Class**: Ensure that the `ContextSnapshot` class is properly defined with relevant properties that link it to observations and transition rules.\n\n2. **Add `hasObservation` Property**: Confirm that the `hasObservation` property is correctly defined as a relationship between `ContextSnapshot` and `Observation`. This property should be an object property that allows linking a context snapshot to its observations.\n\n3. **Define the `Observation` Class**: Ensure that the `Observation` class is defined and includes properties such as `forIdentifier`, which links observations to specific entities (referent entities).\n\n4. **Add `hasTransition` Property**: Ensure that the `hasTransition` property is defined to link `ContextSnapshot` to `TransitionRule`, allowing for the representation of transitions associated with context snapshots.\n\n5. **Create `TransitionRule` Class**: Define the `TransitionRule` class to represent the rules governing transitions, ensuring it can be linked to `ContextSnapshot` through the `hasTransition` property.\n\nBy implementing these suggestions, the ontology will be better equipped to support the SPARQL query and provide relevant results."
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?contextSnapshot ?observation ?identifier ?referentEntity ?transitionRule WHERE {\n  ?contextSnapshot a odp:ContextSnapshot .\n  OPTIONAL { ?contextSnapshot odp:hasObservation ?observation . }\n  OPTIONAL { ?contextSnapshot odp:forIdentifier ?identifier . }\n  OPTIONAL { ?contextSnapshot odp:bindsReferent ?referentEntity . }\n  OPTIONAL { ?contextSnapshot odp:triggeredByRule ?transitionRule . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding context snapshots, the following classes and properties should be added:\n\n1. **Classes**:\n   - **`odp:ContextSnapshot`**: Ensure this class is defined to represent a snapshot of the context at a specific time.\n   - **`odp:Observation`**: Define this class to represent observations made within a context snapshot.\n\n2. **Properties**:\n   - **`odp:hasObservation`**: Create a property that links a `ContextSnapshot` to its associated `Observation`.\n   - **`odp:forIdentifier`**: Define a property that associates a `ContextSnapshot` with a unique identifier (e.g., a string or URI).\n   - **`odp:bindsReferent`**: Establish a property that connects a `ContextSnapshot` to the entity it refers to.\n   - **`odp:triggeredByRule`**: Introduce a property that links a `ContextSnapshot` to the transition rule that triggered it.\n\n3. **Axioms**:\n   - Add axioms to specify that `ContextSnapshot` must have at least one `Observation` and can optionally have an identifier, referent entity, and transition rule to ensure completeness in the representation.\n\nBy implementing these additions, the ontology will be better equipped to answer the competency question effectively."
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?contextSnapshot ?observation ?referentEntity ?transitionRule WHERE {\n  ?contextSnapshot a odp:ContextSnapshot .\n  OPTIONAL { ?contextSnapshot odp:hasObservation ?observation . }\n  OPTIONAL { ?contextSnapshot odp:bindsReferent ?referentEntity . }\n  OPTIONAL { ?contextSnapshot odp:triggeredByRule ?transitionRule . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes and properties to the ontology:\n\n1. **Classes**:\n   - **ContextSnapshot**: Ensure this class is defined with appropriate characteristics and relationships.\n   - **Observation**: Define this class to represent observations related to context snapshots.\n   - **ReferentEntity**: Create this class to represent entities that are bound to context snapshots.\n   - **TransitionRule**: Define this class to represent rules that trigger context snapshots.\n\n2. **Properties**:\n   - **hasObservation**: A property linking `ContextSnapshot` to `Observation`.\n   - **bindsReferent**: A property linking `ContextSnapshot` to `ReferentEntity`.\n   - **triggeredByRule**: A property linking `ContextSnapshot` to `TransitionRule`.\n\n3. **Axioms**:\n   - Define relationships and constraints between these classes and properties to ensure they are used correctly in the context of the ontology.\n\nBy adding these elements, you will create a more robust ontology that can support the queries related to context snapshots and their associated observations, entities, and rules."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#ContextSnapshot> }\n  UNION\n  { ?class a <http://example.org/odp#Observation> }\n  UNION\n  { ?class a <http://example.org/odp#PersistentIdentifier> }\n  UNION\n  { ?class a <http://example.org/odp#ReferentEntity> }\n  UNION\n  { ?class a <http://example.org/odp#ReferentTransition> }\n  UNION\n  { ?class a <http://example.org/odp#TemporalBinding> }\n  UNION\n  { ?class a <http://example.org/odp#TransitionRule> }\n  OPTIONAL { ?property a <http://example.org/odp#bindsReferent> }\n  OPTIONAL { ?property a <http://example.org/odp#forIdentifier> }\n  OPTIONAL { ?property a <http://example.org/odp#fromReferent> }\n  OPTIONAL { ?property a <http://example.org/odp#hasBinding> }\n  OPTIONAL { ?property a <http://example.org/odp#hasObservation> }\n  OPTIONAL { ?property a <http://example.org/odp#hasTransition> }\n  OPTIONAL { ?property a <http://example.org/odp#toReferent> }\n  OPTIONAL { ?property a <http://example.org/odp#triggeredByRule> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can return results for classes and properties, consider the following suggestions:\n\n1. **Declare Classes**: Ensure that all relevant classes are explicitly declared in the ontology using `owl:Class`. For example:\n   ```turtle\n   :ContextSnapshot a owl:Class .\n   :Observation a owl:Class .\n   :PersistentIdentifier a owl:Class .\n   :ReferentEntity a owl:Class .\n   :ReferentTransition a owl:Class .\n   :TemporalBinding a owl:Class .\n   :TransitionRule a owl:Class .\n   ```\n\n2. **Declare Properties**: Ensure that all relevant properties are explicitly declared using `owl:ObjectProperty` or `owl:DatatypeProperty`. For example:\n   ```turtle\n   :bindsReferent a owl:ObjectProperty .\n   :forIdentifier a owl:ObjectProperty .\n   :fromReferent a owl:ObjectProperty .\n   :hasBinding a owl:ObjectProperty .\n   :hasObservation a owl:ObjectProperty .\n   :hasTransition a owl:ObjectProperty .\n   :toReferent a owl:ObjectProperty .\n   :triggeredByRule a owl:ObjectProperty .\n   ```\n\n3. **Use a Consistent Namespace**: Ensure that the ontology uses a consistent namespace (e.g., `http://example.org/odp#`) for all classes and properties to avoid any discrepancies in URIs.\n\n4. **Check for Existing Declarations**: If the classes and properties are already"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?contextSnapshot ?observation ?persistentIdentifier ?referentEntity ?referentTransition ?temporalBinding ?transitionRule WHERE {\n  ?contextSnapshot a odp:ContextSnapshot .\n  OPTIONAL { ?contextSnapshot odp:hasObservation ?observation . }\n  OPTIONAL { ?contextSnapshot odp:forIdentifier ?persistentIdentifier . }\n  OPTIONAL { ?contextSnapshot odp:bindsReferent ?referentEntity . }\n  OPTIONAL { ?contextSnapshot odp:hasTransition ?referentTransition . }\n  OPTIONAL { ?contextSnapshot odp:hasBinding ?temporalBinding . }\n  OPTIONAL { ?contextSnapshot odp:triggeredByRule ?transitionRule . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `ContextSnapshot` Class**: Ensure that the class `odp:ContextSnapshot` is defined in the ontology with appropriate characteristics, such as being a subclass of a more general class if necessary (e.g., `rdf:Resource`).\n\n2. **Define Properties**: Explicitly define the properties used in the query:\n   - `odp:hasObservation` (Object Property)\n   - `odp:forIdentifier` (Object Property)\n   - `odp:bindsReferent` (Object Property)\n   - `odp:hasTransition` (Object Property)\n   - `odp:hasBinding` (Object Property)\n   - `odp:triggeredByRule` (Object Property)\n\n3. **Specify Domain and Range**: For each property, specify the domain and range to clarify the relationships:\n   - For example, `odp:hasObservation` could have a domain of `odp:ContextSnapshot` and a range of `odp:Observation`.\n\n4. **Add Example Instances**: While the request is to avoid individual instances, consider adding example axioms or dummy instances in the ontology to test the query, such as:\n   - `:exampleContextSnapshot a odp:ContextSnapshot .`\n   - `:exampleContextSnapshot odp:hasObservation :exampleObservation .`\n\n5. **"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:ContextSnapshot .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Observation .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:PersistentIdentifier .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:ReferentEntity .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:ReferentTransition .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:TemporalBinding .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:TransitionRule .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:bindsReferent .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:forIdentifier .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1294), (line:51, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class (e.g., `ContextSnapshot`, `Observation`, `PersistentIdentifier`, etc.), add an `rdfs:label` and `rdfs:comment` that succinctly describe the purpose and meaning of the class.\n\n2. **Define Annotations for Each Property**: Similarly, for each property (e.g., `bindsReferent`, `forIdentifier`, etc.), include an `rdfs:label` and `rdfs:comment` that clarify the role of the property within the ontology.\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are user-friendly and consistent across the ontology. For example, use singular nouns for classes and verbs for properties.\n\n4. **Document the Ontology**: Create a separate documentation file or section within the ontology that provides a comprehensive overview of all classes and properties, including their annotations, to facilitate understanding and usage.\n\n5. **SPARQL Update Query**: Construct a SPARQL Update query to programmatically add these annotations to the ontology, ensuring that each class and property is updated with the appropriate `rdfs:label` and `rdfs:comment`.\n\nBy implementing these suggestions, you will enhance the usability and clarity of your ontology, making it easier for"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#ContextSnapshot> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider the following additions to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is defined as an instance of `owl:Ontology`. You can do this by adding a declaration like:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include the `rdfs:label` property to provide a human-readable name for the ontology:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Name\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include the `rdfs:comment` property to provide a description or comment about the ontology:\n   ```turtle\n   :Ontology rdfs:comment \"A brief description of what this ontology represents.\" .\n   ```\n\n4. **Define Namespace**: Ensure that the namespace for your ontology is properly defined at the beginning of your ontology file, for example:\n   ```turtle\n   @prefix : <http://example.org/your-ontology#> .\n   ```\n\n5. **Use a Consistent URI**: Make sure that the URI used for the ontology is consistent and follows best practices for naming conventions, such as using a clear and descriptive path.\n\nBy implementing these suggestions, your ontology will have the necessary structure to answer the competency question effectively."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P11",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#forIdentifier"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "id": "2023-134-03",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 182,
+    "classes_count": 22,
+    "object_properties_count": 17,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.09090909090909091,
+    "relationship_richness": 0.8947368421052632,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 182,
+    "triples_after": 623,
+    "inferred_triples": 441,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 0,
+    "cqs_failed": 7,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "SELECT ?dataRequest ?dataType ?privacyNotice ?privacyPolicy WHERE {\n  ?dataRequest a <http://example.org/odp#DataRequest> .\n  OPTIONAL { ?dataRequest <http://example.org/odp#hasDataType> ?dataType . }\n  OPTIONAL { ?dataRequest <http://example.org/odp#hasPrivacyNotice> ?privacyNotice . }\n  OPTIONAL { ?dataRequest <http://example.org/odp#hasPrivacyPolicy> ?privacyPolicy . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can effectively answer the competency question regarding data requests, consider adding the following classes, properties, or axioms:\n\n1. **Class Definitions**:\n   - Ensure that the class `<http://example.org/odp#DataRequest>` is properly defined in the ontology, along with any necessary subclasses that may represent specific types of data requests.\n\n2. **Property Definitions**:\n   - Define the properties `<http://example.org/odp#hasDataType>`, `<http://example.org/odp#hasPrivacyNotice>`, and `<http://example.org/odp#hasPrivacyPolicy>` with appropriate domain and range specifications. For example:\n     - `hasDataType` could have a domain of `DataRequest` and a range of `DataType`.\n     - `hasPrivacyNotice` could have a domain of `DataRequest` and a range of `PrivacyNotice`.\n     - `hasPrivacyPolicy` could have a domain of `DataRequest` and a range of `PrivacyPolicy`.\n\n3. **Instances**:\n   - Add instances of `DataRequest`, `DataType`, `PrivacyNotice`, and `PrivacyPolicy` to the ontology to ensure that there are actual data entries that can be queried.\n\n4. **Relationships**:\n   - Establish relationships between instances of `DataRequest` and their corresponding `DataType`, `PrivacyNotice`, and `PrivacyPolicy` to ensure that the optional properties can return meaningful results.\n\n5. **Data Population**:"
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#AuditingInformation> }\n  UNION\n  { ?class a <http://example.org/odp#Data> }\n  UNION\n  { ?class a <http://example.org/odp#DataDecision> }\n  UNION\n  { ?class a <http://example.org/odp#DataRequest> }\n  UNION\n  { ?class a <http://example.org/odp#DataType> }\n  UNION\n  { ?class a <http://example.org/odp#Functionality> }\n  UNION\n  { ?class a <http://example.org/odp#GDPRRight> }\n  UNION\n  { ?class a <http://example.org/odp#Pod> }\n  UNION\n  { ?class a <http://example.org/odp#PrivacyNotice> }\n  UNION\n  { ?class a <http://example.org/odp#PrivacyPolicy> }\n  UNION\n  { ?class a <http://example.org/odp#ProvenanceRecord> }\n  UNION\n  { ?class a <http://example.org/odp#Registry> }\n  UNION\n  { ?class a <http://example.org/odp#Role> }\n  UNION\n  { ?class a <http://example.org/odp#SolidActor> }\n  UNION\n  { ?class a <http://example.org/odp#SolidApp> }\n  UNION\n  { ?class a <http://example.org/odp#SolidSpecification> }\n  OPTIONAL { ?class <http://example.org/odp#exercisesRight> ?property }\n  OPTIONAL { ?class <http://example.org/odp#expressesPolicy> ?property }\n  OPTIONAL { ?class <http://example.org/odp#hasDataType> ?property }\n  OPTIONAL { ?class <http://example.org/odp#hasDecision>",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'OPTIONAL'  (at char 1193), (line:36, col:3)",
+        "suggestion": "To ensure that the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding the presence of necessary classes and properties, consider the following suggestions:\n\n1. **Add a Class for Competency Questions**: Introduce a class, e.g., `http://example.org/odp#CompetencyQuestion`, to represent each competency question explicitly within the ontology.\n\n2. **Define Properties for Class-Property Relationships**: Create properties such as:\n   - `http://example.org/odp#requiresClass` to link a competency question to the classes needed to answer it.\n   - `http://example.org/odp#requiresProperty` to link a competency question to the properties needed to answer it.\n\n3. **Establish Relationships Between Classes and Properties**: Ensure that existing classes (e.g., `AuditingInformation`, `Data`, etc.) are linked to the relevant competency questions using the newly defined properties, allowing for a clear mapping of requirements.\n\n4. **Add a Class for Requirements**: Introduce a class, e.g., `http://example.org/odp#Requirement`, to encapsulate the specific requirements (classes and properties) needed to answer each competency question.\n\n5. **Create Instances for Each Competency Question**: Populate the ontology with instances of `CompetencyQuestion` that detail the specific classes and properties required to answer each CQ, ensuring that the ontology is comprehensive and aligned with the competency questions.\n\nThese additions will enhance the ontology's ability to"
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?auditingInfo ?dataType ?dataDecision ?dataRequest ?functionality ?gdprRight ?pod ?privacyNotice ?privacyPolicy ?provenanceRecord WHERE {\n  ?auditingInfo a <http://example.org/odp#AuditingInformation> .\n  OPTIONAL { ?auditingInfo <http://example.org/odp#providesAuditingInfo> ?dataType . }\n  OPTIONAL { ?auditingInfo <http://example.org/odp#hasDecision> ?dataDecision . }\n  OPTIONAL { ?auditingInfo <http://example.org/odp#managesRequest> ?dataRequest . }\n  OPTIONAL { ?auditingInfo <http://example.org/odp#hasFunctionality> ?functionality . }\n  OPTIONAL { ?auditingInfo <http://example.org/odp#exercisesRight> ?gdprRight . }\n  OPTIONAL { ?auditingInfo <http://example.org/odp#isStoredIn> ?pod . }\n  OPTIONAL { ?auditingInfo <http://example.org/odp#hasPrivacyNotice> ?privacyNotice . }\n  OPTIONAL { ?auditingInfo <http://example.org/odp#hasPrivacyPolicy> ?privacyPolicy . }\n  OPTIONAL { ?auditingInfo <http://example.org/odp#hasProvenanceRecord> ?provenanceRecord . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define Instances of AuditingInformation**: Ensure that there are instances of the class `<http://example.org/odp#AuditingInformation>` in the ontology. Without instances, the query will return no results.\n\n2. **Add Relevant Properties**: Verify that the properties used in the query (e.g., `<http://example.org/odp#providesAuditingInfo>`, `<http://example.org/odp#hasDecision>`, etc.) are correctly defined in the ontology and that they have appropriate ranges and domains.\n\n3. **Create Sample Data**: Populate the ontology with sample data that includes instances of `AuditingInformation` and their relationships to the various properties mentioned in the query. This will provide concrete examples for testing.\n\n4. **Check for Data Consistency**: Ensure that the data types and values used in the properties align with the expected types defined in the ontology. For example, if `?dataType` expects a specific class, ensure that the instances conform to that class.\n\n5. **Review Class Hierarchies**: Confirm that the class hierarchy is correctly structured, and that `AuditingInformation` is appropriately linked to other relevant classes, ensuring that the relationships are meaningful and correctly implemented.\n\nBy implementing these suggestions, the ontology will be better equipped to provide meaningful results for the competency question."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#AuditingInformation> }\n  UNION { ?class a <http://example.org/odp#Data> }\n  UNION { ?class a <http://example.org/odp#DataDecision> }\n  UNION { ?class a <http://example.org/odp#DataRequest> }\n  UNION { ?class a <http://example.org/odp#DataType> }\n  UNION { ?class a <http://example.org/odp#Functionality> }\n  UNION { ?class a <http://example.org/odp#GDPRRight> }\n  UNION { ?class a <http://example.org/odp#Pod> }\n  UNION { ?class a <http://example.org/odp#PrivacyNotice> }\n  UNION { ?class a <http://example.org/odp#PrivacyPolicy> }\n  UNION { ?class a <http://example.org/odp#ProvenanceRecord> }\n  UNION { ?class a <http://example.org/odp#Registry> }\n  UNION { ?class a <http://example.org/odp#Role> }\n  UNION { ?class a <http://example.org/odp#SolidActor> }\n  UNION { ?class a <http://example.org/odp#SolidApp> }\n  UNION { ?class a <http://example.org/odp#SolidSpecification> }\n  UNION { ?property a <http://example.org/odp#exercisesRight> }\n  UNION { ?property a <http://example.org/odp#expressesPolicy> }\n  UNION { ?property a <http://example.org/odp#hasDataType> }\n  UNION { ?property a <http://example.org/odp#hasDecision> }\n  UNION { ?property a <http://example.org/odp#hasFunctionality> }\n  UNION { ?property a <http://example.org/",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1266), (line:23, col:3)",
+        "suggestion": "To address the competency question and ensure that every class and property is properly declared in the ontology, consider the following suggestions:\n\n1. **Declare Classes**: Ensure that each class is declared with `a owl:Class`. For example:\n   ```turtle\n   :AuditingInformation a owl:Class .\n   :Data a owl:Class .\n   :DataDecision a owl:Class .\n   :DataRequest a owl:Class .\n   :DataType a owl:Class .\n   :Functionality a owl:Class .\n   :GDPRRight a owl:Class .\n   :Pod a owl:Class .\n   :PrivacyNotice a owl:Class .\n   :PrivacyPolicy a owl:Class .\n   :ProvenanceRecord a owl:Class .\n   :Registry a owl:Class .\n   :Role a owl:Class .\n   :SolidActor a owl:Class .\n   :SolidApp a owl:Class .\n   :SolidSpecification a owl:Class .\n   ```\n\n2. **Declare Object Properties**: Ensure that each object property is declared with `a owl:ObjectProperty`. For example:\n   ```turtle\n   :exercisesRight a owl:ObjectProperty .\n   :expressesPolicy a owl:ObjectProperty .\n   :hasDataType a owl:ObjectProperty .\n   :hasDecision a owl:ObjectProperty .\n   :hasFunctionality a owl:ObjectProperty .\n   ```\n\n3. **Declare Datatype Properties**: If there are any datatype properties, declare them with"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?class ?property ?value WHERE {\n  { ?class a <http://example.org/odp#AuditingInformation> }\n  UNION\n  { ?class a <http://example.org/odp#Data> }\n  UNION\n  { ?class a <http://example.org/odp#DataDecision> }\n  UNION\n  { ?class a <http://example.org/odp#DataRequest> }\n  UNION\n  { ?class a <http://example.org/odp#DataType> }\n  UNION\n  { ?class a <http://example.org/odp#Functionality> }\n  UNION\n  { ?class a <http://example.org/odp#GDPRRight> }\n  UNION\n  { ?class a <http://example.org/odp#Pod> }\n  UNION\n  { ?class a <http://example.org/odp#PrivacyNotice> }\n  UNION\n  { ?class a <http://example.org/odp#PrivacyPolicy> }\n  UNION\n  { ?class a <http://example.org/odp#ProvenanceRecord> }\n  UNION\n  { ?class a <http://example.org/odp#Registry> }\n  UNION\n  { ?class a <http://example.org/odp#Role> }\n  UNION\n  { ?class a <http://example.org/odp#SolidActor> }\n  UNION\n  { ?class a <http://example.org/odp#SolidApp> }\n  UNION\n  { ?class a <http://example.org/odp#SolidSpecification> }\n  \n  OPTIONAL { ?class <http://example.org/odp#exercisesRight> ?value }\n  OPTIONAL { ?class <http://example.org/odp#expressesPolicy> ?value }\n  OPTIONAL { ?class <http://example.org/odp#hasDataType> ?value }\n  OPTIONAL { ?class <http://example.org/odp#",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'OPTIONAL'  (at char 1194), (line:37, col:3)",
+        "suggestion": "To address the competency question and ensure that the ontology can effectively represent the relationships and properties of the specified classes, consider the following suggestions:\n\n1. **Define Object Properties**: Ensure that the following object properties are defined in the ontology to establish relationships between classes:\n   - `exercisesRight` (domain: `GDPRRight`, range: `SolidActor`)\n   - `expressesPolicy` (domain: `PrivacyPolicy`, range: `PrivacyNotice`)\n   - `hasDataType` (domain: `Data`, range: `DataType`)\n\n2. **Define Data Properties**: Introduce relevant data properties that can be associated with the classes:\n   - `hasDescription` (domain: `AuditingInformation`, range: `xsd:string`)\n   - `hasTimestamp` (domain: `ProvenanceRecord`, range: `xsd:dateTime`)\n\n3. **Class Hierarchies**: Establish subclass relationships to enhance the ontology's structure:\n   - `SolidApp` as a subclass of `SolidActor`\n   - `DataDecision` as a subclass of `Data`\n   - `PrivacyNotice` as a subclass of `PrivacyPolicy`\n\n4. **Add Inverse Properties**: Consider adding inverse properties to facilitate querying:\n   - `isExercisedBy` (inverse of `exercisesRight`)\n   - `isExpressedIn` (inverse of `expressesPolicy`)\n\n5. **Define Cardinality Constraints**:"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a <http://example.org/odp#AuditingInformation> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#Data> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#DataDecision> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#DataRequest> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#DataType> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#exercisesRight> .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#expressesPolicy> .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#hasDataType> .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1239), (line:44, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Add rdfs:label Annotations**: For each class and property, include a human-readable label that succinctly describes the entity. For example:\n   - `rdfs:label \"Auditing Information\"` for the class `http://example.org/odp#AuditingInformation`.\n   - `rdfs:label \"Exercises Right\"` for the property `http://example.org/odp#exercisesRight`.\n\n2. **Add rdfs:comment Annotations**: Provide a detailed description for each class and property to clarify their purpose and usage. For example:\n   - `rdfs:comment \"Information related to auditing processes and results.\"` for the class `http://example.org/odp#AuditingInformation`.\n   - `rdfs:comment \"Indicates the rights exercised by a user or entity.\"` for the property `http://example.org/odp#exercisesRight`.\n\n3. **Ensure Consistency**: Make sure that all classes and properties in the ontology have both `rdfs:label` and `rdfs:comment` annotations to maintain consistency and improve usability.\n\n4. **Use a Standardized Format**: Follow a consistent format for labels and comments, such as using sentence case for labels and complete sentences for comments, to enhance readability.\n\n5. **"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#AuditingInformation> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology header can be queried successfully and to answer the competency question, you should consider the following additions to your ontology:\n\n1. **Declare the Ontology Class**: Define the ontology itself as an instance of `owl:Ontology`:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label and rdfs:comment Properties**: Include the mandatory properties `rdfs:label` and `rdfs:comment` for the ontology:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Title\" ; \n             rdfs:comment \"A brief description of the ontology.\" .\n   ```\n\n3. **Define the Namespace**: Ensure that the namespace for your ontology is properly defined at the beginning of your ontology file:\n   ```turtle\n   @prefix : <http://example.org/odp#> .\n   ```\n\n4. **Use the Correct Class for Querying**: Ensure that the class you are querying (`<http://example.org/odp#AuditingInformation>`) is correctly defined in your ontology, or adjust your SPARQL query to target the correct ontology instance.\n\n5. **Check for RDF Serialization**: Ensure that your ontology is serialized in a format that supports RDF, such as Turtle or RDF/XML, and that it is correctly loaded into your RDF store or endpoint.\n\nBy implementing these suggestions, your ontology should be able to return results for the"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

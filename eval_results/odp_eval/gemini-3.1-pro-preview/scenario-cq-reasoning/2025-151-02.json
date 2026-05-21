@@ -1,0 +1,143 @@
+{
+  "id": "2025-151-02",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 117,
+    "classes_count": 13,
+    "object_properties_count": 7,
+    "datatype_properties_count": 8,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.6153846153846154,
+    "relationship_richness": 0.4666666666666667,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 117,
+    "triples_after": 422,
+    "inferred_triples": 305,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "What is the current time?",
+    "What is the location of a party?",
+    "What assets are part of the asset collection of the policy that is being evaluated?",
+    "Which parties are part of the party collection of the policy that is being evaluated?",
+    "What actions were already performed or attempted?",
+    "How many times has a rule been exercised?",
+    "What information is available about an event that has occurred?",
+    "How long has a rule been exercised?",
+    "Which recipients or categories of recipients can receive the result of the rule that has been exercised?",
+    "Has a financial payment been made? What was the amount paid?"
+  ],
+  "cqs_count": 10,
+  "cq_verification": {
+    "cqs_total": 10,
+    "cqs_passed": 1,
+    "cqs_failed": 9,
+    "pass_rate": 0.1,
+    "results": [
+      {
+        "cq": "What is the current time?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?currentTime WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:currentTime ?currentTime }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question \"What is the current time?\", consider adding the following:\n\n1. **Class Definition**: Introduce a class `odp:Time` to represent time instances within the ontology.\n\n2. **Property Definition**: Create a property `odp:currentTime` that links an `odp:Event` to an instance of `odp:Time`, indicating the current time associated with that event.\n\n3. **Axiom for Current Time**: Define an axiom or a rule that specifies how to determine the current time, possibly using a specific instance of `odp:Time` that represents the current moment (e.g., `odp:CurrentTime`).\n\n4. **Instance Creation**: Create an instance of `odp:Time` (e.g., `odp:CurrentTime`) that can be updated dynamically to reflect the actual current time.\n\n5. **Data Type Property**: Optionally, define a data type property (e.g., `odp:timeValue`) for `odp:Time` to store the actual time value in a standard format (e.g., xsd:dateTime). \n\nThese additions will allow the ontology to represent and query the current time effectively."
+      },
+      {
+        "cq": "What is the location of a party?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?party ?location WHERE {\n  ?party a odp:Party .\n  OPTIONAL { ?party odp:hasLocation ?location }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the location of a party, consider the following additions to the ontology:\n\n1. **Define the `odp:hasLocation` Property**: Ensure that the property `odp:hasLocation` is defined as a relationship between `odp:Party` and a location class (e.g., `odp:Location`). This property should be an object property.\n\n2. **Create a `odp:Location` Class**: Introduce a class `odp:Location` to represent various locations. This class can include subclasses for specific types of locations (e.g., `odp:Address`, `odp:GeographicCoordinate`).\n\n3. **Add Instances of `odp:Party` and `odp:Location`**: Populate the ontology with instances of `odp:Party` and corresponding instances of `odp:Location` to ensure there are data points to query against.\n\n4. **Define Domain and Range for `odp:hasLocation`**: Specify the domain of `odp:hasLocation` as `odp:Party` and the range as `odp:Location` to enforce the relationship between parties and their locations.\n\n5. **Include Inference Rules (if applicable)**: If using a reasoner, consider adding rules that infer locations based on other properties or relationships that might be relevant to parties, enhancing the ability to retrieve location data.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding the location of a party."
+      },
+      {
+        "cq": "What assets are part of the asset collection of the policy that is being evaluated?",
+        "sparql": "SELECT ?asset WHERE {\n  ?policy a <http://example.org/odp#Policy> .\n  ?policy <http://example.org/odp#hasAssetCollection> ?assetCollection .\n  ?assetCollection <http://example.org/odp#hasAsset> ?asset .\n  FILTER(?policy <http://example.org/odp#actionStatus> = \"evaluated\")\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'FILTER'  (at char 205), (line:5, col:3)",
+        "suggestion": "To address the competency question and resolve the SPARQL query error, consider the following suggestions for enhancing the ontology:\n\n1. **Action Status Property**: Ensure that the `actionStatus` property is defined as a datatype property (e.g., `xsd:string`) for the `Policy` class to allow for string comparisons in SPARQL queries.\n\n2. **Asset Collection Class**: Define an `AssetCollection` class if it is not already present, and ensure it has a property `hasAsset` that links to the `Asset` class.\n\n3. **Evaluated Status Enumeration**: Introduce an enumeration or a controlled vocabulary for the `actionStatus` property, including a specific value for \"evaluated\" to standardize status values.\n\n4. **Refine SPARQL Query**: Modify the SPARQL query to use the correct syntax for the FILTER clause. Instead of using `FILTER(?policy <http://example.org/odp#actionStatus> = \"evaluated\")`, use `FILTER(?actionStatus = \"evaluated\")` after defining `?actionStatus` in the query.\n\n5. **Property for Action Status**: Ensure that the `Policy` class has a property (e.g., `hasActionStatus`) that links to the action status, allowing you to retrieve the status directly in the query.\n\nBy implementing these suggestions, you can enhance the ontology's expressiveness and ensure that the SPARQL query can be executed correctly to retrieve the"
+      },
+      {
+        "cq": "Which parties are part of the party collection of the policy that is being evaluated?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?party WHERE {\n  ?policy a odp:Policy .\n  ?policy odp:hasPartyCollection ?partyCollection .\n  ?partyCollection odp:hasParty ?party .\n  ?policy odp:actionStatus \"evaluating\" .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Define `odp:actionStatus` as a property**: Ensure that `odp:actionStatus` is defined as a property of the `odp:Policy` class, allowing policies to have a status indicating their current state (e.g., \"evaluating\").\n\n2. **Add `odp:hasPartyCollection` as a property**: Confirm that `odp:hasPartyCollection` is correctly defined as a property linking `odp:Policy` to a collection of parties, ensuring that it can relate to an instance of a party collection.\n\n3. **Define `odp:PartyCollection` class**: Introduce a class `odp:PartyCollection` to represent collections of parties, which can contain multiple instances of `odp:Party`.\n\n4. **Ensure `odp:hasParty` property exists**: Verify that `odp:hasParty` is defined as a property of `odp:PartyCollection`, linking it to individual `odp:Party` instances.\n\n5. **Add instances and data**: Populate the ontology with instances of `odp:Policy`, `odp:PartyCollection`, and `odp:Party`, ensuring at least one policy has the action status \"evaluating\" and is linked to a party collection containing parties.\n\nBy implementing these changes, the ontology will be better structured to support the competency question and yield results in the SPARQL query."
+      },
+      {
+        "cq": "What actions were already performed or attempted?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?status ?eventInfo WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:actionStatus ?status }\n  OPTIONAL { ?action odp:eventInformation ?eventInfo }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding actions that were already performed or attempted, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a class `odp:PerformedAction` as a subclass of `odp:Action` to specifically represent actions that have been executed or attempted.\n\n2. **Property Addition**: Add a property `odp:actionStatus` with a range of `odp:ActionStatus` to capture the status of actions (e.g., \"completed\", \"failed\", \"in-progress\").\n\n3. **Property Addition**: Introduce a property `odp:eventInformation` to provide contextual details about the action, such as timestamps, descriptions, or related events.\n\n4. **Enumerated Class**: Create an enumerated class `odp:ActionStatus` with instances like `odp:Completed`, `odp:Failed`, and `odp:InProgress` to standardize the status values.\n\n5. **Data Property Addition**: Optionally, add a data property `odp:timestamp` to record when the action was performed or attempted, allowing for temporal queries.\n\nThese additions will enhance the ontology's ability to capture and query the relevant information regarding actions that have been performed or attempted."
+      },
+      {
+        "cq": "How many times has a rule been exercised?",
+        "sparql": "SELECT (SUM(?exercisedCount) AS ?totalExercisedCount) WHERE { \n  ?rule a <http://example.org/odp#Rule> .\n  OPTIONAL { ?rule <http://example.org/odp#exercisedCount> ?exercisedCount }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "What information is available about an event that has occurred?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?eventInfo ?actionStatus ?temporalFragment ?isPaid ?paymentAmount WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:eventInformation ?eventInfo }\n  OPTIONAL { ?event odp:actionStatus ?actionStatus }\n  OPTIONAL { ?event odp:temporalFragment ?temporalFragment }\n  OPTIONAL { ?event odp:isPaid ?isPaid }\n  OPTIONAL { ?event odp:paymentAmount ?paymentAmount }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can effectively answer the competency question regarding the information available about an event that has occurred, consider adding the following classes, properties, or axioms:\n\n1. **Class Definition**: Ensure that `odp:Event` is defined as a class in the ontology, representing events that have occurred.\n\n2. **Properties**:\n   - **`odp:eventInformation`**: A property to link an event to its descriptive information (e.g., details about the event).\n   - **`odp:actionStatus`**: A property to indicate the current status of the event (e.g., completed, ongoing, canceled).\n   - **`odp:temporalFragment`**: A property to specify the time period during which the event occurred (e.g., start and end times).\n   - **`odp:isPaid`**: A boolean property to indicate whether the event required payment.\n   - **`odp:paymentAmount`**: A property to specify the amount paid for the event, if applicable.\n\n3. **Axioms**: Define necessary constraints or relationships, such as:\n   - `odp:isPaid` should be a datatype property with a range of xsd:boolean.\n   - `odp:paymentAmount` should be a datatype property with a range of xsd:decimal or xsd:float.\n\nBy ensuring these classes and properties are properly defined and populated in the ontology, the SPARQL query should return relevant results for events that have"
+      },
+      {
+        "cq": "How long has a rule been exercised?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?rule ?exercisedDuration WHERE {\n  ?rule a odp:Rule .\n  OPTIONAL { ?rule odp:exercisedDuration ?exercisedDuration }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"How long has a rule been exercised?\", consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a class `odp:RuleExercise` to represent instances of rules being exercised.\n\n2. **Property Addition**: Add a property `odp:hasExerciseDuration` to link `odp:RuleExercise` instances to a duration value (e.g., a time interval or duration in a standard format).\n\n3. **Property Addition**: Introduce a property `odp:exercisedAt` to record the timestamp or date when the rule was first exercised.\n\n4. **Axiom Definition**: Define an axiom that states that `odp:Rule` can have multiple `odp:RuleExercise` instances, allowing for tracking of multiple exercise periods over time.\n\n5. **Data Type Specification**: Ensure that the `odp:hasExerciseDuration` property is defined to accept a data type such as `xsd:duration` or `xsd:integer` (for days, months, etc.) to quantify the duration effectively. \n\nThese additions will enable the ontology to capture the necessary information to answer the competency question regarding the duration of rule exercise."
+      },
+      {
+        "cq": "Which recipients or categories of recipients can receive the result of the rule that has been exercised?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?recipient ?category WHERE {\n  ?rule a odp:Rule .\n  ?rule odp:hasRecipient ?recipient .\n  OPTIONAL { ?recipient a ?category }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding recipients or categories of recipients for exercised rules, consider the following additions to the ontology:\n\n1. **Define `odp:Recipient` Class**: Create a class `odp:Recipient` to represent entities that can receive the results of rules.\n\n2. **Define `odp:hasRecipient` Property**: Ensure that the property `odp:hasRecipient` is explicitly defined to link `Rule` instances to `Recipient` instances.\n\n3. **Define `odp:Category` Class**: Introduce a class `odp:Category` to categorize recipients, allowing for more structured classification.\n\n4. **Define `odp:hasCategory` Property**: Create a property `odp:hasCategory` to link `Recipient` instances to their respective `Category` instances.\n\n5. **Add Axioms for Inheritance**: If applicable, use subclass relationships to allow `Recipient` to inherit properties from other relevant classes, ensuring that categories can be associated with various types of recipients.\n\nThese additions will enable the SPARQL query to retrieve the desired information about recipients and their categories effectively."
+      },
+      {
+        "cq": "Has a financial payment been made? What was the amount paid?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?paymentAmount ?isPaid WHERE {\n  ?payment a odp:Payment .\n  OPTIONAL { ?payment odp:paymentAmount ?paymentAmount }\n  OPTIONAL { ?payment odp:isPaid ?isPaid }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding financial payments, consider adding the following classes, properties, and axioms to your ontology:\n\n1. **Classes**:\n   - Define a class `Payment` to represent financial transactions.\n\n2. **Properties**:\n   - Add a datatype property `odp:paymentAmount` to represent the amount of the payment (e.g., `xsd:decimal`).\n   - Add a boolean datatype property `odp:isPaid` to indicate whether the payment has been made (e.g., `xsd:boolean`).\n\n3. **Axioms**:\n   - Ensure that the `Payment` class has instances that can be linked to the `paymentAmount` and `isPaid` properties, establishing that each payment can have an associated amount and a status indicating if it has been made.\n\n4. **Example Instances**:\n   - Create example instances of `Payment` with values for `paymentAmount` and `isPaid` to ensure that the query can return results.\n\nBy implementing these suggestions, you will enhance the ontology's ability to answer the competency question effectively."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

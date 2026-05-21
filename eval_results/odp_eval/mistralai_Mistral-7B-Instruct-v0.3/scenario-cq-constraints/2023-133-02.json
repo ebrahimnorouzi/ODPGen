@@ -1,0 +1,118 @@
+{
+  "id": "2023-133-02",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 47,
+    "classes_count": 6,
+    "object_properties_count": 1,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 47,
+    "triples_after": 243,
+    "inferred_triples": 196,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 6,
+    "cqs_failed": 0,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?asthmaPatient ?allergen ?causalEffect ?environment ?medication ?symptom WHERE {\n  ?asthmaPatient a odp:AsthmaPatient .\n  OPTIONAL { ?asthmaPatient odp:CausalRelation ?causalEffect . }\n  OPTIONAL { ?causalEffect a odp:CausalEffect . }\n  OPTIONAL { ?causalEffect odp:hasAllergen ?allergen . }\n  OPTIONAL { ?causalEffect odp:hasEnvironment ?environment . }\n  OPTIONAL { ?causalEffect odp:hasMedication ?medication . }\n  OPTIONAL { ?causalEffect odp:hasSymptom ?symptom . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 7
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?allergen ?asthmaPatient ?causalEffect ?environment ?medication ?symptom WHERE {\n  ?asthmaPatient a <http://example.org/odp#AsthmaPatient> .\n  OPTIONAL { ?asthmaPatient <http://example.org/odp#CausalRelation> ?causalEffect . }\n  OPTIONAL { ?causalEffect a <http://example.org/odp#CausalEffect> . }\n  OPTIONAL { ?causalEffect <http://example.org/odp#CausalRelation> ?allergen . }\n  OPTIONAL { ?causalEffect <http://example.org/odp#CausalRelation> ?environment . }\n  OPTIONAL { ?causalEffect <http://example.org/odp#CausalRelation> ?medication . }\n  OPTIONAL { ?causalEffect <http://example.org/odp#CausalRelation> ?symptom . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a <http://example.org/odp#Allergen> .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#AsthmaPatient> .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#CausalEffect> .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#Environment> .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#Medication> .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#Symptom> .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property <http://example.org/odp#CausalRelation> ?class .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 3
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Allergen> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?asthmaPatient ?allergen ?environment ?medication ?symptom WHERE {\n  ?asthmaPatient a odp:AsthmaPatient .\n  OPTIONAL { ?asthmaPatient odp:CausalRelation ?allergen . }\n  OPTIONAL { ?asthmaPatient odp:CausalRelation ?environment . }\n  OPTIONAL { ?asthmaPatient odp:CausalRelation ?medication . }\n  OPTIONAL { ?asthmaPatient odp:CausalRelation ?symptom . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P34",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://www.w3.org/2002/07/owl#union"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 3,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

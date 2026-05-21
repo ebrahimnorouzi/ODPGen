@@ -1,0 +1,110 @@
+{
+  "id": "2023-133-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 35,
+    "classes_count": 2,
+    "object_properties_count": 3,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 1.0,
+    "relationship_richness": 0.6,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 35,
+    "triples_after": 199,
+    "inferred_triples": 164,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?causalRelation ?sourceEvent ?targetEvent ?effectWeight ?eventState WHERE {\n  ?causalRelation a odp:CausalRelation .\n  OPTIONAL { ?causalRelation odp:hasSourceEvent ?sourceEvent . }\n  OPTIONAL { ?causalRelation odp:hasTargetEvent ?targetEvent . }\n  OPTIONAL { ?causalRelation odp:hasEffectWeight ?effectWeight . }\n  OPTIONAL { ?causalRelation odp:hasEventState ?eventState . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `CausalRelation` Class**: Ensure that the `CausalRelation` class is properly defined in the ontology with relevant properties that link it to events.\n\n2. **Add Properties for Events**:\n   - `odp:hasSourceEvent`: A property linking a `CausalRelation` to its source event.\n   - `odp:hasTargetEvent`: A property linking a `CausalRelation` to its target event.\n   - `odp:hasEffectWeight`: A property to quantify the strength or significance of the causal relationship.\n   - `odp:hasEventState`: A property to describe the state of the event (e.g., active, inactive).\n\n3. **Create Instances of `CausalRelation`**: Add instances of `CausalRelation` in the ontology that utilize the defined properties, linking them to actual events and providing values for effect weight and event state.\n\n4. **Define Event Class**: Ensure there is a class for events (e.g., `odp:Event`) that can be used as the range for the `hasSourceEvent` and `hasTargetEvent` properties.\n\n5. **Populate the Ontology**: Add sample data or instances for both `CausalRelation` and `Event` to ensure that the query can retrieve meaningful results.\n\nBy implementing these"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#CausalRelation> }\n  UNION\n  { ?class a <http://example.org/odp#Event> }\n  UNION\n  { ?property a <http://example.org/odp#causes> }\n  UNION\n  { ?property a <http://example.org/odp#hasSourceEvent> }\n  UNION\n  { ?property a <http://example.org/odp#hasTargetEvent> }\n  UNION\n  { ?property a <http://example.org/odp#hasEffectWeight> }\n  UNION\n  { ?property a <http://example.org/odp#hasEventState> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can return results for the specified classes and properties, consider the following concrete suggestions:\n\n1. **Declare Classes**: Add the following classes to the ontology:\n   - `a owl:Class` for `CausalRelation`\n   - `a owl:Class` for `Event`\n\n2. **Declare Object Properties**: Add the following object properties to the ontology:\n   - `a owl:ObjectProperty` for `causes`\n   - `a owl:ObjectProperty` for `hasSourceEvent`\n   - `a owl:ObjectProperty` for `hasTargetEvent`\n\n3. **Declare Datatype Properties**: Add the following datatype properties to the ontology:\n   - `a owl:DatatypeProperty` for `hasEffectWeight`\n   - `a owl:DatatypeProperty` for `hasEventState`\n\n4. **Define Relationships**: Ensure that the properties are properly defined with domain and range specifications to establish relationships between the classes and properties.\n\n5. **Add Axioms**: Include any necessary axioms that clarify the relationships and constraints between the classes and properties, enhancing the ontology's expressiveness. \n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question effectively."
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?causalRelation ?event ?effectWeight ?eventState WHERE {\n  ?causalRelation a odp:CausalRelation.\n  ?causalRelation odp:hasSourceEvent ?event.\n  ?causalRelation odp:hasTargetEvent ?event.\n  OPTIONAL { ?causalRelation odp:hasEffectWeight ?effectWeight. }\n  OPTIONAL { ?event odp:hasEventState ?eventState. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the class `odp:CausalRelation` is defined as a subclass of a more general class (e.g., `rdf:Resource` or a specific class related to relationships).\n   - Define the class `odp:Event` to represent events in the ontology.\n\n2. **Define Properties**:\n   - Define the property `odp:hasSourceEvent` as a relation from `odp:CausalRelation` to `odp:Event`.\n   - Define the property `odp:hasTargetEvent` as a relation from `odp:CausalRelation` to `odp:Event`.\n   - Define the property `odp:hasEffectWeight` as a relation from `odp:CausalRelation` to a datatype (e.g., `xsd:float`).\n   - Define the property `odp:hasEventState` as a relation from `odp:Event` to a class representing event states (e.g., `odp:EventState`).\n\n3. **Add Axioms**:\n   - Add axioms that specify the domain and range for each property, e.g., `odp:hasSourceEvent` and `odp:hasTargetEvent` should have `odp:CausalRelation` as the domain and `odp:Event` as the range.\n   - Optionally, add"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:CausalRelation .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Event .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:causes .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasSourceEvent .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasTargetEvent .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasEffectWeight .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasEventState .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, consider the following concrete suggestions:\n\n1. **Add rdfs:label and rdfs:comment Annotations**: For each class and property in your ontology (e.g., `odp:CausalRelation`, `odp:Event`, `odp:causes`, `odp:hasSourceEvent`, etc.), explicitly define `rdfs:label` and `rdfs:comment` annotations. For example:\n   ```turtle\n   odp:CausalRelation rdfs:label \"Causal Relation\" ;\n                      rdfs:comment \"A relation that indicates a cause-effect relationship.\" .\n   ```\n\n2. **Create a Validation Rule**: Implement a validation rule or constraint in your ontology management tool to enforce that all classes and properties must have both `rdfs:label` and `rdfs:comment`. This can help prevent future omissions.\n\n3. **Use a SPARQL Update Query**: Write a SPARQL update query to automatically add default `rdfs:label` and `rdfs:comment` annotations for any classes or properties that currently lack them. For example:\n   ```sparql\n   INSERT {\n     ?s rdfs:label \"Default Label\" .\n     ?s rdfs:comment \"Default comment for missing annotations.\" .\n   }\n   WHERE {\n     ?s a ?type .\n     FILTER NOT EXISTS { ?s"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  BIND(odp:Ontology AS ?ontology)\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?sourceEvent ?targetEvent ?effectWeight ?eventState WHERE {\n  ?event a odp:Event.\n  OPTIONAL { ?event odp:hasSourceEvent ?sourceEvent. }\n  OPTIONAL { ?event odp:hasTargetEvent ?targetEvent. }\n  OPTIONAL { ?event odp:hasEffectWeight ?effectWeight. }\n  OPTIONAL { ?event odp:hasEventState ?eventState. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the ontology is minimal and reusable, consider the following additions:\n\n1. **Define the `Event` Class**: Ensure that the `Event` class is properly defined in the ontology with necessary characteristics, such as being a subclass of a more general class (e.g., `Thing`).\n\n2. **Add Object Properties**:\n   - **`hasSourceEvent`**: Define this property to link an `Event` to its source event.\n   - **`hasTargetEvent`**: Define this property to link an `Event` to its target event.\n   - **`hasEffectWeight`**: Define this property to represent the weight or significance of the effect associated with an event, ensuring it can be linked to a numeric value or a specific type.\n   - **`hasEventState`**: Define this property to indicate the current state of the event (e.g., active, completed, pending).\n\n3. **Define Data Types**: Ensure that the `hasEffectWeight` property is associated with a suitable data type (e.g., `xsd:float` or `xsd:integer`) to allow for numeric values.\n\n4. **Add Instances**: Create sample instances of the `Event` class with values for the properties to test the SPARQL query effectively.\n\n5. **Check Ontology Consistency**: Validate the ontology to ensure that all classes and properties are correctly defined and that there are no inconsistencies"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

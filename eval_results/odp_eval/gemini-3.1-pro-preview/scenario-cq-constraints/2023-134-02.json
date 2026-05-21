@@ -1,0 +1,111 @@
+{
+  "id": "2023-134-02",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 77,
+    "classes_count": 10,
+    "object_properties_count": 7,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 4,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.1,
+    "relationship_richness": 0.875,
+    "avg_subclass_per_class": 0.4
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 77,
+    "triples_after": 318,
+    "inferred_triples": 241,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 0,
+    "cqs_failed": 6,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?data ?log WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:actsOnData ?data . }\n  OPTIONAL { ?action odp:publishesLog ?log . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `Action` Class**: Ensure that the `Action` class is properly defined in the ontology with relevant instances that represent specific actions.\n\n2. **Add `actsOnData` Property**: Create a property `actsOnData` that relates an `Action` to the data it acts upon. This property should have a domain of `Action` and a range that includes the relevant data classes.\n\n3. **Add `publishesLog` Property**: Introduce a property `publishesLog` that connects an `Action` to the logs it generates. This property should have a domain of `Action` and a range that includes a `Log` class.\n\n4. **Create Instances of Actions**: Populate the ontology with instances of `Action` that utilize the `actsOnData` and `publishesLog` properties, linking them to specific data and log instances.\n\n5. **Define Data and Log Classes**: Ensure that there are classes for `Data` and `Log` in the ontology, with appropriate instances that can be linked to the actions.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question and return meaningful results from the SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#Action> }\n  UNION { ?class a <http://example.org/odp#Application> }\n  UNION { ?class a <http://example.org/odp#CreateAction> }\n  UNION { ?class a <http://example.org/odp#Data> }\n  UNION { ?class a <http://example.org/odp#Entity> }\n  UNION { ?class a <http://example.org/odp#EraseAction> }\n  UNION { ?class a <http://example.org/odp#Log> }\n  UNION { ?class a <http://example.org/odp#Pod> }\n  UNION { ?class a <http://example.org/odp#StorageLocation> }\n  UNION { ?class a <http://example.org/odp#UpdateAction> }\n  UNION { ?property a <http://example.org/odp#actsOnData> }\n  UNION { ?property a <http://example.org/odp#generatesData> }\n  UNION { ?property a <http://example.org/odp#interactsWith> }\n  UNION { ?property a <http://example.org/odp#isStoredIn> }\n  UNION { ?property a <http://example.org/odp#performsAction> }\n  UNION { ?property a <http://example.org/odp#publishesLog> }\n  UNION { ?property a <http://example.org/odp#recordsAction> }\n  UNION { ?property a <http://example.org/odp#issuedAt> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can answer the competency question regarding the declaration of classes and properties, consider the following concrete suggestions:\n\n1. **Declare Classes**: Ensure that each class is explicitly declared in the ontology using the `owl:Class` construct. For example:\n   ```turtle\n   :Action a owl:Class .\n   :Application a owl:Class .\n   :CreateAction a owl:Class .\n   :Data a owl:Class .\n   :Entity a owl:Class .\n   :EraseAction a owl:Class .\n   :Log a owl:Class .\n   :Pod a owl:Class .\n   :StorageLocation a owl:Class .\n   :UpdateAction a owl:Class .\n   ```\n\n2. **Declare Properties**: Ensure that each property is explicitly declared using the appropriate OWL property types. For example:\n   ```turtle\n   :actsOnData a owl:ObjectProperty .\n   :generatesData a owl:ObjectProperty .\n   :interactsWith a owl:ObjectProperty .\n   :isStoredIn a owl:ObjectProperty .\n   :performsAction a owl:ObjectProperty .\n   :publishesLog a owl:ObjectProperty .\n   :recordsAction a owl:ObjectProperty .\n   :issuedAt a owl:DatatypeProperty .\n   ```\n\n3. **Use a Consistent Namespace**: Make sure that the namespace (e.g., `http://example.org/odp#`) is consistently used throughout the ontology for all classes and properties to avoid mismatches"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?data ?log ?storageLocation WHERE {\n  ?action a odp:Action.\n  OPTIONAL { ?action odp:actsOnData ?data. }\n  OPTIONAL { ?action odp:publishesLog ?log. }\n  OPTIONAL { ?action odp:isStoredIn ?storageLocation. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `Action` Class**: Ensure that the `Action` class is defined in the ontology with appropriate characteristics. For example:\n   ```turtle\n   :Action a owl:Class.\n   ```\n\n2. **Define Properties**: Add the properties `actsOnData`, `publishesLog`, and `isStoredIn` to the ontology, specifying their domains and ranges:\n   ```turtle\n   :actsOnData a owl:ObjectProperty;\n       rdfs:domain :Action;\n       rdfs:range :Data.\n\n   :publishesLog a owl:ObjectProperty;\n       rdfs:domain :Action;\n       rdfs:range :Log.\n\n   :isStoredIn a owl:ObjectProperty;\n       rdfs:domain :Action;\n       rdfs:range :StorageLocation.\n   ```\n\n3. **Define Related Classes**: Ensure that the classes `Data`, `Log`, and `StorageLocation` are defined in the ontology:\n   ```turtle\n   :Data a owl:Class.\n   :Log a owl:Class.\n   :StorageLocation a owl:Class.\n   ```\n\n4. **Add Axioms for Relationships**: Optionally, you can add axioms that describe relationships or constraints between these classes and properties to enhance the ontology's expressiveness.\n\nBy"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a ?type .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a ?type .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  VALUES ?type { \n    <http://example.org/odp#Action> \n    <http://example.org/odp#Application> \n    <http://example.org/odp#CreateAction> \n    <http://example.org/odp#Data> \n    <http://example.org/odp#Entity> \n    <http://example.org/odp#EraseAction> \n    <http://example.org/odp#Log> \n    <http://example.org/odp#Pod> \n    <http://example.org/odp#StorageLocation> \n    <http://example.org/odp#UpdateAction> \n    <http://example.org/odp#actsOnData> \n    <http://example.org/odp#generatesData> \n    <http://example.org/odp#interactsWith> \n    <http://example.org/odp#isStoredIn> \n    <http://example.org/odp#performsAction> \n    <http://example.org/odp#publishesLog> \n    <http://example.org/odp#recordsAction> \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete actions:\n\n1. **Add rdfs:label Annotations**: For each class and property, add a human-readable label using `rdfs:label`. For example:\n   - `rdfs:label \"Action\"`\n   - `rdfs:label \"Application\"`\n   - `rdfs:label \"Create Action\"`\n   - (Repeat for all classes and properties)\n\n2. **Add rdfs:comment Annotations**: Provide a description for each class and property using `rdfs:comment`. For example:\n   - `rdfs:comment \"An action that can be performed.\"`\n   - `rdfs:comment \"An application that processes data.\"`\n   - `rdfs:comment \"An action that creates data.\"`\n   - (Repeat for all classes and properties)\n\n3. **Define a Consistent Annotation Pattern**: Establish a guideline for how to create labels and comments to ensure consistency across the ontology. This could include:\n   - Using a specific format for labels (e.g., noun phrases).\n   - Providing a brief, clear description for comments (e.g., 1-2 sentences).\n\n4. **Implement Validation Rules**: Create a validation mechanism (e.g., SPARQL queries or ontology validation tools) to check that all classes and properties have the required annotations. This"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Action> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should ensure the following classes, properties, and axioms are included in your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is declared as an instance of `owl:Ontology`. This can be done by adding a statement like:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Define rdfs:label Property**: Include the `rdfs:label` property to provide a human-readable name for the ontology. For example:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Name\" .\n   ```\n\n3. **Define rdfs:comment Property**: Add the `rdfs:comment` property to provide a description of the ontology. For example:\n   ```turtle\n   :Ontology rdfs:comment \"This ontology describes...\" .\n   ```\n\n4. **Use the Correct Namespace**: Ensure that the ontology is using the correct namespace for the properties and classes, such as `rdfs` and `owl`. For example, prefix declarations should be included at the top of your ontology file:\n   ```turtle\n   @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n   @prefix owl: <http://www.w3.org/2002/07/owl#> .\n   ```\n\n5. **Check for Consistency**: Ensure"
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?data ?log WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:actsOnData ?data . }\n  OPTIONAL { ?action odp:publishesLog ?log . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the ontology is minimal and reusable, consider adding the following classes and properties:\n\n1. **Classes**:\n   - **Action**: Define this class to represent actions that can be performed.\n   - **Data**: Introduce this class to represent the data that actions can act upon.\n   - **Log**: Create this class to represent logs generated by actions.\n\n2. **Properties**:\n   - **actsOnData**: Define a property that relates an `Action` to the `Data` it acts upon. This should be a property of type `Action` \u2192 `Data`.\n   - **publishesLog**: Define a property that relates an `Action` to the `Log` it generates. This should be a property of type `Action` \u2192 `Log`.\n\n3. **Axioms**:\n   - Ensure that the properties `actsOnData` and `publishesLog` are defined as object properties in the ontology, allowing for the correct linking of instances of `Action` to instances of `Data` and `Log`.\n\nBy implementing these additions, the ontology will be better equipped to answer the competency question while maintaining a minimal and reusable structure."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

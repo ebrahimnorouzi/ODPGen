@@ -1,0 +1,112 @@
+{
+  "id": "2025-147-01",
+  "model": "gpt-5.4",
+  "config": "cq-only",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 75,
+    "classes_count": 22,
+    "object_properties_count": 0,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 2,
+    "equivalence_axioms": 1,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 0.09090909090909091
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 75,
+    "triples_after": 350,
+    "inferred_triples": 275,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "SELECT ?ship ?owner ?country WHERE {\n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#Owner> ?owner . }\n  OPTIONAL { ?owner a <http://example.org/odp#Person> . }\n  OPTIONAL { ?owner a <http://example.org/odp#Organization> . }\n  OPTIONAL { ?owner <http://example.org/odp#Country> ?country . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - Define a class for `Person` and `Organization` if not already present, ensuring they are subclasses of a more general class like `Owner`.\n\n2. **Properties**:\n   - Add a property `hasOwner` (or similar) to link `Ship` to `Owner` (e.g., `?ship <http://example.org/odp#hasOwner> ?owner`).\n   - Define a property `belongsToCountry` to link `Owner` to `Country` (e.g., `?owner <http://example.org/odp#belongsToCountry> ?country`).\n\n3. **Axioms**:\n   - Ensure that `Owner` can be either a `Person` or an `Organization` by using a union class or a similar construct in the ontology.\n\nBy implementing these changes, the ontology will be better equipped to provide the necessary relationships to answer the competency question."
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "SELECT ?ship ?owner ?country ?engineType WHERE {\n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#Owner> ?owner . }\n  OPTIONAL { ?owner a <http://example.org/odp#Person> . }\n  OPTIONAL { ?owner a <http://example.org/odp#Organization> . }\n  OPTIONAL { ?ship <http://example.org/odp#Country> ?country . }\n  OPTIONAL { ?ship <http://example.org/odp#EngineType> ?engineType . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding ships, their owners, countries, and engine types, consider the following additions to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the classes `Ship`, `Person`, `Organization`, and `Country` are clearly defined in the ontology with appropriate properties.\n\n2. **Add Properties**:\n   - Create or verify the existence of the following properties:\n     - `hasOwner` (domain: `Ship`, range: `Person` or `Organization`)\n     - `registeredIn` (domain: `Ship`, range: `Country`)\n     - `hasEngineType` (domain: `Ship`, range: `EngineType`)\n\n3. **Define EngineType Class**:\n   - Introduce an `EngineType` class to categorize different types of engines used in ships, ensuring it is linked to the `Ship` class through the `hasEngineType` property.\n\n4. **Populate Data**:\n   - Ensure that instances of `Ship`, `Person`, `Organization`, `Country`, and `EngineType` are populated in the ontology to provide meaningful results for the SPARQL query.\n\n5. **Check Namespace Consistency**:\n   - Verify that the URIs used in the SPARQL query match the defined classes and properties in the ontology to avoid mismatches that could lead to no results being returned."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?ship ?owner ?country WHERE {\n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#Owner> ?owner . }\n  OPTIONAL { ?owner a <http://example.org/odp#Country> . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `Ship` Class**: Ensure that the class `Ship` is defined in the ontology with the appropriate URI (e.g., `http://example.org/odp#Ship`).\n\n2. **Define the `Owner` Property**: Create a property `Owner` that relates a `Ship` to its owner. This property should be defined as:\n   ```turtle\n   :Owner a rdf:Property ;\n           rdfs:domain :Ship ;\n           rdfs:range :OwnerClass .\n   ```\n\n3. **Define the `OwnerClass`**: Introduce a class for owners (e.g., `OwnerClass`) that can be linked to various entities, including countries:\n   ```turtle\n   :OwnerClass a rdfs:Class .\n   ```\n\n4. **Define the `Country` Class**: Ensure that the class `Country` is defined in the ontology with the appropriate URI (e.g., `http://example.org/odp#Country`).\n\n5. **Link Owners to Countries**: Create a property that links an owner to a country, such as:\n   ```turtle\n   :locatedIn a rdf:Property ;\n               rdfs:domain :OwnerClass ;\n               rdfs:range :Country .\n   ```\n\nBy implementing these changes, the ontology"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "SELECT ?class ?label ?comment WHERE {\n  { ?class a <http://example.org/odp#ContainerShip> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class rdfs:comment ?comment . } }\n  UNION\n  { ?class a <http://example.org/odp#Country> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class rdfs:comment ?comment . } }\n  UNION\n  { ?class a <http://example.org/odp#DrivenComponent> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class rdfs:comment ?comment . } }\n  UNION\n  { ?class a <http://example.org/odp#Engine> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class rdfs:comment ?comment . } }\n  UNION\n  { ?class a <http://example.org/odp#EngineCombination> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class rdfs:comment ?comment . } }\n  UNION\n  { ?class a <http://example.org/odp#EngineType> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class rdfs:comment ?comment . } }\n  UNION\n  { ?class a <http://example.org/odp#Fuel> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class rdfs:comment ?comment . } }\n  UNION\n  { ?class a <http://example.org/odp#LengthUnit> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class rdfs:comment ?comment . } }\n  UNION\n  { ?class a <http://example.org/odp#LocationDescription> . OPTIONAL { ?class rdfs:label ?label . } OPTIONAL { ?class r",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1247), (line:18, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class in your ontology (e.g., `ContainerShip`, `Country`, `DrivenComponent`, etc.), add an `rdfs:label` that provides a human-readable name and an `rdfs:comment` that describes the purpose or characteristics of the class.\n\n2. **Annotate Properties**: Similarly, for every property in your ontology, include `rdfs:label` and `rdfs:comment` annotations to clarify what each property represents and how it should be used.\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are concise and follow a consistent naming convention (e.g., using singular nouns for classes and verbs for properties) to enhance clarity and usability.\n\n4. **Include Language Tags**: If your ontology will be used in multilingual contexts, consider adding language tags to the `rdfs:label` annotations to specify the language of the label (e.g., `rdfs:label \"Container Ship\"@en`).\n\n5. **Document the Ontology**: Create a separate documentation file or section within your ontology that outlines the purpose of each class and property, including examples of usage, to provide additional context for users.\n\nBy implementing these suggestions, you will enhance the usability and comprehensibility"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#ContainerShip> .\n  OPTIONAL { ?ontology rdfs:label ?label } .\n  OPTIONAL { ?ontology rdfs:comment ?comment } .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider the following additions to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is declared as an instance of `owl:Ontology`. For example:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include a `rdfs:label` property for the ontology to provide a human-readable name. For example:\n   ```turtle\n   :Ontology rdfs:label \"My Ontology\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include a `rdfs:comment` property to describe the purpose or scope of the ontology. For example:\n   ```turtle\n   :Ontology rdfs:comment \"This ontology describes the concepts and relationships related to container ships.\" .\n   ```\n\n4. **Define Namespace**: Ensure that the ontology has a defined namespace (e.g., `http://example.org/odp#`) to avoid ambiguity in URIs.\n\n5. **Use Proper Prefixes**: Make sure to declare the necessary prefixes at the beginning of your ontology file, such as:\n   ```turtle\n   @prefix owl: <http://www.w3.org/2002/07/owl#> .\n   @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n   ```\n\nBy implementing these elements"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "id": "2023-133-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 10,
+    "classes_count": 2,
+    "object_properties_count": 0,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 1,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 0.5
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 10,
+    "triples_after": 134,
+    "inferred_triples": 124,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "SELECT ?event ?situation WHERE { \n  ?event a <http://example.org/odp#Event> .\n  OPTIONAL { ?situation a <http://example.org/odp#Situation> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Define the `Event` Class**: Ensure that the `Event` class is properly defined with necessary properties that link it to relevant instances.\n\n2. **Define the `Situation` Class**: Ensure that the `Situation` class is defined and that it has a relationship with the `Event` class, such as a property that indicates which situation an event is associated with.\n\n3. **Add Properties**: Introduce a property, such as `hasSituation`, that links an `Event` to a `Situation`. This will allow for the optional retrieval of situations related to events.\n\n4. **Create Instances**: Populate the ontology with instances of `Event` and `Situation` to ensure that the query can return results.\n\n5. **Ensure Proper RDF Structure**: Verify that the RDF structure is correctly implemented, ensuring that instances of `Event` and `Situation` are correctly typed and linked through the defined properties. \n\nBy implementing these changes, the ontology will be better equipped to answer the competency question effectively."
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?event ?situation WHERE {\n  ?event a odp:Event.\n  OPTIONAL { ?situation a odp:Situation. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Event` Class**: Ensure that the `odp:Event` class is properly defined with relevant properties that describe its characteristics, such as `odp:hasLocation`, `odp:hasTime`, or `odp:involvesParticipant`.\n\n2. **Define the `Situation` Class**: Clearly define the `odp:Situation` class and its properties, such as `odp:hasEvent` (linking situations to events) and `odp:hasContext` (providing additional context for the situation).\n\n3. **Create Relationships**: Establish relationships between `Event` and `Situation` using properties like `odp:occursInSituation` (linking an event to a situation) and `odp:describesEvent` (linking a situation to an event).\n\n4. **Add Instances**: Populate the ontology with instances of `Event` and `Situation` to ensure that there are actual data points for the query to retrieve.\n\n5. **Use Clear Naming Conventions**: Ensure that all class and property names are intuitive and self-explanatory, such as renaming `odp:hasContext` to `odp:contextOfSituation` for clarity.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question and return meaningful results in the SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nSELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?situation WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?situation a odp:Situation }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that `odp:Event` and `odp:Situation` are defined as classes in the ontology.\n\n2. **Create Subclasses**:\n   - If applicable, create subclasses of `odp:Event` and `odp:Situation` to provide more specific types of events and situations (e.g., `odp:Meeting`, `odp:Conflict`).\n\n3. **Establish Relationships**:\n   - Define properties that relate events to situations, such as `odp:hasSituation` to link an event to a situation. For example:\n     ```turtle\n     odp:hasSituation a rdf:Property ;\n       rdfs:domain odp:Event ;\n       rdfs:range odp:Situation .\n     ```\n\n4. **Add Axioms**:\n   - Create axioms that assert the existence of events and their associated situations. For example:\n     ```turtle\n     odp:Event a owl:Class .\n     odp:Situation a owl:Class .\n     ```\n\n5. **Example Axioms**:\n   - Optionally, include example axioms that describe the relationship between events and situations, such as:\n     ```turtle\n     :SomeEvent a odp:Event ;\n       odp:hasSituation :SomeSituation .\n     ```\n\nBy implementing these suggestions,"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?label ?comment WHERE {\n  { ?class a odp:Event . }\n  UNION\n  { ?class a odp:Situation . }\n  OPTIONAL { ?class rdfs:label ?label . }\n  OPTIONAL { ?class rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete steps:\n\n1. **Define Classes and Properties**: Ensure that the classes `odp:Event` and `odp:Situation` are properly defined in your ontology. If they are not present, add them with appropriate URIs.\n\n2. **Add Annotations**: For each class and property in your ontology, explicitly add `rdfs:label` and `rdfs:comment` annotations. For example:\n   - `odp:Event rdfs:label \"Event\" .`\n   - `odp:Event rdfs:comment \"An occurrence that can be identified and described.\" .`\n   - `odp:Situation rdfs:label \"Situation\" .`\n   - `odp:Situation rdfs:comment \"A set of circumstances or conditions.\" .`\n\n3. **Include Other Properties**: If there are other properties in your ontology, ensure they also have `rdfs:label` and `rdfs:comment` annotations. For example:\n   - `odp:hasParticipant rdfs:label \"has Participant\" .`\n   - `odp:hasParticipant rdfs:comment \"Relates an event to its participants.\" .`\n\n4. **Use a SPARQL Update Query**: Create a SPARQL Update query to programmatically add these annotations to your ontology, ensuring that all classes"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Event> .\n  OPTIONAL { ?ontology rdfs:label ?label } .\n  OPTIONAL { ?ontology rdfs:comment ?comment } .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should ensure the following classes, properties, and axioms are included in your ontology:\n\n1. **Declare the Ontology Class**: Define the ontology itself as an instance of `owl:Ontology`:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include a `rdfs:label` property to provide a human-readable name for the ontology:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Name\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include a `rdfs:comment` property to provide a description or comment about the ontology:\n   ```turtle\n   :Ontology rdfs:comment \"A brief description of what this ontology represents.\" .\n   ```\n\n4. **Define Namespace**: Ensure that the ontology has a defined namespace (e.g., `@prefix : <http://example.org/your-ontology#> .`) to avoid ambiguity in URIs.\n\n5. **Use owl:imports (if applicable)**: If your ontology imports other ontologies, include the `owl:imports` property to specify those dependencies.\n\nBy implementing these elements, your ontology will have the necessary structure to answer the competency question effectively."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

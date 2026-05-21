@@ -1,0 +1,136 @@
+{
+  "id": "2023-133-01",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 71,
+    "classes_count": 8,
+    "object_properties_count": 8,
+    "datatype_properties_count": 3,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.375,
+    "relationship_richness": 0.7272727272727273,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 71,
+    "triples_after": 295,
+    "inferred_triples": 224,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 0,
+    "cqs_failed": 6,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?slipperyPavementOutcome ?causalLink ?outcome WHERE {\n  ?slipperyPavementOutcome a odp:SlipperyPavementOutcome .\n  OPTIONAL { ?slipperyPavementOutcome odp:hasCausalLink ?causalLink . }\n  OPTIONAL { ?slipperyPavementOutcome odp:hasOutcome ?outcome . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class Definition**: Ensure that the class `odp:SlipperyPavementOutcome` is defined in the ontology. This class should represent instances of outcomes related to slippery pavement conditions.\n\n2. **Property Definitions**:\n   - **Causal Link Property**: Define the property `odp:hasCausalLink` to link `SlipperyPavementOutcome` instances to their causal factors. This property should have a domain of `odp:SlipperyPavementOutcome` and a range that could be a class representing causal factors (e.g., `odp:CausalFactor`).\n   - **Outcome Property**: Define the property `odp:hasOutcome` to link `SlipperyPavementOutcome` instances to specific outcomes. This property should also have a domain of `odp:SlipperyPavementOutcome` and a range that could be a class representing outcomes (e.g., `odp:Outcome`).\n\n3. **Instance Creation**: Create instances of `odp:SlipperyPavementOutcome` in the ontology, ensuring that they are linked to appropriate causal factors and outcomes using the defined properties.\n\nBy implementing these changes, the ontology will be better equipped to provide results for the given SPARQL query."
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?slipperyPavement ?causalLink ?outcome ?pavementWetness ?sprinklerStatus WHERE {\n  ?slipperyPavement a odp:SlipperyPavement.\n  OPTIONAL { ?slipperyPavement odp:hasCausalLink ?causalLink. }\n  OPTIONAL { ?slipperyPavement odp:hasOutcome ?outcome. }\n  OPTIONAL { ?slipperyPavement odp:hasPavementWetness ?pavementWetness. }\n  OPTIONAL { ?slipperyPavement odp:hasSprinklerStatus ?sprinklerStatus. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `SlipperyPavement` Class**: Ensure that the `SlipperyPavement` class is properly defined in the ontology with relevant instances that represent specific slippery pavement scenarios.\n\n2. **Add Instances of `SlipperyPavement`**: Create instances of the `SlipperyPavement` class in the ontology, each with specific attributes (e.g., `pavementWetness`, `sprinklerStatus`) to ensure that the query can retrieve data.\n\n3. **Define Properties**: Ensure that the properties `hasCausalLink`, `hasOutcome`, `hasPavementWetness`, and `hasSprinklerStatus` are defined with appropriate ranges and domains in the ontology. For example:\n   - `hasCausalLink` could link to a class like `CausalLink`.\n   - `hasOutcome` could link to a class like `Outcome`.\n   - `hasPavementWetness` could be a datatype property with a range of values (e.g., \"wet\", \"dry\").\n   - `hasSprinklerStatus` could also be a datatype property indicating whether sprinklers are on or off.\n\n4. **Add Relevant Instances for Properties**: Populate the ontology with instances for `CausalLink`, `Outcome`, and any other relevant classes"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#CausalLink> }\n  UNION\n  { ?class a <http://example.org/odp#Outcome> }\n  UNION\n  { ?class a <http://example.org/odp#PavementWetness> }\n  UNION\n  { ?class a <http://example.org/odp#ResponsibleEvent> }\n  UNION\n  { ?class a <http://example.org/odp#SlipperyPavement> }\n  UNION\n  { ?class a <http://example.org/odp#SlipperyPavementOutcome> }\n  UNION\n  { ?class a <http://example.org/odp#SprinklerStatus> }\n  UNION\n  { ?class a <http://example.org/odp#SprinklerSystem> }\n  \n  { ?property a <http://example.org/odp#causes> }\n  UNION\n  { ?property a <http://example.org/odp#hasCausalLink> }\n  UNION\n  { ?property a <http://example.org/odp#hasOutcome> }\n  UNION\n  { ?property a <http://example.org/odp#hasSlipperyPavementOutcome> }\n  UNION\n  { ?property a <http://example.org/odp#inverseHasCausalLink> }\n  UNION\n  { ?property a <http://example.org/odp#inverseHasOutcome> }\n  UNION\n  { ?property a <http://example.org/odp#inverseHasSlipperyPavementOutcome> }\n  UNION\n  { ?property a <http://example.org/odp#isCausedBy> }\n  \n  OPTIONAL { ?property a <http://example.org/odp#hasPavementWetness> }\n  OPTIONAL { ?property a <http://example.org/odp#hasSlippery",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'OPTIONAL'  (at char 1155), (line:35, col:3)",
+        "suggestion": "To address the competency question and ensure that every class and property is declared correctly in your ontology, consider the following suggestions:\n\n1. **Declare Classes**: Ensure that all classes are declared with `a owl:Class`. For example:\n   ```turtle\n   :CausalLink a owl:Class .\n   :Outcome a owl:Class .\n   :PavementWetness a owl:Class .\n   :ResponsibleEvent a owl:Class .\n   :SlipperyPavement a owl:Class .\n   :SlipperyPavementOutcome a owl:Class .\n   :SprinklerStatus a owl:Class .\n   :SprinklerSystem a owl:Class .\n   ```\n\n2. **Declare Object Properties**: Ensure that all object properties are declared with `a owl:ObjectProperty`. For example:\n   ```turtle\n   :causes a owl:ObjectProperty .\n   :hasCausalLink a owl:ObjectProperty .\n   :hasOutcome a owl:ObjectProperty .\n   :hasSlipperyPavementOutcome a owl:ObjectProperty .\n   :inverseHasCausalLink a owl:ObjectProperty .\n   :inverseHasOutcome a owl:ObjectProperty .\n   :inverseHasSlipperyPavementOutcome a owl:ObjectProperty .\n   :isCausedBy a owl:ObjectProperty .\n   ```\n\n3. **Declare Datatype Properties**: If there are any datatype properties (e.g., properties that link to literal values), ensure they are declared with"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?causalLink ?outcome ?pavementWetness ?slipperyPavement ?sprinklerStatus WHERE {\n  ?causalLink a odp:CausalLink.\n  OPTIONAL { ?causalLink odp:hasOutcome ?outcome. }\n  OPTIONAL { ?causalLink odp:hasPavementWetness ?pavementWetness. }\n  OPTIONAL { ?causalLink odp:hasSlipperyPavement ?slipperyPavement. }\n  OPTIONAL { ?causalLink odp:hasSprinklerStatus ?sprinklerStatus. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `CausalLink` Class**: Ensure that the `CausalLink` class is defined in the ontology to represent the relationships between causes and effects.\n\n   ```turtle\n   :CausalLink a owl:Class.\n   ```\n\n2. **Define Properties**: Create properties that link `CausalLink` to its attributes, such as `hasOutcome`, `hasPavementWetness`, `hasSlipperyPavement`, and `hasSprinklerStatus`.\n\n   ```turtle\n   :hasOutcome a owl:ObjectProperty; rdfs:domain :CausalLink; rdfs:range :Outcome.\n   :hasPavementWetness a owl:ObjectProperty; rdfs:domain :CausalLink; rdfs:range :PavementWetness.\n   :hasSlipperyPavement a owl:ObjectProperty; rdfs:domain :CausalLink; rdfs:range :SlipperyPavement.\n   :hasSprinklerStatus a owl:ObjectProperty; rdfs:domain :CausalLink; rdfs:range :SprinklerStatus.\n   ```\n\n3. **Define Related Classes**: Define the classes for `Outcome`, `PavementWetness`, `SlipperyPavement`, and `"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:CausalLink .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Outcome .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:PavementWetness .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:ResponsibleEvent .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:SlipperyPavement .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:SlipperyPavementOutcome .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:SprinklerStatus .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:SprinklerSystem .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:causes .\n    OPTIONAL { ?property rdfs",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1282), (line:51, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class (e.g., `CausalLink`, `Outcome`, `PavementWetness`, etc.), add `rdfs:label` and `rdfs:comment` annotations that provide a human-readable name and a description of the class's purpose or role in the ontology.\n\n   Example:\n   ```turtle\n   odp:CausalLink rdfs:label \"Causal Link\" ;\n                   rdfs:comment \"Represents a causal relationship between events.\" .\n   ```\n\n2. **Define Annotations for Each Property**: Similarly, for each property (e.g., `causes`), add `rdfs:label` and `rdfs:comment` annotations that clarify the meaning and usage of the property.\n\n   Example:\n   ```turtle\n   odp:causes rdfs:label \"Causes\" ;\n               rdfs:comment \"Indicates a causal relationship between two events.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are consistent in terms of style (e.g., capitalization) and that comments are concise yet informative, providing enough context for users to understand the ontology's structure.\n\n4. **Automate Annotation Generation**: If the ontology is large,"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#CausalLink> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology header can be queried successfully and to answer the competency question, you should consider the following additions:\n\n1. **Define the Ontology Class**: Ensure that the ontology itself is defined as an instance of `owl:Ontology`. For example:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label and rdfs:comment Properties**: Include the `rdfs:label` and `rdfs:comment` properties for the ontology instance:\n   ```turtle\n   :Ontology rdfs:label \"My Ontology\" ; \n             rdfs:comment \"This ontology describes...\" .\n   ```\n\n3. **Use a Proper Namespace**: Ensure that the ontology is using the correct namespace for `owl` and `rdfs`. For example:\n   ```turtle\n   @prefix owl: <http://www.w3.org/2002/07/owl#> .\n   @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n   ```\n\n4. **Check for Correct URI**: Make sure that the URI used in the SPARQL query matches the one defined in the ontology. If the ontology is defined as `http://example.org/odp#Ontology`, ensure that the query uses this exact URI.\n\n5. **Add Additional Metadata if Necessary**: If your ontology requires more metadata, consider adding properties like `dc:"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 11
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 11,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#inverseHasOutcome",
+          "http://example.org/odp#hasSlipperyPavementOutcome",
+          "http://example.org/odp#inverseHasCausalLink",
+          "http://example.org/odp#isCausedBy",
+          "http://example.org/odp#hasSprinklerStatus",
+          "http://example.org/odp#hasSlipperyPavement",
+          "http://example.org/odp#hasCausalLink",
+          "http://example.org/odp#hasPavementWetness",
+          "http://example.org/odp#causes",
+          "http://example.org/odp#hasOutcome",
+          "http://example.org/odp#inverseHasSlipperyPavementOutcome"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

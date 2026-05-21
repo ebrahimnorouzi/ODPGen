@@ -1,0 +1,141 @@
+{
+  "id": "2023-134-03",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 53,
+    "classes_count": 5,
+    "object_properties_count": 11,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 53,
+    "triples_after": 257,
+    "inferred_triples": 204,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 2,
+    "cqs_failed": 5,
+    "pass_rate": 0.2857,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "SELECT ?actor ?app ?pod ?dataCategoryPolicy ?dataHandlingPractices ?privacyPolicy WHERE {\n  ?actor a <http://example.org/odp#SolidActor> .\n  ?app a <http://example.org/odp#SolidApp> .\n  ?pod a <http://example.org/odp#SolidPod> .\n  ?actor <http://example.org/odp#SolidActor_has_dataCategory_policy> ?dataCategoryPolicy .\n  ?actor <http://example.org/odp#SolidActor_has_dataHandlingPractices> ?dataHandlingPractices .\n  ?actor <http://example.org/odp#SolidActor_has_privacyPolicy> ?privacyPolicy .\n  ?app <http://example.org/odp#SolidApp_has_SolidPod> ?pod .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can effectively answer the competency question regarding the prioritization of semantic faithfulness to the scenario, consider the following additions:\n\n1. **Define Relationships Between Classes**:\n   - Add a property `hasActor` to link `SolidApp` to `SolidActor`, indicating which actors are associated with which applications.\n   - Add a property `hasDataCategoryPolicy` to link `SolidPod` to `DataCategoryPolicy`, ensuring that each pod can specify its data category policies.\n\n2. **Clarify Class Hierarchies**:\n   - Ensure that `DataCategoryPolicy`, `DataHandlingPractices`, and `PrivacyPolicy` are defined as subclasses of a more general class, such as `Policy`, to facilitate better querying and understanding of their relationships.\n\n3. **Include Instances**:\n   - Populate the ontology with instances of `SolidActor`, `SolidApp`, `SolidPod`, and their respective policies to ensure that there are actual data entries to query against.\n\n4. **Add Inverse Properties**:\n   - Introduce inverse properties (e.g., `isActorOf`, `isPodOf`) to enhance the expressiveness of the ontology and allow for more flexible querying.\n\n5. **Define Data Types and Ranges**:\n   - Specify the data types and ranges for properties like `hasDataCategoryPolicy`, `hasDataHandlingPractices`, and `hasPrivacyPolicy` to ensure that the values assigned to these properties are valid and meaningful.\n\nBy implementing"
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "SELECT ?actor ?app ?pod WHERE {\n  ?actor a <http://example.org/odp#SolidActor> .\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_privacyPolicy> ?privacyPolicy . }\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_dataCategory_policy> ?dataCategoryPolicy . }\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_dataHandlingPractices> ?dataHandlingPractices . }\n  \n  ?app a <http://example.org/odp#SolidApp> .\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_has_dataCategory_policy> ?appDataCategoryPolicy . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_logs_dataAccess> ?dataAccessLog . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_provides_dataHandlingPractices> ?appDataHandlingPractices . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_uses_dataCategory> ?appDataCategory . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_has_SolidPod> ?pod . }\n  \n  ?pod a <http://example.org/odp#SolidPod> .\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_dataCategory> ?podDataCategory . }\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_dataLocation> ?dataLocation . }\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_consentRecord> ?consentRecord . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology design pattern (ODP) structurally supports the competency question (CQ) and allows for the retrieval of relevant data, consider adding the following classes, properties, or axioms:\n\n1. **Define Relationships Between Classes**:\n   - Add properties that explicitly define relationships between `SolidActor`, `SolidApp`, and `SolidPod`. For example:\n     - `SolidActor_uses_SolidApp` to link actors to the applications they use.\n     - `SolidApp_stores_dataIn_SolidPod` to link applications to the pods where data is stored.\n\n2. **Enhance Data Handling Practices**:\n   - Introduce a property such as `SolidApp_has_dataHandlingPractices` that connects `SolidApp` to specific data handling practices, ensuring that the practices are clearly defined and linked.\n\n3. **Clarify Data Categories**:\n   - Add a property like `SolidPod_has_dataCategory` that specifies the data categories associated with each pod, ensuring that the data categories are well-defined and can be queried.\n\n4. **Include Consent Management**:\n   - Introduce a property `SolidPod_has_consentRecord` that links `SolidPod` to consent records, allowing for tracking of user consent related to data handling.\n\n5. **Ensure Completeness of Optional Properties**:\n   - Review and ensure that all optional properties used in the SPARQL query are defined in the ontology, such as `SolidActor_has_privacyPolicy`, `"
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?actor ?app ?pod WHERE {\n  ?actor a <http://example.org/odp#SolidActor> .\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_privacyPolicy> ?privacyPolicy . }\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_dataCategory_policy> ?dataCategoryPolicy . }\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_dataHandlingPractices> ?dataHandlingPractices . }\n  \n  ?app a <http://example.org/odp#SolidApp> .\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_has_dataCategory_policy> ?appDataCategoryPolicy . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_provides_dataHandlingPractices> ?appDataHandlingPractices . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_logs_dataAccess> ?appLogsDataAccess . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_has_SolidPod> ?pod . }\n  \n  ?pod a <http://example.org/odp#SolidPod> .\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_dataCategory> ?podDataCategory . }\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_dataLocation> ?podDataLocation . }\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_consentRecord> ?podConsentRecord . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define Relationships**: Ensure that there are properties that establish relationships between `SolidActor`, `SolidApp`, and `SolidPod`. For example:\n   - `SolidActor_uses_SolidApp` (to link actors to the apps they use).\n   - `SolidApp_stores_data_in_SolidPod` (to link apps to the pods where data is stored).\n\n2. **Add Instances**: Create instances of `SolidActor`, `SolidApp`, and `SolidPod` in the ontology to ensure that there are actual data entries to query against. For example:\n   - An instance of `SolidActor` with a specific URI.\n   - An instance of `SolidApp` with a specific URI.\n   - An instance of `SolidPod` with a specific URI.\n\n3. **Ensure Data Properties Exist**: Verify that the properties used in the query (e.g., `SolidActor_has_privacyPolicy`, `SolidApp_has_dataCategory_policy`, etc.) are defined in the ontology and have corresponding data types or ranges.\n\n4. **Check for Data Population**: Populate the ontology with relevant data that matches the properties and classes defined. Ensure that there are actual values for the optional properties in the query.\n\n5. **Review Class Hierarchies**: Ensure that the classes (`SolidActor`, `"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://www.w3.org/2002/07/owl#Class> }\n  UNION\n  { ?property a <http://www.w3.org/2002/07/owl#ObjectProperty> }\n  UNION\n  { ?property a <http://www.w3.org/2002/07/owl#DatatypeProperty> }\n  UNION\n  { ?property a <http://www.w3.org/2002/07/owl#AnnotationProperty> }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?actor ?app ?pod WHERE {\n  ?actor a <http://example.org/odp#SolidActor> .\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_dataCategory_policy> ?dataCategoryPolicy . }\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_dataHandlingPractices> ?dataHandlingPractices . }\n  OPTIONAL { ?actor <http://example.org/odp#SolidActor_has_privacyPolicy> ?privacyPolicy . }\n  \n  ?app a <http://example.org/odp#SolidApp> .\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_has_SolidPod> ?pod . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_has_dataCategory_policy> ?appDataCategoryPolicy . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_logs_dataAccess> ?dataAccess . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_provides_dataHandlingPractices> ?appDataHandlingPractices . }\n  OPTIONAL { ?app <http://example.org/odp#SolidApp_uses_dataCategory> ?appDataCategory . }\n  \n  ?pod a <http://example.org/odp#SolidPod> .\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_consentRecord> ?consentRecord . }\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_dataCategory> ?podDataCategory . }\n  OPTIONAL { ?pod <http://example.org/odp#SolidPod_has_dataLocation> ?dataLocation . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define Class Hierarchies**:\n   - Ensure that `SolidActor`, `SolidApp`, and `SolidPod` are properly defined as subclasses of a more general class (e.g., `Agent`, `Application`, `DataPod`) if applicable, to facilitate better querying.\n\n2. **Add Object Properties**:\n   - Define object properties that establish relationships between the classes. For example:\n     - `:hasDataCategoryPolicy` for linking `SolidActor` to its data category policy.\n     - `:hasSolidPod` for linking `SolidApp` to its associated `SolidPod`.\n     - `:hasConsentRecord` for linking `SolidPod` to its consent record.\n\n3. **Define Data Properties**:\n   - Introduce data properties to capture specific attributes of the classes. For example:\n     - `:dataCategoryPolicy` for `SolidActor` and `SolidApp`.\n     - `:dataLocation` for `SolidPod`.\n\n4. **Add Domain and Range Axioms**:\n   - Specify domain and range for the properties to ensure that they are correctly associated with the intended classes. For example:\n     - `:hasDataCategoryPolicy` domain: `SolidActor`, range: `DataCategoryPolicy`.\n     - `:hasSolidPod` domain: `SolidApp`, range: `SolidPod"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a <http://example.org/odp#SolidActor> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#SolidApp> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#SolidPod> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#SolidProvider> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#SolidUser> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property <http://example.org/odp#SolidActor_has_dataCategory_policy> ?value .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property <http://example.org/odp#SolidActor_has_dataHandlingPractices> ?value .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property <http://example.org/odp#SolidActor_has_privacyPolicy> ?value .\n    OPTIONAL { ?",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1284), (line:44, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Add rdfs:label Annotations**:\n   - For each class (e.g., `SolidActor`, `SolidApp`, `SolidPod`, `SolidProvider`, `SolidUser`), add a human-readable label that succinctly describes the class.\n   - For each property (e.g., `SolidActor_has_dataCategory_policy`, `SolidActor_has_dataHandlingPractices`, `SolidActor_has_privacyPolicy`), add a label that indicates the purpose of the property.\n\n2. **Add rdfs:comment Annotations**:\n   - Provide a detailed comment for each class that explains its role and significance within the ontology.\n   - For each property, include a comment that describes how the property is used, what kind of values it expects, and any relevant constraints.\n\n3. **Use a Consistent Naming Convention**:\n   - Ensure that the labels and comments follow a consistent naming convention and style to enhance readability and maintainability.\n\n4. **Utilize a SPARQL Update Query**:\n   - Construct a SPARQL Update query to programmatically add the `rdfs:label` and `rdfs:comment` annotations to each class and property in the ontology.\n\n5. **Document Changes**:\n   - Maintain documentation of the changes made, including the rationale for the"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology WHERE { \n  ?ontology a <http://example.org/odp#SolidActor> . \n  OPTIONAL { ?ontology rdfs:label ?label } . \n  OPTIONAL { ?ontology rdfs:comment ?comment } \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 11
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 11,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#SolidApp_has_SolidPod",
+          "http://example.org/odp#SolidActor_has_dataHandlingPractices",
+          "http://example.org/odp#SolidApp_logs_dataAccess",
+          "http://example.org/odp#SolidPod_has_dataLocation",
+          "http://example.org/odp#SolidActor_has_privacyPolicy",
+          "http://example.org/odp#SolidApp_provides_dataHandlingPractices",
+          "http://example.org/odp#SolidActor_has_dataCategory_policy",
+          "http://example.org/odp#SolidPod_has_dataCategory",
+          "http://example.org/odp#SolidApp_uses_dataCategory",
+          "http://example.org/odp#SolidApp_has_dataCategory_policy",
+          "http://example.org/odp#SolidPod_has_consentRecord"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 3,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

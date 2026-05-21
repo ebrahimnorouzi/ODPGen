@@ -1,0 +1,107 @@
+{
+  "id": "2023-134-02",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 54,
+    "classes_count": 8,
+    "object_properties_count": 0,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 54,
+    "triples_after": 256,
+    "inferred_triples": 202,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "What type of action, e.g., create, update, erase, is being performed on the data?",
+    "Who is the entity interacting with the data?",
+    "Who is the entity publishing the log?",
+    "When was the log issued?",
+    "Where is the data being stored?",
+    "What application/service is being used to generate the data, if any?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 4,
+    "cqs_failed": 2,
+    "pass_rate": 0.6667,
+    "results": [
+      {
+        "cq": "What type of action, e.g., create, update, erase, is being performed on the data?",
+        "sparql": "SELECT ?action WHERE { \n  ?action a <http://example.org/odp#DataHandlingPractices> \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Who is the entity interacting with the data?",
+        "sparql": "SELECT ?entity WHERE { \n  ?entity a <http://example.org/odp#SolidActor> \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      },
+      {
+        "cq": "Who is the entity publishing the log?",
+        "sparql": "SELECT ?entity WHERE { \n  ?entity a <http://example.org/odp#SolidActor> .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      },
+      {
+        "cq": "When was the log issued?",
+        "sparql": "SELECT ?logIssued WHERE { \n  ?log a <http://example.org/odp#DataCategory> .\n  OPTIONAL { ?log <http://example.org/odp#DataHandlingPractices> ?logIssued }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"When was the log issued?\", consider the following additions to the ontology:\n\n1. **Class Addition**: Ensure there is a class for `Log` (if not already present) to represent log entries explicitly.\n   - Example: `:Log a rdfs:Class.`\n\n2. **Property Addition**: Introduce a property to capture the issuance date of the log.\n   - Example: `:issuedDate a rdf:Property; rdfs:domain :Log; rdfs:range xsd:dateTime.`\n\n3. **Axiom Addition**: Define the relationship between logs and their issuance date using the new property.\n   - Example: `:Log :issuedDate ?logIssued.`\n\n4. **Data Type Specification**: Ensure that the `issuedDate` property is defined to accept date/time values, allowing for precise querying.\n   - Example: Use `xsd:dateTime` as the range for the `issuedDate` property.\n\n5. **Example Instance**: Create an example instance of a log with an issuance date to validate the ontology.\n   - Example: `:log1 a :Log; :issuedDate \"2023-10-01T12:00:00\"^^xsd:dateTime.`\n\nThese additions will enable the SPARQL query to retrieve the issuance date of logs effectively."
+      },
+      {
+        "cq": "Where is the data being stored?",
+        "sparql": "SELECT ?dataLocation WHERE { \n  ?dataCategory a <http://example.org/odp#DataCategory> .\n  OPTIONAL { ?dataCategory <http://example.org/odp#DataLocation> ?dataLocation }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"Where is the data being stored?\", consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a class `DataLocation` to represent various storage locations for data (e.g., databases, cloud storage, file systems).\n\n2. **Property Addition**: Define a property `hasDataLocation` (or `dataLocation`) that relates instances of `DataCategory` to instances of `DataLocation`. This property should be a datatype property if it points to a specific location (e.g., a URL or path).\n\n3. **Axiom Definition**: Create an axiom that states that every `DataCategory` can optionally have a `hasDataLocation` property, allowing for flexibility in data representation.\n\n4. **Example Instances**: Populate the ontology with example instances of `DataCategory` and `DataLocation` to ensure that the query can return meaningful results.\n\n5. **Documentation**: Provide clear documentation on how to use the `hasDataLocation` property within the ontology to ensure users understand how to link data categories to their respective storage locations."
+      },
+      {
+        "cq": "What application/service is being used to generate the data, if any?",
+        "sparql": "SELECT ?service WHERE { \n  ?service a <http://example.org/odp#SolidActor> . \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

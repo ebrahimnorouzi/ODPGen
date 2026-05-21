@@ -1,0 +1,120 @@
+{
+  "id": "2025-150-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 237,
+    "classes_count": 29,
+    "object_properties_count": 27,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 7,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.2413793103448276
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 237,
+    "triples_after": 763,
+    "inferred_triples": 526,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 0,
+    "cqs_failed": 7,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "SELECT ?client ?topic ?packet WHERE {\n  ?client a <http://example.org/odp#MQTTClient> .\n  OPTIONAL { ?client <http://example.org/odp#publishesToTopic> ?topic . }\n  OPTIONAL { ?client <http://example.org/odp#receivesPacket> ?packet . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can effectively answer the competency question regarding MQTT clients, consider adding the following classes, properties, or axioms:\n\n1. **Define MQTTClient Class**: Ensure that the class `<http://example.org/odp#MQTTClient>` is properly defined in the ontology with relevant characteristics and relationships.\n\n2. **Add Publishing and Receiving Properties**:\n   - Define the property `<http://example.org/odp#publishesToTopic>` as an object property linking `MQTTClient` to a `Topic` class.\n   - Define the property `<http://example.org/odp#receivesPacket>` as an object property linking `MQTTClient` to a `Packet` class.\n\n3. **Create Topic and Packet Classes**: Introduce classes for `Topic` and `Packet` to represent the entities that clients interact with. For example:\n   - `<http://example.org/odp#Topic>`\n   - `<http://example.org/odp#Packet>`\n\n4. **Establish Relationships**: Add axioms that define the relationships between `MQTTClient`, `Topic`, and `Packet`, ensuring that clients can be associated with multiple topics and packets as needed.\n\n5. **Populate Instances**: Ensure that instances of `MQTTClient`, `Topic`, and `Packet` are created in the ontology to provide data for the query to return results."
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "SELECT ?mqttClient ?mqttBroker ?mqttTopic WHERE {\n  ?mqttClient a <http://example.org/odp#MQTTClient> .\n  OPTIONAL { ?mqttClient <http://example.org/odp#connectedTo> ?mqttBroker . }\n  OPTIONAL { ?mqttClient <http://example.org/odp#publishesToTopic> ?mqttTopic . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding MQTT clients, brokers, and topics, consider adding the following classes and properties:\n\n1. **Classes**:\n   - **MQTTClient**: Represents an MQTT client that can connect to a broker and publish to topics.\n   - **MQTTBroker**: Represents an MQTT broker that facilitates communication between clients.\n   - **MQTTTopic**: Represents a topic to which clients can publish messages.\n\n2. **Properties**:\n   - **connectedTo**: A property linking an MQTTClient to an MQTTBroker (e.g., `?mqttClient <http://example.org/odp#connectedTo> ?mqttBroker`).\n   - **publishesToTopic**: A property linking an MQTTClient to an MQTTTopic (e.g., `?mqttClient <http://example.org/odp#publishesToTopic> ?mqttTopic`).\n\n3. **Axioms**:\n   - Define domain and range for the properties:\n     - `connectedTo` should have a domain of `MQTTClient` and a range of `MQTTBroker`.\n     - `publishesToTopic` should have a domain of `MQTTClient` and a range of `MQTTTopic`.\n\nBy adding these classes and properties, the ontology will be able to support the competency question effectively."
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?participant ?topic ?subscriptionEntry WHERE {\n  ?participant a <http://example.org/odp#MQTTParticipant> .\n  OPTIONAL { ?participant <http://example.org/odp#listensToTopic> ?topic . }\n  OPTIONAL { ?participant <http://example.org/odp#containsSubscriptionEntry> ?subscriptionEntry . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `MQTTParticipant` Class**: Ensure that the class `MQTTParticipant` is properly defined in the ontology with relevant instances that represent actual participants.\n\n2. **Add `listensToTopic` Property**: Confirm that the property `listensToTopic` is defined as a relationship between `MQTTParticipant` and a `Topic` class, and that there are instances of topics that participants listen to.\n\n3. **Define `containsSubscriptionEntry` Property**: Ensure that the property `containsSubscriptionEntry` is defined to relate `MQTTParticipant` to a `SubscriptionEntry` class, and that there are instances of subscription entries associated with participants.\n\n4. **Create Instances**: Populate the ontology with instances of `MQTTParticipant`, `Topic`, and `SubscriptionEntry` to ensure that there are actual data points for the query to retrieve.\n\n5. **Check for Data Consistency**: Verify that the relationships between participants, topics, and subscription entries are correctly established in the ontology to ensure that the query can successfully match the patterns specified."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#MQTTBroker> }\n  UNION { ?class a <http://example.org/odp#MQTTClient> }\n  UNION { ?class a <http://example.org/odp#MQTTControlPacket> }\n  UNION { ?class a <http://example.org/odp#MQTTFixedHeader> }\n  UNION { ?class a <http://example.org/odp#MQTTNetworkConnection> }\n  UNION { ?class a <http://example.org/odp#MQTTParticipant> }\n  UNION { ?class a <http://example.org/odp#MQTTPayload> }\n  UNION { ?class a <http://example.org/odp#MQTTPayloadField> }\n  UNION { ?class a <http://example.org/odp#MQTTPublishPacket> }\n  UNION { ?class a <http://example.org/odp#MQTTSubscribePacket> }\n  UNION { ?class a <http://example.org/odp#MQTTSubscriptionEntry> }\n  UNION { ?class a <http://example.org/odp#MQTTTopic> }\n  UNION { ?class a <http://example.org/odp#MQTTTopicFilter> }\n  UNION { ?class a <http://example.org/odp#MQTTTopicSubject> }\n  UNION { ?class a <http://example.org/odp#MQTTUnsubscribePacket> }\n  UNION { ?class a <http://example.org/odp#MQTTVariableHeader> }\n  UNION { ?class a <http://example.org/odp#QUDTQuantityValue> }\n  UNION { ?class a <http://example.org/odp#QUDTUnit> }\n  UNION { ?class a <http://example.org/odp#SosaActuation> }\n  UNION { ?class a <http://example.org/odp#",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1210), (line:21, col:3)",
+        "suggestion": "To address the competency question and ensure that you can declare every class and property in your ontology, consider the following suggestions:\n\n1. **Use a General Query for Classes and Properties**: Instead of listing each class and property individually, use a more general SPARQL query to retrieve all classes and properties in the ontology. For example:\n   ```sparql\n   SELECT ?entity WHERE {\n     { ?entity a owl:Class }\n     UNION\n     { ?entity a owl:ObjectProperty }\n     UNION\n     { ?entity a owl:DatatypeProperty }\n     UNION\n     { ?entity a owl:AnnotationProperty }\n   }\n   ```\n\n2. **Define Missing Classes and Properties**: If there are classes or properties that are not currently defined in your ontology but are relevant to the MQTT domain, consider adding them. For example:\n   - `owl:Class` for `MQTTQualityOfService`\n   - `owl:ObjectProperty` for `hasPayload`\n   - `owl:DatatypeProperty` for `hasClientID`\n\n3. **Ensure Proper Namespace Usage**: Make sure that all classes and properties are defined within the correct namespace (e.g., `http://example.org/odp#`). This will help avoid confusion and ensure that the ontology is well-structured.\n\n4. **Add Annotations for Clarity**: Consider adding `owl:AnnotationProperty` for documentation purposes, such as `rdfs:label` or `rdfs:comment`, to provide"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?broker ?client ?packet ?header ?connection ?participant ?payload ?field ?publishPacket ?subscribePacket WHERE {\n  ?broker a <http://example.org/odp#MQTTBroker> .\n  OPTIONAL { ?client a <http://example.org/odp#MQTTClient> . }\n  OPTIONAL { ?packet a <http://example.org/odp#MQTTControlPacket> . }\n  OPTIONAL { ?header a <http://example.org/odp#MQTTFixedHeader> . }\n  OPTIONAL { ?connection a <http://example.org/odp#MQTTNetworkConnection> . }\n  OPTIONAL { ?participant a <http://example.org/odp#MQTTParticipant> . }\n  OPTIONAL { ?payload a <http://example.org/odp#MQTTPayload> . }\n  OPTIONAL { ?field a <http://example.org/odp#MQTTPayloadField> . }\n  OPTIONAL { ?publishPacket a <http://example.org/odp#MQTTPublishPacket> . }\n  OPTIONAL { ?subscribePacket a <http://example.org/odp#MQTTSubscribePacket> . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can support the desired queries, consider adding the following classes, properties, or axioms:\n\n1. **Define Class Hierarchies**:\n   - Ensure that all relevant classes are defined in the ontology, such as `:MQTTBroker`, `:MQTTClient`, `:MQTTControlPacket`, `:MQTTFixedHeader`, `:MQTTNetworkConnection`, `:MQTTParticipant`, `:MQTTPayload`, `:MQTTPayloadField`, `:MQTTPublishPacket`, and `:MQTTSubscribePacket`.\n\n2. **Establish Relationships**:\n   - Create object properties to define relationships between these classes. For example:\n     - `:hasClient` linking `:MQTTBroker` to `:MQTTClient`\n     - `:hasPacket` linking `:MQTTClient` to `:MQTTControlPacket`\n     - `:hasHeader` linking `:MQTTControlPacket` to `:MQTTFixedHeader`\n     - `:hasConnection` linking `:MQTTBroker` to `:MQTTNetworkConnection`\n     - `:hasPayload` linking `:MQTTControlPacket` to `:MQTTPayload`\n     - `:hasField` linking `:MQTTPayload` to `:MQTTPayloadField`\n     - `:hasPublishPacket` linking `:MQTTClient` to `:MQ"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a <http://example.org/odp#MQTTBroker> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#MQTTClient> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#acceptedBy> .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#appearsAsTopicSubject> .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#carriesObservation> .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Add rdfs:label Annotations**:\n   - For each class (e.g., `MQTTBroker`, `MQTTClient`), add a human-readable label that describes the class, such as:\n     ```turtle\n     <http://example.org/odp#MQTTBroker> rdfs:label \"MQTT Broker\" .\n     <http://example.org/odp#MQTTClient> rdfs:label \"MQTT Client\" .\n     ```\n\n2. **Add rdfs:comment Annotations**:\n   - Provide a brief description for each class and property to clarify their purpose, such as:\n     ```turtle\n     <http://example.org/odp#MQTTBroker> rdfs:comment \"A server that implements the MQTT protocol to facilitate message distribution.\" .\n     <http://example.org/odp#MQTTClient> rdfs:comment \"A client that connects to an MQTT broker to publish or subscribe to messages.\" .\n     ```\n\n3. **Include Properties Annotations**:\n   - Similarly, add `rdfs:label` and `rdfs:comment` for each property, for example:\n     ```turtle\n     <http://example.org/odp#acceptedBy> rdfs:label \"Accepted By\" ."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#MQTTBroker> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology header can be queried successfully and to answer the competency question, you should consider adding the following elements to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology itself is declared as an instance of `owl:Ontology`. For example:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label and rdfs:comment Properties**: Include the `rdfs:label` and `rdfs:comment` properties for the ontology. For example:\n   ```turtle\n   :Ontology rdfs:label \"My Ontology\" .\n   :Ontology rdfs:comment \"This ontology describes the MQTT Broker.\" .\n   ```\n\n3. **Define the Namespace**: Make sure to define the namespace for your ontology at the beginning of your Turtle file, e.g.:\n   ```turtle\n   @prefix : <http://example.org/odp#> .\n   ```\n\n4. **Use a Proper URI for the Ontology**: Ensure that the ontology is identified by a proper URI, such as:\n   ```turtle\n   :MyOntology a owl:Ontology ; rdfs:label \"My Ontology\" ; rdfs:comment \"This ontology describes the MQTT Broker.\" .\n   ```\n\n5. **Check for Consistency**: Ensure that the ontology is loaded correctly in your RDF store and that the prefixes are correctly defined to avoid any namespace issues."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

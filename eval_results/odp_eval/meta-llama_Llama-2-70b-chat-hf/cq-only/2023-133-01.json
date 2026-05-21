@@ -1,0 +1,121 @@
+{
+  "id": "2023-133-01",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 42,
+    "classes_count": 3,
+    "object_properties_count": 3,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 1,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.3333333333333333,
+    "relationship_richness": 0.75,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 42,
+    "triples_after": 220,
+    "inferred_triples": 178,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 6,
+    "cqs_failed": 0,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?slipperyPavement ?wetness WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:causesSlipperiness ?slipperyPavement . }\n  OPTIONAL { ?event odp:wetness ?wetness . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?event ?slipperyPavement ?sprinklerSystem ?wetness WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:causesSlipperiness ?slipperyPavement . }\n  OPTIONAL { ?event odp:isOn ?sprinklerSystem . }\n  OPTIONAL { ?event odp:wetness ?wetness . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 7
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?slipperyPavement ?sprinklerSystem ?wetness WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:causesSlipperiness ?slipperyPavement . }\n  OPTIONAL { ?event odp:isOn ?sprinklerSystem . }\n  OPTIONAL { ?event odp:wetness ?wetness . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 2
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?label ?comment WHERE {\n  { \n    ?class a odp:Event .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?class a odp:SlipperyPavement .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?class a odp:SprinklerSystem .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a odp:causesSlipperiness .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a odp:hasCausalLink .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a odp:isOn .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a odp:wetness .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 5
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 4
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P11",
+        "affected_elements_count": 4,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#causesSlipperiness",
+          "http://example.org/odp#wetness",
+          "http://example.org/odp#hasCausalLink",
+          "http://example.org/odp#isOn"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

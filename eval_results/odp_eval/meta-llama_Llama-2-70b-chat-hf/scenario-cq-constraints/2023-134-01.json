@@ -1,0 +1,131 @@
+{
+  "id": "2023-134-01",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 60,
+    "classes_count": 11,
+    "object_properties_count": 8,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 60,
+    "triples_after": 290,
+    "inferred_triples": 230,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?app ?consent ?dataCategory ?identity ?legalCompliance ?pod ?policy ?privacyPolicy ?provenance ?role WHERE {\n  ?app a odp:App .\n  OPTIONAL { ?app odp:Consent ?consent . }\n  OPTIONAL { ?app odp:DataCategory ?dataCategory . }\n  OPTIONAL { ?app odp:Identity ?identity . }\n  OPTIONAL { ?app odp:LegalCompliance ?legalCompliance . }\n  OPTIONAL { ?app odp:Pod ?pod . }\n  OPTIONAL { ?app odp:Policy ?policy . }\n  OPTIONAL { ?app odp:PrivacyPolicy ?privacyPolicy . }\n  OPTIONAL { ?app odp:Provenance ?provenance . }\n  OPTIONAL { ?app odp:Role ?role . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `App` Class**: Ensure that the `odp:App` class is defined in the ontology with appropriate characteristics and relationships to other classes.\n\n2. **Add Properties for Relationships**: \n   - Define properties such as `odp:Consent`, `odp:DataCategory`, `odp:Identity`, `odp:LegalCompliance`, `odp:Pod`, `odp:Policy`, `odp:PrivacyPolicy`, `odp:Provenance`, and `odp:Role` as object properties that relate `App` to the respective classes or data types.\n\n3. **Create Related Classes**: \n   - Introduce classes for each of the properties (e.g., `Consent`, `DataCategory`, `Identity`, `LegalCompliance`, `Pod`, `Policy`, `PrivacyPolicy`, `Provenance`, `Role`) to provide a structured representation of these concepts.\n\n4. **Establish Relationships**: \n   - Define axioms that specify how instances of `App` relate to instances of the newly created classes, ensuring that the ontology captures the intended semantics of these relationships.\n\n5. **Populate the Ontology**: \n   - Add instances of `App` and related entities to the ontology to ensure that there are actual data points for the query to retrieve.\n\nBy implementing these suggestions, the ontology"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#App> }\n  UNION { ?class a <http://example.org/odp#Consent> }\n  UNION { ?class a <http://example.org/odp#DataCategory> }\n  UNION { ?class a <http://example.org/odp#Identity> }\n  UNION { ?class a <http://example.org/odp#LegalCompliance> }\n  UNION { ?class a <http://example.org/odp#Pod> }\n  UNION { ?class a <http://example.org/odp#Policy> }\n  UNION { ?class a <http://example.org/odp#PrivacyPolicy> }\n  UNION { ?class a <http://example.org/odp#Provenance> }\n  UNION { ?class a <http://example.org/odp#Role> }\n  UNION { ?class a <http://example.org/odp#Solid> }\n  \n  OPTIONAL { ?property a <http://example.org/odp#AccessMode> }\n  OPTIONAL { ?property a <http://example.org/odp#Application> }\n  OPTIONAL { ?property a <http://example.org/odp#Assignee> }\n  OPTIONAL { ?property a <http://example.org/odp#Creator> }\n  OPTIONAL { ?property a <http://example.org/odp#IssueDate> }\n  OPTIONAL { ?property a <http://example.org/odp#PersonalData> }\n  OPTIONAL { ?property a <http://example.org/odp#Purpose> }\n  OPTIONAL { ?property a <http://example.org/odp#UniqueIdentifier> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can return results for classes and properties, consider the following concrete suggestions:\n\n1. **Declare Classes**: Ensure that all relevant classes are declared in the ontology using `owl:Class`. For example:\n   ```turtle\n   :App a owl:Class .\n   :Consent a owl:Class .\n   :DataCategory a owl:Class .\n   :Identity a owl:Class .\n   :LegalCompliance a owl:Class .\n   :Pod a owl:Class .\n   :Policy a owl:Class .\n   :PrivacyPolicy a owl:Class .\n   :Provenance a owl:Class .\n   :Role a owl:Class .\n   :Solid a owl:Class .\n   ```\n\n2. **Declare Properties**: Ensure that all relevant properties are declared using the appropriate OWL property types. For example:\n   ```turtle\n   :AccessMode a owl:ObjectProperty .\n   :Application a owl:ObjectProperty .\n   :Assignee a owl:ObjectProperty .\n   :Creator a owl:ObjectProperty .\n   :IssueDate a owl:DatatypeProperty .\n   :PersonalData a owl:ObjectProperty .\n   :Purpose a owl:DatatypeProperty .\n   :UniqueIdentifier a owl:DatatypeProperty .\n   ```\n\n3. **Use RDF Schema or OWL Annotations**: If applicable, consider adding rdfs:label or rdfs:comment annotations to provide human-readable descriptions of classes and properties, which can help in understanding their"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?app ?consent ?dataCategory ?identity ?legalCompliance ?pod ?policy ?privacyPolicy ?provenance ?role \nWHERE {\n  ?app a odp:App .\n  OPTIONAL { ?app odp:Application ?consent . }\n  OPTIONAL { ?app odp:PersonalData ?dataCategory . }\n  OPTIONAL { ?app odp:Assignee ?identity . }\n  OPTIONAL { ?app odp:Creator ?legalCompliance . }\n  OPTIONAL { ?app odp:Purpose ?pod . }\n  OPTIONAL { ?app odp:AccessMode ?policy . }\n  OPTIONAL { ?app odp:UniqueIdentifier ?privacyPolicy . }\n  OPTIONAL { ?app odp:IssueDate ?provenance . }\n  OPTIONAL { ?app a odp:Role ?role . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'OPTIONAL'  (at char 562), (line:13, col:3)",
+        "suggestion": "To address the competency question and ensure the ontology can support the SPARQL query, consider adding the following classes, properties, and axioms:\n\n1. **Classes**:\n   - Define a class `App` to represent applications.\n   - Define a class `Consent` to represent consent related to applications.\n   - Define a class `PersonalData` to categorize types of personal data.\n   - Define a class `Identity` to represent individuals or entities associated with the application.\n   - Define a class `LegalCompliance` to represent compliance aspects related to the application.\n\n2. **Properties**:\n   - Create a property `hasConsent` (domain: `App`, range: `Consent`) to link applications to their consent.\n   - Create a property `hasPersonalData` (domain: `App`, range: `PersonalData`) to link applications to the types of personal data they handle.\n   - Create a property `hasAssignee` (domain: `App`, range: `Identity`) to link applications to their assigned identities.\n   - Create a property `hasCreator` (domain: `App`, range: `LegalCompliance`) to link applications to their legal compliance aspects.\n   - Create a property `hasPurpose` (domain: `App`, range: `Purpose`) to define the purpose of the application.\n\n3. **Axioms**:\n   - Add axioms to specify that `App` can have multiple `Consent`, `PersonalData`, `Identity`,"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a rdfs:Class .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a rdfs:Property .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete steps:\n\n1. **Define Classes**: Add at least one class to your ontology, for example:\n   ```turtle\n   :ExampleClass a rdfs:Class ;\n       rdfs:label \"Example Class\" ;\n       rdfs:comment \"This is an example class for demonstration purposes.\" .\n   ```\n\n2. **Define Properties**: Add at least one property to your ontology, for example:\n   ```turtle\n   :exampleProperty a rdf:Property ;\n       rdfs:label \"Example Property\" ;\n       rdfs:comment \"This is an example property for demonstration purposes.\" .\n   ```\n\n3. **Ensure Annotations**: Verify that all existing classes and properties in your ontology have corresponding `rdfs:label` and `rdfs:comment` annotations. If any are missing, add them accordingly.\n\n4. **Use a Consistent Naming Convention**: Ensure that all classes and properties follow a consistent naming convention that makes it easy to generate meaningful labels and comments.\n\n5. **Validation**: Implement a validation mechanism (e.g., a SPARQL query) to check for any classes or properties that lack the required annotations, and update them as necessary."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?app ?policy ?consent ?dataCategory WHERE {\n  ?app a odp:App .\n  OPTIONAL { ?app odp:Application ?policy . }\n  OPTIONAL { ?app odp:Consent ?consent . }\n  OPTIONAL { ?app odp:PersonalData ?dataCategory . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can effectively answer the competency question regarding applications, policies, consents, and data categories, consider adding the following classes and properties:\n\n1. **Classes**:\n   - `odp:App`: Represents an application.\n   - `odp:Policy`: Represents a policy associated with an application.\n   - `odp:Consent`: Represents consent given by users for data processing.\n   - `odp:PersonalData`: Represents categories of personal data handled by the application.\n\n2. **Properties**:\n   - `odp:hasPolicy`: A property linking an `odp:App` to an `odp:Policy`.\n   - `odp:hasConsent`: A property linking an `odp:App` to an `odp:Consent`.\n   - `odp:handlesData`: A property linking an `odp:App` to `odp:PersonalData`.\n\n3. **Axioms**:\n   - Define the relationships between the classes and properties to ensure that they are correctly utilized in the ontology. For example, specify that `odp:App` can have multiple `odp:Policy`, `odp:Consent`, and `odp:PersonalData` instances.\n\nBy implementing these additions, you will create a more robust ontology that can return results for your SPARQL query."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 8
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 8,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#Creator",
+          "http://example.org/odp#Assignee",
+          "http://example.org/odp#UniqueIdentifier",
+          "http://example.org/odp#IssueDate",
+          "http://example.org/odp#Application",
+          "http://example.org/odp#PersonalData",
+          "http://example.org/odp#AccessMode",
+          "http://example.org/odp#Purpose"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

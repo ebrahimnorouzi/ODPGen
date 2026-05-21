@@ -1,0 +1,127 @@
+{
+  "id": "2026-155-01",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 81,
+    "classes_count": 11,
+    "object_properties_count": 9,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 81,
+    "triples_after": 336,
+    "inferred_triples": 255,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Which survey or investigation activities were performed on a given cultural property or on a specific feature of interest?",
+    "Which method or investigation technique was adopted in a specific survey or investigation activity?",
+    "Which observations were produced during a given survey or investigation activity?",
+    "Which experts participated in the survey or investigation activity, and with which roles?",
+    "Which hardware, software, and technical configurations were used to conduct a specific survey or investigation activity?",
+    "What interpretations or claims are supported by the observations produced during a survey?",
+    "How are post-processed outputs (e.g., interactive images, spectra, datasets) related to the underlying acquisition or observation activities?",
+    "Which acquisition parameters (e.g., exposure time, ISO, aperture) characterised a specific photographic acquisition cycle within a survey?"
+  ],
+  "cqs_count": 8,
+  "cq_verification": {
+    "cqs_total": 8,
+    "cqs_passed": 0,
+    "cqs_failed": 8,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Which survey or investigation activities were performed on a given cultural property or on a specific feature of interest?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?survey ?acquisition ?observation ?method ?expert WHERE {\n  ?survey a odp:Survey .\n  OPTIONAL { ?survey odp:hasAcquisition ?acquisition . }\n  OPTIONAL { ?survey odp:hasObservation ?observation . }\n  OPTIONAL { ?survey odp:hasMethod ?method . }\n  OPTIONAL { ?survey odp:hasExpert ?expert . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding survey or investigation activities performed on a cultural property or specific feature of interest, consider adding the following classes and properties to the ontology:\n\n1. **Classes**:\n   - **odp:SurveyActivity**: A class to represent various survey or investigation activities related to cultural properties.\n   - **odp:CulturalProperty**: A class to represent cultural properties that can be the subject of surveys.\n\n2. **Properties**:\n   - **odp:hasSurveyActivity**: A property to link a cultural property to its associated survey activities (domain: odp:CulturalProperty, range: odp:SurveyActivity).\n   - **odp:hasFeatureOfInterest**: A property to specify particular features of interest within a cultural property that are the focus of the survey (domain: odp:SurveyActivity, range: odp:Feature).\n   - **odp:hasMethod**: A property to describe the methods used in the survey (domain: odp:SurveyActivity, range: odp:Method).\n\n3. **Axioms**:\n   - Define relationships between **odp:SurveyActivity** and other relevant classes (e.g., **odp:Expert**, **odp:Observation**, **odp:Acquisition**) to ensure comprehensive data capture regarding the survey activities.\n\nBy implementing these additions, the ontology will better support queries related to survey activities associated with cultural properties and their specific features of interest."
+      },
+      {
+        "cq": "Which method or investigation technique was adopted in a specific survey or investigation activity?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?survey ?method WHERE {\n  ?survey a odp:Survey .\n  OPTIONAL { ?survey odp:hasMethod ?method }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the method or investigation technique adopted in a specific survey or investigation activity, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a new class `odp:Method` to represent different investigation techniques or methods used in surveys.\n\n2. **Property Addition**: Define a property `odp:hasMethod` that relates a `odp:Survey` to an `odp:Method`. This property should be a domain of `odp:Survey` and a range of `odp:Method`.\n\n3. **Property Addition**: If not already present, ensure that the `odp:Survey` class has a property `odp:hasInvestigationActivity` to link surveys to specific investigation activities, allowing for more detailed queries.\n\n4. **Axiom Addition**: Create axioms that specify the relationship between `odp:Survey` and `odp:Method`, ensuring that each survey can have one or more associated methods.\n\n5. **Data Population**: Populate the ontology with instances of `odp:Survey` and `odp:Method`, ensuring that the `odp:hasMethod` property is utilized to link them appropriately.\n\nThese additions will enable the SPARQL query to retrieve the desired information about the methods used in specific surveys."
+      },
+      {
+        "cq": "Which observations were produced during a given survey or investigation activity?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?observation WHERE {\n  ?survey odp:hasObservation ?observation .\n  ?survey a odp:Survey .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding observations produced during a survey or investigation activity, consider the following additions to the ontology:\n\n1. **Define the `Observation` Class**: Create a class `Observation` to represent individual observations made during surveys or investigations.\n\n2. **Establish a Relationship**: Introduce a property `odp:producesObservation` that relates a `Survey` to its `Observation`. This property should be defined as:\n   ```turtle\n   odp:producesObservation rdf:type owl:ObjectProperty ;\n       rdfs:domain odp:Survey ;\n       rdfs:range odp:Observation .\n   ```\n\n3. **Link Observations to Surveys**: Ensure that existing survey instances are linked to their respective observations using the new `producesObservation` property.\n\n4. **Add a `Survey` Class**: If not already defined, ensure that there is a class `Survey` to represent the survey or investigation activities.\n\n5. **Include Relevant Data Properties**: Optionally, add data properties to the `Observation` class to capture relevant details (e.g., `odp:observationDate`, `odp:observationType`) that may help in filtering or categorizing observations.\n\nBy implementing these changes, the ontology will support the competency question effectively, allowing for the retrieval of observations associated with specific surveys."
+      },
+      {
+        "cq": "Which experts participated in the survey or investigation activity, and with which roles?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?expert ?role WHERE {\n  ?survey odp:hasExpert ?expert .\n  OPTIONAL { ?expert odp:hasRole ?role }\n  ?survey a odp:Survey .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding experts and their roles in survey or investigation activities, consider adding the following elements to the ontology:\n\n1. **Classes**:\n   - Define a class `Expert` to represent individuals with expertise.\n   - Define a class `Role` to represent different roles that experts can have in a survey or investigation.\n\n2. **Properties**:\n   - Add a property `odp:hasExpert` to link a `Survey` to its `Expert` participants.\n   - Add a property `odp:hasRole` to link an `Expert` to their specific `Role` in the context of a `Survey`.\n\n3. **Axioms**:\n   - Create an axiom stating that `Expert` can have multiple `Role` instances, allowing for flexibility in representing experts with multiple roles.\n   - Ensure that `Survey` is defined as a subclass of an overarching class (e.g., `InvestigationActivity`) to clarify its context within the ontology.\n\nThese additions will enable the SPARQL query to retrieve the desired information about experts and their roles in surveys."
+      },
+      {
+        "cq": "Which hardware, software, and technical configurations were used to conduct a specific survey or investigation activity?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?survey ?equipmentConfig ?method ?expert WHERE {\n  ?survey a odp:Survey .\n  OPTIONAL { ?survey odp:hasEquipmentConfiguration ?equipmentConfig . }\n  OPTIONAL { ?survey odp:hasMethod ?method . }\n  OPTIONAL { ?survey odp:hasExpert ?expert . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the hardware, software, and technical configurations used in a survey or investigation activity, consider adding the following classes and properties to the ontology:\n\n1. **Classes**:\n   - `odp:EquipmentConfiguration`: A class to represent the specific configurations of hardware and software used in the survey.\n   - `odp:Method`: A class to represent the methodologies employed in conducting the survey.\n   - `odp:Expert`: A class to represent individuals or entities with expertise involved in the survey.\n\n2. **Properties**:\n   - `odp:hasEquipmentConfiguration`: A property linking a survey to its associated equipment configurations.\n   - `odp:hasMethod`: A property linking a survey to the methods used in its execution.\n   - `odp:hasExpert`: A property linking a survey to the experts involved in the survey.\n\n3. **Axioms**:\n   - Define relationships between `odp:Survey`, `odp:EquipmentConfiguration`, `odp:Method`, and `odp:Expert` to ensure that each survey can be associated with multiple configurations, methods, and experts as needed.\n\nBy implementing these additions, the ontology will be better equipped to capture and query the necessary information related to the surveys and their associated configurations."
+      },
+      {
+        "cq": "What interpretations or claims are supported by the observations produced during a survey?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?interpretation ?observation WHERE {\n  ?survey a odp:Survey .\n  ?survey odp:hasObservation ?observation .\n  OPTIONAL { ?observation odp:hasInterpretation ?interpretation }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding interpretations or claims supported by survey observations, consider adding the following elements to the ontology:\n\n1. **Class Addition**: Introduce a class `Interpretation` to represent the interpretations or claims derived from observations.\n\n2. **Property Addition**: Define a property `hasInterpretation` that links `Observation` instances to `Interpretation` instances, allowing for the association of specific interpretations with each observation.\n\n3. **Property Addition**: Create a property `isSupportedBy` that connects `Interpretation` instances back to `Observation` instances, establishing a clear relationship indicating which observations support which interpretations.\n\n4. **Class Hierarchy**: If applicable, consider creating subclasses of `Interpretation` to categorize different types of interpretations (e.g., `Claim`, `Conclusion`, etc.) for more nuanced querying.\n\n5. **Axiom Definition**: Establish axioms that define the relationship between `Survey`, `Observation`, and `Interpretation`, ensuring that every observation produced during a survey can be linked to one or more interpretations. \n\nThese additions will enhance the ontology's ability to represent and query the relationships between survey observations and their interpretations effectively."
+      },
+      {
+        "cq": "How are post-processed outputs (e.g., interactive images, spectra, datasets) related to the underlying acquisition or observation activities?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?postProcessedOutput ?acquisition ?observation WHERE {\n  ?postProcessedOutput a odp:PostProcessedOutput .\n  OPTIONAL { ?postProcessedOutput odp:hasAcquisition ?acquisition . }\n  OPTIONAL { ?postProcessedOutput odp:hasObservation ?observation . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the relationship between post-processed outputs and the underlying acquisition or observation activities, consider the following additions to the ontology:\n\n1. **Classes**:\n   - Define a class `odp:Acquisition` to represent the activities or processes through which data is collected.\n   - Define a class `odp:Observation` to represent the specific instances of data collection or measurement.\n\n2. **Properties**:\n   - Create a property `odp:hasAcquisition` that links `odp:PostProcessedOutput` to `odp:Acquisition`.\n   - Create a property `odp:hasObservation` that links `odp:PostProcessedOutput` to `odp:Observation`.\n\n3. **Axioms**:\n   - Establish a relationship axiom stating that `odp:PostProcessedOutput` is derived from `odp:Acquisition` and/or `odp:Observation`, indicating that post-processed outputs are generated based on these activities.\n\n4. **Data Properties** (optional):\n   - Consider adding data properties to capture metadata about the acquisition and observation, such as `odp:acquisitionDate`, `odp:observationType`, or `odp:instrumentUsed`, to provide more context for the relationships.\n\nBy implementing these suggestions, the ontology will better represent the relationships needed to answer the competency question effectively."
+      },
+      {
+        "cq": "Which acquisition parameters (e.g., exposure time, ISO, aperture) characterised a specific photographic acquisition cycle within a survey?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?parameter WHERE {\n  ?survey odp:hasAcquisition ?acquisition .\n  ?acquisition odp:hasParameter ?parameter .\n  ?survey odp:hasSurvey ?specificSurvey .\n  FILTER(?specificSurvey = <http://example.org/odp#SpecificSurveyURI>) \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding acquisition parameters in a photographic survey, consider the following additions to the ontology:\n\n1. **Class Definitions**:\n   - Define a class `Acquisition` to represent the photographic acquisition cycles.\n   - Define a class `Parameter` to represent various acquisition parameters (e.g., exposure time, ISO, aperture).\n\n2. **Property Definitions**:\n   - Create a property `odp:hasParameter` to link an `Acquisition` to its associated `Parameter`.\n   - Create a property `odp:hasAcquisition` to link a `Survey` to its `Acquisition`.\n\n3. **Instance Relationships**:\n   - Ensure that instances of `Survey` can be linked to specific instances of `Acquisition` and that each `Acquisition` can have multiple `Parameter` instances associated with it.\n\n4. **Data Properties**:\n   - Define data properties for `Parameter` to capture specific values (e.g., `odp:exposureTime`, `odp:ISO`, `odp:aperture`) to store the actual values of these parameters.\n\n5. **Example Instances**:\n   - Provide example instances of `Survey`, `Acquisition`, and `Parameter` to ensure that the ontology can be tested and validated against real data.\n\nThese additions will help structure the ontology to effectively capture and query the necessary information regarding photographic acquisition parameters."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

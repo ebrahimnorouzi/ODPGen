@@ -1,0 +1,113 @@
+{
+  "id": "2025-153-01",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 58,
+    "classes_count": 7,
+    "object_properties_count": 6,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 1,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 58,
+    "triples_after": 269,
+    "inferred_triples": 211,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Which entity does a persistent identifier currently reference?",
+    "Which entity was referenced at a past timestamp?",
+    "When did referent transitions occur?",
+    "What observations are associated with specific referents?",
+    "What is the full sequence of referents over time?",
+    "Which rules triggered specific transitions?",
+    "Are there gaps or overlaps in temporal bindings?",
+    "Can complete context be rebuilt for any time point?"
+  ],
+  "cqs_count": 8,
+  "cq_verification": {
+    "cqs_total": 8,
+    "cqs_passed": 0,
+    "cqs_failed": 8,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Which entity does a persistent identifier currently reference?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?persistentIdentifier ?referent WHERE {\n  ?persistentIdentifier a odp:PersistentIdentifier .\n  OPTIONAL { ?persistentIdentifier odp:appliesTo ?referent }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which entity a persistent identifier currently references, consider the following additions to the ontology:\n\n1. **Define the `appliesTo` Property**: Ensure that the `appliesTo` property is explicitly defined in the ontology, linking `PersistentIdentifier` to the entities it references. This property should have a domain of `PersistentIdentifier` and a range that includes the relevant entities (e.g., `Entity`, `Resource`).\n\n2. **Add Relevant Classes**: If not already present, define a class for the entities that persistent identifiers can reference, such as `Entity` or `Resource`. This will provide a clear structure for what types of entities can be linked to persistent identifiers.\n\n3. **Include Inverse Properties**: Consider adding an inverse property, such as `isReferencedBy`, to establish a two-way relationship between persistent identifiers and the entities they reference. This can enhance query capabilities and provide more context.\n\n4. **Define Instances**: Ensure that there are instances of `PersistentIdentifier` and the entities they reference in the ontology. This will allow for meaningful query results when executing SPARQL queries.\n\n5. **Add Documentation**: Include comments or documentation within the ontology to clarify the intended use of the `appliesTo` property and the relationships between classes, aiding future users in understanding the ontology structure."
+      },
+      {
+        "cq": "Which entity was referenced at a past timestamp?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?entity ?timestamp WHERE {\n  ?entity odp:hasTimeStamp ?timestamp .\n  ?entity a odp:Referent .\n  FILTER(?timestamp < NOW())\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding entities referenced at a past timestamp, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that the class `odp:Referent` is properly defined to include all relevant entities that can be referenced. If necessary, create subclasses to categorize different types of referents.\n\n2. **Property Definition**: Define the property `odp:hasTimeStamp` as a datatype property that links entities to their timestamps. Ensure it is explicitly typed as a `xsd:dateTime` to facilitate temporal queries.\n\n3. **Temporal Axioms**: Introduce axioms or constraints that specify the relationship between `odp:Referent` and `odp:hasTimeStamp`, ensuring that every instance of `odp:Referent` must have a valid timestamp associated with it.\n\n4. **Data Population**: Populate the ontology with instances of `odp:Referent` that include valid timestamps in the past. This will provide data for the SPARQL query to retrieve results.\n\n5. **Indexing and Optimization**: Consider indexing the `odp:hasTimeStamp` property to improve query performance, especially if the dataset is large, ensuring efficient retrieval of entities based on temporal conditions."
+      },
+      {
+        "cq": "When did referent transitions occur?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?transitionEvent ?timeStamp WHERE {\n  ?transitionEvent a odp:TransitionEvent .\n  OPTIONAL { ?transitionEvent odp:hasTimeStamp ?timeStamp }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding when referent transitions occurred, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that `TransitionEvent` is defined as a subclass of a more general class, such as `Event`, to establish a clear hierarchy and context for transition events.\n\n2. **Property Definition**: Introduce a property `hasTimeStamp` (if not already defined) that links `TransitionEvent` instances to a `TimeStamp` datatype or a `DateTime` class, allowing for the representation of specific time points.\n\n3. **Time Representation**: Define a `TimeStamp` class or use an existing time ontology (e.g., OWL-Time) to represent time-related information, ensuring that it can capture various formats of time (e.g., date, time, duration).\n\n4. **Axiom for Transition Events**: Create axioms that specify the relationship between `TransitionEvent` and `TimeStamp`, such as `TransitionEvent hasTimeStamp some TimeStamp`, to enforce that every transition event must have an associated timestamp.\n\n5. **Data Population**: Ensure that instances of `TransitionEvent` are populated with relevant data, including timestamps, to enable meaningful querying and retrieval of transition events in the SPARQL queries."
+      },
+      {
+        "cq": "What observations are associated with specific referents?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?referent ?observation WHERE {\n  ?referent a odp:Referent .\n  OPTIONAL { ?referent odp:hasObservation ?observation }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding observations associated with specific referents, consider the following additions:\n\n1. **Define the `Observation` Class**: Introduce a class `Observation` to represent the observations in the ontology. This class should encapsulate the properties and characteristics of observations.\n\n2. **Create a Property `hasObservation`**: Ensure that the property `hasObservation` is defined as a relationship between `Referent` and `Observation`. This property should be a valid object property that links instances of `Referent` to instances of `Observation`.\n\n3. **Add Relevant Data Properties**: Define data properties for the `Observation` class, such as `observationDate`, `observationType`, or `observationValue`, to provide more context and details about each observation.\n\n4. **Establish Domain and Range**: Explicitly set the domain of `hasObservation` to `Referent` and the range to `Observation` to enforce the relationship in the ontology.\n\n5. **Include Example Instances**: Populate the ontology with example instances of `Referent` and `Observation`, and link them using the `hasObservation` property to ensure that the query can return results.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the association of observations with specific referents."
+      },
+      {
+        "cq": "What is the full sequence of referents over time?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?referent ?observation ?gap WHERE {\n  ?referent a odp:Referent.\n  OPTIONAL { ?referent odp:hasObservation ?observation. }\n  OPTIONAL { ?referent odp:hasGap ?gap. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the full sequence of referents over time, consider the following additions to the ontology:\n\n1. **Class Definitions**:\n   - Define a class `odp:Observation` to represent observations related to referents.\n   - Define a class `odp:Gap` to represent gaps in the sequence of referents.\n\n2. **Property Definitions**:\n   - Add a property `odp:hasObservation` that links `odp:Referent` to `odp:Observation`.\n   - Add a property `odp:hasGap` that links `odp:Referent` to `odp:Gap`.\n\n3. **Temporal Properties**:\n   - Introduce a property `odp:occursAtTime` for both `odp:Observation` and `odp:Gap` to specify the time at which each observation or gap occurs.\n\n4. **Relationships**:\n   - Establish a property `odp:precedes` to indicate the temporal relationship between two `odp:Referent` instances, allowing for the representation of sequences over time.\n\nBy implementing these changes, the ontology will better support queries related to the sequence of referents and their associated observations and gaps over time."
+      },
+      {
+        "cq": "Which rules triggered specific transitions?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?rule ?transition WHERE {\n  ?rule a odp:Rule .\n  ?rule odp:Transition ?transition .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which rules triggered specific transitions, consider adding the following elements to the ontology:\n\n1. **Class Definition**: Ensure that there is a class for `Transition` if it doesn't already exist. This class should represent the transitions in your system.\n\n2. **Property Definition**: Introduce a property `odp:triggers` that relates a `Rule` to a `Transition`. This property should be defined as:\n   - `odp:triggers a rdf:Property; rdfs:domain odp:Rule; rdfs:range odp:Transition.`\n\n3. **Inverse Property**: Optionally, define an inverse property `odp:triggeredBy` to facilitate querying from the perspective of transitions back to rules:\n   - `odp:triggeredBy a rdf:Property; rdfs:domain odp:Transition; rdfs:range odp:Rule.`\n\n4. **Axiom for Relationships**: Ensure that there are axioms or instances in the ontology that explicitly state which rules trigger which transitions, using the new `odp:triggers` property.\n\n5. **Documentation**: Update the ontology documentation to clarify the semantics of the new properties and classes, ensuring users understand how to use them in queries.\n\nBy implementing these changes, you will enable the ontology to support queries that can retrieve the relationships between rules and transitions effectively."
+      },
+      {
+        "cq": "Are there gaps or overlaps in temporal bindings?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?gap ?observation WHERE {\n  ?gap a odp:Gap .\n  OPTIONAL { ?gap odp:hasObservation ?observation }\n  OPTIONAL { ?gap odp:TemporalBinding ?temporalBinding }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively address the competency question regarding gaps or overlaps in temporal bindings, consider the following additions to the ontology:\n\n1. **Class Definitions**:\n   - Define a class `odp:TemporalBinding` to represent temporal bindings explicitly, if not already defined.\n   - Define a class `odp:Overlap` to represent instances where temporal bindings overlap.\n\n2. **Properties**:\n   - Introduce a property `odp:hasTemporalBinding` to link observations or gaps to their respective temporal bindings.\n   - Introduce a property `odp:hasOverlap` to link gaps to instances of overlaps, allowing for the identification of overlapping temporal bindings.\n\n3. **Axioms**:\n   - Create an axiom that specifies the conditions under which two `odp:TemporalBinding` instances overlap, such as having intersecting time intervals.\n   - Define an axiom that states that if a `gap` has a `temporalBinding`, it should also be checked for overlaps with other `temporalBindings`.\n\nThese additions will facilitate querying for gaps and overlaps in temporal bindings effectively."
+      },
+      {
+        "cq": "Can complete context be rebuilt for any time point?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?gap ?observation ?timestamp WHERE {\n  ?gap a odp:Gap .\n  OPTIONAL { ?gap odp:hasObservation ?observation . }\n  OPTIONAL { ?gap odp:hasTimeStamp ?timestamp . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding the ability to rebuild complete context for any time point, consider adding the following:\n\n1. **Class Definitions**:\n   - Define a class `odp:Context` that represents the complete context at a specific time point.\n\n2. **Properties**:\n   - Add a property `odp:hasContext` to link `odp:Gap` to `odp:Context`, indicating that a gap can have an associated context.\n   - Introduce a property `odp:hasTimePoint` to link `odp:Context` to a specific time point, allowing for the association of contexts with temporal instances.\n\n3. **Axioms**:\n   - Create an axiom that states that for every `odp:Gap`, there exists a corresponding `odp:Context` that can be linked through `odp:hasContext`, ensuring that gaps are always associated with a complete context.\n\nBy implementing these additions, the ontology will be better equipped to represent and query the complete context at any given time point."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [],
+    "pitfall_instance_counts": {},
+    "pitfall_affected_elements_counts": {},
+    "pitfalls_total": 0,
+    "pitfalls": [],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 0,
+    "critical_count": 0
+  }
+}

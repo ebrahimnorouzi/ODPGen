@@ -1,0 +1,121 @@
+{
+  "id": "2023-133-01",
+  "model": "gpt-5.4",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 68,
+    "classes_count": 5,
+    "object_properties_count": 8,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.4,
+    "relationship_richness": 0.8,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 68,
+    "triples_after": 281,
+    "inferred_triples": 213,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?event ?intervention ?outcome ?causalStrength ?truthValue WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:hasInterventionTarget ?intervention . }\n  OPTIONAL { ?event odp:hasOutcome ?outcome . }\n  OPTIONAL { ?event odp:hasCausalStrength ?causalStrength . }\n  OPTIONAL { ?event odp:hasTruthValue ?truthValue . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes and properties to the ontology:\n\n1. **Classes**:\n   - **Event**: Define a class `Event` to represent the events of interest.\n   - **Intervention**: Define a class `Intervention` to represent interventions related to events.\n   - **Outcome**: Define a class `Outcome` to represent outcomes associated with events.\n   - **CausalStrength**: Define a class `CausalStrength` to represent the strength of causal relationships.\n   - **TruthValue**: Define a class `TruthValue` to represent the truth values associated with events.\n\n2. **Properties**:\n   - **hasInterventionTarget**: Create a property `hasInterventionTarget` to link `Event` to `Intervention`.\n   - **hasOutcome**: Create a property `hasOutcome` to link `Event` to `Outcome`.\n   - **hasCausalStrength**: Create a property `hasCausalStrength` to link `Event` to `CausalStrength`.\n   - **hasTruthValue**: Create a property `hasTruthValue` to link `Event` to `TruthValue`.\n\n3. **Axioms**:\n   - Ensure that the properties are defined with appropriate domains and ranges, e.g., `hasInterventionTarget` has a domain of `Event` and a range of `Intervention`.\n\nBy implementing these additions"
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?intervention ?outcome ?causalStrength ?truthValue WHERE {\n  ?event a odp:Event .\n  OPTIONAL { ?event odp:hasInterventionTarget ?intervention . }\n  OPTIONAL { ?event odp:hasOutcome ?outcome . }\n  OPTIONAL { ?event odp:hasCausalStrength ?causalStrength . }\n  OPTIONAL { ?event odp:hasTruthValue ?truthValue . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Event` Class**: Ensure that the `Event` class is properly defined in the ontology with relevant instances that can be queried. For example, create instances like `odp:Event1`, `odp:Event2`, etc.\n\n2. **Add Properties**: Verify that the properties `hasInterventionTarget`, `hasOutcome`, `hasCausalStrength`, and `hasTruthValue` are defined in the ontology. If they are not, add them with appropriate domain and range specifications:\n   - `odp:hasInterventionTarget` (Domain: `Event`, Range: `Intervention`)\n   - `odp:hasOutcome` (Domain: `Event`, Range: `Outcome`)\n   - `odp:hasCausalStrength` (Domain: `Event`, Range: `CausalStrength`)\n   - `odp:hasTruthValue` (Domain: `Event`, Range: `TruthValue`)\n\n3. **Create Instances for Properties**: Populate the ontology with instances of `Intervention`, `Outcome`, `CausalStrength`, and `TruthValue` that can be linked to the `Event` instances. For example:\n   - `odp:Intervention1`, `odp:Outcome1`, `odp:CausalStrength1`, `odp:TruthValue1`.\n\n4. **Establish Relationships**: Ensure"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#CausalLink> }\n  UNION { ?class a <http://example.org/odp#Event> }\n  UNION { ?class a <http://example.org/odp#Intervention> }\n  UNION { ?class a <http://example.org/odp#Outcome> }\n  UNION { ?class a <http://example.org/odp#State> }\n  UNION { ?property a <http://example.org/odp#causes> }\n  UNION { ?property a <http://example.org/odp#hasCausalLink> }\n  UNION { ?property a <http://example.org/odp#hasCause> }\n  UNION { ?property a <http://example.org/odp#hasEffect> }\n  UNION { ?property a <http://example.org/odp#hasInterventionTarget> }\n  UNION { ?property a <http://example.org/odp#hasOutcome> }\n  UNION { ?property a <http://example.org/odp#intervenesOn> }\n  UNION { ?property a <http://example.org/odp#resultsIn> }\n  UNION { ?property a <http://example.org/odp#hasCausalStrength> }\n  UNION { ?property a <http://example.org/odp#hasTruthValue> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can answer the competency question regarding the declaration of classes and properties, consider the following concrete suggestions:\n\n1. **Declare Classes**: Ensure that each class is explicitly declared in the ontology using the `owl:Class` construct. For example:\n   ```turtle\n   :CausalLink a owl:Class .\n   :Event a owl:Class .\n   :Intervention a owl:Class .\n   :Outcome a owl:Class .\n   :State a owl:Class .\n   ```\n\n2. **Declare Properties**: Ensure that each property is explicitly declared using the appropriate OWL property types. For example:\n   ```turtle\n   :causes a owl:ObjectProperty .\n   :hasCausalLink a owl:ObjectProperty .\n   :hasCause a owl:ObjectProperty .\n   :hasEffect a owl:ObjectProperty .\n   :hasInterventionTarget a owl:ObjectProperty .\n   :hasOutcome a owl:ObjectProperty .\n   :intervenesOn a owl:ObjectProperty .\n   :resultsIn a owl:ObjectProperty .\n   :hasCausalStrength a owl:DatatypeProperty .\n   :hasTruthValue a owl:DatatypeProperty .\n   ```\n\n3. **Use RDF Schema or OWL Annotations**: If you have additional metadata or descriptions for your classes and properties, consider using `rdfs:label` or `rdfs:comment` to provide human-readable names and descriptions, which can help in understanding the ontology structure.\n\n4. **Check Namespace"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?causalLink ?event ?intervention ?outcome ?state ?causalStrength ?truthValue WHERE {\n  ?causalLink a odp:CausalLink .\n  OPTIONAL { ?causalLink odp:hasCause ?event . }\n  OPTIONAL { ?causalLink odp:hasEffect ?intervention . }\n  OPTIONAL { ?causalLink odp:resultsIn ?outcome . }\n  OPTIONAL { ?causalLink odp:intervenesOn ?state . }\n  OPTIONAL { ?causalLink odp:hasCausalStrength ?causalStrength . }\n  OPTIONAL { ?causalLink odp:hasTruthValue ?truthValue . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Create classes for `CausalLink`, `Event`, `Intervention`, `Outcome`, and `State` if they are not already defined. This will provide a clear structure for the ontology.\n\n2. **Define Object Properties**:\n   - Add object properties to represent the relationships:\n     - `hasCause` (domain: `CausalLink`, range: `Event`)\n     - `hasEffect` (domain: `CausalLink`, range: `Intervention`)\n     - `resultsIn` (domain: `CausalLink`, range: `Outcome`)\n     - `intervenesOn` (domain: `CausalLink`, range: `State`)\n     - `hasCausalStrength` (domain: `CausalLink`, range: `CausalStrength`) - where `CausalStrength` is a defined class.\n     - `hasTruthValue` (domain: `CausalLink`, range: `TruthValue`) - where `TruthValue` is a defined class.\n\n3. **Define Data Properties** (if applicable):\n   - If `CausalStrength` and `TruthValue` are not classes but rather attributes, define them as data properties with appropriate data types (e.g., `hasCausalStrength` as a float or integer, `has"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:CausalLink .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Event .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Intervention .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Outcome .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:State .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a odp:causes .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a odp:hasCausalLink .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a odp:hasCause .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a odp:hasEffect .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1250), (line:51, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: \n   - Add `rdfs:label` and `rdfs:comment` for each class (e.g., `odp:CausalLink`, `odp:Event`, `odp:Intervention`, `odp:Outcome`, `odp:State`) to provide human-readable names and descriptions.\n\n2. **Define Annotations for Each Property**: \n   - Similarly, add `rdfs:label` and `rdfs:comment` for each property (e.g., `odp:causes`, `odp:hasCausalLink`, `odp:hasCause`, `odp:hasEffect`) to clarify their purpose and usage.\n\n3. **Use a Consistent Format**: \n   - Ensure that the labels are concise and descriptive, while comments provide a clear explanation of the class or property\u2019s role within the ontology.\n\n4. **Consider Language Tags**: \n   - If your ontology will be used in multilingual contexts, consider adding language tags to the `rdfs:label` annotations to support localization.\n\n5. **Document the Changes**: \n   - Maintain a changelog or documentation that outlines the added annotations, including the rationale for each label and comment, to facilitate future updates and understanding of the ontology.\n\nBy implementing these suggestions,"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?ontologyLabel }\n  OPTIONAL { ?ontology rdfs:comment ?ontologyComment }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P30"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P30": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P30": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P30",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Equivalent classes not explicitly declared",
+        "description": "This pitfall consists in missing the definition of equivalent classes (owl:equivalentClass) in case of duplicated concepts. When an ontology reuses terms from other ontologies, classes that have the same meaning should be defined as equivalent in order to benefit the interoperability between both ontologies."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

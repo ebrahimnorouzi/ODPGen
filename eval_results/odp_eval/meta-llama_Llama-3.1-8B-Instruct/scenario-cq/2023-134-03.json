@@ -1,0 +1,133 @@
+{
+  "id": "2023-134-03",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 77,
+    "classes_count": 17,
+    "object_properties_count": 4,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.11764705882352941,
+    "relationship_richness": 0.6666666666666666,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 77,
+    "triples_after": 337,
+    "inferred_triples": 260,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 0,
+    "cqs_failed": 7,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "SELECT ?app ?dataType ?registryCreationDate ?registryUpdateDate WHERE {\n  ?app a <http://example.org/odp#App> .\n  OPTIONAL { ?app <http://example.org/odp#hasDataType> ?dataType . }\n  OPTIONAL { ?app <http://example.org/odp#RegistryCreationDate> ?registryCreationDate . }\n  OPTIONAL { ?app <http://example.org/odp#RegistryUpdateDate> ?registryUpdateDate . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can effectively answer the competency question regarding applications and their associated data types and registry dates, consider the following additions:\n\n1. **Define the `hasDataType` Property**: Ensure that the property `<http://example.org/odp#hasDataType>` is defined in the ontology, linking `App` instances to their respective data types. This property should have a domain of `App` and a range that includes the relevant data type classes.\n\n2. **Define Registry Date Properties**: Confirm that the properties `<http://example.org/odp#RegistryCreationDate>` and `<http://example.org/odp#RegistryUpdateDate>` are defined, with a domain of `App` and a range of `xsd:dateTime` or `xsd:date`, to accurately represent the creation and update dates of the registry.\n\n3. **Add Data Type Classes**: Introduce specific classes for data types (e.g., `<http://example.org/odp#DataType>`) to provide a structured way to categorize different data types that applications may utilize.\n\n4. **Create Sample Instances**: Populate the ontology with sample instances of `App`, `DataType`, and relevant registry dates to ensure that the query can return results during testing.\n\n5. **Check for Consistency**: Ensure that the ontology is consistent and that there are no conflicting definitions or missing relationships that could prevent the query from returning results."
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "SELECT ?app ?registryCreationDate ?registryUpdateDate WHERE { \n  ?app a <http://example.org/odp#App> .\n  OPTIONAL { ?app <http://example.org/odp#RegistryCreationDate> ?registryCreationDate . }\n  OPTIONAL { ?app <http://example.org/odp#RegistryUpdateDate> ?registryUpdateDate . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding applications and their registry dates, consider adding the following classes and properties:\n\n1. **Class Definition**: Ensure the class `App` is defined in the ontology, representing the applications in your domain.\n   - Example: `:App a owl:Class .`\n\n2. **Property Definitions**: Define the properties `RegistryCreationDate` and `RegistryUpdateDate` as datatype properties associated with the `App` class.\n   - Example: \n     - `:RegistryCreationDate a owl:DatatypeProperty ; rdfs:domain :App ; rdfs:range xsd:dateTime .`\n     - `:RegistryUpdateDate a owl:DatatypeProperty ; rdfs:domain :App ; rdfs:range xsd:dateTime .`\n\n3. **Data Population**: Ensure that instances of the `App` class are created in the ontology with values for `RegistryCreationDate` and `RegistryUpdateDate`.\n   - Example: \n     - `:App1 a :App ; :RegistryCreationDate \"2023-01-01T00:00:00\"^^xsd:dateTime ; :RegistryUpdateDate \"2023-10-01T00:00:00\"^^xsd:dateTime .`\n\n4. **RDF Schema Annotations**: Use appropriate RDF schema annotations (like `rdfs:label` and `r"
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?registry ?creationDate ?updateDate WHERE {\n  ?registry a <http://example.org/odp#Registry> .\n  OPTIONAL { ?registry <http://example.org/odp#RegistryCreationDate> ?creationDate }\n  OPTIONAL { ?registry <http://example.org/odp#RegistryUpdateDate> ?updateDate }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following elements to the ontology:\n\n1. **Class Definition**: Ensure that the class `Registry` is defined in the ontology with the appropriate URI: `<http://example.org/odp#Registry>`.\n\n2. **Property Definitions**:\n   - Add the property `RegistryCreationDate` with the URI `<http://example.org/odp#RegistryCreationDate>` and define its domain as `Registry` and range as `xsd:dateTime`.\n   - Add the property `RegistryUpdateDate` with the URI `<http://example.org/odp#RegistryUpdateDate>` and define its domain as `Registry` and range as `xsd:dateTime`.\n\n3. **Instance Data**: Create instances of the `Registry` class in the ontology, ensuring that they have values for the `RegistryCreationDate` and `RegistryUpdateDate` properties to provide data for the query.\n\nBy implementing these changes, the ontology will be better equipped to return results for the given SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { \n    ?class a <http://example.org/odp#App> .\n  } UNION {\n    ?class a <http://example.org/odp#AuditingInformation> .\n  } UNION {\n    ?class a <http://example.org/odp#ConsentRecord> .\n  } UNION {\n    ?class a <http://example.org/odp#DataCategory> .\n  } UNION {\n    ?class a <http://example.org/odp#DataHandlingPractice> .\n  } UNION {\n    ?class a <http://example.org/odp#DataPolicy> .\n  } UNION {\n    ?class a <http://example.org/odp#DataStorageLocation> .\n  } UNION {\n    ?class a <http://example.org/odp#DataType> .\n  } UNION {\n    ?class a <http://example.org/odp#GDPRRight> .\n  } UNION {\n    ?class a <http://example.org/odp#Pod> .\n  } UNION {\n    ?class a <http://example.org/odp#PrivacyNotice> .\n  } UNION {\n    ?class a <http://example.org/odp#PrivacyPreference> .\n  } UNION {\n    ?class a <http://example.org/odp#ProvenanceMetadata> .\n  } UNION {\n    ?class a <http://example.org/odp#Provider> .\n  } UNION {\n    ?class a <http://example.org/odp#Registry> .\n  } UNION {\n    ?class a <http://example.org/odp#RegistryMaintainer> .\n  } UNION {\n    ?class a <http://example.org/odp#User> .\n  } \n  OPTIONAL {\n    ?property a <http://example.org/odp#RegistryMaintainer> .\n  } UNION {\n    ?property a <http://example.org/odp#RegistryCreationDate> .\n  } UNION {\n    ?property a",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1212), (line:39, col:5)",
+        "suggestion": "To effectively answer the competency question regarding the declaration of classes and properties in your ontology, consider the following suggestions:\n\n1. **Use OWL Class Declaration**: Ensure that all classes are declared using `a owl:Class`. For example:\n   ```turtle\n   :App a owl:Class .\n   :AuditingInformation a owl:Class .\n   :ConsentRecord a owl:Class .\n   ```\n\n2. **Declare Object and Datatype Properties**: Ensure that all properties are declared appropriately. For example:\n   ```turtle\n   :hasConsent a owl:ObjectProperty .\n   :registryCreationDate a owl:DatatypeProperty .\n   ```\n\n3. **Include Annotation Properties**: If there are any annotation properties, declare them as well:\n   ```turtle\n   :description a owl:AnnotationProperty .\n   ```\n\n4. **SPARQL Query Correction**: Modify your SPARQL query to correctly retrieve classes and properties without using UNION inappropriately. Use a single pattern for classes and properties:\n   ```sparql\n   SELECT ?entity WHERE {\n     { ?entity a owl:Class . }\n     UNION\n     { ?entity a owl:ObjectProperty . }\n     UNION\n     { ?entity a owl:DatatypeProperty . }\n     UNION\n     { ?entity a owl:AnnotationProperty . }\n   }\n   ```\n\n5. **Check Namespace and Prefixes**: Ensure that the namespace `<http://example.org/odp#>` is correctly"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?value WHERE {\n  { \n    ?class a odp:App .\n    OPTIONAL { ?class odp:hasDataType ?value }\n  }\n  UNION\n  { \n    ?class a odp:AuditingInformation .\n    OPTIONAL { ?class odp:RegistryCreationDate ?value }\n  }\n  UNION\n  { \n    ?class a odp:ConsentRecord .\n    OPTIONAL { ?class odp:RegistryUpdateDate ?value }\n  }\n  UNION\n  { \n    ?class a odp:DataCategory .\n    OPTIONAL { ?class odp:RegistryMaintainer ?value }\n  }\n  UNION\n  { \n    ?class a odp:DataHandlingPractice .\n    OPTIONAL { ?class odp:RegistryCreationDate ?value }\n  }\n  UNION\n  { \n    ?class a odp:DataPolicy .\n    OPTIONAL { ?class odp:RegistryUpdateDate ?value }\n  }\n  UNION\n  { \n    ?class a odp:DataStorageLocation .\n    OPTIONAL { ?class odp:RegistryMaintainer ?value }\n  }\n  UNION\n  { \n    ?class a odp:DataType .\n    OPTIONAL { ?class odp:hasDataType ?value }\n  }\n  UNION\n  { \n    ?class a odp:GDPRRight .\n    OPTIONAL { ?class odp:RegistryCreationDate ?value }\n  }\n  UNION\n  { \n    ?class a odp:Pod .\n    OPTIONAL { ?class odp:RegistryUpdateDate ?value }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can provide meaningful results for the SPARQL query, consider the following suggestions:\n\n1. **Define Classes**: Ensure that the classes mentioned in the query (e.g., `odp:App`, `odp:AuditingInformation`, `odp:ConsentRecord`, etc.) are explicitly defined in the ontology with appropriate subclass relationships if necessary.\n\n2. **Add Properties**: Ensure that the properties used in the query (e.g., `odp:hasDataType`, `odp:RegistryCreationDate`, `odp:RegistryUpdateDate`, `odp:RegistryMaintainer`) are defined as object properties or data properties in the ontology, with clear domain and range specifications.\n\n3. **Create Class Hierarchies**: If applicable, create a hierarchy of classes to better organize the ontology. For example, if `odp:DataCategory` is a subclass of `odp:DataHandlingPractice`, this should be explicitly stated.\n\n4. **Include Axioms for Relationships**: Add axioms that define the relationships between classes and properties, such as:\n   - `odp:App` has a `odp:hasDataType` property that relates to `odp:DataType`.\n   - `odp:AuditingInformation` has a `odp:RegistryCreationDate` property that is a date type.\n\n5. **Document Constraints**: If there are specific constraints or cardinalities for the properties (e.g., a `RegistryCreationDate`"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a <http://example.org/odp#App> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#RegistryCreationDate> .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#RegistryUpdateDate> .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Classes and Properties**: Ensure that all relevant classes and properties are defined in your ontology. For example:\n   - Classes: `http://example.org/odp#App`, `http://example.org/odp#Registry`, etc.\n   - Properties: `http://example.org/odp#RegistryCreationDate`, `http://example.org/odp#RegistryUpdateDate`, etc.\n\n2. **Add rdfs:label Annotations**: For each class and property, add a human-readable label. For example:\n   - `rdfs:label \"Application\"^^xsd:string` for `http://example.org/odp#App`\n   - `rdfs:label \"Registry Creation Date\"^^xsd:string` for `http://example.org/odp#RegistryCreationDate`\n\n3. **Add rdfs:comment Annotations**: Provide a description for each class and property to clarify their purpose. For example:\n   - `rdfs:comment \"Represents an application in the system.\"^^xsd:string` for `http://example.org/odp#App`\n   - `rdfs:comment \"The date when the registry was created.\"^^xsd:string` for `http://example.org/odp#RegistryCreationDate`\n\n4. **Use a Cons"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#DataPolicy> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider adding the following classes, properties, and axioms to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is defined as an instance of `owl:Ontology`. For example:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include the `rdfs:label` property to provide a human-readable name for the ontology:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Name\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include the `rdfs:comment` property to provide a description or comment about the ontology:\n   ```turtle\n   :Ontology rdfs:comment \"A brief description of your ontology.\" .\n   ```\n\n4. **Define Namespace**: Ensure that the namespace for your ontology is properly defined at the beginning of your ontology file, for example:\n   ```turtle\n   @prefix : <http://example.org/your-ontology#> .\n   ```\n\n5. **Use Correct Class for Query**: In your SPARQL query, ensure you are querying for the correct ontology class. If you are using a specific ontology URI, make sure it matches the one defined in your ontology.\n\nBy implementing these points, your ontology will have the necessary structure to answer the competency question effectively."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P24"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P24": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P24": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P24",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Using recursive definitions",
+        "description": "An ontology element (a class, an object property or a datatype property) is used in its own definition. Some examples of this would be: (a) the definition of a class as the enumeration of several classes including itself;  (b) the appearance of a class within its owl:equivalentClass or rdfs:subClassOf axioms; (c) the appearance of an object property in its rdfs:domain or range rdfs:range definitions; or (d) the appearance of a datatype property in its rdfs:domain definition.",
+        "affected_elements_sample": [
+          "http://example.org/odp#RegistryMaintainer"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 3,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

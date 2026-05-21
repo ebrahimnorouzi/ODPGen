@@ -1,0 +1,132 @@
+{
+  "id": "2025-153-01",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 54,
+    "classes_count": 10,
+    "object_properties_count": 8,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 54,
+    "triples_after": 267,
+    "inferred_triples": 213,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 0,
+    "cqs_failed": 6,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?fullSequence ?gap ?overlap ?rebuild ?referentTransition ?rule WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:FullSequence ?fullSequence }\n  OPTIONAL { ?observation odp:Gap ?gap }\n  OPTIONAL { ?observation odp:Overlap ?overlap }\n  OPTIONAL { ?observation odp:Rebuild ?rebuild }\n  OPTIONAL { ?observation odp:ReferentTransition ?referentTransition }\n  OPTIONAL { ?observation odp:Rule ?rule }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that the class `odp:Observation` is defined in the ontology. If it is not already present, create it to represent the observations being queried.\n\n2. **Property Definitions**: Define the following properties to link observations to their attributes:\n   - `odp:FullSequence` (Object Property): Links an `odp:Observation` to its full sequence.\n   - `odp:Gap` (Data Property): Represents the gap associated with an `odp:Observation`.\n   - `odp:Overlap` (Data Property): Represents the overlap associated with an `odp:Observation`.\n   - `odp:Rebuild` (Data Property): Represents the rebuild status or information related to an `odp:Observation`.\n   - `odp:ReferentTransition` (Object Property): Links an `odp:Observation` to its referent transition.\n   - `odp:Rule` (Object Property): Links an `odp:Observation` to the rule it follows.\n\n3. **Instance Creation**: Ensure that instances of `odp:Observation` are created in the ontology with the relevant properties populated. This is crucial for the query to return results.\n\n4. **Data Types**: Specify the data types for the properties, especially for data properties like `odp:Gap`, `odp:Overlap`, and `odp:Rebuild`, to ensure"
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?fullSequence ?gap ?observation ?overlap ?rebuild ?referentTransition ?rule WHERE {\n  ?instance a odp:FullSequence .\n  OPTIONAL { ?instance odp:Gap ?gap . }\n  OPTIONAL { ?instance odp:Observation ?observation . }\n  OPTIONAL { ?instance odp:Overlap ?overlap . }\n  OPTIONAL { ?instance odp:Rebuild ?rebuild . }\n  OPTIONAL { ?instance odp:ReferentTransition ?referentTransition . }\n  OPTIONAL { ?instance odp:Rule ?rule . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `FullSequence` Class**: Ensure that the `FullSequence` class is properly defined in the ontology with relevant instances that can be queried.\n\n2. **Add Properties**: Verify that the properties `Gap`, `Observation`, `Overlap`, `Rebuild`, `ReferentTransition`, and `Rule` are defined as object properties in the ontology and are correctly associated with the `FullSequence` class.\n\n3. **Create Instances**: Populate the ontology with instances of `FullSequence` that have values for the properties mentioned. For example, create instances of `FullSequence` and link them to corresponding instances of `Gap`, `Observation`, etc.\n\n4. **Check Data Types**: Ensure that the values for the properties are of the correct data types and that they are linked to the appropriate instances in the ontology.\n\n5. **Review Ontology Structure**: Confirm that the ontology structure allows for the relationships between `FullSequence` and the other properties to be valid and meaningful, possibly by adding necessary classes or relationships if they are missing. \n\nBy implementing these suggestions, the ontology should be better equipped to return results for the given SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#FullSequence> }\n  UNION\n  { ?class a <http://example.org/odp#Gap> }\n  UNION\n  { ?class a <http://example.org/odp#Observation> }\n  UNION\n  { ?class a <http://example.org/odp#Overlap> }\n  UNION\n  { ?class a <http://example.org/odp#PersistentIdentifier> }\n  UNION\n  { ?class a <http://example.org/odp#Rebuild> }\n  UNION\n  { ?class a <http://example.org/odp#Referent> }\n  UNION\n  { ?class a <http://example.org/odp#ReferentTransition> }\n  UNION\n  { ?class a <http://example.org/odp#Rule> }\n  UNION\n  { ?class a <http://example.org/odp#TimeStamp> }\n  OPTIONAL { ?property a <http://example.org/odp#FullSequence> }\n  OPTIONAL { ?property a <http://example.org/odp#Gap> }\n  OPTIONAL { ?property a <http://example.org/odp#Observation> }\n  OPTIONAL { ?property a <http://example.org/odp#Overlap> }\n  OPTIONAL { ?property a <http://example.org/odp#Rebuild> }\n  OPTIONAL { ?property a <http://example.org/odp#Reference> }\n  OPTIONAL { ?property a <http://example.org/odp#ReferentTransition> }\n  OPTIONAL { ?property a <http://example.org/odp#Rule> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the declaration of classes and properties in your ontology, consider the following suggestions:\n\n1. **Declare Classes**: Ensure that all relevant classes are explicitly declared in your ontology using `owl:Class`. For example:\n   ```turtle\n   :FullSequence a owl:Class .\n   :Gap a owl:Class .\n   :Observation a owl:Class .\n   :Overlap a owl:Class .\n   :PersistentIdentifier a owl:Class .\n   :Rebuild a owl:Class .\n   :Referent a owl:Class .\n   :ReferentTransition a owl:Class .\n   :Rule a owl:Class .\n   :TimeStamp a owl:Class .\n   ```\n\n2. **Declare Properties**: Ensure that all relevant properties are explicitly declared using `owl:ObjectProperty`, `owl:DatatypeProperty`, or `owl:AnnotationProperty`. For example:\n   ```turtle\n   :hasGap a owl:ObjectProperty .\n   :hasObservation a owl:ObjectProperty .\n   :hasOverlap a owl:ObjectProperty .\n   :hasRebuild a owl:ObjectProperty .\n   :hasReferent a owl:ObjectProperty .\n   :hasRule a owl:ObjectProperty .\n   :timestamp a owl:DatatypeProperty .\n   ```\n\n3. **Use a General Query**: Instead of specifying each class and property individually in your SPARQL query, use a more general approach to retrieve all classes and properties:\n   ```sparql\n   SELECT ?entity WHERE"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#FullSequence> }\n  UNION\n  { ?class a <http://example.org/odp#Gap> }\n  UNION\n  { ?class a <http://example.org/odp#Observation> }\n  UNION\n  { ?class a <http://example.org/odp#Overlap> }\n  UNION\n  { ?class a <http://example.org/odp#PersistentIdentifier> }\n  UNION\n  { ?class a <http://example.org/odp#Rebuild> }\n  UNION\n  { ?class a <http://example.org/odp#Referent> }\n  UNION\n  { ?class a <http://example.org/odp#ReferentTransition> }\n  UNION\n  { ?class a <http://example.org/odp#Rule> }\n  OPTIONAL { ?class <http://example.org/odp#FullSequence> ?property }\n  OPTIONAL { ?class <http://example.org/odp#Gap> ?property }\n  OPTIONAL { ?class <http://example.org/odp#Observation> ?property }\n  OPTIONAL { ?class <http://example.org/odp#Overlap> ?property }\n  OPTIONAL { ?class <http://example.org/odp#Rebuild> ?property }\n  OPTIONAL { ?class <http://example.org/odp#Reference> ?property }\n  OPTIONAL { ?class <http://example.org/odp#ReferentTransition> ?property }\n  OPTIONAL { ?class <http://example.org/odp#Rule> ?property }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can provide meaningful results for the SPARQL query, consider the following suggestions:\n\n1. **Define Class Hierarchies**: Ensure that the classes (`FullSequence`, `Gap`, `Observation`, `Overlap`, `PersistentIdentifier`, `Rebuild`, `Referent`, `ReferentTransition`, `Rule`) are properly defined in the ontology with appropriate subclass relationships if applicable. For example:\n   ```turtle\n   :FullSequence rdfs:subClassOf :Sequence .\n   :Gap rdfs:subClassOf :Event .\n   ```\n\n2. **Establish Object Properties**: Define object properties that relate these classes to one another. For instance:\n   ```turtle\n   :hasObservation a rdf:Property ; rdfs:domain :FullSequence ; rdfs:range :Observation .\n   :hasGap a rdf:Property ; rdfs:domain :FullSequence ; rdfs:range :Gap .\n   ```\n\n3. **Define Data Properties**: If applicable, introduce data properties that can provide additional information about the classes. For example:\n   ```turtle\n   :hasIdentifier a rdf:Property ; rdfs:domain :PersistentIdentifier ; rdfs:range xsd:string .\n   ```\n\n4. **Add Axioms for Relationships**: Create axioms that define how these classes and properties interact. For example:\n   ```turtle\n   :FullSequence rdfs:subClass"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?label ?comment WHERE {\n  { \n    ?class a odp:FullSequence .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Gap .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Observation .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Overlap .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:PersistentIdentifier .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Rebuild .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Referent .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:ReferentTransition .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Rule .\n    OPTIONAL { ?class",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1234), (line:52, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class in your ontology (e.g., `FullSequence`, `Gap`, `Observation`, etc.), add an `rdfs:label` that provides a human-readable name and an `rdfs:comment` that describes the purpose or role of the class.\n\n   Example:\n   ```turtle\n   odp:FullSequence rdfs:label \"Full Sequence\" ;\n                    rdfs:comment \"Represents a complete sequence of observations.\" .\n   ```\n\n2. **Annotate Properties**: Similarly, for each property in your ontology, add `rdfs:label` and `rdfs:comment` annotations to clarify their usage and meaning.\n\n   Example:\n   ```turtle\n   odp:hasObservation rdfs:label \"Has Observation\" ;\n                     rdfs:comment \"Links a sequence to its observations.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are consistent in terms of naming conventions (e.g., using camel case or underscores) and that comments are concise yet informative.\n\n4. **Include Examples**: If applicable, provide examples in the comments to illustrate how the class or property is used within the ontology.\n\n5. **Review and Validate**: After adding the annotations,"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#FullSequence> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider adding the following elements to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is defined as an instance of `owl:Ontology`. You can do this by adding a declaration like:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include a `rdfs:label` property to provide a human-readable name for the ontology. For example:\n   ```turtle\n   :Ontology rdfs:label \"My Ontology\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include a `rdfs:comment` property to provide a description of the ontology. For example:\n   ```turtle\n   :Ontology rdfs:comment \"This ontology describes the relationships and properties of ... \" .\n   ```\n\n4. **Define Namespace**: Ensure that the namespace for your ontology is properly defined at the beginning of your ontology file, e.g.:\n   ```turtle\n   @prefix : <http://example.org/odp#> .\n   ```\n\n5. **Use a Consistent URI**: Make sure that the URI used for the ontology is consistent and correctly referenced in your SPARQL query. For example, if your ontology is defined as `http://example.org/odp#Ontology`, ensure that this URI is used in your SPARQL query.\n\nBy"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 8
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 8,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#Rule",
+          "http://example.org/odp#FullSequence",
+          "http://example.org/odp#Overlap",
+          "http://example.org/odp#ReferentTransition",
+          "http://example.org/odp#Observation",
+          "http://example.org/odp#Gap",
+          "http://example.org/odp#Reference",
+          "http://example.org/odp#Rebuild"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

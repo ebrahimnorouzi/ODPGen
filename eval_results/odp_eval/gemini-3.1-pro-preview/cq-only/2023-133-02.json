@@ -1,0 +1,128 @@
+{
+  "id": "2023-133-02",
+  "model": "gemini-3.1-pro-preview",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 62,
+    "classes_count": 8,
+    "object_properties_count": 6,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 3,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.25,
+    "relationship_richness": 0.75,
+    "avg_subclass_per_class": 0.375
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 62,
+    "triples_after": 280,
+    "inferred_triples": 218,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?patient ?asthmaSymptom ?cough ?medicationIntake ?outdoorEnvironment ?pollen WHERE {\n  ?patient a odp:Patient .\n  OPTIONAL { ?patient odp:experiences ?asthmaSymptom . }\n  OPTIONAL { ?asthmaSymptom a odp:AsthmaSymptom . }\n  OPTIONAL { ?asthmaSymptom odp:causedBy ?cough . }\n  OPTIONAL { ?patient odp:takesMedication ?medicationIntake . }\n  OPTIONAL { ?patient odp:isPresentIn ?outdoorEnvironment . }\n  OPTIONAL { ?outdoorEnvironment odp:hasProbableCause ?pollen . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - `odp:AsthmaSymptom` - Define this class to represent various asthma symptoms.\n   - `odp:Cough` - Define this class to represent cough as a specific type of asthma symptom.\n\n2. **Properties**:\n   - `odp:experiences` - A property linking `Patient` to `AsthmaSymptom` to indicate which symptoms a patient experiences.\n   - `odp:causedBy` - A property linking `AsthmaSymptom` to `Cough` to indicate that a specific asthma symptom may be caused by a cough.\n   - `odp:takesMedication` - A property linking `Patient` to `Medication` to indicate the medications a patient is taking.\n   - `odp:isPresentIn` - A property linking `Patient` to `OutdoorEnvironment` to indicate the environments where the patient is present.\n   - `odp:hasProbableCause` - A property linking `OutdoorEnvironment` to `Pollen` to indicate that pollen is a probable cause of symptoms in that environment.\n\n3. **Axioms**:\n   - Define necessary relationships and constraints to ensure that instances of `AsthmaSymptom` can be linked to instances of `Cough`, `Medication`, `OutdoorEnvironment`, and `Pollen` appropriately.\n\nBy implementing these"
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?patient ?asthmaSymptom ?cough ?medicationIntake ?outdoorEnvironment ?outdoorEnvironmentalAllergen ?pollen WHERE {\n  ?patient a odp:Patient.\n  OPTIONAL { ?patient odp:experiences ?asthmaSymptom. }\n  OPTIONAL { ?asthmaSymptom a odp:AsthmaSymptom. }\n  OPTIONAL { ?asthmaSymptom odp:causedBy ?cough. }\n  OPTIONAL { ?patient odp:takesMedication ?medicationIntake. }\n  OPTIONAL { ?patient odp:isPresentIn ?outdoorEnvironment. }\n  OPTIONAL { ?outdoorEnvironment odp:hasProbableCause ?outdoorEnvironmentalAllergen. }\n  OPTIONAL { ?outdoorEnvironmentalAllergen a odp:OutdoorEnvironmentalAllergen. }\n  OPTIONAL { ?outdoorEnvironmentalAllergen odp:isPresent ?pollen. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define Specific Asthma Symptoms**: Create subclasses of `odp:AsthmaSymptom` to represent specific symptoms (e.g., `odp:Cough`, `odp:Wheezing`, `odp:ShortnessOfBreath`) to ensure that symptoms can be explicitly linked to patients.\n\n2. **Clarify Medication Properties**: Introduce a property such as `odp:hasMedication` to link patients to specific medications they are taking, and ensure that `odp:Medication` is defined as a class.\n\n3. **Enhance Environmental Context**: Define classes for different types of outdoor environments (e.g., `odp:Park`, `odp:UrbanArea`) and properties like `odp:hasAllergen` to link environments to specific allergens, ensuring that `odp:OutdoorEnvironmentalAllergen` is clearly defined.\n\n4. **Link Pollen to Allergens**: Create a property such as `odp:associatedWithPollen` to connect `odp:OutdoorEnvironmentalAllergen` to specific pollen types, ensuring that `odp:Pollen` is defined as a class.\n\n5. **Ensure Data Instances**: Populate the ontology with instances of `odp:Patient`, `odp:AsthmaSymptom`, `odp:Medication`, `odp:OutdoorEnvironmentalAllergen`, and `odp:Pollen` to ensure that the query can retrieve meaningful results"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#AQI> }\n  UNION { ?class a <http://example.org/odp#AsthmaSymptom> }\n  UNION { ?class a <http://example.org/odp#Cough> }\n  UNION { ?class a <http://example.org/odp#MedicationIntake> }\n  UNION { ?class a <http://example.org/odp#OutdoorEnvironment> }\n  UNION { ?class a <http://example.org/odp#OutdoorEnvironmentalAllergen> }\n  UNION { ?class a <http://example.org/odp#Patient> }\n  UNION { ?class a <http://example.org/odp#Pollen> }\n  UNION { ?property a <http://example.org/odp#affects> }\n  UNION { ?property a <http://example.org/odp#causedBy> }\n  UNION { ?property a <http://example.org/odp#experiences> }\n  UNION { ?property a <http://example.org/odp#hasProbableCause> }\n  UNION { ?property a <http://example.org/odp#isPresentIn> }\n  UNION { ?property a <http://example.org/odp#takesMedication> }\n  UNION { ?property a <http://example.org/odp#effectMagnitude> }\n  UNION { ?property a <http://example.org/odp#isPresent> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can return results for classes and properties, consider the following suggestions:\n\n1. **Declare Classes**: Ensure that each class is declared with `a owl:Class`. For example:\n   ```turtle\n   :AQI a owl:Class .\n   :AsthmaSymptom a owl:Class .\n   :Cough a owl:Class .\n   :MedicationIntake a owl:Class .\n   :OutdoorEnvironment a owl:Class .\n   :OutdoorEnvironmentalAllergen a owl:Class .\n   :Patient a owl:Class .\n   :Pollen a owl:Class .\n   ```\n\n2. **Declare Object Properties**: Ensure that each property is declared with `a owl:ObjectProperty`. For example:\n   ```turtle\n   :affects a owl:ObjectProperty .\n   :causedBy a owl:ObjectProperty .\n   :experiences a owl:ObjectProperty .\n   :hasProbableCause a owl:ObjectProperty .\n   :isPresentIn a owl:ObjectProperty .\n   :takesMedication a owl:ObjectProperty .\n   ```\n\n3. **Declare Datatype Properties**: If there are any properties that should be declared as datatype properties, ensure they are defined as such. For example:\n   ```turtle\n   :effectMagnitude a owl:DatatypeProperty .\n   :isPresent a owl:DatatypeProperty .\n   ```\n\n4. **Check Namespace**: Ensure that the namespace `<http://example.org/odp#>`"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?patient ?asthmaSymptom ?cough ?medicationIntake ?outdoorEnvironment ?outdoorEnvironmentalAllergen ?pollen WHERE {\n  ?patient a odp:Patient.\n  OPTIONAL { ?patient odp:experiences ?asthmaSymptom. }\n  OPTIONAL { ?asthmaSymptom a odp:AsthmaSymptom. }\n  OPTIONAL { ?asthmaSymptom odp:causedBy ?cough. }\n  OPTIONAL { ?patient odp:takesMedication ?medicationIntake. }\n  OPTIONAL { ?outdoorEnvironment a odp:OutdoorEnvironment. }\n  OPTIONAL { ?outdoorEnvironment odp:isPresentIn ?outdoorEnvironmentalAllergen. }\n  OPTIONAL { ?outdoorEnvironmentalAllergen a odp:OutdoorEnvironmentalAllergen. }\n  OPTIONAL { ?outdoorEnvironmentalAllergen odp:affects ?pollen. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query can return results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - Define the class `:AsthmaSymptom` to represent various asthma symptoms.\n   - Define the class `:OutdoorEnvironmentalAllergen` to represent allergens found in outdoor environments.\n\n2. **Properties**:\n   - Create a property `odp:experiences` to link `:Patient` to `:AsthmaSymptom`.\n   - Create a property `odp:causedBy` to link `:AsthmaSymptom` to specific symptoms like cough.\n   - Create a property `odp:takesMedication` to link `:Patient` to medications they are taking.\n   - Create a property `odp:isPresentIn` to link `:OutdoorEnvironment` to `:OutdoorEnvironmentalAllergen`.\n   - Create a property `odp:affects` to link `:OutdoorEnvironmentalAllergen` to pollen.\n\n3. **Axioms**:\n   - Specify that `:Patient` can experience multiple `:AsthmaSymptom` instances.\n   - Specify that `:AsthmaSymptom` can be caused by one or more symptoms (e.g., cough).\n   - Specify that `:OutdoorEnvironmentalAllergen` can affect various types of pollen.\n\nBy implementing these additions, the ontology will better support the relationships and queries related to asthma symptoms, medications, and environmental"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a rdfs:Class .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a rdfs:Property .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete steps:\n\n1. **Define Classes**: Ensure that you have defined classes in your ontology. For example:\n   - `odp:Person`\n   - `odp:Organization`\n   - `odp:Event`\n\n2. **Define Properties**: Ensure that you have defined properties in your ontology. For example:\n   - `odp:hasName`\n   - `odp:hasLocation`\n   - `odp:participatesIn`\n\n3. **Add Annotations**: For each class and property, add `rdfs:label` and `rdfs:comment` annotations. For example:\n   ```turtle\n   odp:Person rdfs:label \"Person\" ;\n               rdfs:comment \"A human being.\" .\n\n   odp:hasName rdfs:label \"has Name\" ;\n                rdfs:comment \"The name of a person or organization.\" .\n   ```\n\n4. **Check RDF Schema**: Ensure that your ontology is correctly using RDF Schema (RDFS) and that the classes and properties are properly declared as `rdf:Class` and `rdf:Property`.\n\n5. **Validate Ontology**: Use an ontology editor or validation tool to check for any missing classes or properties and ensure that they are correctly annotated.\n\nBy implementing these steps, you will be able to provide the"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontologyLabel ?ontologyComment WHERE {\n  :Ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 6
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P11",
+        "affected_elements_count": 6,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#affects",
+          "http://example.org/odp#isPresentIn",
+          "http://example.org/odp#hasProbableCause",
+          "http://example.org/odp#causedBy",
+          "http://example.org/odp#isPresent",
+          "http://example.org/odp#effectMagnitude"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

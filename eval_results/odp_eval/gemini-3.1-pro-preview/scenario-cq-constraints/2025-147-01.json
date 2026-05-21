@@ -1,0 +1,110 @@
+{
+  "id": "2025-147-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 80,
+    "classes_count": 23,
+    "object_properties_count": 0,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 8,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 0.34782608695652173
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 80,
+    "triples_after": 352,
+    "inferred_triples": 272,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?ship ?propulsionSystem WHERE {\n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#PropulsionSystem> ?propulsionSystem }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `Ship` Class**: Ensure that the class `Ship` is properly defined in the ontology with relevant characteristics or subclasses if necessary.\n\n2. **Define the `PropulsionSystem` Class**: Create a class for `PropulsionSystem` to represent different types of propulsion systems that ships can have.\n\n3. **Create a Property for Propulsion System**: Add a property, such as `hasPropulsionSystem`, to link `Ship` instances to their corresponding `PropulsionSystem` instances. This property should be defined as:\n   ```turtle\n   <http://example.org/odp#hasPropulsionSystem> a rdf:Property ;\n       rdfs:domain <http://example.org/odp#Ship> ;\n       rdfs:range <http://example.org/odp#PropulsionSystem> .\n   ```\n\n4. **Add Instances of Ships and Propulsion Systems**: Populate the ontology with instances of `Ship` and `PropulsionSystem` to ensure that there are actual data points for the query to retrieve.\n\n5. **Ensure Proper RDF Namespace Usage**: Verify that the URIs used in the SPARQL query match the defined classes and properties in the ontology, ensuring consistency in naming conventions and namespaces. \n\nBy implementing these changes, the ontology will be better equipped to answer"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?ship ?propulsionSystem ?engine ?propulsor WHERE {\n  ?ship a odp:Ship .\n  OPTIONAL { ?ship a odp:PropulsionSystem . }\n  OPTIONAL { ?ship a odp:Engine . }\n  OPTIONAL { ?ship a odp:Propulsor . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define Class Hierarchies**:\n   - Ensure that `:Ship`, `:PropulsionSystem`, `:Engine`, and `:Propulsor` are defined as classes in the ontology. Establish a clear hierarchy if applicable (e.g., `:PropulsionSystem` could be a subclass of `:Ship` if all ships have propulsion systems).\n\n2. **Create Object Properties**:\n   - Introduce object properties to represent relationships between classes. For example:\n     - `odp:hasPropulsionSystem` to link `:Ship` to `:PropulsionSystem`.\n     - `odp:hasEngine` to link `:Ship` to `:Engine`.\n     - `odp:hasPropulsor` to link `:Ship` to `:Propulsor`.\n\n3. **Define Class Characteristics**:\n   - Specify characteristics of the classes, such as:\n     - `:Ship` may have a cardinality restriction indicating it must have at least one `:PropulsionSystem`.\n     - `:PropulsionSystem` may have properties that link to `:Engine` and `:Propulsor`.\n\n4. **Add Domain and Range for Properties**:\n   - Clearly define the domain and range for the properties to ensure proper inference. For example:\n     - `odp:hasPropulsionSystem` domain: `"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?label ?comment WHERE {\n  { \n    ?class a ?type .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  VALUES ?type {\n    <http://example.org/odp#BladedPropulsor>\n    <http://example.org/odp#ContainerShip>\n    <http://example.org/odp#Dimension>\n    <http://example.org/odp#Draught>\n    <http://example.org/odp#ElectricEngine>\n    <http://example.org/odp#Engine>\n    <http://example.org/odp#Fuel>\n    <http://example.org/odp#GPSAntenna>\n    <http://example.org/odp#JetPropulsor>\n    <http://example.org/odp#Location>\n    <http://example.org/odp#MotorizedPropulsion>\n    <http://example.org/odp#Organization>\n    <http://example.org/odp#PropulsionSystem>\n    <http://example.org/odp#PropulsionTechnology>\n    <http://example.org/odp#Propulsor>\n    <http://example.org/odp#Route>\n    <http://example.org/odp#ScrewPropeller>\n    <http://example.org/odp#Ship>\n    <http://example.org/odp#ShipStructure>\n    <http://example.org/odp#Trajectory>\n    <http://example.org/odp#TrajectoryPart>\n    <http://example.org/odp#Unit>\n    <http://example.org/odp#WindPropulsion>\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete steps:\n\n1. **Add rdfs:label Annotations**: For each class and property in your ontology, add a `rdfs:label` that provides a human-readable name. For example:\n   ```turtle\n   <http://example.org/odp#BladedPropulsor> rdfs:label \"Bladed Propulsor\" .\n   ```\n\n2. **Add rdfs:comment Annotations**: Similarly, for each class and property, include a `rdfs:comment` that describes its purpose or functionality. For example:\n   ```turtle\n   <http://example.org/odp#BladedPropulsor> rdfs:comment \"A type of propulsor that uses blades to generate thrust.\" .\n   ```\n\n3. **Create a Validation Rule**: Implement a validation rule or constraint in your ontology management tool to check for the presence of `rdfs:label` and `rdfs:comment` for all classes and properties. This can help ensure compliance moving forward.\n\n4. **Batch Update Existing Classes and Properties**: If you have many classes and properties without these annotations, consider writing a script or using a tool to batch update them with default labels and comments based on their names or intended use.\n\n5. **Documentation and Guidelines**: Create documentation that outlines"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Organization> .\n  OPTIONAL { ?ontology rdfs:label ?label } .\n  OPTIONAL { ?ontology rdfs:comment ?comment } .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider the following additions to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is defined as an instance of `owl:Ontology`. You can do this by adding a declaration like:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include the `rdfs:label` property to provide a human-readable name for the ontology. For example:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Name\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include the `rdfs:comment` property to provide a description of the ontology. For example:\n   ```turtle\n   :Ontology rdfs:comment \"This ontology describes...\" .\n   ```\n\n4. **Define Namespace**: Ensure that the namespace for your ontology is properly defined at the beginning of your ontology file, e.g.:\n   ```turtle\n   @prefix : <http://example.org/your-ontology#> .\n   ```\n\n5. **Use owl:Ontology in SPARQL Query**: Modify your SPARQL query to look for instances of `owl:Ontology` instead of `http://example.org/odp#Organization` to retrieve the ontology header information correctly:\n   ```sparql\n   SELECT ?ontology ?label ?comment WHERE {\n     ?ontology"
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "SELECT ?ship ?propulsionSystem WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#PropulsionSystem> ?propulsionSystem }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the ontology is minimal and reusable, consider the following additions:\n\n1. **Define the `Ship` Class**: Ensure that the class `Ship` is defined in the ontology with a clear URI, e.g., `<http://example.org/odp#Ship>`.\n\n2. **Define the `PropulsionSystem` Class**: Introduce a class for `PropulsionSystem` with a URI, e.g., `<http://example.org/odp#PropulsionSystem>`, to represent different types of propulsion systems.\n\n3. **Create a Property for Propulsion System**: Add a property to link `Ship` to `PropulsionSystem`, e.g., `<http://example.org/odp#hasPropulsionSystem>`, to indicate which propulsion system a ship uses.\n\n4. **Add Instances of Ship and PropulsionSystem**: Populate the ontology with instances of `Ship` and `PropulsionSystem` to ensure that the query can return results. For example, create instances like `<http://example.org/odp#Ship1>` and `<http://example.org/odp#PropulsionSystem1>`.\n\n5. **Use RDF Schema or OWL for Relationships**: If using OWL, define the relationship between `Ship` and `PropulsionSystem` using an appropriate axiom, such as `rdfs:domain` and `rdfs:range` for the `hasPropulsionSystem` property.\n\nBy implementing these suggestions,"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "id": "2023-134-01",
+  "model": "gpt-5.4",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 61,
+    "classes_count": 6,
+    "object_properties_count": 6,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.3333333333333333,
+    "relationship_richness": 0.75,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 61,
+    "triples_after": 273,
+    "inferred_triples": 212,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?agent ?accessMode ?personalData ?applicationOrService ?policyIdentifier ?issuedOn WHERE {\n  ?agent a odp:Agent .\n  OPTIONAL { ?agent odp:hasAccessMode ?accessMode . }\n  OPTIONAL { ?agent odp:accessesPersonalData ?personalData . }\n  OPTIONAL { ?agent odp:usesApplicationOrService ?applicationOrService . }\n  OPTIONAL { ?agent odp:hasCreator ?policy . }\n  OPTIONAL { ?policy odp:hasPolicyIdentifier ?policyIdentifier . }\n  OPTIONAL { ?policy odp:issuedOn ?issuedOn . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes and properties to the ontology:\n\n1. **Classes**:\n   - `odp:Agent`: Represents entities that can access personal data or use applications/services.\n   - `odp:AccessMode`: Represents different modes of access (e.g., read, write).\n   - `odp:PersonalData`: Represents types of personal data that can be accessed.\n   - `odp:ApplicationOrService`: Represents applications or services that agents can use.\n   - `odp:Policy`: Represents policies related to data access.\n\n2. **Properties**:\n   - `odp:hasAccessMode`: Links an `odp:Agent` to an `odp:AccessMode`.\n   - `odp:accessesPersonalData`: Links an `odp:Agent` to `odp:PersonalData`.\n   - `odp:usesApplicationOrService`: Links an `odp:Agent` to `odp:ApplicationOrService`.\n   - `odp:hasCreator`: Links an `odp:Policy` to an `odp:Agent`.\n   - `odp:hasPolicyIdentifier`: Links an `odp:Policy` to a policy identifier (string).\n   - `odp:issuedOn`: Links an `odp:Policy` to a date or timestamp.\n\n3. **Axioms**:\n   - Ensure that instances of `odp:Agent` can have multiple relationships to `odp:AccessMode`, `odp:"
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?policy ?accessMode ?personalData ?purpose ?applicationOrService WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasAccessMode ?accessMode . }\n  OPTIONAL { ?policy odp:accessesPersonalData ?personalData . }\n  OPTIONAL { ?policy odp:hasPurpose ?purpose . }\n  OPTIONAL { ?policy odp:usesApplicationOrService ?applicationOrService . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Policy` Class**: Ensure that the `odp:Policy` class is properly defined in the ontology with relevant characteristics and relationships.\n\n2. **Add Properties**:\n   - **`hasAccessMode`**: Define this property to link a `Policy` to its access modes (e.g., \"read\", \"write\").\n   - **`accessesPersonalData`**: Create this property to specify which personal data elements are accessed by the policy (e.g., \"name\", \"email\").\n   - **`hasPurpose`**: Introduce this property to describe the purpose of the policy (e.g., \"data processing\", \"marketing\").\n   - **`usesApplicationOrService`**: Define this property to indicate which applications or services are utilized under the policy (e.g., \"CRM system\", \"analytics tool\").\n\n3. **Add Instances**: Populate the ontology with instances of `Policy` and corresponding values for the properties to ensure that the query can retrieve meaningful results.\n\n4. **Ensure Consistency**: Verify that the ontology is consistent and that all classes and properties are correctly linked to avoid any issues with querying.\n\n5. **Documentation**: Provide clear documentation for each class and property to ensure that their purposes and relationships are well understood."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#AccessMode> }\n  UNION\n  { ?class a <http://example.org/odp#Agent> }\n  UNION\n  { ?class a <http://example.org/odp#ApplicationOrService> }\n  UNION\n  { ?class a <http://example.org/odp#PersonalData> }\n  UNION\n  { ?class a <http://example.org/odp#Policy> }\n  UNION\n  { ?class a <http://example.org/odp#Purpose> }\n  OPTIONAL { ?property a <http://example.org/odp#accessesPersonalData> }\n  OPTIONAL { ?property a <http://example.org/odp#hasAccessMode> }\n  OPTIONAL { ?property a <http://example.org/odp#hasAssignee> }\n  OPTIONAL { ?property a <http://example.org/odp#hasCreator> }\n  OPTIONAL { ?property a <http://example.org/odp#hasPurpose> }\n  OPTIONAL { ?property a <http://example.org/odp#usesApplicationOrService> }\n  OPTIONAL { ?property a <http://example.org/odp#hasPolicyIdentifier> }\n  OPTIONAL { ?property a <http://example.org/odp#issuedOn> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your SPARQL query returns results for the competency question regarding classes and properties in your ontology, consider the following suggestions:\n\n1. **Declare Classes**: Ensure that all relevant classes are declared in your ontology using the `owl:Class` construct. For example:\n   ```turtle\n   :AccessMode a owl:Class .\n   :Agent a owl:Class .\n   :ApplicationOrService a owl:Class .\n   :PersonalData a owl:Class .\n   :Policy a owl:Class .\n   :Purpose a owl:Class .\n   ```\n\n2. **Declare Properties**: Ensure that all relevant properties are declared using the appropriate OWL property types. For example:\n   ```turtle\n   :accessesPersonalData a owl:ObjectProperty .\n   :hasAccessMode a owl:ObjectProperty .\n   :hasAssignee a owl:ObjectProperty .\n   :hasCreator a owl:ObjectProperty .\n   :hasPurpose a owl:ObjectProperty .\n   :usesApplicationOrService a owl:ObjectProperty .\n   :hasPolicyIdentifier a owl:DatatypeProperty .\n   :issuedOn a owl:DatatypeProperty .\n   ```\n\n3. **Check Namespace**: Verify that the namespace `<http://example.org/odp#>` is correctly defined in your ontology and that all classes and properties are correctly prefixed with this namespace.\n\n4. **Use a General Query**: Modify your SPARQL query to be more general, allowing it to retrieve all classes and properties without specifying"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?policy ?accessMode ?personalData ?purpose ?applicationOrService WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasAccessMode ?accessMode . }\n  OPTIONAL { ?policy odp:accessesPersonalData ?personalData . }\n  OPTIONAL { ?policy odp:hasPurpose ?purpose . }\n  OPTIONAL { ?policy odp:usesApplicationOrService ?applicationOrService . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `Policy` Class**: Ensure that the class `odp:Policy` is defined in the ontology to represent the policies being queried.\n   ```turtle\n   :Policy a rdfs:Class .\n   ```\n\n2. **Define Properties**: Add the following properties to represent the relationships in the query:\n   - `odp:hasAccessMode`: To link a policy to its access modes.\n   - `odp:accessesPersonalData`: To link a policy to the personal data it accesses.\n   - `odp:hasPurpose`: To link a policy to its purpose.\n   - `odp:usesApplicationOrService`: To link a policy to the applications or services it uses.\n   ```turtle\n   :hasAccessMode a rdf:Property ; rdfs:domain :Policy ; rdfs:range :AccessMode .\n   :accessesPersonalData a rdf:Property ; rdfs:domain :Policy ; rdfs:range :PersonalData .\n   :hasPurpose a rdf:Property ; rdfs:domain :Policy ; rdfs:range :Purpose .\n   :usesApplicationOrService a rdf:Property ; rdfs:domain :Policy ; rdfs:range :ApplicationOrService .\n   ```\n\n3. **Define Related Classes**: Define the classes for the properties'"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:AccessMode .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Agent .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:ApplicationOrService .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:PersonalData .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Policy .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Purpose .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a odp:accessesPersonalData .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a odp:hasAccessMode .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?property a odp:hasAssignee .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property r",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1268), (line:51, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class in your ontology (e.g., `AccessMode`, `Agent`, `ApplicationOrService`, `PersonalData`, `Policy`, `Purpose`), add `rdfs:label` and `rdfs:comment` to provide human-readable names and descriptions. For example:\n   ```turtle\n   odp:AccessMode rdfs:label \"Access Mode\" ;\n                  rdfs:comment \"Defines the mode of access to personal data.\" .\n   ```\n\n2. **Define Annotations for Each Property**: Similarly, for each property (e.g., `accessesPersonalData`, `hasAccessMode`, `hasAssignee`), include `rdfs:label` and `rdfs:comment` to clarify their purpose. For example:\n   ```turtle\n   odp:accessesPersonalData rdfs:label \"Accesses Personal Data\" ;\n                            rdfs:comment \"Indicates that an agent accesses personal data.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are consistent in terms of naming conventions (e.g., using camel case or underscores) and that comments are clear and concise to enhance understanding.\n\n4. **Automate Annotation Generation**: If the ontology is"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

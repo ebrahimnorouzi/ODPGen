@@ -1,0 +1,111 @@
+{
+  "id": "2025-149-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 144,
+    "classes_count": 24,
+    "object_properties_count": 11,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 14,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.5833333333333334
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 144,
+    "triples_after": 510,
+    "inferred_triples": 366,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?agent ?database ?table WHERE {\n  ?action a odp:Action.\n  OPTIONAL { ?action odp:hasAgent ?agent. }\n  OPTIONAL { ?action odp:belongsToDatabase ?database. }\n  OPTIONAL { ?action odp:targetsTable ?table. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - Define a class `Action` if it doesn't already exist, representing actions that can be performed in the context of the ontology.\n\n2. **Properties**:\n   - Add the property `hasAgent` to link an `Action` to an `Agent` (e.g., a user or system performing the action).\n   - Add the property `belongsToDatabase` to associate an `Action` with a `Database` where the action is executed.\n   - Add the property `targetsTable` to connect an `Action` to a `Table` that is affected by the action.\n\n3. **Instances**:\n   - Create instances of `Action`, `Agent`, `Database`, and `Table` to ensure there are actual data points in the ontology that can be queried.\n\n4. **Axioms**:\n   - Define axioms that specify the relationships between these classes and properties, ensuring that they are correctly linked in the ontology.\n\nBy implementing these suggestions, the ontology will be better equipped to provide meaningful results for the given SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?action ?actionScope ?agent ?database ?table WHERE {\n  ?action a <http://example.org/odp#Action> .\n  OPTIONAL { ?action <http://example.org/odp#hasActionScope> ?actionScope . }\n  OPTIONAL { ?action <http://example.org/odp#hasAgent> ?agent . }\n  OPTIONAL { ?action <http://example.org/odp#belongsToDatabase> ?database . }\n  OPTIONAL { ?action <http://example.org/odp#belongsToTable> ?table . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `Action` Class**: Ensure that the class `Action` is defined in the ontology with the appropriate rdfs:subClassOf relationships if necessary.\n\n2. **Add Properties**:\n   - **`hasActionScope`**: Define this property to relate an `Action` to its scope (e.g., `:ActionScope`).\n   - **`hasAgent`**: Define this property to relate an `Action` to an `Agent` (e.g., `:Agent`).\n   - **`belongsToDatabase`**: Define this property to relate an `Action` to a `Database` (e.g., `:Database`).\n   - **`belongsToTable`**: Define this property to relate an `Action` to a `Table` (e.g., `:Table`).\n\n3. **Create Domain and Range Axioms**: Specify the domain and range for each property to ensure they are correctly associated with the `Action` class and their respective classes (e.g., `hasActionScope` domain: `Action`, range: `ActionScope`).\n\n4. **Add Example Instances**: While the request is to avoid individual instances, consider adding example instances in the ontology for testing purposes to ensure the properties are functioning as expected.\n\n5. **"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a ?type .\n    OPTIONAL { ?class <http://www.w3.org/2000/01/rdf-schema#label> ?label . }\n    OPTIONAL { ?class <http://www.w3.org/2000/01/rdf-schema#comment> ?comment . }\n  }\n  UNION\n  { \n    ?property a ?type .\n    OPTIONAL { ?property <http://www.w3.org/2000/01/rdf-schema#label> ?label . }\n    OPTIONAL { ?property <http://www.w3.org/2000/01/rdf-schema#comment> ?comment . }\n  }\n  FILTER(?type IN (\n    <http://example.org/odp#ASTNode>, \n    <http://example.org/odp#Action>, \n    <http://example.org/odp#ActionScope>, \n    <http://example.org/odp#Agent>, \n    <http://example.org/odp#Column>, \n    <http://example.org/odp#ColumnRef>, \n    <http://example.org/odp#Condition>, \n    <http://example.org/odp#Database>, \n    <http://example.org/odp#ModifyAction>, \n    <http://example.org/odp#Policy>, \n    <http://example.org/odp#ProcessActionScope>, \n    <http://example.org/odp#Prohibition>, \n    <http://example.org/odp#ReadAction>, \n    <http://example.org/odp#ReferenceNode>, \n    <http://example.org/odp#RowTag>, \n    <http://example.org/odp#SQLClause>, \n    <http://example.org/odp#SQLQuery>, \n    <http://example.org/odp#SQLStatement>, \n    <http://example.org/odp#SelectStatement>, \n    <http://example.org",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'FILTER'  (at char 447), (line:13, col:3)",
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete actions:\n\n1. **Define a SHACL Shape**: Create a SHACL shape that specifies that every class and property must have both `rdfs:label` and `rdfs:comment`. This will enforce the requirement at the validation level.\n\n2. **Add Annotations for Existing Classes and Properties**: Review the existing classes and properties in your ontology and add `rdfs:label` and `rdfs:comment` annotations where they are missing. Ensure that each annotation provides meaningful descriptions.\n\n3. **Implement a SPARQL Update Query**: Write a SPARQL update query to automatically add default `rdfs:label` and `rdfs:comment` annotations for any class or property that currently lacks them. This can help in bulk updating your ontology.\n\n4. **Create a Documentation Process**: Establish a process for future ontology development that mandates the inclusion of `rdfs:label` and `rdfs:comment` for every new class and property added to the ontology.\n\n5. **Conduct Regular Audits**: Schedule regular audits of the ontology to check for compliance with the annotation requirements, ensuring that all classes and properties are properly documented."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Policy> .\n  OPTIONAL { ?ontology rdfs:label ?label } .\n  OPTIONAL { ?ontology rdfs:comment ?comment } .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology header can be queried successfully and to answer the competency question, you should consider the following additions:\n\n1. **Define the Ontology Class**: Ensure that the ontology is defined as an instance of `owl:Ontology`. For example:\n   ```turtle\n   :MyOntology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include a `rdfs:label` property for the ontology to provide a human-readable name:\n   ```turtle\n   :MyOntology rdfs:label \"My Ontology\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include a `rdfs:comment` property to describe the ontology:\n   ```turtle\n   :MyOntology rdfs:comment \"This ontology describes...\" .\n   ```\n\n4. **Use the Correct Namespace**: Ensure that the ontology is using the correct namespace for `owl` and `rdfs`. For example:\n   ```turtle\n   @prefix owl: <http://www.w3.org/2002/07/owl#> .\n   @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n   ```\n\n5. **Check for Correct URI**: Make sure that the URI used in the SPARQL query matches the one defined in the ontology. For example, if your ontology is defined as `http://example.org/odp#MyOntology`,"
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "SELECT ?policy ?action ?database ?table WHERE {\n  ?policy a <http://example.org/odp#Policy> .\n  OPTIONAL { ?policy <http://example.org/odp#hasAction> ?action . }\n  OPTIONAL { ?policy <http://example.org/odp#belongsToDatabase> ?database . }\n  OPTIONAL { ?policy <http://example.org/odp#belongsToTable> ?table . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can effectively answer the competency question regarding policies, actions, databases, and tables, consider adding the following classes and properties:\n\n1. **Classes**:\n   - **Policy**: Ensure this class is defined to represent the policies in your ontology.\n   - **Action**: Define this class to represent the actions associated with policies.\n   - **Database**: Define this class to represent the databases that policies belong to.\n   - **Table**: Define this class to represent the tables that policies belong to.\n\n2. **Properties**:\n   - **hasAction**: Define this object property to link a `Policy` to an `Action`.\n   - **belongsToDatabase**: Define this object property to link a `Policy` to a `Database`.\n   - **belongsToTable**: Define this object property to link a `Policy` to a `Table`.\n\n3. **Axioms**:\n   - Ensure that the properties are correctly defined with domain and range restrictions, e.g., `hasAction` has a domain of `Policy` and a range of `Action`, to enforce the relationships.\n\nBy implementing these additions, the ontology will be better structured to return results for the SPARQL query provided."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

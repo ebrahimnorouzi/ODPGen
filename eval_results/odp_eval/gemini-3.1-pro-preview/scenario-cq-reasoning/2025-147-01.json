@@ -1,0 +1,449 @@
+{
+  "id": "2025-147-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 14,
+    "classes_count": 1,
+    "object_properties_count": 0,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 2,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 2,
+    "attribute_richness": 0.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 2.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 14,
+    "triples_after": 145,
+    "inferred_triples": 131,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "How are ships clearly identified?",
+    "How are a ship's dimensions described?",
+    "What information can be provided about the typical location of a ship?",
+    "Who can be the owner of a ship?",
+    "How is a ship's average speed over ground specified?",
+    "How many container ships are registered under the German flag?",
+    "How is the GPS antenna placed relatively to the ship's structure (bow, stern, port, starboard)?",
+    "Which organization owns the most ships?",
+    "What information can be provided about a ship route?",
+    "What information is known about a single trajectory part?",
+    "What types of trajectories are distinguished?",
+    "What unit does the draught of a ship have?",
+    "What was the average speed over ground of the ship on route on day X?",
+    "What route is predicted for ship X?",
+    "What types of engines are used in ships?",
+    "What combinations of engines can exist?",
+    "What powers these ship engines?",
+    "What is driven by ship engines?",
+    "What types of propulsion systems can ships have?",
+    "What propulsion systems don't rely on an engine?",
+    "Which propulsion technologies are used by each individual propulsion system?",
+    "What falls under the category of propulsion technologies powered by engines?",
+    "What types of jet propulsors exist?",
+    "What types of bladed propulsors exist?",
+    "What types of blade propulsors follow a special design?",
+    "What properties describe a bladed propulsor?",
+    "What types of screw propellers can be used?",
+    "What is used to prevent cavitation on technologies for motorized propulsion?",
+    "What type of sails exist?",
+    "Which type of propulsion technologies can assist a motorized ship?",
+    "What fuel does ship X use to drive?",
+    "How many engines power ship X?",
+    "What types of propellers are installed on ship X?",
+    "What is the most common type of propeller?",
+    "How many ships have sails?",
+    "Which ships use electric engines exclusively?",
+    "What motorized propulsion does a ship use that is assisted by wind propulsion?",
+    "How many supercavitating propellers does ship X use?",
+    "What diameter and how many blades does the fixed pitch propeller Y of ship X have?",
+    "What is the least utilized wind assisted propulsion system?",
+    "What different kinds of data can be used to represent a ship?",
+    "How is sonar data of ships stored?",
+    "What image resources are available for a ship?",
+    "What textual information about a ship is available?",
+    "What does ship X look like?",
+    "How does ship X sound like on a sonar?",
+    "What is the textual description of ship X?",
+    "Are there ships without sonar signatures?"
+  ],
+  "cqs_count": 48,
+  "cq_verification": {
+    "cqs_total": 48,
+    "cqs_passed": 4,
+    "cqs_failed": 44,
+    "pass_rate": 0.0833,
+    "results": [
+      {
+        "cq": "How are ships clearly identified?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding how ships are clearly identified, consider adding the following elements to the ontology:\n\n1. **Class Definition**: Ensure that the class `Ship` is properly defined in the ontology, including its hierarchy and relationships to other relevant classes (e.g., `Vessel`, `Watercraft`).\n\n2. **Identifier Property**: Introduce a property such as `hasIdentifier` (e.g., `http://example.org/odp#hasIdentifier`) that links a `Ship` to its unique identifiers (e.g., IMO number, MMSI number, or other registration numbers).\n\n3. **Identifier Type Class**: Create a class for `Identifier` (e.g., `http://example.org/odp#Identifier`) that can represent different types of identifiers, allowing for properties like `identifierType` to specify whether it is an IMO number, MMSI, etc.\n\n4. **Data Properties**: Define data properties such as `identifierValue` (e.g., `http://example.org/odp#identifierValue`) to store the actual value of the identifier associated with a ship.\n\n5. **Example Instances**: Add example instances of `Ship` with associated identifiers to the ontology to ensure that queries can return results and demonstrate the relationships clearly.\n\nBy implementing these suggestions, the ontology will be better equipped to answer questions about ship identification."
+      },
+      {
+        "cq": "How are a ship's dimensions described?",
+        "sparql": "SELECT ?ship ?dimension WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { \n    ?ship <http://example.org/odp#hasDimension> ?dimension \n  } \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding how a ship's dimensions are described, consider adding the following elements to the ontology:\n\n1. **Class Definition**: Define a class for dimensions, such as `<http://example.org/odp#Dimension>`, to represent various types of dimensions (e.g., length, width, height).\n\n2. **Properties**: Introduce properties to relate ships to their dimensions, such as:\n   - `<http://example.org/odp#hasLength>` (to specify the length of the ship)\n   - `<http://example.org/odp#hasWidth>` (to specify the width of the ship)\n   - `<http://example.org/odp#hasHeight>` (to specify the height of the ship)\n\n3. **Data Types**: Ensure that the dimension properties can link to data types that represent numerical values, such as `xsd:decimal` or `xsd:float`, to allow for precise measurements.\n\n4. **Axioms**: Add axioms to define the relationships clearly, such as stating that a ship has at least one dimension, ensuring that the ontology captures the necessary constraints.\n\n5. **Example Instances**: Create example instances of ships and their dimensions to validate the ontology and ensure that the SPARQL query can return meaningful results."
+      },
+      {
+        "cq": "What information can be provided about the typical location of a ship?",
+        "sparql": "SELECT ?ship ?location WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasLocation> ?location }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the typical location of a ship, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that the class `Ship` is properly defined in the ontology, if not already present. This class should represent all entities that are ships.\n\n2. **Property Definition**: Define a property `hasLocation` (or a more specific property like `typicalLocation`) that links a `Ship` to its location. This property should have a domain of `Ship` and a range that could be a class representing locations (e.g., `Location`).\n\n3. **Location Class**: Create a `Location` class that can represent various types of locations (e.g., ports, coordinates, regions). This class can have subclasses if needed (e.g., `Port`, `Harbor`).\n\n4. **Axioms for Typical Locations**: Add axioms that specify typical locations for different types of ships, if applicable. For example, you could define that certain classes of ships (like cargo ships) typically have locations that are ports.\n\n5. **Data Population**: Ensure that instances of `Ship` are populated with actual data, including their `hasLocation` property, to allow for meaningful query results.\n\nBy implementing these suggestions, the ontology will be better equipped to provide information about the typical location of ships."
+      },
+      {
+        "cq": "Who can be the owner of a ship?",
+        "sparql": "SELECT ?owner WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#owner> ?owner }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"Who can be the owner of a ship?\" in your ontology, consider the following additions:\n\n1. **Define Owner Class**: Introduce a class `<http://example.org/odp#Owner>` to represent entities that can own ships, which could include individuals, companies, or organizations.\n\n2. **Add Ownership Property**: Ensure the property `<http://example.org/odp#owner>` is defined as a relationship between `<http://example.org/odp#Ship>` and `<http://example.org/odp#Owner>`, with appropriate domain and range specifications:\n   - Domain: `<http://example.org/odp#Ship>`\n   - Range: `<http://example.org/odp#Owner>`\n\n3. **Specify Subclasses of Owner**: If applicable, create subclasses of `<http://example.org/odp#Owner>` (e.g., `<http://example.org/odp#IndividualOwner>`, `<http://example.org/odp#CompanyOwner>`) to capture different types of owners.\n\n4. **Add Ownership Constraints**: If there are specific constraints or conditions under which an entity can be an owner (e.g., legal age for individuals, registration for companies), define these as axioms in the ontology.\n\n5. **Populate Instances**: Ensure that instances of `<http://example.org/odp#Ship>` and `<http://example.org/odp#Owner>` are populated in the ontology to allow for meaningful queries and results"
+      },
+      {
+        "cq": "How is a ship's average speed over ground specified?",
+        "sparql": "SELECT ?ship ?averageSpeed WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#averageSpeed> ?averageSpeed }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding a ship's average speed over ground, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that the class `Ship` is defined in the ontology, if not already present. This class should represent all ship entities.\n\n2. **Property Definition**: Introduce a property `averageSpeed` (e.g., `http://example.org/odp#averageSpeed`) that links a `Ship` to its average speed value. This property should be defined with a suitable data type, such as `xsd:decimal` or `xsd:float`, to represent speed numerically.\n\n3. **Speed Measurement Context**: Optionally, define a class or property to specify the context of the speed measurement, such as `SpeedMeasurement` or `SpeedUnit`, to clarify whether the speed is in knots, miles per hour, etc.\n\n4. **Instance Population**: Ensure that instances of `Ship` are populated in the ontology with the `averageSpeed` property filled with appropriate values to enable query results.\n\n5. **RDF Schema or OWL Axioms**: If using OWL, consider adding axioms that define the relationship between `Ship` and `averageSpeed`, ensuring that the property is correctly typed and that any necessary constraints (e.g., minimum or maximum speed) are specified.\n\nBy implementing these suggestions, the ontology will be better equipped to provide answers to the competency question regarding a ship's average speed"
+      },
+      {
+        "cq": "How many container ships are registered under the German flag?",
+        "sparql": "SELECT (COUNT(?ship) AS ?count) WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  FILTER(CONTAINS(STR(?ship), \"German\"))\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "How is the GPS antenna placed relatively to the ship's structure (bow, stern, port, starboard)?",
+        "sparql": "SELECT ?ship ?gpsAntennaPlacement WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#gpsAntennaPlacement> ?gpsAntennaPlacement }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the placement of the GPS antenna relative to the ship's structure, consider the following additions to the ontology:\n\n1. **Class Definition**: Introduce a class for `GPSAntenna` to represent the GPS antenna as a distinct entity within the ontology.\n   ```ttl\n   :GPSAntenna a owl:Class .\n   ```\n\n2. **Property Definition**: Create a property `gpsAntennaPlacement` that links a `Ship` to its `GPSAntenna` and specifies its placement relative to the ship's structure.\n   ```ttl\n   :gpsAntennaPlacement a owl:ObjectProperty ;\n       rdfs:domain :Ship ;\n       rdfs:range :GPSAntennaPlacementType .\n   ```\n\n3. **Placement Type Enumeration**: Define an enumeration or class for `GPSAntennaPlacementType` that includes values such as `Bow`, `Stern`, `Port`, and `Starboard`.\n   ```ttl\n   :GPSAntennaPlacementType a owl:Class ;\n       rdfs:subClassOf owl:Thing .\n   :Bow a :GPSAntennaPlacementType .\n   :Stern a :GPSAntennaPlacementType .\n   :Port a :GPSAntennaPlacementType .\n   :Starboard a :GPSAntennaPlacementType .\n   ```\n\n4. **Axiom for Relationships**: Establish axioms that define the relationship between the"
+      },
+      {
+        "cq": "Which organization owns the most ships?",
+        "sparql": "SELECT ?organization (COUNT(?ship) AS ?shipCount) WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#ownedBy> ?organization }\n} GROUP BY ?organization ORDER BY DESC(?shipCount) LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which organization owns the most ships, consider the following additions to the ontology:\n\n1. **Define the `Ship` Class**: Ensure that the `Ship` class is clearly defined in the ontology, with appropriate properties that describe its attributes and relationships.\n\n2. **Add the `ownedBy` Property**: Create a property `ownedBy` that links instances of the `Ship` class to instances of an `Organization` class. This property should be defined as a relationship where a ship is owned by an organization.\n\n3. **Define the `Organization` Class**: Ensure there is a class for `Organization` that represents entities that can own ships. This class should include relevant properties that describe organizations.\n\n4. **Include Instances of Ships and Organizations**: Populate the ontology with instances of ships and organizations, ensuring that the `ownedBy` property is correctly used to link ships to their respective owners.\n\n5. **Check for Data Consistency**: Ensure that the data is consistent and that there are no missing links between ships and organizations, as this could lead to empty query results."
+      },
+      {
+        "cq": "What information can be provided about a ship route?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?shipRoute ?additionalInfo WHERE {\n  ?shipRoute a odp:Ship .\n  OPTIONAL { ?shipRoute ?property ?additionalInfo }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the information that can be provided about a ship route, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Class Definition**: Define a class `ShipRoute` (if not already defined) to represent the concept of a ship route.\n   ```ttl\n   :ShipRoute a owl:Class .\n   ```\n\n2. **Properties**: Introduce specific properties related to ship routes, such as:\n   - `odp:hasDeparturePort` (to link to a port where the ship departs)\n   - `odp:hasDestinationPort` (to link to a port where the ship arrives)\n   - `odp:hasDistance` (to specify the distance of the route)\n   - `odp:hasEstimatedTime` (to provide the estimated travel time)\n\n   Example:\n   ```ttl\n   odp:hasDeparturePort a owl:ObjectProperty .\n   odp:hasDestinationPort a owl:ObjectProperty .\n   odp:hasDistance a owl:DatatypeProperty ; rdfs:range xsd:float .\n   odp:hasEstimatedTime a owl:DatatypeProperty ; rdfs:range xsd:duration .\n   ```\n\n3. **Axioms**: Add axioms to define relationships and constraints, such as:\n   - A ship route must have a departure port and a destination port.\n   - The distance must be a positive value.\n\n   Example:\n   ```ttl\n   :ShipRoute"
+      },
+      {
+        "cq": "What information is known about a single trajectory part?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding information about a single trajectory part, consider adding the following elements to the ontology:\n\n1. **Class for Trajectory Part**: Introduce a class, e.g., `<http://example.org/odp#TrajectoryPart>`, to represent individual segments of a trajectory.\n\n2. **Properties for Trajectory Data**: Define properties such as:\n   - `<http://example.org/odp#hasStartLocation>`: to link a trajectory part to its starting location.\n   - `<http://example.org/odp#hasEndLocation>`: to link a trajectory part to its ending location.\n   - `<http://example.org/odp#hasTimeInterval>`: to specify the time period during which the trajectory part occurs.\n\n3. **Relationship to Ship**: Establish a property, e.g., `<http://example.org/odp#hasTrajectoryPart>`, to associate a ship with its trajectory parts, allowing for queries that connect ships to their respective trajectory segments.\n\n4. **Axioms for Data Integrity**: Implement axioms to ensure that each trajectory part is associated with exactly one ship and has valid start and end locations, enhancing the semantic integrity of the data.\n\nBy incorporating these elements, the ontology will be better equipped to provide detailed information about individual trajectory parts."
+      },
+      {
+        "cq": "What types of trajectories are distinguished?",
+        "sparql": "SELECT ?trajectory WHERE { \n  ?trajectory a <http://example.org/odp#Ship> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the types of trajectories distinguished in your ontology, consider the following suggestions:\n\n1. **Define a Trajectory Class**: Introduce a class `Trajectory` (e.g., `<http://example.org/odp#Trajectory>`) to represent different types of trajectories. This class can serve as a superclass for specific trajectory types.\n\n2. **Create Subclasses for Trajectory Types**: Define subclasses under the `Trajectory` class to represent specific types of trajectories, such as `StraightTrajectory`, `CurvedTrajectory`, and `ComplexTrajectory`. This allows for differentiation between various trajectory types.\n\n3. **Add Properties for Trajectory Characteristics**: Introduce properties such as `hasStartPoint`, `hasEndPoint`, and `hasPath` to describe the characteristics of trajectories. These properties can link trajectories to their spatial representations.\n\n4. **Establish Relationships with Ships**: Create a property like `hasTrajectory` (e.g., `<http://example.org/odp#hasTrajectory>`) to link instances of `Ship` to their corresponding `Trajectory` instances, enabling queries to retrieve trajectories associated with ships.\n\n5. **Include Axioms for Trajectory Types**: Add axioms that define the relationships and constraints between `Ship`, `Trajectory`, and its subclasses, ensuring that the ontology captures the intended semantics of trajectory types effectively.\n\nBy implementing these suggestions, you will enhance the ontology's ability to distinguish and query different types of trajectories."
+      },
+      {
+        "cq": "What unit does the draught of a ship have?",
+        "sparql": "SELECT ?unit WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#draughtUnit> ?unit }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the unit of draught for a ship, consider the following additions to the ontology:\n\n1. **Define a Property for Draught Unit**: \n   - Create a property `http://example.org/odp#draughtUnit` that relates a `Ship` to its draught unit. This property should be defined as an object property.\n\n2. **Create a Class for Units**: \n   - Introduce a class `http://example.org/odp#Unit` to represent various measurement units. This class can include subclasses for specific types of units (e.g., `http://example.org/odp#Meter`, `http://example.org/odp#Feet`).\n\n3. **Link Draught to Unit**: \n   - Ensure that the `draught` property (e.g., `http://example.org/odp#draught`) is defined as a datatype property that can be associated with a numerical value, and that it is linked to the `draughtUnit` property.\n\n4. **Add Instances of Units**: \n   - Populate the ontology with instances of the `Unit` class, such as `http://example.org/odp#Meter` and `http://example.org/odp#Feet`, to provide concrete examples of units that can be used for draught.\n\n5. **Define Domain and Range**: \n   - Specify the domain of the `draughtUnit` property as `Ship` and the range"
+      },
+      {
+        "cq": "What was the average speed over ground of the ship on route on day X?",
+        "sparql": "SELECT ?ship ?averageSpeed WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#averageSpeed> ?averageSpeed }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the average speed over ground of a ship on a specific route on a given day, consider the following additions to the ontology:\n\n1. **Class for Route**: Introduce a class `<http://example.org/odp#Route>` to represent the routes taken by ships, which can be linked to specific ships and their journeys.\n\n2. **Property for Speed Measurement**: Define a property `<http://example.org/odp#averageSpeed>` that relates a ship to its average speed over ground, ensuring it can be associated with specific instances of routes or journeys.\n\n3. **Property for Date**: Add a property `<http://example.org/odp#hasDate>` to link a route or journey to a specific date, allowing for temporal queries regarding the ship's performance.\n\n4. **Class for Journey**: Create a class `<http://example.org/odp#Journey>` that represents individual trips taken by ships, which can include properties for the ship, route, date, and average speed.\n\n5. **Instance Data**: Ensure that instances of ships, routes, and journeys are populated with relevant data, including average speed values and associated dates, to enable meaningful queries. \n\nThese additions will provide the necessary structure to capture and query the average speed of ships on specific routes and dates."
+      },
+      {
+        "cq": "What route is predicted for ship X?",
+        "sparql": "SELECT ?route WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  ?ship <http://example.org/odp#predictedRoute> ?route .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding the predicted route for a ship, consider the following additions:\n\n1. **Class Definition**: Ensure that the class `Ship` is defined in the ontology, if not already present. This class should represent all ship entities.\n\n2. **Property Definition**: Add a property `predictedRoute` to the ontology, defined as:\n   - **Predicate**: `http://example.org/odp#predictedRoute`\n   - **Domain**: `http://example.org/odp#Ship`\n   - **Range**: A class representing routes, e.g., `http://example.org/odp#Route`.\n\n3. **Route Class**: Define a `Route` class in the ontology to represent the routes that ships can take. This class should include relevant attributes such as start and end points, waypoints, and any other necessary details.\n\n4. **Instance Creation**: Ensure that instances of `Ship` are created in the ontology and that they have associated `predictedRoute` properties linking them to specific instances of the `Route` class.\n\n5. **Data Population**: Populate the ontology with data that includes ships and their predicted routes to ensure that the query can return meaningful results."
+      },
+      {
+        "cq": "What types of engines are used in ships?",
+        "sparql": "SELECT ?engineType WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasEngineType> ?engineType }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the types of engines used in ships, consider the following additions to the ontology:\n\n1. **Define EngineType Class**: Create a class `<http://example.org/odp#EngineType>` to represent different types of engines (e.g., diesel, gas turbine, electric).\n\n2. **Add hasEngineType Property**: Ensure the property `<http://example.org/odp#hasEngineType>` is defined as a relationship between the `Ship` class and the `EngineType` class, allowing ships to be associated with specific engine types.\n\n3. **Create Subclasses of EngineType**: Define subclasses under `EngineType` for specific engine types (e.g., `<http://example.org/odp#DieselEngine>`, `<http://example.org/odp#GasTurbineEngine>`, `<http://example.org/odp#ElectricEngine>`).\n\n4. **Populate Instances**: Add instances of `Ship` and associate them with specific `EngineType` instances using the `hasEngineType` property to ensure there are data points to query.\n\n5. **Ensure Proper Class Hierarchy**: Verify that the `Ship` class is correctly defined and that it is clear how it relates to the `EngineType` class within the ontology structure."
+      },
+      {
+        "cq": "What combinations of engines can exist?",
+        "sparql": "SELECT ?engine1 ?engine2 WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasEngine> ?engine1 . }\n  OPTIONAL { ?ship <http://example.org/odp#hasEngine> ?engine2 . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the combinations of engines that can exist, consider the following additions to the ontology:\n\n1. **Define Engine Class**: Create a class for engines, e.g., `<http://example.org/odp#Engine>`, to represent different types of engines.\n\n2. **Define Engine Types**: Introduce subclasses of the Engine class, such as `<http://example.org/odp#DieselEngine>`, `<http://example.org/odp#ElectricEngine>`, etc., to specify different engine types.\n\n3. **Modify hasEngine Property**: Ensure that the property `<http://example.org/odp#hasEngine>` is defined as a relationship between the Ship class and the Engine class, allowing for multiple engines to be associated with a single ship.\n\n4. **Add Engine Combination Property**: Introduce a property, e.g., `<http://example.org/odp#canCombineWith>`, to define valid combinations of engines, allowing for the specification of which engines can coexist on a ship.\n\n5. **Create Instances of Engines**: Add instances of the engine types to the ontology, such as `<http://example.org/odp#Engine1>` and `<http://example.org/odp#Engine2>`, and use the `canCombineWith` property to define valid combinations between these instances.\n\nThese additions will enable the ontology to represent and query the combinations of engines effectively."
+      },
+      {
+        "cq": "What powers these ship engines?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?ship ?enginePower WHERE {\n  ?ship a odp:Ship .\n  OPTIONAL { ?ship odp:enginePower ?enginePower }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"What powers these ship engines?\", consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a class `odp:EnginePower` to represent the various types of power sources for engines (e.g., diesel, electric, nuclear).\n\n2. **Property Addition**: Define a property `odp:hasEnginePower` to link `odp:Ship` instances to their corresponding `odp:EnginePower` instances.\n\n3. **Property Addition**: If applicable, create a property `odp:usesFuelType` to specify the fuel type used by the `odp:EnginePower`, allowing for more detailed queries about the energy sources.\n\n4. **Axiom Addition**: Establish a relationship between `odp:Ship` and `odp:EnginePower` using the `odp:hasEnginePower` property to ensure that each ship can be associated with its engine power source.\n\nBy implementing these changes, the ontology will be better equipped to provide answers to the competency question regarding ship engine power sources."
+      },
+      {
+        "cq": "What is driven by ship engines?",
+        "sparql": "SELECT ?shipEngine WHERE { \n  ?shipEngine a <http://example.org/odp#Ship> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"What is driven by ship engines?\" you can enhance your ontology with the following additions:\n\n1. **Define a Class for Ship Engines**: Create a class `ShipEngine` to represent ship engines explicitly. This will help in categorizing and identifying ship engines within the ontology.\n\n   ```ttl\n   :ShipEngine a owl:Class .\n   ```\n\n2. **Establish a Relationship**: Introduce a property `drives` that links `ShipEngine` to the entities it powers, such as `Ship` or other relevant classes (e.g., `Boat`, `Vessel`).\n\n   ```ttl\n   :drives a owl:ObjectProperty ;\n           rdfs:domain :ShipEngine ;\n           rdfs:range :Ship .\n   ```\n\n3. **Create Instances of Ships and Engines**: Add instances of `Ship` and `ShipEngine` to the ontology, ensuring that you use the `drives` property to connect them.\n\n   ```ttl\n   :Titanic a :Ship .\n   :TitanicEngine a :ShipEngine ;\n                  :drives :Titanic .\n   ```\n\n4. **Include Additional Classes if Necessary**: If there are other entities that can be driven by ship engines (e.g., `Submarine`, `CargoShip`), consider creating those classes and linking them similarly.\n\n5. **Add Inference Rules (if applicable)**: If your ontology supports reasoning, you might want to"
+      },
+      {
+        "cq": "What types of propulsion systems can ships have?",
+        "sparql": "SELECT ?propulsionSystem WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasPropulsionSystem> ?propulsionSystem }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the types of propulsion systems that ships can have, consider the following additions to the ontology:\n\n1. **Define Propulsion System Class**: Create a class `PropulsionSystem` to represent different types of propulsion systems (e.g., `Engine`, `Sail`, `Nuclear`, etc.).\n\n2. **Establish Relationships**: Add a property `hasPropulsionSystem` that links the `Ship` class to the `PropulsionSystem` class, allowing for the association of ships with their respective propulsion systems.\n\n3. **Specify Subclasses**: Define subclasses under `PropulsionSystem` for specific types of propulsion (e.g., `DieselEngine`, `GasTurbine`, `WindSail`, etc.) to provide more granularity.\n\n4. **Add Instances**: Populate the ontology with instances of `Ship` and `PropulsionSystem` to ensure that there are actual data points to query against.\n\n5. **Include Data Properties**: Optionally, add data properties to `PropulsionSystem` to describe characteristics (e.g., `powerOutput`, `fuelType`) that can provide additional context for each propulsion system type. \n\nThese additions will enable the SPARQL query to return meaningful results regarding the types of propulsion systems associated with ships."
+      },
+      {
+        "cq": "What propulsion systems don't rely on an engine?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#propulsionSystem> ?propulsionSystem . }\n  FILTER NOT EXISTS { ?propulsionSystem a <http://example.org/odp#Engine> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding propulsion systems that do not rely on an engine, consider the following additions to the ontology:\n\n1. **Define Non-Engine Propulsion Systems**: Create a class `<http://example.org/odp#NonEnginePropulsionSystem>` to categorize propulsion systems that do not involve engines, such as sails, oars, or solar sails.\n\n2. **Subclass Relationships**: Establish subclass relationships where specific propulsion systems (e.g., `<http://example.org/odp#Sail>`, `<http://example.org/odp#Oar>`, `<http://example.org/odp#SolarSail>`) are defined as subclasses of `<http://example.org/odp#NonEnginePropulsionSystem>`.\n\n3. **Update Propulsion System Property**: Ensure that the property `<http://example.org/odp#propulsionSystem>` can link ships to both engine-based and non-engine-based propulsion systems, allowing for a broader classification.\n\n4. **Axiom for Engine Exclusion**: Add an axiom that explicitly states that any instance of `<http://example.org/odp#NonEnginePropulsionSystem>` is not an instance of `<http://example.org/odp#Engine>`, reinforcing the distinction between the two categories.\n\n5. **Examples and Instances**: Populate the ontology with instances of non-engine propulsion systems to provide concrete examples, which will help in testing and validating the SPARQL queries."
+      },
+      {
+        "cq": "Which propulsion technologies are used by each individual propulsion system?",
+        "sparql": "SELECT ?ship ?propulsionTechnology WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { \n    ?ship <http://example.org/odp#usesPropulsionTechnology> ?propulsionTechnology \n  } \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the propulsion technologies used by each individual propulsion system, consider the following additions to the ontology:\n\n1. **Define Propulsion System Class**: Introduce a class `<http://example.org/odp#PropulsionSystem>` to represent different propulsion systems (e.g., engines, thrusters).\n\n2. **Establish Relationships**: Create a property `<http://example.org/odp#hasPropulsionSystem>` to link ships to their respective propulsion systems, and a property `<http://example.org/odp#usesPropulsionTechnology>` to link propulsion systems to their specific propulsion technologies.\n\n3. **Define Propulsion Technology Class**: Introduce a class `<http://example.org/odp#PropulsionTechnology>` to categorize various propulsion technologies (e.g., diesel, electric, nuclear).\n\n4. **Add Instances**: Populate the ontology with instances of ships, propulsion systems, and propulsion technologies to ensure that there are actual data points for the query to retrieve.\n\n5. **Ensure Proper Relationships**: Ensure that instances of ships are correctly linked to their propulsion systems and that those systems are linked to the appropriate propulsion technologies using the defined properties. \n\nBy implementing these changes, the ontology will be structured to support the competency question effectively."
+      },
+      {
+        "cq": "What falls under the category of propulsion technologies powered by engines?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#propulsionTechnology> ?technology . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding propulsion technologies powered by engines, consider the following additions to the ontology:\n\n1. **Define a Class for Propulsion Technologies**: \n   - Create a class `PropulsionTechnology` under the namespace `<http://example.org/odp#>` to categorize various propulsion technologies.\n\n2. **Add Subclasses for Engine-Powered Technologies**: \n   - Introduce subclasses such as `EnginePoweredPropulsion` and `NonEnginePoweredPropulsion` under `PropulsionTechnology` to differentiate between types of propulsion.\n\n3. **Establish Properties for Relationships**: \n   - Define a property `hasPropulsionTechnology` (e.g., `<http://example.org/odp#hasPropulsionTechnology>`) to link ships to their respective propulsion technologies.\n\n4. **Create Instances of Propulsion Technologies**: \n   - Add instances of specific propulsion technologies (e.g., `DieselEngine`, `GasTurbine`, `ElectricMotor`) under the `EnginePoweredPropulsion` subclass to provide concrete examples.\n\n5. **Link Ships to Propulsion Technologies**: \n   - Ensure that existing ship instances are linked to their respective propulsion technology instances using the `hasPropulsionTechnology` property.\n\nThese additions will enable the ontology to effectively categorize and retrieve information about ships based on their propulsion technologies."
+      },
+      {
+        "cq": "What types of jet propulsors exist?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the types of jet propulsors, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Class Definition**: Create a class `JetPropulsor` to represent different types of jet propulsors. This class can be a subclass of a broader class like `Propulsor`.\n\n2. **Subclasses**: Define specific subclasses under `JetPropulsor`, such as `Turbojet`, `Turbofan`, `Turboprop`, and `Ramjet`, to categorize the various types of jet propulsors.\n\n3. **Property Definition**: Introduce a property `hasType` (or similar) that links a `Ship` to its `JetPropulsor`. This property can be used to specify which type of jet propulsor a particular ship utilizes.\n\n4. **Axiom Addition**: Add axioms that define the relationships between `Ship`, `JetPropulsor`, and their subclasses, ensuring that each ship can be associated with one or more specific types of jet propulsors.\n\n5. **Instance Creation**: Populate the ontology with instances of `Ship` and link them to instances of the various `JetPropulsor` subclasses to ensure that queries can return meaningful results. \n\nBy implementing these suggestions, the ontology will be better equipped to answer questions about the types of jet propulsors."
+      },
+      {
+        "cq": "What types of bladed propulsors exist?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the types of bladed propulsors, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Class Definition**: Create a class `BladedPropulsor` to represent all types of bladed propulsors. This class can be a subclass of a broader class like `Propulsor`.\n\n2. **Subclasses**: Define specific subclasses under `BladedPropulsor`, such as `Propeller`, `Turbine`, and `Rotor`, to categorize different types of bladed propulsors.\n\n3. **Properties**: Introduce a property `hasType` that links a `Ship` to its `BladedPropulsor`. This property can help in associating ships with their respective propulsor types.\n\n4. **Axioms**: Add axioms that specify the relationship between `Ship` and `BladedPropulsor`, such as \"A Ship can have one or more BladedPropulsors\" to ensure that the ontology captures the relationship correctly.\n\n5. **Data Instances**: Populate the ontology with instances of `Ship` and `BladedPropulsor` to ensure that queries can return meaningful results. For example, create instances like `Ship1` with a `hasType` relationship to `Propeller`.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding the types of bladed propulsors."
+      },
+      {
+        "cq": "What types of blade propulsors follow a special design?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasSpecialDesign> ?design } \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding types of blade propulsors that follow a special design, consider adding the following elements to the ontology:\n\n1. **Class for Blade Propulsors**: Introduce a new class, `<http://example.org/odp#BladePropulsor>`, to categorize all types of blade propulsors.\n\n2. **Property for Special Design**: Define a property, `<http://example.org/odp#hasSpecialDesign>`, that links a blade propulsor to its design characteristics, allowing for the specification of different design types.\n\n3. **Subclass for Special Design Propulsors**: Create a subclass, `<http://example.org/odp#SpecialDesignBladePropulsor>`, under the `BladePropulsor` class to specifically identify those propulsors that have a special design.\n\n4. **Relationship to Ships**: Ensure that the `Ship` class has a property, `<http://example.org/odp#hasPropulsor>`, that connects ships to their respective propulsors, enabling queries about ships with specific propulsor types.\n\n5. **Axioms for Design Characteristics**: Add axioms that define the characteristics of special designs, possibly including properties like `<http://example.org/odp#designType>` or `<http://example.org/odp#designFeatures>`, to provide more detailed information about what constitutes a \"special design.\"\n\nBy implementing these additions, the ontology will be better equipped to answer"
+      },
+      {
+        "cq": "What properties describe a bladed propulsor?",
+        "sparql": "SELECT ?property WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship ?property ?value } \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the properties that describe a bladed propulsor, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Class Definition**: Create a class for `BladedPropulsor` to represent the concept of bladed propulsors within the ontology.\n   ```ttl\n   :BladedPropulsor a owl:Class .\n   ```\n\n2. **Property Definitions**: Define specific properties that describe characteristics of a bladed propulsor, such as:\n   - `hasBladeCount`: to indicate the number of blades.\n   - `hasDiameter`: to specify the diameter of the propulsor.\n   - `hasMaterial`: to describe the material from which the propulsor is made.\n   ```ttl\n   :hasBladeCount a owl:ObjectProperty .\n   :hasDiameter a owl:DatatypeProperty .\n   :hasMaterial a owl:DatatypeProperty .\n   ```\n\n3. **Relationship to Ship**: Establish a relationship between the `Ship` class and the `BladedPropulsor` class to indicate that a ship can have a bladed propulsor.\n   ```ttl\n   :hasPropulsor a owl:ObjectProperty ; \n                 rdfs:domain :Ship ; \n                 rdfs:range :BladedPropulsor .\n   ```\n\n4. **Axioms for Properties**: Add axioms that define the expected values for the properties, such as:"
+      },
+      {
+        "cq": "What types of screw propellers can be used?",
+        "sparql": "SELECT ?screwPropeller WHERE { \n  ?screwPropeller a <http://example.org/odp#Ship> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the types of screw propellers, consider the following additions to the ontology:\n\n1. **Define a Class for Screw Propellers**: \n   - Create a class `ScrewPropeller` (e.g., `<http://example.org/odp#ScrewPropeller>`) to represent different types of screw propellers.\n\n2. **Subclass Relationships**: \n   - Introduce subclasses under `ScrewPropeller` for specific types (e.g., `SingleScrew`, `TwinScrew`, `TripleScrew`, etc.) to categorize various designs.\n\n3. **Property for Propeller Type**: \n   - Add a property `hasType` (e.g., `<http://example.org/odp#hasType>`) to link ships to their respective screw propeller types, allowing for queries about the types used by specific ships.\n\n4. **Instance Data**: \n   - Populate the ontology with instances of `ScrewPropeller` and their relationships to ships, ensuring that there are actual data entries to query against.\n\n5. **Rethink the Query**: \n   - Modify the SPARQL query to target the new `ScrewPropeller` class instead of `Ship`, for example:\n     ```sparql\n     SELECT ?screwPropeller WHERE { \n       ?screwPropeller a <http://example.org/odp#ScrewPropeller> \n     } LIMIT 10"
+      },
+      {
+        "cq": "What is used to prevent cavitation on technologies for motorized propulsion?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#preventsCavitation> ?cavitationTechnology }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding what is used to prevent cavitation in motorized propulsion technologies, consider adding the following elements to the ontology:\n\n1. **Class for Cavitation Prevention Technologies**: Introduce a new class, e.g., `<http://example.org/odp#CavitationPreventionTechnology>`, to categorize various technologies or methods used to prevent cavitation.\n\n2. **Property for Cavitation Prevention**: Define a property, e.g., `<http://example.org/odp#preventsCavitation>`, that relates instances of the `Ship` class to instances of the `CavitationPreventionTechnology` class.\n\n3. **Specific Instances of Cavitation Prevention Technologies**: Add specific instances of the `CavitationPreventionTechnology` class, such as `<http://example.org/odp#CavitationInhibitor>`, `<http://example.org/odp#HydrodynamicDesign>`, or `<http://example.org/odp#VariablePitchPropeller>`.\n\n4. **Relationship to Propulsion Systems**: Create a property, e.g., `<http://example.org/odp#usesPropulsionSystem>`, to link ships to their respective propulsion systems, which can also be related to cavitation prevention technologies.\n\n5. **Axioms for Relationships**: Establish axioms that define the relationships between ships, their propulsion systems, and the technologies used to prevent cavitation, ensuring that the ontology captures the necessary connections for querying"
+      },
+      {
+        "cq": "What type of sails exist?",
+        "sparql": "SELECT ?sailType WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasSailType> ?sailType }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the types of sails, consider the following additions to the ontology:\n\n1. **Class Definition**: Create a class `SailType` to represent different types of sails (e.g., `MainSail`, `Jib`, `Spinnaker`).\n\n2. **Property Definition**: Define a property `hasSailType` that relates a `Ship` to its `SailType`. This property should be an object property.\n\n3. **Axiom Addition**: Ensure that the `Ship` class has a relationship with the `SailType` class through the `hasSailType` property, allowing for multiple sail types to be associated with a single ship.\n\n4. **Instance Creation**: Populate the ontology with instances of `SailType` to represent specific types of sails, ensuring that they are linked to relevant ship instances.\n\n5. **Domain and Range Specification**: Specify the domain of `hasSailType` as `Ship` and the range as `SailType` to enforce the relationship in the ontology."
+      },
+      {
+        "cq": "Which type of propulsion technologies can assist a motorized ship?",
+        "sparql": "SELECT ?propulsionTechnology WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasPropulsionTechnology> ?propulsionTechnology }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding propulsion technologies that can assist a motorized ship, consider the following additions to the ontology:\n\n1. **Class Definition**: Define a class for `PropulsionTechnology` to represent different types of propulsion systems (e.g., `Engine`, `Sail`, `HybridSystem`).\n\n2. **Property Definition**: Create a property `hasPropulsionTechnology` that relates instances of `Ship` to instances of `PropulsionTechnology`. Ensure this property is defined as an object property.\n\n3. **Subclass Relationships**: If applicable, define subclasses of `PropulsionTechnology` (e.g., `DieselEngine`, `GasTurbine`, `ElectricMotor`) to provide more specific types of propulsion technologies.\n\n4. **Ship Class Definition**: Ensure that the `Ship` class is properly defined and that instances of ships are correctly classified as `a Ship`.\n\n5. **Data Population**: Populate the ontology with instances of `Ship` and their associated `PropulsionTechnology` to ensure that the query can return meaningful results.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding propulsion technologies for motorized ships."
+      },
+      {
+        "cq": "What fuel does ship X use to drive?",
+        "sparql": "SELECT ?fuel WHERE { \n  <http://example.org/odp#ShipX> OPTIONAL { <http://example.org/odp#ShipX> <http://example.org/odp#usesFuel> ?fuel } \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found '<'  (at char 24), (line:2, col:3)",
+        "suggestion": "To effectively answer the competency question regarding the fuel used by a specific ship, you should consider the following additions to your ontology:\n\n1. **Class Definition**: Define a class for `Ship` if it doesn't already exist, to categorize all ship instances.\n   ```ttl\n   :Ship a rdfs:Class .\n   ```\n\n2. **Property Definition**: Create a property `usesFuel` to link ships to the type of fuel they use.\n   ```ttl\n   :usesFuel a rdf:Property ;\n              rdfs:domain :Ship ;\n              rdfs:range :Fuel .\n   ```\n\n3. **Class for Fuel**: Define a class for `Fuel` to represent different types of fuel.\n   ```ttl\n   :Fuel a rdfs:Class .\n   ```\n\n4. **Instance Creation**: Ensure that `ShipX` is an instance of the `Ship` class and that the fuel it uses is an instance of the `Fuel` class.\n   ```ttl\n   <http://example.org/odp#ShipX> a :Ship ;\n                                   :usesFuel <http://example.org/odp#Diesel> .\n   <http://example.org/odp#Diesel> a :Fuel .\n   ```\n\n5. **SPARQL Query Correction**: Ensure the SPARQL query correctly references the ontology structure, using the defined properties and classes.\n   ```sparql\n   SELECT ?fuel WHERE { \n     <http://"
+      },
+      {
+        "cq": "How many engines power ship X?",
+        "sparql": "SELECT (COUNT(?engine) AS ?engineCount) WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasEngine> ?engine }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "What types of propellers are installed on ship X?",
+        "sparql": "SELECT ?propellerType WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  ?ship <http://example.org/odp#hasPropellerType> ?propellerType .\n  FILTER(?ship = <http://example.org/odp#ShipX>) \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the competency question regarding the types of propellers installed on ship X, consider the following additions to the ontology:\n\n1. **Define Propeller Class**: Introduce a class for propellers, e.g., `<http://example.org/odp#Propeller>`, to represent different types of propellers.\n\n2. **Create hasPropeller Property**: Ensure there is a property, e.g., `<http://example.org/odp#hasPropeller>`, that links a ship to its propellers, allowing for multiple propellers to be associated with a single ship.\n\n3. **Define Propeller Type Subclasses**: Create subclasses under the Propeller class to represent specific types of propellers, such as `<http://example.org/odp#FixedPitchPropeller>` and `<http://example.org/odp#ControllablePitchPropeller>`.\n\n4. **Update Ship Class**: Modify the Ship class to include the new property, ensuring that it can have multiple instances of the Propeller class associated with it.\n\n5. **Add Instances**: Ensure that instances of Ship and Propeller are created in the ontology, including an instance for Ship X and its associated propeller types.\n\nThese additions will allow the SPARQL query to retrieve the desired information about the propeller types installed on ship X."
+      },
+      {
+        "cq": "What is the most common type of propeller?",
+        "sparql": "SELECT ?propellerType (COUNT(?ship) AS ?count) WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasPropellerType> ?propellerType }\n} GROUP BY ?propellerType ORDER BY DESC(?count) LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the most common type of propeller, consider the following additions to the ontology:\n\n1. **Define PropellerType Class**: Create a class `<http://example.org/odp#PropellerType>` to represent different types of propellers (e.g., fixed-pitch, variable-pitch, etc.).\n\n2. **Add hasPropellerType Property**: Ensure that the property `<http://example.org/odp#hasPropellerType>` is defined as a relationship between the `Ship` class and the `PropellerType` class, allowing ships to be associated with specific propeller types.\n\n3. **Include Instances of Propeller Types**: Populate the ontology with instances of the `PropellerType` class, such as `<http://example.org/odp#FixedPitch>`, `<http://example.org/odp#VariablePitch>`, etc., to provide concrete data for querying.\n\n4. **Ensure Ship Instances Have Propeller Types**: Verify that existing instances of the `Ship` class are linked to instances of the `PropellerType` class through the `hasPropellerType` property, ensuring that there is data to count.\n\n5. **Check Data Consistency**: Validate that the ontology is populated with sufficient data and that the relationships are correctly established to ensure meaningful query results."
+      },
+      {
+        "cq": "How many ships have sails?",
+        "sparql": "SELECT (COUNT(?ship) AS ?numberOfShipsWithSails) WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasSail> ?sail . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Which ships use electric engines exclusively?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?ship WHERE {\n  ?ship a odp:Ship .\n  OPTIONAL { ?ship odp:usesEngine \"electric\" . }\n  FILTER NOT EXISTS { ?ship odp:usesEngine ?engine . FILTER(?engine != \"electric\") }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding ships that use electric engines exclusively, consider the following additions to the ontology:\n\n1. **Property Addition**: Introduce a property `odp:usesEngine` with a range that includes a class `odp:EngineType`, which can have subclasses like `odp:ElectricEngine`, `odp:DieselEngine`, etc.\n\n2. **Class Definition**: Define a class `odp:EngineType` to categorize different types of engines, allowing for more structured data representation.\n\n3. **Data Type Property**: If not already present, ensure that `odp:usesEngine` is defined as a data type property that can link ships to specific engine types, rather than just using string literals.\n\n4. **Axiom for Exclusivity**: Add an axiom or rule that specifies that a ship can only have one engine type, ensuring that if a ship is classified as using an `odp:ElectricEngine`, it cannot simultaneously use any other engine type.\n\n5. **Example Instances**: Populate the ontology with example instances of ships and their corresponding engine types to validate the query and ensure it returns results.\n\nThese changes will help structure the data more effectively and allow for accurate querying of ships with exclusive electric engines."
+      },
+      {
+        "cq": "What motorized propulsion does a ship use that is assisted by wind propulsion?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#motorizedPropulsion> ?motorizedPropulsion . }\n  OPTIONAL { ?ship <http://example.org/odp#windPropulsion> ?windPropulsion . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding ships that use both motorized and wind propulsion, consider the following additions to the ontology:\n\n1. **Define a New Class**: Introduce a class `HybridShip` that represents ships utilizing both motorized and wind propulsion systems.\n\n2. **Create Properties**: \n   - Define a property `hasMotorizedPropulsion` to link a ship to its motorized propulsion system.\n   - Define a property `hasWindPropulsion` to link a ship to its wind propulsion system.\n\n3. **Establish Relationships**: \n   - Create a subclass relationship where `HybridShip` is a subclass of `Ship`, ensuring that all hybrid ships inherit properties from the `Ship` class.\n\n4. **Add Specific Instances**: Include specific instances of motorized and wind propulsion systems in the ontology to provide concrete examples for querying.\n\n5. **Axiom for Hybrid Propulsion**: Add an axiom that specifies that a `HybridShip` must have at least one `hasMotorizedPropulsion` and one `hasWindPropulsion` to qualify as a hybrid. \n\nThese additions will enable the ontology to accurately represent and query ships that utilize both types of propulsion."
+      },
+      {
+        "cq": "How many supercavitating propellers does ship X use?",
+        "sparql": "SELECT (COUNT(?propeller) AS ?count) WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  ?ship <http://example.org/odp#usesPropeller> ?propeller .\n  OPTIONAL { ?propeller <http://example.org/odp#isSupercavitating> true }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "What diameter and how many blades does the fixed pitch propeller Y of ship X have?",
+        "sparql": "SELECT ?diameter ?blades WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  ?ship <http://example.org/odp#hasPropeller> ?propeller .\n  ?propeller <http://example.org/odp#hasDiameter> ?diameter .\n  OPTIONAL { ?propeller <http://example.org/odp#hasNumberOfBlades> ?blades }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the SPARQL query to return results for the competency question regarding the diameter and number of blades of the fixed pitch propeller of a ship, consider the following additions to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the class `<http://example.org/odp#Propeller>` is defined and that it is a subclass of a more general class if necessary (e.g., `<http://example.org/odp#MarineComponent>`).\n\n2. **Add Properties**:\n   - Define the property `<http://example.org/odp#hasDiameter>` to link a propeller to its diameter, ensuring it has a suitable range (e.g., `xsd:float` or `xsd:integer`).\n   - Define the property `<http://example.org/odp#hasNumberOfBlades>` to link a propeller to its number of blades, with an appropriate range (e.g., `xsd:integer`).\n\n3. **Establish Relationships**:\n   - Ensure that the relationship between ships and propellers is correctly established, confirming that `<http://example.org/odp#hasPropeller>` is defined and that the ship instances are correctly linked to their respective propeller instances.\n\n4. **Add Instances**:\n   - Create instances of ships and propellers in the ontology, ensuring that the properties for diameter and number of blades are populated with actual values for the specific propeller of ship X.\n\n5. **Check for Data Cons"
+      },
+      {
+        "cq": "What is the least utilized wind assisted propulsion system?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#utilization> ?utilization . }\n} \nORDER BY ?utilization \nLIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the least utilized wind-assisted propulsion system, consider adding the following elements to the ontology:\n\n1. **Class Definition**: Ensure there is a class for `WindAssistedPropulsionSystem` to categorize different types of wind-assisted propulsion systems.\n\n2. **Property for Utilization**: Define a property `utilization` (e.g., `<http://example.org/odp#utilization>`) that quantifies the usage of each wind-assisted propulsion system, allowing for numerical values or percentages.\n\n3. **Relationship to Ships**: Establish a property (e.g., `<http://example.org/odp#hasPropulsionSystem>`) to link `Ship` instances to their respective `WindAssistedPropulsionSystem` instances, enabling the association of ships with their propulsion systems.\n\n4. **Data Type for Utilization**: Specify the data type for the `utilization` property as a numeric value (e.g., `xsd:float` or `xsd:integer`) to facilitate proper ordering and comparison in queries.\n\n5. **Example Instances**: Add example instances of `WindAssistedPropulsionSystem` with varying utilization values to ensure that the ontology has data to query against.\n\nThese additions will enable the SPARQL query to retrieve and order ships based on the utilization of their wind-assisted propulsion systems."
+      },
+      {
+        "cq": "What different kinds of data can be used to represent a ship?",
+        "sparql": "SELECT ?ship WHERE { \n  ?ship a <http://example.org/odp#Ship> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively represent a ship in your ontology and answer the competency question, consider adding the following classes, properties, and axioms:\n\n1. **Class Definition**: Ensure that the class `Ship` is defined in your ontology with a clear URI, e.g., `<http://example.org/odp#Ship>`, and that it is included in the ontology's hierarchy.\n\n2. **Properties for Ship Attributes**:\n   - **Data Properties**: Add properties such as:\n     - `hasName` (e.g., `<http://example.org/odp#hasName>`) to represent the name of the ship.\n     - `hasLength` (e.g., `<http://example.org/odp#hasLength>`) to represent the length of the ship in meters.\n     - `hasType` (e.g., `<http://example.org/odp#hasType>`) to specify the type of ship (e.g., cargo, passenger, military).\n\n3. **Object Properties**: Introduce relationships to other relevant classes, such as:\n   - `hasOwner` (e.g., `<http://example.org/odp#hasOwner>`) linking to a class `Owner` that represents the entity owning the ship.\n   - `hasPort` (e.g., `<http://example.org/odp#hasPort>`) linking to a class `Port` to indicate the home port of the ship.\n\n4. **Instances of Ship**: Create instances of"
+      },
+      {
+        "cq": "How is sonar data of ships stored?",
+        "sparql": "SELECT ?ship ?sonarData WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#sonarData> ?sonarData }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding how sonar data of ships is stored, consider the following additions to the ontology:\n\n1. **Class Definition**: Introduce a class for `SonarData` to represent the sonar data associated with ships.\n   - Example: `:SonarData a owl:Class .`\n\n2. **Property Definition**: Create a property to link ships to their sonar data.\n   - Example: `:hasSonarData a owl:ObjectProperty ; rdfs:domain :Ship ; rdfs:range :SonarData .`\n\n3. **Data Type Property**: If sonar data includes specific attributes (e.g., frequency, depth, timestamp), define relevant data type properties.\n   - Example: `:sonarFrequency a owl:DatatypeProperty ; rdfs:domain :SonarData ; rdfs:range xsd:float .`\n\n4. **Instance Creation**: Ensure that instances of `Ship` are created with associated `SonarData` instances to populate the ontology.\n   - Example: Create instances like `:Ship1 a :Ship ; :hasSonarData :SonarData1 .`\n\n5. **Documentation**: Add annotations or comments to clarify the purpose of the new classes and properties for future users of the ontology.\n   - Example: Use `rdfs:comment` to describe the role of `hasSonarData` in linking ships to their sonar data.\n\nThese additions will enable the SPARQL query"
+      },
+      {
+        "cq": "What image resources are available for a ship?",
+        "sparql": "SELECT ?shipImage WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#hasImage> ?shipImage }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding available image resources for a ship, consider the following additions to the ontology:\n\n1. **Define the `hasImage` Property**: Ensure that the property `<http://example.org/odp#hasImage>` is defined as a relationship between the `Ship` class and an `Image` class (or equivalent). This property should be of type `owl:ObjectProperty`.\n\n2. **Create an `Image` Class**: Introduce a new class `<http://example.org/odp#Image>` to represent image resources. This class can include various attributes related to images, such as format, resolution, and source.\n\n3. **Add Domain and Range for `hasImage`**: Specify the domain of the `hasImage` property as the `Ship` class and the range as the `Image` class. This will enforce the relationship between ships and their associated images.\n\n4. **Include Image Metadata**: Optionally, consider adding properties to the `Image` class, such as `imageURL`, `imageDescription`, and `imageDate`, to provide more context and details about each image resource.\n\n5. **Ensure Data Population**: Verify that instances of ships in the ontology are correctly linked to image resources using the `hasImage` property, ensuring that there are actual data entries that satisfy the query. \n\nBy implementing these changes, the ontology will be better equipped to provide answers to the competency question regarding image resources for ships."
+      },
+      {
+        "cq": "What textual information about a ship is available?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?shipInfo WHERE {\n  ?ship a odp:Ship .\n  OPTIONAL { ?ship ?property ?shipInfo }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the textual information available about a ship, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Properties for Ship Attributes**:\n   - Add properties such as `odp:hasName`, `odp:hasType`, `odp:hasOwner`, `odp:hasRegistrationNumber`, and `odp:hasDescription` to capture specific textual information about ships.\n\n2. **Ship Class Hierarchy**:\n   - Ensure that the `odp:Ship` class is properly defined and consider creating subclasses (e.g., `odp:CargoShip`, `odp:PassengerShip`) to provide more context and specificity.\n\n3. **Data Type Properties**:\n   - Define the above properties as data type properties (e.g., `rdf:Literal`) to allow for textual values, ensuring that they can store strings or other relevant textual information.\n\n4. **Example Instances**:\n   - Create example instances of `odp:Ship` with populated properties to demonstrate how the ontology can be used to store and retrieve textual information.\n\n5. **Documentation and Annotations**:\n   - Add rdfs:label and rdfs:comment annotations to properties and classes to provide clear definitions and descriptions, aiding in understanding and usage of the ontology.\n\nBy implementing these suggestions, the ontology will be better equipped to provide the necessary textual information about ships."
+      },
+      {
+        "cq": "What does ship X look like?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?ship ?appearance WHERE {\n  ?ship a odp:Ship .\n  OPTIONAL { ?ship odp:appearance ?appearance }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"What does ship X look like?\", consider the following additions to the ontology:\n\n1. **Define Appearance Class**: Create a class `odp:Appearance` to represent the visual characteristics of ships, which can include attributes like color, size, shape, and other visual features.\n\n2. **Add Appearance Property**: Introduce a property `odp:hasAppearance` (or `odp:appearance`) that links instances of `odp:Ship` to instances of `odp:Appearance`. This property should be defined as an object property.\n\n3. **Specify Appearance Attributes**: Within the `odp:Appearance` class, define relevant data properties such as `odp:color`, `odp:size`, `odp:shape`, etc., to capture specific attributes of a ship's appearance.\n\n4. **Create Example Instances**: Populate the ontology with example instances of `odp:Ship` and corresponding `odp:Appearance` instances to ensure that the query can return meaningful results.\n\n5. **Ensure Proper Relationships**: Verify that the relationships between `odp:Ship` and `odp:Appearance` are correctly established in the ontology to facilitate accurate querying."
+      },
+      {
+        "cq": "How does ship X sound like on a sonar?",
+        "sparql": "SELECT ?ship ?sound WHERE { \n  ?ship a <http://example.org/odp#Ship> .\n  OPTIONAL { ?ship <http://example.org/odp#sound> ?sound }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding how a specific ship sounds on sonar, consider the following additions:\n\n1. **Class Addition**: Introduce a new class `Sound` to represent different sound types or characteristics associated with ships.\n\n2. **Property Addition**: Define a property `hasSound` (e.g., `<http://example.org/odp#hasSound>`) that relates instances of the `Ship` class to instances of the `Sound` class, allowing for the association of specific sounds with each ship.\n\n3. **Sound Characteristics**: Create specific instances of the `Sound` class that describe the sonar characteristics of different ships (e.g., `SoundX`, `SoundY`), including attributes like frequency, amplitude, and signature.\n\n4. **Axiom Definition**: Establish axioms that define the relationship between ships and their sonar sounds, ensuring that each ship can be linked to its corresponding sound instance through the `hasSound` property.\n\n5. **Data Population**: Populate the ontology with data linking specific ships to their sonar sounds using the newly defined properties and classes, ensuring that the ontology has relevant instances to query against."
+      },
+      {
+        "cq": "What is the textual description of ship X?",
+        "sparql": "SELECT ?description WHERE { \n  <http://example.org/odp#ShipX> ?description \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found '<'  (at char 31), (line:2, col:3)",
+        "suggestion": "To effectively answer the competency question regarding the textual description of ship X, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure there is a class for `Ship` (if not already defined) to categorize all ship entities, including Ship X.\n\n2. **Property Definition**: Introduce a property such as `hasDescription` (or `description`) that links a `Ship` instance to its textual description. This property should be defined with a suitable datatype (e.g., `xsd:string`).\n\n3. **Instance Creation**: Ensure that Ship X is defined as an instance of the `Ship` class and that it has a corresponding `hasDescription` property with a literal value representing its description.\n\n4. **RDF Syntax Correction**: Modify the SPARQL query to correctly reference the property, e.g., `?description` should be linked to the property, like so: \n   ```sparql\n   SELECT ?description WHERE { \n     <http://example.org/odp#ShipX> <http://example.org/odp#hasDescription> ?description \n   } LIMIT 10\n   ```\n\n5. **Documentation**: Provide clear documentation for the ontology, specifying the purpose and usage of the `hasDescription` property to facilitate understanding and future queries."
+      },
+      {
+        "cq": "Are there ships without sonar signatures?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?ship WHERE {\n  ?ship a odp:Ship .\n  OPTIONAL { ?ship odp:sonarSignature ?signature . }\n  FILTER (!BOUND(?signature))\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding ships without sonar signatures, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure there is a class `odp:SonarSignature` to represent sonar signatures explicitly. This will help in distinguishing ships with and without sonar signatures.\n\n2. **Property Definition**: Define a property `odp:hasSonarSignature` to link ships to their sonar signatures. This property should be used instead of `odp:sonarSignature` to clarify the relationship.\n\n3. **Axiom Addition**: Introduce an axiom stating that a ship can exist without a sonar signature, e.g., `odp:Ship` can have a cardinality of zero for `odp:hasSonarSignature`.\n\n4. **Data Population**: Ensure that instances of `odp:Ship` are populated in the ontology, including some that explicitly do not have any associated `odp:hasSonarSignature`.\n\n5. **Inference Rules**: If using a reasoner, add rules that infer the absence of a sonar signature for ships that do not have the `odp:hasSonarSignature` property defined.\n\nThese additions will enable the ontology to accurately represent and query for ships without sonar signatures."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P34": 2
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P34",
+        "affected_elements_count": 2,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://example.org/odp#hasIdentifier",
+          "http://example.org/odp#hasOwner"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 0,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

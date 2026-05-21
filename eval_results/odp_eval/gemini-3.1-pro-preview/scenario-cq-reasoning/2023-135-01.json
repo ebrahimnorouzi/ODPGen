@@ -1,0 +1,73 @@
+{
+  "id": "2023-135-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 78,
+    "classes_count": 8,
+    "object_properties_count": 8,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 1,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 4,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.125,
+    "relationship_richness": 0.8888888888888888,
+    "avg_subclass_per_class": 0.125
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 78,
+    "triples_after": 314,
+    "inferred_triples": 236,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?",
+    "What alternative did C. S. Lewis used to assume the role of a book writer?",
+    "Show the trajectories of rivers which cross national parks?"
+  ],
+  "cqs_count": 3,
+  "cq_verification": {
+    "cqs_total": 3,
+    "cqs_passed": 0,
+    "cqs_failed": 3,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?",
+        "sparql": "SELECT ?pseudonym WHERE { \n  ?work a <http://example.org/odp#CreativeWork> ; \n        <http://example.org/odp#publishedUnder> ?author ; \n        <http://example.org/odp#hasName> ?name . \n  ?author <http://example.org/odp#hasPseudonym> ?pseudonym . \n  FILTER(?name = \"Spirit in Bondage\") . \n  FILTER(?author = \"C. S. Lewis\") \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the pseudonym under which C. S. Lewis published \"Spirit in Bondage,\" consider the following additions to the ontology:\n\n1. **Class for Author**: Define a class `<http://example.org/odp#Author>` to represent authors, allowing for more specific relationships and properties related to authorship.\n\n2. **Property for Pseudonym**: Introduce a property `<http://example.org/odp#hasPseudonym>` that links an author to their pseudonyms, ensuring that it can be used to relate authors to multiple pseudonyms if necessary.\n\n3. **Property for Work Title**: Ensure that the property `<http://example.org/odp#hasTitle>` is defined to link a creative work to its title, allowing for more precise querying based on the title of the work.\n\n4. **Property for Authorship**: Add a property `<http://example.org/odp#authoredBy>` to link a creative work to its author, facilitating the relationship between works and their respective authors.\n\n5. **Data Type for Name**: Ensure that the property `<http://example.org/odp#hasName>` is defined as a data type property that can accept string values, allowing for proper filtering based on the author's name and work title.\n\nThese additions will enhance the ontology's ability to represent and query relationships between authors, their pseudonyms, and their works effectively."
+      },
+      {
+        "cq": "What alternative did C. S. Lewis used to assume the role of a book writer?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?pseudonym WHERE {\n  ?person a odp:Person .\n  ?person odp:hasPseudonym ?pseudonym .\n  ?person odp:assumesRole ?role .\n  ?role odp:roleName \"book writer\" .\n  ?person odp:hasName ?name .\n  FILTER(?name = \"C. S. Lewis\")\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding C. S. Lewis's pseudonym as a book writer, consider adding the following:\n\n1. **Class for Pseudonyms**: Introduce a class `odp:Pseudonym` to represent pseudonyms used by authors.\n\n2. **Property for Pseudonym Association**: Add a property `odp:hasPseudonym` that links a `Person` to their `Pseudonym`, allowing for the association of multiple pseudonyms with a single author.\n\n3. **Role Class**: Define a class `odp:Role` to represent different roles (e.g., book writer, poet) that a person can assume.\n\n4. **Role Property**: Create a property `odp:assumesRole` that connects a `Person` to a `Role`, enabling the specification of various roles an individual may take on.\n\n5. **Pseudonym Role Association**: Establish a property `odp:hasPseudonymRole` that links a `Pseudonym` to a `Role`, allowing for the identification of roles associated with specific pseudonyms.\n\nThese additions will facilitate the retrieval of information about C. S. Lewis's pseudonym in the context of his role as a book writer."
+      },
+      {
+        "cq": "Show the trajectories of rivers which cross national parks?",
+        "sparql": "SELECT ?river ?trajectory WHERE {\n  ?river a <http://example.org/odp#River> .\n  ?river <http://example.org/odp#crosses> ?nationalPark .\n  ?nationalPark a <http://example.org/odp#NationalPark> .\n  OPTIONAL { ?river <http://example.org/odp#hasTrajectory> ?trajectory }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the trajectories of rivers that cross national parks, consider the following additions to the ontology:\n\n1. **Define the `hasTrajectory` Property**: Ensure that the `hasTrajectory` property is explicitly defined as a relationship between the `River` class and a new `Trajectory` class, which represents the path or course of the river.\n\n2. **Create a `Trajectory` Class**: Introduce a `Trajectory` class that can encapsulate the geometric or spatial representation of a river's path, allowing for more detailed queries about river trajectories.\n\n3. **Add a `crosses` Property**: Confirm that the `crosses` property is correctly defined to relate rivers to national parks, ensuring it is a valid relationship in the ontology.\n\n4. **Include Spatial Data**: Consider adding spatial data types or classes (e.g., `GeographicFeature`) to represent the geographical aspects of rivers and national parks, which may enhance the ability to query spatial relationships.\n\n5. **Ensure Data Population**: Verify that the ontology is populated with instances of rivers, national parks, and their respective trajectories to ensure that the SPARQL query can return meaningful results."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [],
+    "pitfall_instance_counts": {},
+    "pitfall_affected_elements_counts": {},
+    "pitfalls_total": 0,
+    "pitfalls": [],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 0,
+    "critical_count": 0
+  }
+}

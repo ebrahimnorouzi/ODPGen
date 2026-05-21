@@ -1,0 +1,341 @@
+{
+  "id": "2025-150-01",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 73,
+    "classes_count": 10,
+    "object_properties_count": 0,
+    "datatype_properties_count": 10,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 1.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 73,
+    "triples_after": 306,
+    "inferred_triples": 233,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Which MQTT Clients are connected to which Broker?",
+    "Which MQTT NetworkConnections exist, are they TLS-secured, and who initiated/accepted them?",
+    "Which MQTT participants (Clients/Brokers) use which MQTT NetworkConnections?",
+    "Which MQTT Clients with which ClientIDs run on which SOSA platforms?",
+    "Which MQTT Clients are hosting which SOSA systems (sensors/actuators)?",
+    "What host/port is a MQTT Broker configured with?",
+    "Which SOSA sensors publish to which MQTT Topics (observations)?",
+    "Which SOSA actuators listen to which MQTT Topics (commands)?",
+    "Which SOSA FeaturesOfInterest, Properties etc. appear as MQTT TopicSubjects and on which MQTT Topics?",
+    "Which MQTT Topic Filters match a given MQTT Topic?",
+    "Which MQTT Topics are matched by a given MQTT Topic Filter?",
+    "Which MQTT filter patterns (with wildcards) are stored?",
+    "Which MQTT Clients send which MQTT Control Packets?",
+    "Which MQTT PUBLISH/SUBSCRIBE/UNSUBSCRIBE packets were sent (specializations)?",
+    "Which MQTT Brokers receive/forward which MQTT Control Packets?",
+    "Which MQTT Control Packets were sent by which Client (inverse)?",
+    "Which MQTT Publish packets carry Observations for a specific SOSA FeatureOfInterest or Property?",
+    "Which MQTT SUBSCRIBE packets request QoS=2 and for which filters?",
+    "Which MQTT UNSUBSCRIBE packets remove all filters under a certain path (e.g. 'factory/centering/#')?",
+    "Which MQTT Control Packet has which Fixed Header / Variable Header / Payload?",
+    "Which MQTT PUBLISH packet has which MQTT Topic (name) in the Variable Header?",
+    "Which QoS levels are set (in PUBLISH Fixed Header or SubscriptionEntry)?",
+    "Are RETAIN/DUP flags set in PUBLISH?",
+    "Which MQTT Control Packets have which PacketIdentifier?",
+    "Which MQTT SUBSCRIBE payloads contain which SubscriptionEntries?",
+    "Which MQTT Topic Filters (with QoS) are requested by a SubscriptionEntry?",
+    "Which MQTT UNSUBSCRIBE payloads remove which MQTT TopicFilters?",
+    "Which MQTT PUBLISH payloads encode SOSA Observations (or Observation Collections)?",
+    "Which MQTT PUBLISH payloads encode SOSA Actuations (or Actuation Collections)?",
+    "Which fields are encoded in a MQTT payload?",
+    "What content, content type, encoding and delimiter does a MQTT PUBLISH payload have?",
+    "What is the size of a MQTT payload (as QUDT QuantityValue with unit)?"
+  ],
+  "cqs_count": 32,
+  "cq_verification": {
+    "cqs_total": 32,
+    "cqs_passed": 0,
+    "cqs_failed": 32,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Which MQTT Clients are connected to which Broker?",
+        "sparql": "SELECT ?client ?broker WHERE {\n  ?client a <http://example.org/odp#MQTTClient> .\n  ?broker a <http://example.org/odp#MQTTBroker> .\n  OPTIONAL { ?client <http://example.org/odp#MQTTClientID> ?clientID }\n  OPTIONAL { ?broker <http://example.org/odp#MQTTBrokerHost> ?brokerHost }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT Clients are connected to which Broker, consider the following additions to the ontology:\n\n1. **Connection Property**: Introduce a property such as `<http://example.org/odp#connectedTo>` that relates an MQTTClient to an MQTTBroker. This property should have a domain of `MQTTClient` and a range of `MQTTBroker`.\n\n2. **Client-Broker Relationship**: Define an axiom that specifies the relationship between clients and brokers, e.g., `?client <http://example.org/odp#connectedTo> ?broker`.\n\n3. **Client and Broker Instances**: Ensure that instances of `MQTTClient` and `MQTTBroker` are created in the ontology, and explicitly state the connections using the new property.\n\n4. **Client and Broker Identifiers**: Ensure that the properties `<http://example.org/odp#MQTTClientID>` and `<http://example.org/odp#MQTTBrokerHost>` are populated with relevant data for each instance to provide context.\n\n5. **Data Population**: Populate the ontology with actual data instances that reflect the connections between MQTT clients and brokers to ensure that the SPARQL query can return meaningful results."
+      },
+      {
+        "cq": "Which MQTT NetworkConnections exist, are they TLS-secured, and who initiated/accepted them?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?networkConnection ?tls ?initiator ?acceptor WHERE {\n  ?networkConnection a odp:MQTTNetworkConnection .\n  OPTIONAL { ?networkConnection odp:MQTTNetworkConnectionTLS ?tls . }\n  OPTIONAL { ?networkConnection odp:MQTTClientID ?initiator . }\n  OPTIONAL { ?networkConnection odp:MQTTBrokerHost ?acceptor . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding MQTT NetworkConnections, the following classes, properties, and axioms should be added to the ontology:\n\n1. **Class Definition**: Ensure that `odp:MQTTNetworkConnection` is defined as a class representing the network connections in the MQTT context.\n\n2. **Properties**:\n   - **`odp:hasTLS`**: A property to indicate whether a network connection is TLS-secured (boolean or a specific type indicating security).\n   - **`odp:initiatedBy`**: A property to link a `MQTTNetworkConnection` to the `MQTTClientID` of the initiator.\n   - **`odp:acceptedBy`**: A property to link a `MQTTNetworkConnection` to the `MQTTBrokerHost` of the acceptor.\n\n3. **Data Types**: Define the data types for `odp:MQTTClientID` and `odp:MQTTBrokerHost` to ensure they can hold relevant identifiers (e.g., string).\n\n4. **Axioms**: Add axioms to specify the relationships and constraints between these properties and the `MQTTNetworkConnection` class, ensuring that each connection must have an initiator and an acceptor.\n\n5. **Example Instances**: Create example instances of `MQTTNetworkConnection` with associated properties to validate the ontology and ensure that the SPARQL query can return results."
+      },
+      {
+        "cq": "Which MQTT participants (Clients/Brokers) use which MQTT NetworkConnections?",
+        "sparql": "SELECT ?participant ?networkConnection WHERE {\n  { \n    ?participant a <http://example.org/odp#MQTTClient> .\n    ?participant <http://example.org/odp#MQTTNetworkConnection> ?networkConnection \n  }\n  UNION\n  { \n    ?participant a <http://example.org/odp#MQTTBroker> .\n    ?participant <http://example.org/odp#MQTTNetworkConnection> ?networkConnection \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding which MQTT participants use which MQTT NetworkConnections, consider the following additions:\n\n1. **Define Classes**:\n   - Ensure that `MQTTClient` and `MQTTBroker` are defined as subclasses of a more general class, such as `MQTTParticipant`, to facilitate querying.\n\n2. **Define Properties**:\n   - Introduce a property `usesNetworkConnection` (e.g., `<http://example.org/odp#usesNetworkConnection>`) that relates both `MQTTClient` and `MQTTBroker` to `MQTTNetworkConnection`. This property should have a domain of `MQTTParticipant` and a range of `MQTTNetworkConnection`.\n\n3. **Add Instances**:\n   - Populate the ontology with instances of `MQTTClient`, `MQTTBroker`, and `MQTTNetworkConnection`, and assert relationships using the new `usesNetworkConnection` property to establish connections between participants and network connections.\n\n4. **Define Relationships**:\n   - Ensure that the relationships between participants and network connections are explicitly defined in the ontology, allowing for clear querying of these associations.\n\n5. **Check for Consistency**:\n   - Validate the ontology to ensure that all classes and properties are correctly defined and that there are no inconsistencies that could prevent the query from returning results. \n\nBy implementing these changes, the ontology will be better equipped to answer the competency question effectively."
+      },
+      {
+        "cq": "Which MQTT Clients with which ClientIDs run on which SOSA platforms?",
+        "sparql": "SELECT ?client ?clientID ?platform WHERE {\n  ?client a <http://example.org/odp#MQTTClient> .\n  OPTIONAL { ?client <http://example.org/odp#MQTTClientID> ?clientID } .\n  OPTIONAL { ?client <http://example.org/odp#MQTTNetworkConnection> ?platform } .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding MQTT Clients, ClientIDs, and SOSA platforms, consider adding the following elements to the ontology:\n\n1. **Class Definitions**:\n   - Define a class for `MQTTClient` if not already present, and ensure it is properly linked to the SOSA ontology.\n   - Define a class for `SOSAPlatform` to represent the platforms on which MQTT clients run.\n\n2. **Property Definitions**:\n   - Create a property `hasClientID` (e.g., `<http://example.org/odp#hasClientID>`) to link `MQTTClient` instances to their respective ClientIDs.\n   - Create a property `runsOnPlatform` (e.g., `<http://example.org/odp#runsOnPlatform>`) to associate `MQTTClient` instances with `SOSAPlatform` instances.\n\n3. **Axioms**:\n   - Ensure that the `MQTTClient` class has a relationship with the `SOSAPlatform` class through the `runsOnPlatform` property, establishing that an MQTT client can run on a specific platform.\n   - Ensure that the `ClientID` is defined as a datatype property (e.g., `xsd:string`) to facilitate the association with `MQTTClient`.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the relationships between MQTT clients, their ClientIDs, and the platforms they operate on."
+      },
+      {
+        "cq": "Which MQTT Clients are hosting which SOSA systems (sensors/actuators)?",
+        "sparql": "SELECT ?mqttClient ?mqttClientID ?mqttBrokerHost ?mqttBrokerPort WHERE {\n  ?mqttClient a <http://example.org/odp#MQTTClient> .\n  OPTIONAL { ?mqttClient <http://example.org/odp#MQTTClientID> ?mqttClientID . }\n  OPTIONAL { ?mqttClient <http://example.org/odp#MQTTBrokerHost> ?mqttBrokerHost . }\n  OPTIONAL { ?mqttClient <http://example.org/odp#MQTTBrokerPort> ?mqttBrokerPort . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT Clients are hosting which SOSA systems (sensors/actuators), consider the following additions to the ontology:\n\n1. **Define Relationships**:\n   - Add a property `hosts` (e.g., `<http://example.org/odp#hosts>`) that relates `MQTTClient` instances to `SOSA` instances (sensors/actuators). This will explicitly link MQTT clients to the systems they host.\n\n2. **Specify SOSA System Types**:\n   - Ensure that the ontology includes specific classes for `Sensor` and `Actuator` under the SOSA framework, if not already present. This will allow for clear identification of the types of systems being hosted.\n\n3. **Add MQTT Client Properties**:\n   - Ensure that properties like `MQTTClientID`, `MQTTBrokerHost`, and `MQTTBrokerPort` are correctly defined and linked to the `MQTTClient` class. This will ensure that the query can retrieve relevant information about each client.\n\n4. **Incorporate Instance Data**:\n   - Populate the ontology with instances of `MQTTClient` and `SOSA` systems, ensuring that the `hosts` relationships are established between them. This will provide the necessary data for the SPARQL query to return results.\n\n5. **Use Proper Namespaces**:\n   - Ensure that the ontology uses consistent and correct namespaces for all classes and properties to avoid issues with query resolution"
+      },
+      {
+        "cq": "What host/port is a MQTT Broker configured with?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?host ?port WHERE {\n  ?broker a odp:MQTTBroker .\n  OPTIONAL { ?broker odp:MQTTBrokerHost ?host }\n  OPTIONAL { ?broker odp:MQTTBrokerPort ?port }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding the host and port configuration of an MQTT Broker, consider the following additions:\n\n1. **Class Definition**: Ensure that the class `odp:MQTTBroker` is defined in the ontology to represent MQTT brokers.\n\n2. **Property Definitions**:\n   - **Host Property**: Add a property `odp:MQTTBrokerHost` with a domain of `odp:MQTTBroker` and a range of `xsd:string` to represent the host address.\n   - **Port Property**: Add a property `odp:MQTTBrokerPort` with a domain of `odp:MQTTBroker` and a range of `xsd:integer` to represent the port number.\n\n3. **Example Instances**: Create example instances of `odp:MQTTBroker` with specific values for `odp:MQTTBrokerHost` and `odp:MQTTBrokerPort` to ensure that the query can return results.\n\n4. **Documentation**: Include documentation or comments in the ontology to clarify the intended use of the properties and their expected data types.\n\nBy implementing these changes, the ontology will be better equipped to provide answers to the competency question regarding the configuration of MQTT Brokers."
+      },
+      {
+        "cq": "Which SOSA sensors publish to which MQTT Topics (observations)?",
+        "sparql": "SELECT ?sensor ?topic WHERE {\n  ?sensor a <http://example.org/odp#MQTTClient> .\n  ?sensor <http://example.org/odp#MQTTPublishPayload> ?payload .\n  ?payload <http://example.org/odp#MQTTTopic> ?topic .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which SOSA sensors publish to which MQTT topics, consider the following additions to the ontology:\n\n1. **Class for MQTT Topics**: Introduce a class, e.g., `MQTTTopic`, to represent MQTT topics explicitly. This will help in categorizing and linking topics to sensors.\n\n2. **Property for Sensor-Topic Relationship**: Define a property, e.g., `publishesTo`, to establish a direct relationship between the `MQTTPublishPayload` (or the sensor itself) and the `MQTTTopic`. This could be defined as:\n   ```turtle\n   <http://example.org/odp#publishesTo> a rdf:Property ;\n       rdfs:domain <http://example.org/odp#MQTTClient> ;\n       rdfs:range <http://example.org/odp#MQTTTopic> .\n   ```\n\n3. **Property for Payload Association**: Ensure that the `MQTTPublishPayload` class has a property, e.g., `hasPayload`, that links it to the `MQTTTopic`. This will clarify the relationship between the payload and the topic.\n\n4. **Axioms for Sensor Capabilities**: Add axioms that define the capabilities of sensors in terms of their ability to publish to specific topics, ensuring that the ontology captures the necessary relationships.\n\n5. **Example Instances**: Create example instances of `MQTTClient`, `MQTTTopic`, and `"
+      },
+      {
+        "cq": "Which SOSA actuators listen to which MQTT Topics (commands)?",
+        "sparql": "SELECT ?actuator ?topicName WHERE {\n  ?actuator a <http://example.org/odp#MQTTClient> .\n  OPTIONAL { ?actuator <http://example.org/odp#MQTTSUBSCRIBEQoS> ?qos . }\n  OPTIONAL { ?actuator <http://example.org/odp#MQTTTopic> ?topic . }\n  ?topic <http://example.org/odp#MQTTTopicName> ?topicName .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which SOSA actuators listen to which MQTT topics, consider the following additions to the ontology:\n\n1. **Define MQTTTopic Class**: Ensure there is a class for MQTT topics, such as `<http://example.org/odp#MQTTTopic>`, that can represent individual topics.\n\n2. **Add MQTTTopicName Property**: Introduce a property `<http://example.org/odp#MQTTTopicName>` that links instances of the MQTTTopic class to their respective string names.\n\n3. **Create Subscription Relationship**: Establish a property, such as `<http://example.org/odp#subscribesTo>`, that relates MQTTClient instances (actuators) to MQTTTopic instances, indicating which topics they subscribe to.\n\n4. **Define QoS Levels**: Ensure that the property `<http://example.org/odp#MQTTSUBSCRIBEQoS>` is correctly defined to represent the Quality of Service levels for subscriptions, if relevant.\n\n5. **Link Actuators to Topics**: Ensure that the actuators (instances of MQTTClient) are correctly linked to their subscribed topics using the new `<http://example.org/odp#subscribesTo>` property.\n\nBy implementing these changes, the ontology will better support queries related to the relationships between actuators and MQTT topics."
+      },
+      {
+        "cq": "Which SOSA FeaturesOfInterest, Properties etc. appear as MQTT TopicSubjects and on which MQTT Topics?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?topic ?featureOfInterest ?property WHERE {\n  ?topic a odp:MQTTTopic .\n  ?topic odp:MQTTTopicName ?topicName .\n  OPTIONAL { ?featureOfInterest a odp:MQTTTopicFilter . }\n  OPTIONAL { ?property a odp:MQTTPublish . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the relationship between SOSA FeaturesOfInterest, Properties, and MQTT Topics, consider the following additions to the ontology:\n\n1. **Define MQTTTopic Class**: Ensure that `odp:MQTTTopic` is defined as a class that can represent MQTT topics, including properties that link it to SOSA features and properties.\n\n2. **Add Properties for Relationships**:\n   - **`odp:hasFeatureOfInterest`**: A property linking `odp:MQTTTopic` to `sosa:FeatureOfInterest`, allowing the representation of which features are associated with each topic.\n   - **`odp:hasProperty`**: A property linking `odp:MQTTTopic` to `sosa:Property`, indicating which properties are published on each topic.\n\n3. **Define MQTTTopicName Property**: Ensure that `odp:MQTTTopicName` is defined as a datatype property of `odp:MQTTTopic` to store the name of the MQTT topic.\n\n4. **Create MQTTTopicFilter Class**: If not already defined, create a class `odp:MQTTTopicFilter` to represent filters that can be applied to MQTT topics, which can be linked to `sosa:FeatureOfInterest`.\n\n5. **Add Instances**: Populate the ontology with instances of `odp:MQTTTopic`, `sosa:FeatureOfInterest`, and `sosa:Property` to ensure that the SPARQL query can return meaningful"
+      },
+      {
+        "cq": "Which MQTT Topic Filters match a given MQTT Topic?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?topicFilter WHERE {\n  ?topicFilter a odp:MQTTTopicFilter .\n  ?topic a odp:MQTTTopic .\n  ?topicFilter odp:MQTTTopicFilterPattern ?pattern .\n  ?topic odp:MQTTTopicName ?topicName .\n  FILTER regex(?topicName, ?pattern)\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT Topic Filters match a given MQTT Topic, consider the following additions to the ontology:\n\n1. **Define a Property for Topic Filter Patterns**: Ensure that the `odp:MQTTTopicFilterPattern` property is explicitly defined as a datatype property that links `odp:MQTTTopicFilter` instances to their corresponding pattern strings.\n\n2. **Add a Property for Topic Names**: Confirm that the `odp:MQTTTopicName` property is defined as a datatype property that connects `odp:MQTTTopic` instances to their respective topic name strings.\n\n3. **Introduce a Class for MQTT Topic Filters**: Ensure that the class `odp:MQTTTopicFilter` is properly defined with necessary characteristics, such as being able to have multiple patterns (if applicable).\n\n4. **Implement a Matching Mechanism**: Consider adding a custom reasoning rule or a SPARQL function that can handle wildcard matching (e.g., `+`, `#`) in MQTT topic filters, as regex alone may not suffice for all MQTT filter patterns.\n\n5. **Include Examples and Instances**: Populate the ontology with example instances of `odp:MQTTTopic` and `odp:MQTTTopicFilter` to ensure that the query can be tested against real data, facilitating debugging and validation of the query logic."
+      },
+      {
+        "cq": "Which MQTT Topics are matched by a given MQTT Topic Filter?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?topic WHERE {\n  ?filter a odp:MQTTTopicFilter .\n  ?filter odp:MQTTTopicFilterPattern ?pattern .\n  ?topic a odp:MQTTTopic .\n  FILTER regex(?topic, ?pattern)\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT Topics are matched by a given MQTT Topic Filter, consider the following additions to the ontology:\n\n1. **Define MQTT Topic Filter Patterns**: \n   - Introduce a property `odp:matches` that relates `odp:MQTTTopicFilter` to `odp:MQTTTopic`. This property will explicitly indicate which topics are matched by a specific filter.\n\n2. **Enhance Topic Filter Representation**:\n   - Add a datatype property `odp:pattern` to `odp:MQTTTopicFilter` to store the regex pattern as a string, ensuring it can be directly referenced in queries.\n\n3. **Create a Matching Mechanism**:\n   - Implement a reasoning rule or axiom that defines how to determine if a topic matches a filter pattern, potentially using a custom SPARQL function or a rule-based approach.\n\n4. **Include Topic Hierarchies**:\n   - If applicable, introduce a hierarchy for MQTT topics (e.g., `odp:hasSubTopic`) to allow for more complex matching scenarios, such as wildcard topics.\n\n5. **Document Example Instances**:\n   - Provide example instances of `odp:MQTTTopic` and `odp:MQTTTopicFilter` in the ontology to facilitate testing and validation of the matching logic.\n\nThese enhancements will enable the ontology to effectively support the competency question and facilitate accurate querying of topic matches."
+      },
+      {
+        "cq": "Which MQTT filter patterns (with wildcards) are stored?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?filterPattern WHERE {\n  ?filterPattern a odp:MQTTTopicFilter .\n  OPTIONAL { ?filterPattern odp:MQTTTopicFilterPattern ?pattern }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding stored MQTT filter patterns, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that the class `odp:MQTTTopicFilter` is defined in the ontology to represent MQTT filter patterns explicitly.\n\n2. **Property Definition**: Introduce a property `odp:hasFilterPattern` (or similar) to link instances of `odp:MQTTTopicFilter` to their specific filter patterns. This property should have a range that allows for string values or a dedicated class for filter patterns.\n\n3. **Data Type Property**: Define a data type property `odp:MQTTTopicFilterPattern` that can store the actual filter pattern strings (e.g., using `xsd:string`).\n\n4. **Instance Creation**: Create instances of `odp:MQTTTopicFilter` in the ontology, each with an associated `odp:MQTTTopicFilterPattern` to ensure there are actual data entries to query against.\n\n5. **Documentation and Examples**: Provide documentation or examples within the ontology to clarify how to use the defined classes and properties, ensuring users understand how to create and query MQTT filter patterns effectively. \n\nBy implementing these suggestions, the ontology will be better equipped to store and retrieve MQTT filter patterns using SPARQL queries."
+      },
+      {
+        "cq": "Which MQTT Clients send which MQTT Control Packets?",
+        "sparql": "SELECT ?client ?controlPacket WHERE {\n  ?client a <http://example.org/odp#MQTTClient> .\n  ?controlPacket a <http://example.org/odp#MQTTControlPacket> .\n  OPTIONAL { ?client <http://example.org/odp#MQTTControlPacketIdentifier> ?controlPacketIdentifier . }\n  OPTIONAL { ?controlPacket <http://example.org/odp#MQTTControlPacketIdentifier> ?controlPacketIdentifier . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT Clients send which MQTT Control Packets, consider adding the following elements to the ontology:\n\n1. **Class for MQTT Control Packets**: Ensure there is a class defined for MQTT Control Packets, e.g., `<http://example.org/odp#MQTTControlPacket>`, with subclasses for specific types of control packets (e.g., CONNECT, PUBLISH, SUBSCRIBE).\n\n2. **Property for Sending Relationship**: Introduce a property, e.g., `<http://example.org/odp#sendsControlPacket>`, to establish a relationship between MQTT Clients and the Control Packets they send. This property should have a domain of `<http://example.org/odp#MQTTClient>` and a range of `<http://example.org/odp#MQTTControlPacket>`.\n\n3. **Instances of MQTT Clients and Control Packets**: Create instances of MQTT Clients and MQTT Control Packets in the ontology, and use the new property to link them. For example, `:Client1 <http://example.org/odp#sendsControlPacket> :ConnectPacket`.\n\n4. **Control Packet Identifiers**: If relevant, ensure that each control packet has a unique identifier property, e.g., `<http://example.org/odp#controlPacketIdentifier>`, to facilitate more detailed queries if needed.\n\n5. **Documentation and Examples**: Provide documentation or examples within the ontology to clarify how to use the new properties and"
+      },
+      {
+        "cq": "Which MQTT PUBLISH/SUBSCRIBE/UNSUBSCRIBE packets were sent (specializations)?",
+        "sparql": "SELECT ?packet ?publishPayload ?subscribeQoS ?unsubscribeTopicFilter WHERE { \n  { \n    ?packet a <http://example.org/odp#MQTTPublish> .\n    OPTIONAL { ?packet <http://example.org/odp#MQTTPublishPayload> ?publishPayload }\n  } UNION { \n    ?packet a <http://example.org/odp#MQTTSUBSCRIBE> .\n    OPTIONAL { ?packet <http://example.org/odp#MQTTSUBSCRIBEQoS> ?subscribeQoS }\n  } UNION { \n    ?packet a <http://example.org/odp#MQTTUnsubscribe> .\n    OPTIONAL { ?packet <http://example.org/odp#MQTTUnsubscribeTopicFilter> ?unsubscribeTopicFilter }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding MQTT PUBLISH/SUBSCRIBE/UNSUBSCRIBE packets, consider the following additions to the ontology:\n\n1. **Define Classes for MQTT Packets**:\n   - Ensure that the classes for `MQTTPublish`, `MQTTSubscribe`, and `MQTTUnsubscribe` are properly defined in the ontology with appropriate subclass relationships if needed.\n\n2. **Add Properties for Packet Attributes**:\n   - Define properties such as `MQTTPublishPayload`, `MQTTSubscribeQoS`, and `MQTTUnsubscribeTopicFilter` to capture the specific attributes of each packet type. Ensure these properties are correctly typed (e.g., string, integer) based on the expected data.\n\n3. **Establish Relationships**:\n   - Create relationships between the packet classes and their respective properties to ensure that instances of these classes can be linked to their attributes. For example, `:MQTTPublish :hasPayload :MQTTPublishPayload`.\n\n4. **Incorporate Instances**:\n   - Add instances of the defined classes to the ontology that represent actual MQTT packets, including their payloads, QoS levels, and topic filters, to ensure that the SPARQL query can retrieve meaningful results.\n\n5. **Check for Consistency**:\n   - Ensure that the ontology is consistent and that the classes and properties are correctly utilized in the data. Validate that the URIs used in the SPARQL query match those defined in the ontology.\n\nBy"
+      },
+      {
+        "cq": "Which MQTT Brokers receive/forward which MQTT Control Packets?",
+        "sparql": "SELECT ?broker ?controlPacket WHERE {\n  ?broker a <http://example.org/odp#MQTTBroker> .\n  ?controlPacket a <http://example.org/odp#MQTTControlPacket> .\n  OPTIONAL { ?broker <http://example.org/odp#MQTTBrokerHost> ?host . }\n  OPTIONAL { ?broker <http://example.org/odp#MQTTBrokerPort> ?port . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT Brokers receive or forward which MQTT Control Packets, consider adding the following elements to the ontology:\n\n1. **Classes**:\n   - Define a class `MQTTControlPacket` to represent different types of MQTT control packets (e.g., CONNECT, PUBLISH, SUBSCRIBE).\n   - Define a class `MQTTBroker` to represent MQTT brokers.\n\n2. **Properties**:\n   - Introduce a property `receivesControlPacket` with the domain `MQTTBroker` and range `MQTTControlPacket` to indicate which control packets a broker can receive.\n   - Introduce a property `forwardsControlPacket` with the same domain and range to indicate which control packets a broker can forward.\n\n3. **Axioms**:\n   - Create specific instances of `MQTTBroker` and `MQTTControlPacket` to populate the ontology with real-world examples, allowing for meaningful queries.\n\nBy implementing these suggestions, you will enable the ontology to represent the relationships between MQTT brokers and control packets, facilitating the retrieval of relevant information through SPARQL queries."
+      },
+      {
+        "cq": "Which MQTT Control Packets were sent by which Client (inverse)?",
+        "sparql": "SELECT ?client ?controlPacket WHERE {\n  ?controlPacket a <http://example.org/odp#MQTTControlPacket> .\n  ?client a <http://example.org/odp#MQTTClient> .\n  OPTIONAL { ?controlPacket <http://example.org/odp#MQTTControlPacketIdentifier> ?identifier }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT Control Packets were sent by which Client, consider the following additions to the ontology:\n\n1. **Define a Relationship**: Introduce a property such as `<http://example.org/odp#sentBy>` that links `MQTTControlPacket` instances to `MQTTClient` instances. This property should have a domain of `MQTTControlPacket` and a range of `MQTTClient`.\n\n2. **Add Inverse Property**: Define an inverse property, such as `<http://example.org/odp#sentControlPacket>`, to facilitate querying in the opposite direction (from Client to Control Packet).\n\n3. **Specify Control Packet Types**: Ensure that the ontology includes specific subclasses of `MQTTControlPacket` (e.g., `CONNECT`, `PUBLISH`, `SUBSCRIBE`) to allow for more detailed queries if needed.\n\n4. **Include Identifiers**: Ensure that each `MQTTControlPacket` has a unique identifier property (if not already present) to facilitate tracking and referencing specific packets.\n\n5. **Document Relationships**: Provide documentation or annotations for the new properties to clarify their intended use and relationships within the ontology, enhancing usability for future queries. \n\nBy implementing these changes, the ontology will better support the competency question and allow for effective querying of the relationships between MQTT Clients and Control Packets."
+      },
+      {
+        "cq": "Which MQTT Publish packets carry Observations for a specific SOSA FeatureOfInterest or Property?",
+        "sparql": "SELECT ?publishPacket ?payload ?topicName WHERE {\n  ?publishPacket a <http://example.org/odp#MQTTPublish> .\n  OPTIONAL { ?publishPacket <http://example.org/odp#MQTTPublishPayload> ?payload . }\n  OPTIONAL { ?publishPacket <http://example.org/odp#MQTTTopicName> ?topicName . }\n  FILTER(CONTAINS(?topicName, \"FeatureOfInterest\") || CONTAINS(?topicName, \"Property\"))\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT Publish packets carry Observations for a specific SOSA FeatureOfInterest or Property, consider the following additions to the ontology:\n\n1. **Define Relationships**:\n   - Introduce a property such as `<http://example.org/odp#hasObservation>` to link `MQTTPublish` packets to specific `Observation` instances that reference `FeatureOfInterest` or `Property`.\n\n2. **Enhance MQTT Packet Structure**:\n   - Add a property `<http://example.org/odp#hasFeatureOfInterest>` to `MQTTPublish` to explicitly associate it with a `FeatureOfInterest` from the SOSA ontology.\n\n3. **Observation Payload Structure**:\n   - Define a property `<http://example.org/odp#containsProperty>` to indicate that the payload of an `MQTTPublish` packet may contain specific properties related to the observations.\n\n4. **Topic Naming Convention**:\n   - Establish a naming convention for MQTT topics that includes identifiers for `FeatureOfInterest` and `Property`, allowing for easier filtering and querying based on these identifiers.\n\n5. **Link to SOSA**:\n   - Ensure that the ontology includes direct references to the SOSA ontology classes and properties, allowing for seamless integration and querying of observations related to features and properties.\n\nBy implementing these changes, the ontology will better support the querying of MQTT Publish packets in relation to specific observations of features and properties."
+      },
+      {
+        "cq": "Which MQTT SUBSCRIBE packets request QoS=2 and for which filters?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?subscribePacket ?filterPattern WHERE {\n  ?subscribePacket a odp:MQTTSUBSCRIBE .\n  ?subscribePacket odp:MQTTSUBSCRIBEQoS \"2\" .\n  OPTIONAL { ?subscribePacket odp:MQTTTopicFilterPattern ?filterPattern }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding MQTT SUBSCRIBE packets with QoS=2 and their associated filters, consider the following additions to the ontology:\n\n1. **Property for QoS Level**: Ensure there is a property, such as `odp:hasQoSLevel`, that explicitly links `MQTTSUBSCRIBE` packets to their QoS levels. This property should be defined to accept integer values (e.g., 0, 1, 2).\n\n2. **Property for Topic Filter Pattern**: Confirm that the property `odp:MQTTTopicFilterPattern` is correctly defined and used to link `MQTTSUBSCRIBE` packets to their respective topic filter patterns. Ensure that this property is used consistently across instances.\n\n3. **Data Type for QoS Level**: If not already defined, specify the data type for the QoS level property as an integer or string, ensuring that it can accurately represent the values \"0\", \"1\", and \"2\".\n\n4. **Class Hierarchy**: Verify that `MQTTSUBSCRIBE` is correctly classified under a broader class (e.g., `odp:MQTTPacket`) to ensure proper inheritance of properties and relationships.\n\n5. **Example Instances**: Add example instances of `MQTTSUBSCRIBE` packets with QoS=2 and associated topic filters to the ontology to facilitate testing and validation of the SPARQL query.\n\nBy implementing these suggestions, the ontology will be better equipped to provide the"
+      },
+      {
+        "cq": "Which MQTT UNSUBSCRIBE packets remove all filters under a certain path (e.g. 'factory/centering/#')?",
+        "sparql": "SELECT ?unsubscribePacket ?topicFilter WHERE {\n  ?unsubscribePacket a <http://example.org/odp#MQTTUnsubscribe> .\n  OPTIONAL { \n    ?unsubscribePacket <http://example.org/odp#MQTTUnsubscribeTopicFilter> ?topicFilter .\n  }\n  FILTER regex(?topicFilter, \"^factory/centering/#\")\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding MQTT UNSUBSCRIBE packets that remove all filters under a certain path, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that the class `<http://example.org/odp#MQTTUnsubscribe>` is properly defined to represent MQTT UNSUBSCRIBE packets, including necessary properties.\n\n2. **Property for Topic Filters**: Define a property `<http://example.org/odp#MQTTUnsubscribeTopicFilter>` that links an MQTT UNSUBSCRIBE packet to its associated topic filters. This property should allow for wildcard patterns (e.g., `#`).\n\n3. **Wildcard Handling**: Introduce a mechanism or property to explicitly denote wildcard usage in topic filters, such as a property `<http://example.org/odp#hasWildcard>` that indicates whether a topic filter includes wildcards.\n\n4. **Inference Rules**: Implement inference rules or axioms that can deduce when a topic filter with a wildcard (e.g., `factory/centering/#`) implies the removal of all subtopics under that path.\n\n5. **Example Instances**: Create example instances of MQTT UNSUBSCRIBE packets with various topic filters, including those with wildcards, to ensure that the ontology can be tested and validated against the competency question.\n\nThese additions will enhance the ontology's ability to represent and query MQTT UNSUBSCRIBE packets effectively."
+      },
+      {
+        "cq": "Which MQTT Control Packet has which Fixed Header / Variable Header / Payload?",
+        "sparql": "SELECT ?controlPacket ?fixedHeader ?variableHeader ?payload WHERE {\n  ?controlPacket a <http://example.org/odp#MQTTControlPacket> .\n  OPTIONAL { ?controlPacket <http://example.org/odp#MQTTControlPacketIdentifier> ?fixedHeader }\n  OPTIONAL { ?controlPacket <http://example.org/odp#MQTTPublishPayload> ?payload }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding MQTT Control Packets and their associated components, consider the following additions to the ontology:\n\n1. **Define Classes for MQTT Components**:\n   - Create a class for `MQTTControlPacket` if it doesn't already exist.\n   - Define subclasses for each specific control packet type (e.g., `MQTTPublish`, `MQTTSubscribe`, etc.).\n\n2. **Add Properties for Relationships**:\n   - Introduce a property `hasFixedHeader` to link `MQTTControlPacket` to its `FixedHeader`.\n   - Introduce a property `hasVariableHeader` to link `MQTTControlPacket` to its `VariableHeader`.\n   - Introduce a property `hasPayload` to link `MQTTControlPacket` to its `Payload`.\n\n3. **Define Fixed Header, Variable Header, and Payload Classes**:\n   - Create classes for `FixedHeader`, `VariableHeader`, and `Payload` to represent these components explicitly.\n\n4. **Specify Data Types or Object Types**:\n   - Ensure that the properties for `FixedHeader`, `VariableHeader`, and `Payload` are correctly typed (e.g., as objects or literals) to facilitate querying.\n\n5. **Add Instances of Control Packets**:\n   - Populate the ontology with instances of various MQTT control packets, including their respective fixed headers, variable headers, and payloads to ensure that the query can return meaningful results. \n\nBy implementing these suggestions, the ontology will"
+      },
+      {
+        "cq": "Which MQTT PUBLISH packet has which MQTT Topic (name) in the Variable Header?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?publish ?topicName WHERE {\n  ?publish a odp:MQTTPublish .\n  OPTIONAL { ?publish odp:MQTTTopicName ?topicName }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the relationship between MQTT PUBLISH packets and their associated MQTT Topic names in the Variable Header, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that there is a class for `MQTTPublish` that represents MQTT PUBLISH packets. If it doesn't exist, create it:\n   - `odp:MQTTPublish`\n\n2. **Property Definition**: Define a property to link the `MQTTPublish` class to the MQTT Topic name:\n   - `odp:hasTopicName` (domain: `odp:MQTTPublish`, range: `xsd:string` or a specific `odp:MQTTTopic` class if you want to model topics as a separate entity).\n\n3. **Instance Creation**: Ensure that instances of `MQTTPublish` are created in the ontology with the `hasTopicName` property populated with the appropriate topic names.\n\n4. **Data Type Specification**: If using a string for topic names, ensure that the datatype is correctly specified (e.g., `xsd:string`) to facilitate querying.\n\n5. **Example Instances**: Provide example instances of `MQTTPublish` with associated topic names to validate the ontology structure and ensure that the SPARQL query can return results.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding MQTT PUBLISH packets and their associated topics."
+      },
+      {
+        "cq": "Which QoS levels are set (in PUBLISH Fixed Header or SubscriptionEntry)?",
+        "sparql": "SELECT ?qosLevel WHERE { \n  { \n    ?publish a <http://example.org/odp#MQTTPublish> .\n    OPTIONAL { ?publish <http://example.org/odp#MQTTSUBSCRIBEQoS> ?qosLevel }\n  } UNION { \n    ?subscribe a <http://example.org/odp#MQTTSUBSCRIBE> .\n    OPTIONAL { ?subscribe <http://example.org/odp#MQTTSUBSCRIBEQoS> ?qosLevel }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding QoS levels in the PUBLISH Fixed Header or SubscriptionEntry, consider the following additions to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the classes `MQTTPublish` and `MQTTSUBSCRIBE` are properly defined in the ontology, if not already present.\n\n2. **Add Properties**:\n   - Introduce a property `hasQoSLevel` (or similar) to link instances of `MQTTPublish` and `MQTTSUBSCRIBE` to their respective QoS levels. This property should be defined as:\n     ``` \n     hasQoSLevel a rdf:Property ;\n     rdfs:domain <http://example.org/odp#MQTTPublish> ;\n     rdfs:domain <http://example.org/odp#MQTTSUBSCRIBE> ;\n     rdfs:range <http://example.org/odp#QoSLevel> .\n     ```\n\n3. **Define QoSLevel Class**:\n   - Create a class `QoSLevel` to represent the different Quality of Service levels (e.g., 0, 1, 2). This class can have instances representing each QoS level.\n\n4. **Add Instances**:\n   - Populate the `QoSLevel` class with instances for each QoS level, such as `QoS0`, `QoS1`, and `QoS2`, to provide concrete values for the QoS levels."
+      },
+      {
+        "cq": "Are RETAIN/DUP flags set in PUBLISH?",
+        "sparql": "SELECT ?publish ?retain ?dup WHERE { \n  ?publish a <http://example.org/odp#MQTTPublish> .\n  OPTIONAL { ?publish <http://example.org/odp#MQTTControlPacketIdentifier> ?retain . }\n  OPTIONAL { ?publish <http://example.org/odp#MQTTControlPacketIdentifier> ?dup . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the RETAIN and DUP flags in the PUBLISH message, consider the following additions to the ontology:\n\n1. **Define Properties for RETAIN and DUP Flags**:\n   - Add properties `<http://example.org/odp#hasRetainFlag>` and `<http://example.org/odp#hasDupFlag>` to represent the RETAIN and DUP flags, respectively. These properties should be defined as boolean values (true/false).\n\n2. **Update the MQTTPublish Class**:\n   - Ensure that the class `<http://example.org/odp#MQTTPublish>` includes the new properties for RETAIN and DUP flags. This can be done by adding axioms that state that instances of MQTTPublish can have these properties.\n\n3. **Define the Relationship Between PUBLISH and Flags**:\n   - Create axioms that specify that a PUBLISH message can have associated RETAIN and DUP flags, linking the properties to the MQTTPublish class.\n\n4. **Add Example Instances**:\n   - Include example instances of MQTTPublish with specific values for the RETAIN and DUP flags to demonstrate how they can be utilized in queries.\n\n5. **Documentation and Comments**:\n   - Provide clear documentation and comments within the ontology to explain the purpose of the RETAIN and DUP properties, ensuring that users understand how to use them in queries.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the"
+      },
+      {
+        "cq": "Which MQTT Control Packets have which PacketIdentifier?",
+        "sparql": "SELECT ?controlPacket ?packetIdentifier WHERE {\n  ?controlPacket a <http://example.org/odp#MQTTControlPacket> .\n  OPTIONAL { \n    ?controlPacket <http://example.org/odp#MQTTControlPacketIdentifier> ?packetIdentifier \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding MQTT Control Packets and their Packet Identifiers, consider the following additions to the ontology:\n\n1. **Define MQTT Control Packet Class**: Ensure that the class `<http://example.org/odp#MQTTControlPacket>` is properly defined and includes all relevant MQTT control packet types (e.g., CONNECT, PUBLISH, SUBSCRIBE).\n\n2. **Define Packet Identifier Property**: Create a property `<http://example.org/odp#MQTTControlPacketIdentifier>` that links instances of `MQTTControlPacket` to their corresponding Packet Identifiers. This property should be defined as a datatype property if the identifier is a simple value (e.g., integer).\n\n3. **Add Instances of Control Packets**: Populate the ontology with instances of `MQTTControlPacket`, each associated with a specific Packet Identifier using the defined property. For example, create instances for each control packet type and assign them unique identifiers.\n\n4. **Define Data Type for Packet Identifiers**: If not already defined, specify a data type for the Packet Identifier (e.g., xsd:integer) to ensure that the values assigned to the property are valid.\n\n5. **Include Inference Rules (if applicable)**: If there are specific rules or constraints regarding how Packet Identifiers are assigned to different control packets (e.g., uniqueness), include these as axioms in the ontology to facilitate reasoning.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency"
+      },
+      {
+        "cq": "Which MQTT SUBSCRIBE payloads contain which SubscriptionEntries?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?subscribePayload ?subscriptionEntry WHERE {\n  ?subscribePayload a odp:MQTTSUBSCRIBE .\n  OPTIONAL { ?subscribePayload odp:MQTTPublishPayload ?payload . }\n  OPTIONAL { ?subscribePayload odp:MQTTTopicFilterPattern ?subscriptionEntry . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT SUBSCRIBE payloads contain which SubscriptionEntries, consider the following additions to the ontology:\n\n1. **Define Classes**:\n   - Ensure that `odp:MQTTSUBSCRIBE` is defined as a class representing MQTT SUBSCRIBE messages.\n   - Define a class `odp:SubscriptionEntry` to represent individual subscription entries.\n\n2. **Define Properties**:\n   - Create a property `odp:hasSubscriptionEntry` to link `odp:MQTTSUBSCRIBE` instances to their corresponding `odp:SubscriptionEntry` instances.\n   - Define a property `odp:hasPayload` to link `odp:MQTTSUBSCRIBE` instances to their payloads, if applicable.\n\n3. **Add Axioms**:\n   - Specify that `odp:MQTTSUBSCRIBE` has a relationship with `odp:SubscriptionEntry` through the `odp:hasSubscriptionEntry` property, indicating that a subscribe message can have multiple subscription entries.\n   - Ensure that the `odp:MQTTPublishPayload` property is correctly defined and linked to the appropriate class representing payloads, if it is not already.\n\nBy implementing these changes, the ontology will better represent the relationships needed to answer the competency question."
+      },
+      {
+        "cq": "Which MQTT Topic Filters (with QoS) are requested by a SubscriptionEntry?",
+        "sparql": "SELECT ?topicFilter ?qos WHERE { \n  ?subscriptionEntry a <http://example.org/odp#MQTTSUBSCRIBE> .\n  OPTIONAL { \n    ?subscriptionEntry <http://example.org/odp#MQTTTopicFilter> ?topicFilter .\n  }\n  OPTIONAL { \n    ?subscriptionEntry <http://example.org/odp#MQTTSUBSCRIBEQoS> ?qos .\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding MQTT Topic Filters and QoS requested by a SubscriptionEntry, consider the following additions:\n\n1. **Define Classes**:\n   - Ensure that the class `MQTTSUBSCRIBE` is properly defined in the ontology to represent subscription entries.\n\n2. **Define Properties**:\n   - Add a property `MQTTTopicFilter` to link `MQTTSUBSCRIBE` instances to their corresponding topic filters.\n   - Add a property `MQTTSUBSCRIBEQoS` to link `MQTTSUBSCRIBE` instances to their Quality of Service levels.\n\n3. **Add Instances**:\n   - Create instances of `MQTTSUBSCRIBE` with associated `MQTTTopicFilter` and `MQTTSUBSCRIBEQoS` values to ensure there are data entries to query against.\n\n4. **Ensure Data Consistency**:\n   - Verify that the ontology includes necessary axioms to enforce the relationship between `MQTTSUBSCRIBE`, `MQTTTopicFilter`, and `MQTTSUBSCRIBEQoS`, ensuring that each subscription entry can have a valid topic filter and QoS level.\n\n5. **Use Appropriate Data Types**:\n   - Define the data types for `MQTTTopicFilter` and `MQTTSUBSCRIBEQoS` to ensure they can hold the expected values (e.g., string for topic filters and integer for QoS levels). \n\nBy implementing these suggestions, the ontology will be better"
+      },
+      {
+        "cq": "Which MQTT UNSUBSCRIBE payloads remove which MQTT TopicFilters?",
+        "sparql": "SELECT ?unsubscribePayload ?topicFilter WHERE {\n  ?unsubscribe a <http://example.org/odp#MQTTUnsubscribe> .\n  ?unsubscribe <http://example.org/odp#MQTTPublishPayload> ?unsubscribePayload .\n  ?unsubscribe <http://example.org/odp#MQTTUnsubscribeTopicFilter> ?topicFilter .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which MQTT UNSUBSCRIBE payloads remove which MQTT TopicFilters, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that there is a class for `MQTTUnsubscribe` that represents the unsubscribe action in the MQTT protocol.\n\n2. **Property Definitions**:\n   - **`hasMQTTPayload`**: Define a property that links an `MQTTUnsubscribe` instance to its corresponding payload (e.g., `http://example.org/odp#hasMQTTPayload`).\n   - **`hasTopicFilter`**: Define a property that links an `MQTTUnsubscribe` instance to the `TopicFilter` it removes (e.g., `http://example.org/odp#hasTopicFilter`).\n\n3. **Instance Relationships**: Ensure that instances of `MQTTUnsubscribe` are correctly related to their payloads and topic filters using the defined properties.\n\n4. **Data Type Definitions**: Specify the data types for the payload and topic filter properties, ensuring they can accommodate the expected values (e.g., string for topic filters).\n\n5. **Example Instances**: Create example instances of `MQTTUnsubscribe` with associated payloads and topic filters to validate the ontology and ensure that the SPARQL query can return results. \n\nBy implementing these changes, the ontology will be better equipped to answer the competency question."
+      },
+      {
+        "cq": "Which MQTT PUBLISH payloads encode SOSA Observations (or Observation Collections)?",
+        "sparql": "SELECT ?publishPayload WHERE { \n  ?publish a <http://example.org/odp#MQTTPublish> .\n  ?publish <http://example.org/odp#MQTTPublishPayload> ?publishPayload .\n  OPTIONAL { ?publish <http://example.org/odp#MQTTControlPacketIdentifier> ?identifier . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding MQTT PUBLISH payloads that encode SOSA Observations or Observation Collections, consider the following additions:\n\n1. **Define a Class for SOSA Observations**: \n   - Add a class `Observation` that is a subclass of `sosa:Observation` from the SOSA ontology to represent individual observations.\n\n2. **Define a Class for Observation Collections**: \n   - Add a class `ObservationCollection` that is a subclass of `sosa:ObservationCollection` to represent collections of observations.\n\n3. **Create Properties for Encoding Relationships**: \n   - Introduce a property `encodesObservation` that relates `MQTTPublish` instances to `Observation` instances.\n   - Introduce a property `encodesObservationCollection` that relates `MQTTPublish` instances to `ObservationCollection` instances.\n\n4. **Define Payload Structure**: \n   - Specify that the `MQTTPublishPayload` can contain either an `Observation` or an `ObservationCollection` by using a union class or a property restriction.\n\n5. **Add Example Instances**: \n   - Create example instances of `MQTTPublish`, `Observation`, and `ObservationCollection` to demonstrate the relationships and ensure that the ontology can be queried effectively.\n\nThese additions will help structure the ontology to capture the necessary relationships and enable effective querying of MQTT PUBLISH payloads that encode SOSA Observations or Observation Collections."
+      },
+      {
+        "cq": "Which MQTT PUBLISH payloads encode SOSA Actuations (or Actuation Collections)?",
+        "sparql": "SELECT ?publishPayload WHERE { \n  ?publish a <http://example.org/odp#MQTTPublish> .\n  OPTIONAL { ?publish <http://example.org/odp#MQTTPublishPayload> ?publishPayload . }\n  FILTER(CONTAINS(?publishPayload, \"SOSA Actuation\"))\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding MQTT PUBLISH payloads that encode SOSA Actuations, consider the following additions to the ontology:\n\n1. **Define a Class for Actuation Payloads**: Introduce a class, e.g., `ActuationPayload`, that specifically represents payloads containing SOSA Actuations. This will help in categorizing and querying payloads related to actuations.\n\n2. **Create a Property for Actuation Encoding**: Add a property, e.g., `encodesActuation`, that links `MQTTPublish` instances to `ActuationPayload` instances. This property can be used to directly associate MQTT messages with their corresponding actuation data.\n\n3. **Specify Actuation Types**: Define subclasses or specific instances of `ActuationPayload` that represent different types of SOSA Actuations (e.g., `SOSAActuation`, `ActuationCollection`). This will allow for more granular querying and filtering.\n\n4. **Enhance the Payload Structure**: Ensure that the `MQTTPublishPayload` property can reference structured data formats (e.g., JSON-LD) that explicitly include SOSA Actuation information, making it easier to parse and query.\n\n5. **Add Annotations or Tags**: Consider adding annotations or tags to the `MQTTPublish` instances that indicate whether they contain SOSA Actuation data, which can be used in filtering queries.\n\nThese enhancements will facilitate more effective querying of MQTT PUBLISH"
+      },
+      {
+        "cq": "Which fields are encoded in a MQTT payload?",
+        "sparql": "SELECT ?payloadField WHERE { \n  ?payloadField a <http://example.org/odp#MQTTPublish> .\n  OPTIONAL { ?payloadField <http://example.org/odp#MQTTPublishPayload> ?payloadValue }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the fields encoded in an MQTT payload, consider the following additions to the ontology:\n\n1. **Class Definition**: Introduce a class `MQTTPayloadField` to represent individual fields within an MQTT payload.\n   ```ttl\n   :MQTTPayloadField a rdfs:Class .\n   ```\n\n2. **Property Definition**: Define a property `hasField` to link an `MQTTPublish` instance to its corresponding `MQTTPayloadField` instances.\n   ```ttl\n   :hasField a rdf:Property ;\n             rdfs:domain :MQTTPublish ;\n             rdfs:range :MQTTPayloadField .\n   ```\n\n3. **Property Definition**: Define a property `fieldValue` to represent the value of each `MQTTPayloadField`.\n   ```ttl\n   :fieldValue a rdf:Property ;\n               rdfs:domain :MQTTPayloadField ;\n               rdfs:range xsd:string .  // or appropriate datatype\n   ```\n\n4. **Axiom Addition**: Ensure that instances of `MQTTPublish` can have multiple `MQTTPayloadField` instances associated with them through the `hasField` property.\n\n5. **Example Instances**: Create example instances of `MQTTPublish` and `MQTTPayloadField` to demonstrate the relationships and ensure the ontology is populated for testing queries.\n\nBy implementing these changes, the"
+      },
+      {
+        "cq": "What content, content type, encoding and delimiter does a MQTT PUBLISH payload have?",
+        "sparql": "SELECT ?payload ?contentType ?encoding ?delimiter WHERE { \n  ?publish a <http://example.org/odp#MQTTPublish> .\n  OPTIONAL { ?publish <http://example.org/odp#MQTTPublishPayload> ?payload . }\n  OPTIONAL { ?publish <http://example.org/odp#MQTTTopicName> ?contentType . }\n  OPTIONAL { ?publish <http://example.org/odp#MQTTControlPacketIdentifier> ?encoding . }\n  OPTIONAL { ?publish <http://example.org/odp#MQTTTopicFilterPattern> ?delimiter . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the MQTT PUBLISH payload, the following classes, properties, and axioms should be added to the ontology:\n\n1. **Classes**:\n   - Define a class `MQTTPublishPayload` to represent the payload of an MQTT PUBLISH message.\n\n2. **Properties**:\n   - Add a property `hasContent` (domain: `MQTTPublishPayload`, range: `xsd:string`) to specify the actual content of the payload.\n   - Add a property `hasContentType` (domain: `MQTTPublishPayload`, range: `xsd:string`) to indicate the content type (e.g., JSON, XML).\n   - Add a property `hasEncoding` (domain: `MQTTPublishPayload`, range: `xsd:string`) to specify the encoding format (e.g., UTF-8).\n   - Add a property `hasDelimiter` (domain: `MQTTPublishPayload`, range: `xsd:string`) to define the delimiter used in the payload (if applicable).\n\n3. **Axioms**:\n   - Create axioms that link `MQTTPublish` to `MQTTPublishPayload` using a property like `hasPayload` to establish the relationship between a publish message and its payload.\n\nBy implementing these additions, the ontology will be better equipped to provide answers to the competency question regarding the MQTT PUBLISH payload."
+      },
+      {
+        "cq": "What is the size of a MQTT payload (as QUDT QuantityValue with unit)?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?payloadSize ?unit WHERE {\n  ?publish a odp:MQTTPublish .\n  OPTIONAL { ?publish odp:MQTTPublishPayload ?payloadSize }\n  OPTIONAL { ?publish odp:MQTTControlPacketIdentifier ?unit }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the size of an MQTT payload as a QUDT QuantityValue with a unit, consider the following additions to the ontology:\n\n1. **Define a Class for Payload Size**: Introduce a class `odp:PayloadSize` that represents the size of the MQTT payload, which can be linked to QUDT's `QuantityValue`.\n\n2. **Add Properties for Size and Unit**:\n   - Create a property `odp:hasPayloadSize` to link `odp:MQTTPublish` instances to their corresponding `odp:PayloadSize`.\n   - Create a property `odp:hasUnit` to specify the unit of measurement for the payload size (e.g., bytes, kilobytes).\n\n3. **Integrate QUDT**: Ensure that the `odp:PayloadSize` class can be associated with QUDT's `QuantityValue` to represent the size quantitatively, including the unit of measurement.\n\n4. **Define Relationships**: Establish relationships between `odp:MQTTPublish`, `odp:PayloadSize`, and QUDT's unit classes to facilitate querying the size and unit together.\n\n5. **Example Instances**: Provide example instances of `odp:MQTTPublish` with associated `odp:PayloadSize` and `odp:hasUnit` to demonstrate the usage and ensure the ontology is populated for testing queries. \n\nThese additions will enable the ontology to effectively represent and query the size of MQTT payloads"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 10
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P11",
+        "affected_elements_count": 10,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#MQTTControlPacketIdentifier",
+          "http://example.org/odp#MQTTTopicFilterPattern",
+          "http://example.org/odp#MQTTPublishPayload",
+          "http://example.org/odp#MQTTNetworkConnectionTLS",
+          "http://example.org/odp#MQTTClientID",
+          "http://example.org/odp#MQTTBrokerPort",
+          "http://example.org/odp#MQTTBrokerHost",
+          "http://example.org/odp#MQTTSUBSCRIBEQoS",
+          "http://example.org/odp#MQTTTopicName",
+          "http://example.org/odp#MQTTUnsubscribeTopicFilter"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "id": "2025-153-01",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 61,
+    "classes_count": 5,
+    "object_properties_count": 4,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 2,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 3,
+    "attribute_richness": 0.2,
+    "relationship_richness": 0.8,
+    "avg_subclass_per_class": 0.4
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 61,
+    "triples_after": 268,
+    "inferred_triples": 207,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 0,
+    "cqs_failed": 6,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?entity ?observation ?referent ?rule ?transition ?timestamp WHERE {\n  ?entity a odp:Entity .\n  OPTIONAL { ?entity odp:hasObservation ?observation . }\n  OPTIONAL { ?entity odp:hasReferent ?referent . }\n  OPTIONAL { ?entity odp:hasRule ?rule . }\n  OPTIONAL { ?entity odp:hasTransition ?transition . }\n  OPTIONAL { ?entity odp:hasTimestamp ?timestamp . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Define the `Entity` Class**: Ensure that the `odp:Entity` class is properly defined and instances of this class are created in the ontology.\n\n2. **Add Properties**: \n   - Define the properties `odp:hasObservation`, `odp:hasReferent`, `odp:hasRule`, `odp:hasTransition`, and `odp:hasTimestamp` as object properties that relate `Entity` instances to their respective observations, referents, rules, transitions, and timestamps.\n\n3. **Create Instances**: Populate the ontology with instances of `Entity` and link them to relevant observations, referents, rules, transitions, and timestamps using the defined properties.\n\n4. **Ensure Data Types**: If `odp:hasTimestamp` is meant to represent a date or time, ensure it is defined with an appropriate data type (e.g., xsd:dateTime).\n\n5. **Check for Consistency**: Validate that the ontology is consistent and that the relationships between entities and their properties are correctly established to ensure query results can be returned."
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?entity ?observation ?referent ?rule ?transition ?timestamp WHERE {\n  ?entity a odp:Entity .\n  OPTIONAL { ?entity odp:hasObservation ?observation . }\n  OPTIONAL { ?entity odp:hasReferent ?referent . }\n  OPTIONAL { ?entity odp:hasRule ?rule . }\n  OPTIONAL { ?entity odp:hasTransition ?transition . }\n  OPTIONAL { ?entity odp:hasTimestamp ?timestamp . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Entity` Class**: Ensure that the `odp:Entity` class is properly defined in the ontology with relevant instances. If no instances exist, the query will return no results.\n\n2. **Add Properties**: Verify that the properties `odp:hasObservation`, `odp:hasReferent`, `odp:hasRule`, `odp:hasTransition`, and `odp:hasTimestamp` are defined in the ontology. If they are not, add them with appropriate domain and range specifications.\n\n3. **Create Instances**: Populate the ontology with instances of `odp:Entity` and link them to observations, referents, rules, transitions, and timestamps using the defined properties. This will ensure that the query can retrieve meaningful data.\n\n4. **Check Data Types**: Ensure that the values for properties like `odp:hasTimestamp` are of the correct data type (e.g., xsd:dateTime) to avoid type mismatches that could lead to empty results.\n\n5. **Review Ontology Structure**: Confirm that the ontology structure is correctly set up, including any necessary imports or relationships that might affect the visibility of the `Entity` class and its properties."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#Entity> }\n  UNION\n  { ?class a <http://example.org/odp#Observation> }\n  UNION\n  { ?class a <http://example.org/odp#Referent> }\n  UNION\n  { ?class a <http://example.org/odp#Rule> }\n  UNION\n  { ?class a <http://example.org/odp#Transition> }\n  OPTIONAL { ?property a <http://example.org/odp#hasObservation> }\n  OPTIONAL { ?property a <http://example.org/odp#hasReferent> }\n  OPTIONAL { ?property a <http://example.org/odp#hasRule> }\n  OPTIONAL { ?property a <http://example.org/odp#hasTransition> }\n  OPTIONAL { ?property a <http://example.org/odp#hasTimestamp> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can return results for classes and properties, consider the following suggestions:\n\n1. **Define Classes**: Ensure that the following classes are declared in the ontology:\n   - `:Entity a owl:Class .`\n   - `:Observation a owl:Class .`\n   - `:Referent a owl:Class .`\n   - `:Rule a owl:Class .`\n   - `:Transition a owl:Class .`\n\n2. **Define Object Properties**: Declare the necessary object properties that relate these classes:\n   - `:hasObservation a owl:ObjectProperty .`\n   - `:hasReferent a owl:ObjectProperty .`\n   - `:hasRule a owl:ObjectProperty .`\n   - `:hasTransition a owl:ObjectProperty .`\n\n3. **Define Datatype Properties**: If applicable, add any relevant datatype properties:\n   - `:hasTimestamp a owl:DatatypeProperty .`\n\n4. **Add Instances (Optional)**: To test the query effectively, consider adding instances of these classes and properties to the ontology.\n\n5. **Check Namespace**: Ensure that the namespace `<http://example.org/odp#>` is correctly defined and used consistently throughout the ontology.\n\nBy implementing these suggestions, the ontology will be better equipped to return results for the competency question."
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?entity ?observation ?referent ?rule ?transition ?timestamp WHERE {\n  ?entity a odp:Entity .\n  OPTIONAL { ?entity odp:hasObservation ?observation . }\n  OPTIONAL { ?entity odp:hasReferent ?referent . }\n  OPTIONAL { ?entity odp:hasRule ?rule . }\n  OPTIONAL { ?entity odp:hasTransition ?transition . }\n  OPTIONAL { ?entity odp:hasTimestamp ?timestamp . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Define the `Entity` Class**: Ensure that the class `odp:Entity` is defined in the ontology with appropriate characteristics. For example:\n   ```turtle\n   :Entity a rdfs:Class .\n   ```\n\n2. **Define Properties**: Ensure that the properties used in the query are defined in the ontology. For example:\n   ```turtle\n   :hasObservation a rdf:Property ; rdfs:domain :Entity ; rdfs:range :Observation .\n   :hasReferent a rdf:Property ; rdfs:domain :Entity ; rdfs:range :Referent .\n   :hasRule a rdf:Property ; rdfs:domain :Entity ; rdfs:range :Rule .\n   :hasTransition a rdf:Property ; rdfs:domain :Entity ; rdfs:range :Transition .\n   :hasTimestamp a rdf:Property ; rdfs:domain :Entity ; rdfs:range xsd:dateTime .\n   ```\n\n3. **Define Related Classes**: Define the classes for the properties' ranges to ensure they are recognized:\n   ```turtle\n   :Observation a rdfs:Class .\n   :Referent a rdfs:Class .\n   :Rule a rdfs:Class .\n   :Transition a rdfs:Class .\n   ```\n\n4. **Add Axioms for"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:Entity .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Observation .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Referent .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Rule .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Transition .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasObservation .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasReferent .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasRule .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasTransition .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1263), (line:51, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Classes**: For each class in your ontology (e.g., `odp:Entity`, `odp:Observation`, `odp:Referent`, `odp:Rule`, `odp:Transition`), add `rdfs:label` and `rdfs:comment` properties that provide a human-readable name and a description of the class's purpose.\n\n   Example:\n   ```turtle\n   odp:Entity rdfs:label \"Entity\" .\n   odp:Entity rdfs:comment \"A general representation of an object or concept.\" .\n   ```\n\n2. **Define Annotations for Properties**: Similarly, for each property (e.g., `odp:hasObservation`, `odp:hasReferent`, `odp:hasRule`, `odp:hasTransition`), add `rdfs:label` and `rdfs:comment` to describe the relationship and its significance.\n\n   Example:\n   ```turtle\n   odp:hasObservation rdfs:label \"Has Observation\" .\n   odp:hasObservation rdfs:comment \"Indicates that an entity has an associated observation.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are consistent in terms of naming conventions (e.g., using singular or plural forms)"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX : <http://example.org/odp#>\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a :Entity ;\n            :hasObservation ?observation .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can answer the competency question regarding the mandatory ontology header, you should consider adding the following classes, properties, and axioms:\n\n1. **Define the Ontology Class**:\n   - Create a class for the ontology itself, e.g., `:Ontology a owl:Class .`\n\n2. **Declare the Ontology Properties**:\n   - Define the properties `rdfs:label` and `rdfs:comment` as applicable to the `:Ontology` class:\n     ```turtle\n     :hasLabel a rdf:Property ; rdfs:domain :Ontology ; rdfs:range rdfs:Literal .\n     :hasComment a rdf:Property ; rdfs:domain :Ontology ; rdfs:range rdfs:Literal .\n     ```\n\n3. **Create an Instance of the Ontology**:\n   - Instantiate the ontology and provide values for the label and comment:\n     ```turtle\n     :MyOntology a :Ontology ;\n                 :hasLabel \"My Ontology\" ;\n                 :hasComment \"This ontology describes...\" .\n     ```\n\n4. **Ensure Proper RDF Type**:\n   - Ensure that the ontology instance is correctly typed as `:Ontology` rather than `:Entity` to match the SPARQL query's expectations.\n\n5. **Update SPARQL Query**:\n   - Modify the SPARQL query to reflect the correct properties:\n     ```sparql\n     SELECT ?ontology ?label ?comment WHERE {"
+      }
+    ]
+  },
+  "oops": {
+    "error": "OOPS request failed (status 200)",
+    "raw_response": "<rdf:RDF\nxmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\nxmlns:oops=\"http://oops.linkeddata.es/def#\" > \n<rdf:Description rdf:about=\"http://oops.linkeddata.es/data/wrong_execution\">\n    <oops:hasTitle rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\">OOPS! something went wrong.</oops:hasTitle>\n    <oops:hasMessage rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\">If you have entered a URI make sure that it is available on-line using, for example, Vapour or Hyperthing.</oops:hasM"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "id": "2023-134-03",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 48,
+    "classes_count": 5,
+    "object_properties_count": 4,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.4,
+    "relationship_richness": 0.6666666666666666,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 48,
+    "triples_after": 239,
+    "inferred_triples": 191,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?pod ?dataCategory ?policy ?maintainedBy ?storedAt ?createdAt ?updatedAt WHERE {\n  ?pod a odp:Pod .\n  OPTIONAL { ?pod odp:hasDataCategory ?dataCategory . }\n  OPTIONAL { ?pod odp:hasPolicy ?policy . }\n  OPTIONAL { ?pod odp:maintainedBy ?maintainedBy . }\n  OPTIONAL { ?pod odp:storedAt ?storedAt . }\n  OPTIONAL { ?pod odp:createdAt ?createdAt . }\n  OPTIONAL { ?pod odp:updatedAt ?updatedAt . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class Definition**: Ensure that the class `odp:Pod` is defined in the ontology with appropriate instances. If no instances of `odp:Pod` exist, the query will return no results.\n\n2. **Data Properties**: Define the following data properties if they are not already present:\n   - `odp:hasDataCategory` (range: `xsd:string` or a specific category class)\n   - `odp:hasPolicy` (range: `xsd:string` or a specific policy class)\n   - `odp:maintainedBy` (range: `xsd:string` or a specific organization/person class)\n   - `odp:storedAt` (range: `xsd:string` or a specific location class)\n   - `odp:createdAt` (range: `xsd:dateTime`)\n   - `odp:updatedAt` (range: `xsd:dateTime`)\n\n3. **Instance Creation**: Create instances of `odp:Pod` in the ontology with values for the properties defined above to ensure that the query can retrieve meaningful results.\n\n4. **Data Population**: Populate the ontology with relevant data that corresponds to the properties of `odp:Pod`, ensuring that at least one instance has values for the optional properties to test the query effectively.\n\n5. **"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?type WHERE {\n  { \n    ?class a owl:Class .\n    BIND(\"Class\" AS ?type)\n  } UNION {\n    ?property a owl:ObjectProperty .\n    BIND(\"ObjectProperty\" AS ?type)\n  } UNION {\n    ?property a owl:DatatypeProperty .\n    BIND(\"DatatypeProperty\" AS ?type)\n  } \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?pod ?dataCategory ?policy ?maintainer ?storage ?created ?updated WHERE {\n  ?pod a odp:Pod .\n  OPTIONAL { ?pod odp:hasDataCategory ?dataCategory . }\n  OPTIONAL { ?pod odp:hasPolicy ?policy . }\n  OPTIONAL { ?pod odp:maintainedBy ?maintainer . }\n  OPTIONAL { ?pod odp:storedAt ?storage . }\n  OPTIONAL { ?pod odp:createdAt ?created . }\n  OPTIONAL { ?pod odp:updatedAt ?updated . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `Pod` Class**:\n   - Axiom: `:Pod a rdfs:Class .`\n\n2. **Define Properties for Relationships**:\n   - Axiom: `:hasDataCategory a rdf:Property ; rdfs:domain :Pod ; rdfs:range :DataCategory .`\n   - Axiom: `:hasPolicy a rdf:Property ; rdfs:domain :Pod ; rdfs:range :Policy .`\n   - Axiom: `:maintainedBy a rdf:Property ; rdfs:domain :Pod ; rdfs:range :Maintainer .`\n   - Axiom: `:storedAt a rdf:Property ; rdfs:domain :Pod ; rdfs:range :Storage .`\n   - Axiom: `:createdAt a rdf:Property ; rdfs:domain :Pod ; rdfs:range xsd:dateTime .`\n   - Axiom: `:updatedAt a rdf:Property ; rdfs:domain :Pod ; rdfs:range xsd:dateTime .`\n\n3. **Define Related Classes**:\n   - Axiom: `:DataCategory a rdfs:Class .`\n   - Axiom: `:Policy a rdfs:Class .`\n   - Axiom: `:Maintainer a r"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:DataCategory .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:DataRegistry .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Pod .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Policy .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:SolidActor .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasDataCategory .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasPolicy .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:maintainedBy .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:storedAt .",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1272), (line:52, col:3)",
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can implement the following suggestions:\n\n1. **Add Constraints in Ontology**: Define a custom SHACL (Shapes Constraint Language) shape that enforces the presence of `rdfs:label` and `rdfs:comment` for all classes and properties. This will allow you to validate your ontology against these constraints.\n\n2. **Create a Validation SPARQL Query**: Modify your SPARQL query to check for the absence of `rdfs:label` and `rdfs:comment` annotations. This can be done by using `FILTER` to find classes and properties that do not have these annotations.\n\n3. **Define Default Annotations**: If certain classes or properties are frequently created without annotations, consider defining default `rdfs:label` and `rdfs:comment` values in your ontology creation process or through a script that automatically assigns these values when new entities are created.\n\n4. **Documentation and Guidelines**: Provide clear documentation and guidelines for ontology developers to ensure that they include `rdfs:label` and `rdfs:comment` when defining new classes and properties.\n\n5. **Regular Audits**: Implement a regular audit process using SPARQL queries to check for compliance with the annotation requirements, ensuring that any missing annotations are addressed promptly. \n\nBy following these steps, you can effectively enforce the requirement for `r"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?pod ?dataCategory ?policy ?maintainer ?created ?updated WHERE {\n  ?pod a odp:Pod .\n  OPTIONAL { ?pod odp:hasDataCategory ?dataCategory . }\n  OPTIONAL { ?pod odp:hasPolicy ?policy . }\n  OPTIONAL { ?pod odp:maintainedBy ?maintainer . }\n  OPTIONAL { ?pod odp:createdAt ?created . }\n  OPTIONAL { ?pod odp:updatedAt ?updated . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can effectively answer the competency question regarding the `Pod` and its associated properties, consider the following additions:\n\n1. **Define the `Pod` Class**: Ensure that the `Pod` class is explicitly defined in the ontology with a clear URI, e.g., `odp:Pod`.\n\n2. **Add Object Properties**:\n   - `odp:hasDataCategory`: Define this property to link a `Pod` to its data category.\n   - `odp:hasPolicy`: Define this property to link a `Pod` to its associated policy.\n   - `odp:maintainedBy`: Define this property to link a `Pod` to its maintainer (e.g., a person or organization).\n   \n3. **Add Datatype Properties**:\n   - `odp:createdAt`: Define this property to store the creation date of a `Pod`.\n   - `odp:updatedAt`: Define this property to store the last updated date of a `Pod`.\n\n4. **Ensure Instances Exist**: Verify that there are instances of `Pod` in the ontology with the relevant properties populated. If no instances exist, the query will return no results.\n\n5. **Check for Data Population**: Ensure that the ontology is populated with data that includes instances of `Pod` and their associated properties to return meaningful results when the SPARQL query is executed."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

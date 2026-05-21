@@ -1,0 +1,88 @@
+{
+  "id": "2023-135-01",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-reasoning",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 69,
+    "classes_count": 14,
+    "object_properties_count": 3,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 7,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.5
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 69,
+    "triples_after": 311,
+    "inferred_triples": 242,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?",
+    "What alternative did C. S. Lewis used to assume the role of a book writer?",
+    "Show the trajectories of rivers which cross national parks?"
+  ],
+  "cqs_count": 3,
+  "cq_verification": {
+    "cqs_total": 3,
+    "cqs_passed": 0,
+    "cqs_failed": 3,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?pseudonym WHERE {\n  ?author a odp:Author ;\n          odp:hasName \"C. S. Lewis\" .\n  ?work a odp:PoetryCollection ;\n        odp:hasAlternativeName \"Spirit in Bondage\" ;\n        odp:hasPseudonym ?pseudonym .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To answer the competency question regarding the pseudonym under which C. S. Lewis published \"Spirit in Bondage,\" consider adding the following to the ontology:\n\n1. **Class for Pseudonyms**: Introduce a class `odp:Pseudonym` to represent pseudonyms used by authors.\n\n2. **Property for Author Pseudonym**: Add a property `odp:hasPseudonym` that links an `odp:Author` to an `odp:Pseudonym`.\n\n3. **Property for Work Pseudonym**: Include a property `odp:publishedUnderPseudonym` that connects a work (e.g., `odp:PoetryCollection`) to the pseudonym under which it was published.\n\n4. **Instance of Pseudonym**: Create an instance of `odp:Pseudonym` for the pseudonym used by C. S. Lewis for \"Spirit in Bondage\" (e.g., \"N. W. Clerk\").\n\n5. **Linking Instances**: Ensure that the instance of `odp:PoetryCollection` for \"Spirit in Bondage\" is linked to the appropriate `odp:Pseudonym` instance using the `odp:publishedUnderPseudonym` property. \n\nThese additions will allow the SPARQL query to retrieve the desired information effectively."
+      },
+      {
+        "cq": "What alternative did C. S. Lewis used to assume the role of a book writer?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?alternativeName WHERE {\n  ?author a odp:Author .\n  ?author odp:hasAlternativeName ?alternativeName .\n  ?author odp:hasName \"C. S. Lewis\" .\n  ?author odp:hasPseudonym ?pseudonym .\n  ?pseudonym a odp:BookWriterRole .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the alternative names or pseudonyms used by C. S. Lewis as a book writer, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Class Addition**: Introduce a class `odp:Pseudonym` to represent alternative names or pseudonyms used by authors.\n\n2. **Property Addition**: Define a property `odp:hasPseudonym` that links an `odp:Author` to an `odp:Pseudonym`, allowing for the representation of multiple pseudonyms for a single author.\n\n3. **Property Addition**: Create a property `odp:hasRole` to specify the role of the author (e.g., `odp:BookWriterRole`), which can be linked to the `odp:Author` class.\n\n4. **Axiom Addition**: Establish an axiom that states that if an author has a pseudonym, then that pseudonym is also an instance of `odp:Pseudonym`.\n\n5. **Data Population**: Ensure that the ontology is populated with instances of `odp:Author`, `odp:Pseudonym`, and their relationships, specifically including C. S. Lewis and any known pseudonyms he used.\n\nBy implementing these changes, the ontology will be better equipped to answer queries related to the alternative names of authors."
+      },
+      {
+        "cq": "Show the trajectories of rivers which cross national parks?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?river ?nationalPark ?trajectory WHERE {\n  ?river a odp:River .\n  ?nationalPark a odp:NationalPark .\n  ?river odp:hasName ?trajectory .\n  ?river ?crosses ?nationalPark .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the trajectories of rivers that cross national parks, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class for Trajectories**: Introduce a new class `odp:Trajectory` to represent the paths or trajectories of rivers.\n\n2. **Property for River Trajectories**: Define a property `odp:hasTrajectory` that links a river to its corresponding trajectory, allowing for the representation of the river's path.\n\n3. **Crosses Relationship**: Ensure that the property `odp:crosses` is explicitly defined to relate rivers to national parks, indicating that a river intersects with a national park.\n\n4. **Geographical Representation**: Consider adding a geographical representation for both rivers and national parks, such as coordinates or geometrical shapes, to facilitate spatial queries.\n\n5. **Data Population**: Ensure that the ontology is populated with instances of rivers, national parks, and their respective trajectories to provide meaningful query results."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

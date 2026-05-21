@@ -1,0 +1,112 @@
+{
+  "id": "2023-134-03",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-constraints",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 48,
+    "classes_count": 5,
+    "object_properties_count": 4,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.4,
+    "relationship_richness": 0.6666666666666666,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 48,
+    "triples_after": 239,
+    "inferred_triples": 191,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?actor ?dataCategory ?policy ?registry ?storageLocation WHERE {\n  ?actor a odp:Actor .\n  OPTIONAL { ?actor odp:hasDataCategory ?dataCategory . }\n  OPTIONAL { ?actor odp:hasPolicy ?policy . }\n  OPTIONAL { ?actor odp:maintainedBy ?registry . }\n  OPTIONAL { ?actor odp:storedAt ?storageLocation . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `Actor` Class**: Ensure that the `Actor` class is properly defined in the ontology with relevant instances that represent actual actors (e.g., individuals, organizations).\n\n2. **Add Data Categories**: Introduce the `DataCategory` class and create instances of data categories that actors can have. Define the property `odp:hasDataCategory` to link actors to these categories.\n\n3. **Establish Policies**: Create a `Policy` class and define instances of policies that can be associated with actors. Ensure the property `odp:hasPolicy` is linked to this class.\n\n4. **Registry Class**: Define a `Registry` class and create instances that represent registries. Ensure the property `odp:maintainedBy` is linked to this class.\n\n5. **Storage Location Class**: Introduce a `StorageLocation` class and create instances that represent various storage locations. Ensure the property `odp:storedAt` is linked to this class.\n\nBy implementing these additions, the ontology will be better equipped to provide meaningful results for the given SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#Actor> }\n  UNION { ?class a <http://example.org/odp#DataCategory> }\n  UNION { ?class a <http://example.org/odp#Policy> }\n  UNION { ?class a <http://example.org/odp#Registry> }\n  UNION { ?class a <http://example.org/odp#StorageLocation> }\n  UNION { ?property a <http://example.org/odp#hasDataCategory> }\n  UNION { ?property a <http://example.org/odp#hasPolicy> }\n  UNION { ?property a <http://example.org/odp#maintainedBy> }\n  UNION { ?property a <http://example.org/odp#storedAt> }\n  UNION { ?property a <http://example.org/odp#createdAt> }\n  UNION { ?property a <http://example.org/odp#updatedAt> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can answer the competency question regarding the declaration of classes and properties, consider the following concrete suggestions:\n\n1. **Declare Classes**: Ensure that the following classes are explicitly declared in your ontology:\n   ```turtle\n   :Actor a owl:Class .\n   :DataCategory a owl:Class .\n   :Policy a owl:Class .\n   :Registry a owl:Class .\n   :StorageLocation a owl:Class .\n   ```\n\n2. **Declare Object Properties**: Ensure that the following object properties are explicitly declared:\n   ```turtle\n   :hasDataCategory a owl:ObjectProperty .\n   :hasPolicy a owl:ObjectProperty .\n   :maintainedBy a owl:ObjectProperty .\n   :storedAt a owl:ObjectProperty .\n   ```\n\n3. **Declare Datatype Properties**: Ensure that the following datatype properties are explicitly declared:\n   ```turtle\n   :createdAt a owl:DatatypeProperty .\n   :updatedAt a owl:DatatypeProperty .\n   ```\n\n4. **Use Proper Namespaces**: Make sure to use the correct namespace for your ontology (e.g., `http://example.org/odp#`) in your SPARQL queries and ontology definitions.\n\n5. **Check Ontology Loading**: Verify that your ontology is correctly loaded into the SPARQL endpoint or reasoner you are using, as this can affect query results."
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?actor ?dataCategory ?policy ?registry ?storageLocation ?createdAt ?updatedAt WHERE {\n  ?actor a odp:Actor .\n  OPTIONAL { ?actor odp:hasDataCategory ?dataCategory . }\n  OPTIONAL { ?actor odp:hasPolicy ?policy . }\n  OPTIONAL { ?actor odp:maintainedBy ?registry . }\n  OPTIONAL { ?actor odp:storedAt ?storageLocation . }\n  OPTIONAL { ?actor odp:createdAt ?createdAt . }\n  OPTIONAL { ?actor odp:updatedAt ?updatedAt . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `Actor` Class**: Ensure that the `Actor` class is explicitly defined in the ontology.\n   ```turtle\n   :Actor a owl:Class .\n   ```\n\n2. **Define Properties**: Add the necessary properties that relate `Actor` to other entities. For example:\n   ```turtle\n   :hasDataCategory a owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range :DataCategory .\n   :hasPolicy a owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range :Policy .\n   :maintainedBy a owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range :Registry .\n   :storedAt a owl:ObjectProperty ; rdfs:domain :Actor ; rdfs:range :StorageLocation .\n   :createdAt a owl:DatatypeProperty ; rdfs:domain :Actor ; rdfs:range xsd:dateTime .\n   :updatedAt a owl:DatatypeProperty ; rdfs:domain :Actor ; rdfs:range xsd:dateTime .\n   ```\n\n3. **Define Related Classes**: Ensure that the related classes (`DataCategory`, `Policy`, `Registry`, `StorageLocation`) are defined in the ontology.\n   ```turtle\n   :DataCategory a owl:Class ."
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:Actor .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:DataCategory .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Policy .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:Registry .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?class a odp:StorageLocation .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasDataCategory .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:hasPolicy .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:maintainedBy .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:storedAt .",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1275), (line:52, col:3)",
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can implement the following suggestions:\n\n1. **Add Constraints in Ontology**: Define a custom ontology axiom or constraint that mandates the presence of `rdfs:label` and `rdfs:comment` for all classes and properties. This can be done using OWL or SHACL (Shapes Constraint Language).\n\n2. **Create a Validation Process**: Implement a validation process (e.g., using a reasoner or a validation tool) that checks for the existence of `rdfs:label` and `rdfs:comment` for each class and property upon ontology updates or before deployment.\n\n3. **Define Default Annotations**: Introduce a mechanism to automatically assign default `rdfs:label` and `rdfs:comment` values for classes and properties that lack these annotations, ensuring that they are not left empty.\n\n4. **Documentation and Guidelines**: Provide clear documentation and guidelines for ontology developers to follow, emphasizing the importance of including `rdfs:label` and `rdfs:comment` for every class and property.\n\n5. **SPARQL Query Correction**: Modify the SPARQL query to ensure it correctly checks for the existence of `rdfs:label` and `rdfs:comment` without using UNION incorrectly. Use a single pattern with OPTIONAL clauses for both classes and properties, ensuring that the query structure is"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?actor ?dataCategory ?policy ?registry ?storageLocation WHERE {\n  ?actor a odp:Actor .\n  OPTIONAL { ?actor odp:hasDataCategory ?dataCategory . }\n  OPTIONAL { ?actor odp:hasPolicy ?policy . }\n  OPTIONAL { ?actor odp:maintainedBy ?registry . }\n  OPTIONAL { ?actor odp:storedAt ?storageLocation . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the ontology is minimal and reusable, consider the following additions:\n\n1. **Define the `Actor` Class**: Ensure that the `Actor` class is properly defined in the ontology with relevant characteristics that can be instantiated.\n\n2. **Add Data Properties**:\n   - `odp:hasDataCategory`: Define this property to link `Actor` instances to their respective data categories.\n   - `odp:hasPolicy`: Define this property to link `Actor` instances to the policies they are associated with.\n   - `odp:maintainedBy`: Define this property to link `Actor` instances to the registries that maintain them.\n   - `odp:storedAt`: Define this property to link `Actor` instances to their storage locations.\n\n3. **Create Instances**: Ensure that there are instances of `Actor` in the ontology that have values for the properties defined above. For example, create instances like `odp:Actor1`, `odp:Actor2`, etc., and link them to appropriate data categories, policies, registries, and storage locations.\n\n4. **Use RDFS or OWL for Class Hierarchy**: If applicable, use RDFS or OWL to define any necessary hierarchies or relationships between classes to enhance reusability and clarity.\n\n5. **Check for Consistency**: Validate the ontology to ensure that all classes and properties are correctly defined and that there are no inconsistencies that could lead to empty query results"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

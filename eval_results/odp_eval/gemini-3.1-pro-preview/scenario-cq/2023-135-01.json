@@ -1,0 +1,121 @@
+{
+  "id": "2023-135-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 100,
+    "classes_count": 12,
+    "object_properties_count": 9,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 4,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.16666666666666666,
+    "relationship_richness": 0.8181818181818182,
+    "avg_subclass_per_class": 0.3333333333333333
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 100,
+    "triples_after": 377,
+    "inferred_triples": 277,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 0,
+    "cqs_failed": 7,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?book ?title ?author ?pseudonym WHERE {\n  ?book a odp:Book .\n  OPTIONAL { ?book odp:title ?title . }\n  OPTIONAL { ?book odp:publishes ?author . }\n  OPTIONAL { ?author odp:hasPseudonym ?pseudonym . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can answer the competency question regarding books, authors, and pseudonyms, consider adding the following classes, properties, and axioms:\n\n1. **Classes**:\n   - Define a class `odp:Author` to represent authors in the ontology.\n\n2. **Properties**:\n   - Add a property `odp:hasPseudonym` to link an `odp:Author` to their pseudonym.\n   - Ensure that the property `odp:publishes` is defined to relate `odp:Book` to `odp:Author`.\n\n3. **Axioms**:\n   - Specify that `odp:publishes` is a relationship between `odp:Book` and `odp:Author` (e.g., `odp:publishes rdfs:domain odp:Book; rdfs:range odp:Author`).\n   - Define the relationship for pseudonyms, indicating that `odp:hasPseudonym` has `rdfs:domain odp:Author` and `rdfs:range odp:Pseudonym` (where `odp:Pseudonym` is a new class for pseudonyms).\n\nBy implementing these changes, the ontology will be better equipped to answer queries related to books, their authors, and any associated pseudonyms."
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?book ?author ?title ?pseudonym ?alternativeName WHERE {\n  ?book a odp:Book .\n  ?book odp:publishes ?author .\n  ?book odp:title ?title .\n  OPTIONAL { ?author odp:hasPseudonym ?pseudonym . }\n  OPTIONAL { ?book odp:hasAlternativeName ?alternativeName . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding books, authors, titles, pseudonyms, and alternative names, consider adding the following classes and properties:\n\n1. **Classes**:\n   - **`odp:Book`**: Represents a book entity.\n   - **`odp:Author`**: Represents an author entity.\n\n2. **Properties**:\n   - **`odp:publishes`**: A property linking `odp:Book` to `odp:Author` (domain: `odp:Book`, range: `odp:Author`).\n   - **`odp:title`**: A property to specify the title of a book (domain: `odp:Book`, range: `xsd:string`).\n   - **`odp:hasPseudonym`**: A property linking `odp:Author` to a pseudonym (domain: `odp:Author`, range: `xsd:string`).\n   - **`odp:hasAlternativeName`**: A property linking `odp:Book` to an alternative name (domain: `odp:Book`, range: `xsd:string`).\n\n3. **Axioms**:\n   - Ensure that the properties are correctly defined with appropriate domains and ranges in the ontology to facilitate querying.\n\nBy adding these elements, the ontology will be better equipped to answer the competency question regarding the relationships and attributes of books and authors."
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?book ?title ?author ?pseudonym WHERE {\n  ?book a odp:Book .\n  OPTIONAL { ?book odp:title ?title . }\n  OPTIONAL { ?book odp:publishes ?author . }\n  OPTIONAL { ?book odp:hasPseudonym ?pseudonym . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class Definition**: Ensure that the class `odp:Book` is defined in the ontology with appropriate characteristics, such as its relationship to authors and titles.\n\n2. **Property Definitions**:\n   - **`odp:title`**: Define this property to link a `Book` to its title. Ensure it is a datatype property (e.g., `xsd:string`).\n   - **`odp:publishes`**: Define this property to link a `Book` to its author. This should be an object property linking `Book` to an `Author` class.\n   - **`odp:hasPseudonym`**: Define this property to link a `Book` to a pseudonym, which could be a datatype property or an object property depending on how pseudonyms are modeled.\n\n3. **Instance Data**: Add instances of `Book`, `Author`, and any relevant pseudonyms to the ontology to ensure there are actual data entries that can be queried.\n\n4. **Domain and Range**: Specify the domain and range for each property to ensure proper relationships are established (e.g., `odp:title` has a domain of `odp:Book` and a range of `xsd:string`).\n\nBy implementing these suggestions, the ontology will be better equipped to return results for the given SPARQL"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#AlternativeName> }\n  UNION\n  { ?class a <http://example.org/odp#Author> }\n  UNION\n  { ?class a <http://example.org/odp#Book> }\n  UNION\n  { ?class a <http://example.org/odp#Marriage> }\n  UNION\n  { ?class a <http://example.org/odp#Name> }\n  UNION\n  { ?class a <http://example.org/odp#NameChangeEvent> }\n  UNION\n  { ?class a <http://example.org/odp#NationalPark> }\n  UNION\n  { ?class a <http://example.org/odp#PoemCollection> }\n  UNION\n  { ?class a <http://example.org/odp#Pseudonym> }\n  UNION\n  { ?class a <http://example.org/odp#River> }\n  UNION\n  { ?class a <http://example.org/odp#Role> }\n  UNION\n  { ?class a <http://example.org/odp#Trajectory> }\n  \n  OPTIONAL { ?property a <http://example.org/odp#acquiredThrough> }\n  OPTIONAL { ?property a <http://example.org/odp#assumesRole> }\n  OPTIONAL { ?property a <http://example.org/odp#crosses> }\n  OPTIONAL { ?property a <http://example.org/odp#hasAlternativeName> }\n  OPTIONAL { ?property a <http://example.org/odp#hasPseudonym> }\n  OPTIONAL { ?property a <http://example.org/odp#hasTrajectory> }\n  OPTIONAL { ?property a <http://example.org/odp#publishedUnderName> }\n  OPTIONAL { ?property a <http://example.org/odp#publishes> }\n  OPTIONAL { ?property a <http://example",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'OPTIONAL'  (at char 1250), (line:34, col:3)",
+        "suggestion": "To effectively answer the competency question regarding the declaration of classes and properties in your ontology, you can make the following specific additions:\n\n1. **Declare Classes**: Ensure that all relevant classes are declared using `a owl:Class`. For example:\n   ```turtle\n   :AlternativeName a owl:Class .\n   :Author a owl:Class .\n   :Book a owl:Class .\n   :Marriage a owl:Class .\n   :Name a owl:Class .\n   :NameChangeEvent a owl:Class .\n   :NationalPark a owl:Class .\n   :PoemCollection a owl:Class .\n   :Pseudonym a owl:Class .\n   :River a owl:Class .\n   :Role a owl:Class .\n   :Trajectory a owl:Class .\n   ```\n\n2. **Declare Object Properties**: Ensure that all relevant object properties are declared using `a owl:ObjectProperty`. For example:\n   ```turtle\n   :acquiredThrough a owl:ObjectProperty .\n   :assumesRole a owl:ObjectProperty .\n   :crosses a owl:ObjectProperty .\n   :hasAlternativeName a owl:ObjectProperty .\n   :hasPseudonym a owl:ObjectProperty .\n   :hasTrajectory a owl:ObjectProperty .\n   :publishedUnderName a owl:ObjectProperty .\n   :publishes a owl:ObjectProperty .\n   ```\n\n3. **Declare Datatype Properties**: If there are any datatype properties that need to be included, declare them using `a owl"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?book ?author ?title ?alternativeName ?pseudonym WHERE {\n  ?book a odp:Book .\n  OPTIONAL { ?book odp:publishes ?author . }\n  OPTIONAL { ?book odp:title ?title . }\n  OPTIONAL { ?book odp:hasAlternativeName ?alternativeName . }\n  OPTIONAL { ?book odp:hasPseudonym ?pseudonym . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the class `odp:Book` is defined in the ontology, representing the concept of a book.\n\n2. **Define Properties**:\n   - Add the property `odp:publishes` to link a book to its author, with a domain of `odp:Book` and a range of `odp:Author`.\n   - Add the property `odp:title` to represent the title of a book, with a domain of `odp:Book` and a range of `xsd:string`.\n   - Add the property `odp:hasAlternativeName` to represent alternative names for a book, with a domain of `odp:Book` and a range of `xsd:string`.\n   - Add the property `odp:hasPseudonym` to represent pseudonyms associated with a book, with a domain of `odp:Book` and a range of `xsd:string`.\n\n3. **Define Relationships**:\n   - Ensure that the `odp:Author` class is defined, and establish a relationship between `odp:Author` and `odp:Book` through the `odp:publishes` property.\n\nBy implementing these changes, the ontology will be better equipped to support the SPARQL query and return meaningful results."
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:AlternativeName .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:Author .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:Book .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:Marriage .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:Name .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:NameChangeEvent .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:NationalPark .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:PoemCollection .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:Pseudonym .\n    OPTIONAL { ?class rdfs:label ?label }\n    OPTIONAL { ?class rdfs:comment ?comment }\n  }\n  UNION\n  { \n    ?class a odp:River",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1345), (line:57, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define a Standard Annotation Property**: Ensure that all classes and properties in your ontology have a consistent way to include `rdfs:label` and `rdfs:comment`. This can be done by creating a guideline or a template for documentation.\n\n2. **Add Annotations for Each Class**: For each class in your ontology (e.g., `odp:AlternativeName`, `odp:Author`, `odp:Book`, etc.), add an `rdfs:label` that provides a human-readable name and an `rdfs:comment` that describes the purpose or meaning of the class.\n\n   Example:\n   ```turtle\n   odp:Author a rdfs:Class ;\n       rdfs:label \"Author\" ;\n       rdfs:comment \"A person who writes books, articles, or other texts.\" .\n   ```\n\n3. **Add Annotations for Each Property**: Similarly, for each property in your ontology, add `rdfs:label` and `rdfs:comment` annotations to clarify their usage and meaning.\n\n   Example:\n   ```turtle\n   odp:hasAuthor a rdf:Property ;\n       rdfs:label \"has Author\" ;\n       rdfs:comment \"Relates a book to its author.\" .\n   ```\n\n4. **Use"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Ontology> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology header can be queried successfully and to answer the competency question, you should add the following elements to your ontology:\n\n1. **Declare the Ontology Class**: Define the `Ontology` class in your ontology:\n   ```turtle\n   :Ontology a owl:Class .\n   ```\n\n2. **Define the `rdfs:label` Property**: Ensure that the `rdfs:label` property is available for use:\n   ```turtle\n   rdfs:label a rdf:Property .\n   ```\n\n3. **Define the `rdfs:comment` Property**: Ensure that the `rdfs:comment` property is available for use:\n   ```turtle\n   rdfs:comment a rdf:Property .\n   ```\n\n4. **Add the Ontology Header**: Include the mandatory ontology header with appropriate values:\n   ```turtle\n   :OntologyInstance a :Ontology ; \n       rdfs:label \"My Ontology\" ; \n       rdfs:comment \"This ontology describes...\" .\n   ```\n\n5. **Use a Proper Namespace**: Ensure that you are using the correct namespace for your ontology (e.g., `http://example.org/odp#`) in your SPARQL query and ontology definitions."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

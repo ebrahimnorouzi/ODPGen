@@ -1,0 +1,125 @@
+{
+  "id": "2023-133-02",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 50,
+    "classes_count": 10,
+    "object_properties_count": 1,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.1,
+    "relationship_richness": 0.5,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 50,
+    "triples_after": 249,
+    "inferred_triples": 199,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI?",
+    "How much does the presence of an asthma symptom effect the intake of medication?",
+    "How does an outdoor environmental allergen affect the patient?",
+    "What is the probable cause of the cough experienced by the patient?",
+    "What if pollen (or AQI) allergen was not present in the outdoor environment, how would it effect the intake of medication?",
+    "What if the patient did not experience a cough, how would it effect the intake of medication?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 0,
+    "cqs_failed": 6,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI?",
+        "sparql": "SELECT ?medication ?patient WHERE {\n  ?patient a <http://example.org/odp#AsthmaPatient> .\n  ?medication a <http://example.org/odp#Medication> .\n  {\n    ?presence a <http://example.org/odp#Presence> .\n    ?presence <http://example.org/odp#CausalRelation> ?medication .\n    ?presence <http://example.org/odp#CausalRelation> ?pollen .\n    ?pollen a <http://example.org/odp#Pollen> .\n  } UNION {\n    ?aqi a <http://example.org/odp#AQI> .\n    ?aqi <http://example.org/odp#CausalRelation> ?medication .\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the causal relationship between outdoor environmental allergens (like pollen or AQI) and medication intake by asthma patients, consider the following additions to the ontology:\n\n1. **CausalRelation Property**: Ensure that the `CausalRelation` property is defined to link instances of `Presence` (which could represent environmental factors) to instances of `Medication`. This property should be explicitly defined as a relationship that indicates causation.\n\n2. **EnvironmentalFactor Class**: Introduce a new class called `EnvironmentalFactor` that serves as a superclass for specific environmental elements like `Pollen` and `AQI`. This will allow for a more generalized representation of various environmental factors that can influence medication intake.\n\n3. **Presence Class Enhancements**: Modify the `Presence` class to include properties that can link it to specific instances of `EnvironmentalFactor`. For example, add a property like `hasEnvironmentalFactor` to relate `Presence` to instances of `Pollen` or `AQI`.\n\n4. **MedicationIntake Class**: Create a new class called `MedicationIntake` that represents instances of medication being taken by patients. This class can have properties linking it to both `AsthmaPatient` and `Presence`, indicating the context in which the medication was taken.\n\n5. **CausalEvidence Property**: Introduce a property called `hasCausalEvidence` that can link `MedicationIntake` to instances of `Presence` or `EnvironmentalFactor`,"
+      },
+      {
+        "cq": "How much does the presence of an asthma symptom effect the intake of medication?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?symptom ?medication ?effectWeight WHERE {\n  ?symptom a odp:Symptom .\n  ?medication a odp:Medication .\n  ?symptom odp:CausalRelation ?medication .\n  OPTIONAL { ?symptom odp:EffectWeight ?effectWeight }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the effect of asthma symptoms on medication intake, consider adding the following elements to the ontology:\n\n1. **Classes**:\n   - Define a class `odp:Effect` to represent the impact of symptoms on medication intake.\n\n2. **Properties**:\n   - Introduce a property `odp:hasEffect` to link `odp:Symptom` to `odp:Effect`, indicating that a symptom can have a specific effect on medication intake.\n   - Add a property `odp:affectsMedication` to relate `odp:Effect` to `odp:Medication`, specifying which medications are influenced by the effect of the symptom.\n\n3. **Axioms**:\n   - Create axioms that specify the nature of the relationship, such as \"If a symptom has an effect, then it affects the intake of a specific medication,\" to formalize the causal relationship.\n\n4. **Data Properties**:\n   - Define a data property `odp:effectWeight` to quantify the strength of the effect, allowing for numerical values to be associated with the relationship between symptoms and medication intake.\n\nBy implementing these suggestions, the ontology will better capture the relationships needed to answer the competency question."
+      },
+      {
+        "cq": "How does an outdoor environmental allergen affect the patient?",
+        "sparql": "SELECT ?patient ?allergen ?effectWeight WHERE {\n  ?patient a <http://example.org/odp#AsthmaPatient> .\n  ?allergen a <http://example.org/odp#Pollen> .\n  ?patient <http://example.org/odp#CausalRelation> ?allergen .\n  OPTIONAL { ?allergen <http://example.org/odp#EffectWeight> ?effectWeight }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding how an outdoor environmental allergen affects a patient, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class for Environmental Allergens**: Define a broader class, such as `<http://example.org/odp#EnvironmentalAllergen>`, that includes subclasses like `<http://example.org/odp#Pollen>`, `<http://example.org/odp#Mold>`, etc.\n\n2. **Property for Patient-Allergen Interaction**: Introduce a property like `<http://example.org/odp#hasEffectOn>` that links a patient to an allergen and describes the nature of the effect (e.g., \"causes symptoms,\" \"triggers asthma\").\n\n3. **Class for Effects**: Create a class `<http://example.org/odp#Effect>` that can represent various effects (e.g., symptoms, severity) that allergens can have on patients, allowing for more detailed descriptions.\n\n4. **Property for Effect Weight**: Ensure that the property `<http://example.org/odp#EffectWeight>` is associated with the `<http://example.org/odp#Effect>` class to quantify the severity or impact of the allergen on the patient.\n\n5. **Axioms for Relationships**: Define axioms that specify the relationships between patients, allergens, and effects, such as \"If a patient has an allergen, then there exists an effect that the allergen has on the patient.\""
+      },
+      {
+        "cq": "What is the probable cause of the cough experienced by the patient?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?cause ?effectWeight WHERE {\n  ?patient a odp:AsthmaPatient .\n  ?patient odp:CausalRelation ?cause .\n  ?cause a odp:Cough .\n  OPTIONAL { ?cause odp:EffectWeight ?effectWeight }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the probable cause of the cough experienced by the patient, consider the following additions to the ontology:\n\n1. **Class for Cough Causes**: Introduce a class `odp:CoughCause` to represent various potential causes of cough, which can include conditions like `odp:Asthma`, `odp:Allergy`, `odp:Infection`, etc.\n\n2. **Property for Causal Relationships**: Define a property `odp:hasCoughCause` to link patients to their specific cough causes. This property should relate instances of `odp:AsthmaPatient` to instances of `odp:CoughCause`.\n\n3. **Property for Effect Weight**: Ensure that the property `odp:EffectWeight` is defined for `odp:CoughCause` to quantify the severity or likelihood of each cause contributing to the cough.\n\n4. **Instance Data**: Populate the ontology with instances of `odp:CoughCause` and their relationships to specific `odp:AsthmaPatient` instances, including the `EffectWeight` values to provide meaningful data for queries.\n\n5. **Inference Rules**: Implement inference rules that can deduce the most probable cause of a cough based on the patient's conditions and the associated effect weights, enhancing the reasoning capabilities of the ontology."
+      },
+      {
+        "cq": "What if pollen (or AQI) allergen was not present in the outdoor environment, how would it effect the intake of medication?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?medication ?effectWeight WHERE {\n  ?pollen a odp:Pollen.\n  ?aqi a odp:AQI.\n  OPTIONAL { ?medication a odp:Medication. }\n  OPTIONAL { ?medication odp:EffectWeight ?effectWeight. }\n  FILTER NOT EXISTS { ?pollen odp:CausalRelation ?medication }\n  FILTER NOT EXISTS { ?aqi odp:CausalRelation ?medication }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the absence of pollen or AQI allergens and its effect on medication intake, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Classes**:\n   - **Allergen**: A superclass for different types of allergens, including subclasses for **Pollen** and **AQI**.\n   - **MedicationEffect**: A class to represent the effects of medications in relation to allergens.\n\n2. **Properties**:\n   - **hasEffectOn**: A property linking **Medication** to **MedicationEffect**, indicating how a medication's effectiveness is influenced by the presence or absence of allergens.\n   - **isAffectedBy**: A property linking **Allergen** to **MedicationEffect**, specifying how the presence of specific allergens affects the intake or effectiveness of medications.\n\n3. **Axioms**:\n   - Define axioms that state that if an **Allergen** (like **Pollen** or **AQI**) is not present, then the **MedicationEffect** related to that allergen is altered (e.g., reduced need for medication or increased effectiveness).\n\nBy incorporating these elements, the ontology will better represent the relationships between allergens and medication, allowing for more meaningful queries related to the competency question."
+      },
+      {
+        "cq": "What if the patient did not experience a cough, how would it effect the intake of medication?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?medication ?effectWeight WHERE {\n  ?patient a odp:AsthmaPatient.\n  ?patient odp:CausalRelation ?cough.\n  ?cough a odp:Cough.\n  ?patient odp:CausalRelation ?medication.\n  OPTIONAL { ?medication odp:EffectWeight ?effectWeight }\n  FILTER NOT EXISTS { ?patient odp:CausalRelation ?cough }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the impact of the absence of a cough on medication intake for asthma patients, consider the following additions to the ontology:\n\n1. **Class for Symptoms**: Introduce a class `odp:Symptom` that includes subclasses like `odp:Cough` and potentially other symptoms relevant to asthma (e.g., `odp:Wheezing`, `odp:ShortnessOfBreath`).\n\n2. **Property for Symptom Absence**: Add a property `odp:hasSymptom` to relate patients to their symptoms, and a property `odp:doesNotHaveSymptom` to explicitly indicate the absence of specific symptoms.\n\n3. **Medication Effect Class**: Create a class `odp:MedicationEffect` that describes the effects of medications based on the presence or absence of symptoms, including properties like `odp:affectsSymptom` and `odp:effectWeight`.\n\n4. **Causal Relationships**: Define a property `odp:affectsMedicationIntake` to establish a relationship between symptoms (or their absence) and the intake of specific medications, allowing for a clearer representation of how symptoms influence treatment decisions.\n\n5. **Axioms for Conditional Relationships**: Implement axioms that specify conditions under which medications are prescribed or adjusted based on the presence or absence of symptoms, such as \"If a patient does not have a cough, then the effect weight of certain medications may change.\" \n\nThese additions will enhance the ontology's ability to model"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 2
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 2,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#EffectWeight",
+          "http://example.org/odp#CausalRelation"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

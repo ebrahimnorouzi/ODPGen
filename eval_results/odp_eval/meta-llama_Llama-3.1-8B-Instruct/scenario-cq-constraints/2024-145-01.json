@@ -1,0 +1,110 @@
+{
+  "id": "2024-145-01",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 61,
+    "classes_count": 9,
+    "object_properties_count": 3,
+    "datatype_properties_count": 3,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 1,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.3333333333333333,
+    "relationship_richness": 0.5,
+    "avg_subclass_per_class": 0.1111111111111111
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 61,
+    "triples_after": 280,
+    "inferred_triples": 219,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?checkPayment ?checkTransactionType ?paymentDate ?transactionStatus WHERE {\n  ?checkPayment a odp:CheckPayment.\n  OPTIONAL { ?checkPayment odp:checkTransactionType ?checkTransactionType. }\n  OPTIONAL { ?checkPayment odp:paymentDate ?paymentDate. }\n  OPTIONAL { ?checkPayment odp:transactionStatus ?transactionStatus. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class Definition**: Ensure that the class `odp:CheckPayment` is defined in the ontology with appropriate characteristics and relationships.\n\n2. **Property Definitions**:\n   - **`odp:checkTransactionType`**: Define this property to relate `CheckPayment` instances to their transaction types (e.g., \"Deposit\", \"Withdrawal\").\n   - **`odp:paymentDate`**: Define this property to associate `CheckPayment` instances with their corresponding payment dates.\n   - **`odp:transactionStatus`**: Define this property to indicate the status of the transaction (e.g., \"Pending\", \"Completed\", \"Failed\").\n\n3. **Instance Data**: Add instances of `CheckPayment` to the ontology with values for the properties `checkTransactionType`, `paymentDate`, and `transactionStatus` to ensure that there are actual data points to query against.\n\n4. **Data Type Definitions**: Ensure that the data types for properties like `paymentDate` are correctly defined (e.g., as `xsd:date`), so that the data can be properly queried and interpreted.\n\nBy implementing these suggestions, the ontology will be better equipped to provide meaningful results for the given SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#BadCheck> }\n  UNION { ?class a <http://example.org/odp#CheckPayment> }\n  UNION { ?class a <http://example.org/odp#CheckTransactionType> }\n  UNION { ?class a <http://example.org/odp#Court> }\n  UNION { ?class a <http://example.org/odp#District> }\n  UNION { ?class a <http://example.org/odp#DistrictCourt> }\n  UNION { ?class a <http://example.org/odp#State> }\n  UNION { ?class a <http://example.org/odp#StateOfIndia> }\n  UNION { ?class a <http://example.org/odp#TransactionStatus> }\n  OPTIONAL { ?property a <http://example.org/odp#hasAuthority> }\n  OPTIONAL { ?property a <http://example.org/odp#hasDistrict> }\n  OPTIONAL { ?property a <http://example.org/odp#locatedIn> }\n  OPTIONAL { ?property a <http://example.org/odp#checkTransactionType> }\n  OPTIONAL { ?property a <http://example.org/odp#paymentDate> }\n  OPTIONAL { ?property a <http://example.org/odp#transactionStatus> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can return results for classes and properties, consider the following concrete suggestions:\n\n1. **Declare Classes**: Ensure that all relevant classes are declared in the ontology using `owl:Class`. For example:\n   ```turtle\n   :BadCheck a owl:Class .\n   :CheckPayment a owl:Class .\n   :CheckTransactionType a owl:Class .\n   :Court a owl:Class .\n   :District a owl:Class .\n   :DistrictCourt a owl:Class .\n   :State a owl:Class .\n   :StateOfIndia a owl:Class .\n   :TransactionStatus a owl:Class .\n   ```\n\n2. **Declare Properties**: Ensure that all relevant properties are declared using `owl:ObjectProperty` or `owl:DatatypeProperty`. For example:\n   ```turtle\n   :hasAuthority a owl:ObjectProperty .\n   :hasDistrict a owl:ObjectProperty .\n   :locatedIn a owl:ObjectProperty .\n   :checkTransactionType a owl:ObjectProperty .\n   :paymentDate a owl:DatatypeProperty .\n   :transactionStatus a owl:DatatypeProperty .\n   ```\n\n3. **Use a Consistent Namespace**: Make sure that the namespace used in the ontology (e.g., `http://example.org/odp#`) is consistent and correctly referenced in the SPARQL query.\n\n4. **Add Axioms**: If necessary, add axioms that define relationships between classes and properties to"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?court ?district ?state ?transactionType ?paymentDate ?transactionStatus WHERE {\n  ?court a odp:Court .\n  ?court odp:hasDistrict ?district .\n  ?district odp:locatedIn ?state .\n  OPTIONAL { ?checkPayment odp:checkTransactionType ?transactionType . }\n  OPTIONAL { ?checkPayment odp:paymentDate ?paymentDate . }\n  OPTIONAL { ?checkPayment odp:transactionStatus ?transactionStatus . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the classes `:Court`, `:District`, `:State`, and `:CheckPayment` are defined in the ontology.\n\n2. **Define Object Properties**:\n   - Add the object property `odp:hasDistrict` to link `:Court` to `:District`.\n   - Add the object property `odp:locatedIn` to link `:District` to `:State`.\n   - Add the object property `odp:checkTransactionType` to link `:CheckPayment` to a transaction type (e.g., `:TransactionType`).\n   - Add the object property `odp:paymentDate` to link `:CheckPayment` to a date (e.g., `xsd:date`).\n   - Add the object property `odp:transactionStatus` to link `:CheckPayment` to a status (e.g., `:TransactionStatus`).\n\n3. **Define Data Properties**:\n   - If not already defined, create data properties for `odp:paymentDate` and `odp:transactionStatus` to ensure they can hold literal values.\n\n4. **Establish Relationships**:\n   - Create axioms that establish relationships between `:CheckPayment` and the relevant classes, ensuring that `:CheckPayment` can be associated with a"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a rdfs:Class .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a rdfs:Property .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete steps:\n\n1. **Define Classes**: Add at least one class to your ontology, for example:\n   ```turtle\n   :ExampleClass a rdfs:Class ;\n       rdfs:label \"Example Class\" ;\n       rdfs:comment \"This is an example class for demonstration purposes.\" .\n   ```\n\n2. **Define Properties**: Add at least one property to your ontology, for example:\n   ```turtle\n   :exampleProperty a rdf:Property ;\n       rdfs:label \"Example Property\" ;\n       rdfs:comment \"This is an example property for demonstration purposes.\" .\n   ```\n\n3. **Ensure Annotations**: Verify that all existing classes and properties in your ontology have both `rdfs:label` and `rdfs:comment` annotations. If any are missing, add them accordingly.\n\n4. **Use a Consistent Naming Convention**: Ensure that all classes and properties follow a consistent naming convention that makes it easy to generate meaningful labels and comments.\n\n5. **Validation**: Implement a validation mechanism (e.g., a SPARQL query) to check for any classes or properties that lack the required annotations, and update them as necessary."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?checkPayment ?checkTransactionType ?transactionStatus WHERE {\n  ?checkPayment a odp:CheckPayment.\n  OPTIONAL { ?checkPayment odp:checkTransactionType ?checkTransactionType. }\n  OPTIONAL { ?checkPayment odp:transactionStatus ?transactionStatus. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the ontology is minimal and reusable, consider the following additions:\n\n1. **Define the `CheckPayment` Class**: Ensure that the class `CheckPayment` is explicitly defined in the ontology with appropriate characteristics.\n\n2. **Add Properties**:\n   - **`checkTransactionType`**: Define this property to relate `CheckPayment` instances to their transaction types (e.g., \"Deposit\", \"Withdrawal\").\n   - **`transactionStatus`**: Define this property to relate `CheckPayment` instances to their current status (e.g., \"Pending\", \"Completed\", \"Failed\").\n\n3. **Create Enumerated Types**: For `checkTransactionType` and `transactionStatus`, consider creating enumerated classes or controlled vocabularies to standardize the values used (e.g., `odp:TransactionType` and `odp:TransactionStatus`).\n\n4. **Add Instances**: Populate the ontology with instances of `CheckPayment` that utilize the defined properties to ensure that the SPARQL query can return results.\n\n5. **Ensure Proper RDF Schema**: Verify that the ontology adheres to RDF and OWL standards, ensuring that all classes and properties are correctly defined and linked. \n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question effectively."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "id": "2023-135-01",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 58,
+    "classes_count": 5,
+    "object_properties_count": 2,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 3,
+    "equivalence_axioms": 2,
+    "disjoint_axioms": 1,
+    "restriction_axioms": 5,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.6
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 58,
+    "triples_after": 268,
+    "inferred_triples": 210,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?",
+    "What alternative did C. S. Lewis used to assume the role of a book writer?",
+    "Show the trajectories of rivers which cross national parks?"
+  ],
+  "cqs_count": 3,
+  "cq_verification": {
+    "cqs_total": 3,
+    "cqs_passed": 0,
+    "cqs_failed": 3,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?pseudonym WHERE {\n  ?author a odp:Author ;\n          odp:UsedPseudonym ?pseudonym ;\n          odp:PublishedBy ?book .\n  ?book a odp:Book ;\n        rdfs:label \"Spirit in Bondage\" .\n  FILTER (str(?author) = \"C. S. Lewis\")\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding the pseudonym of C. S. Lewis for the book \"Spirit in Bondage,\" consider adding the following:\n\n1. **Class for Pseudonyms**: Introduce a class `odp:Pseudonym` to represent pseudonyms used by authors.\n\n2. **Property for Author Pseudonym**: Define a property `odp:hasPseudonym` that links an `odp:Author` to an `odp:Pseudonym`. This will allow for a direct relationship between authors and their pseudonyms.\n\n3. **Property for Book Title**: Ensure that the property `rdfs:label` is used consistently for book titles, or create a specific property like `odp:hasTitle` to explicitly link books to their titles.\n\n4. **Instance for Pseudonym**: Add an instance of `odp:Pseudonym` for C. S. Lewis, e.g., `odp:AuthorPseudonym` with the value \"Clive Hamilton\" (the pseudonym under which \"Spirit in Bondage\" was published).\n\n5. **Linking Book to Author**: Ensure that there is a property like `odp:writtenBy` that links the `odp:Book` instance for \"Spirit in Bondage\" to the `odp:Author` instance for C. S. Lewis. \n\nThese additions will help structure the ontology to effectively answer the competency question."
+      },
+      {
+        "cq": "What alternative did C. S. Lewis used to assume the role of a book writer?",
+        "sparql": "SELECT ?pseudonym WHERE { \n  ?author a <http://example.org/odp#Author> .\n  ?author <http://example.org/odp#UsedPseudonym> ?pseudonym .\n  FILTER(?author = <http://example.org/odp#CQL1>)\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding C. S. Lewis's use of a pseudonym, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a class `Pseudonym` to represent alternative names used by authors.\n\n2. **Property Addition**: Add a property `hasPseudonym` to link an `Author` to their `Pseudonym`. This property should have a domain of `Author` and a range of `Pseudonym`.\n\n3. **Instance Creation**: Create an instance of `Pseudonym` for C. S. Lewis, such as `<http://example.org/odp#Narnia>` or any other pseudonym he used.\n\n4. **Axiom Definition**: Define an axiom stating that an `Author` can have multiple `Pseudonym` instances, allowing for flexibility in representing authors with multiple alternative names.\n\n5. **Data Population**: Ensure that the instance for C. S. Lewis is correctly linked to the relevant `Pseudonym` instance using the `hasPseudonym` property.\n\nThese additions will enable the ontology to effectively represent and query information about authors and their pseudonyms."
+      },
+      {
+        "cq": "Show the trajectories of rivers which cross national parks?",
+        "sparql": "SELECT ?river ?nationalPark WHERE {\n  ?river a <http://example.org/odp#CQL1> .\n  ?nationalPark a <http://example.org/odp#Book> .\n  OPTIONAL { ?river <http://example.org/odp#PublishedBy> ?publisher }\n  OPTIONAL { ?nationalPark <http://example.org/odp#UsedPseudonym> ?pseudonym }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the trajectories of rivers that cross national parks, consider the following additions to the ontology:\n\n1. **Class for Rivers**: Define a class `<http://example.org/odp#River>` to represent rivers explicitly, ensuring that rivers can be distinctly identified and queried.\n\n2. **Class for National Parks**: Define a class `<http://example.org/odp#NationalPark>` to represent national parks, allowing for clear differentiation from other types of entities.\n\n3. **Property for River Trajectories**: Introduce a property `<http://example.org/odp#crosses>` that links a river to a national park, indicating that the river crosses through the national park. This property should have a domain of `<http://example.org/odp#River>` and a range of `<http://example.org/odp#NationalPark>`.\n\n4. **Geospatial Representation**: Consider adding a property like `<http://example.org/odp#hasGeospatialData>` to both rivers and national parks to store their geographical coordinates or boundaries, enabling spatial queries.\n\n5. **Data Population**: Ensure that instances of rivers and national parks are populated in the ontology with appropriate relationships using the new properties, so that the SPARQL query can retrieve meaningful results. \n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the trajectories of rivers that cross national parks."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P34": 3
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P34",
+        "affected_elements_count": 3,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://example.org/odp#hasTitle",
+          "http://example.org/odp#hasName"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

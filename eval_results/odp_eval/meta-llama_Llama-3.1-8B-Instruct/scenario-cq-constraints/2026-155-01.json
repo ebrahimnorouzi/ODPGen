@@ -1,0 +1,109 @@
+{
+  "id": "2026-155-01",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 78,
+    "classes_count": 10,
+    "object_properties_count": 9,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 78,
+    "triples_after": 326,
+    "inferred_triples": 248,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?acquisition ?claim ?equipmentConfiguration ?expert ?method ?observation ?parameter ?postProcessedOutput ?role WHERE {\n  ?acquisition a odp:Acquisition .\n  OPTIONAL { ?acquisition odp:hasClaim ?claim . }\n  OPTIONAL { ?acquisition odp:hasEquipmentConfiguration ?equipmentConfiguration . }\n  OPTIONAL { ?acquisition odp:hasExpert ?expert . }\n  OPTIONAL { ?acquisition odp:hasMethod ?method . }\n  OPTIONAL { ?acquisition odp:hasObservation ?observation . }\n  OPTIONAL { ?acquisition odp:hasParameter ?parameter . }\n  OPTIONAL { ?acquisition odp:hasPostProcessedOutput ?postProcessedOutput . }\n  OPTIONAL { ?acquisition odp:hasRole ?role . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `odp:Acquisition` Class**: Ensure that the `odp:Acquisition` class is properly defined in the ontology with relevant properties that link it to the other concepts.\n\n2. **Add Properties for Relationships**: \n   - Define properties such as `odp:hasClaim`, `odp:hasEquipmentConfiguration`, `odp:hasExpert`, `odp:hasMethod`, `odp:hasObservation`, `odp:hasParameter`, `odp:hasPostProcessedOutput`, and `odp:hasRole` if they are not already defined. Ensure these properties have appropriate domains and ranges.\n\n3. **Create Instances of `odp:Acquisition`**: Populate the ontology with instances of the `odp:Acquisition` class that include values for the properties being queried. This will provide the necessary data for the SPARQL query to return results.\n\n4. **Ensure Data Consistency**: Verify that the instances of `odp:Acquisition` are linked to valid instances of the other classes (e.g., `odp:Claim`, `odp:EquipmentConfiguration`, etc.) to ensure that the optional properties can resolve correctly.\n\n5. **Check for Data Availability**: Confirm that there is actual data in the ontology that corresponds to the properties being queried. If no instances exist, the query will return"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { \n    ?class a owl:Class \n  } UNION { \n    ?property a owl:ObjectProperty \n  } UNION { \n    ?property a owl:DatatypeProperty \n  } UNION { \n    ?property a owl:AnnotationProperty \n  }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?acquisition ?claim ?equipmentConfiguration ?expert ?method ?observation ?parameter ?postProcessedOutput ?role WHERE {\n  ?acquisition a odp:Acquisition .\n  OPTIONAL { ?acquisition odp:hasClaim ?claim . }\n  OPTIONAL { ?acquisition odp:hasEquipmentConfiguration ?equipmentConfiguration . }\n  OPTIONAL { ?acquisition odp:hasExpert ?expert . }\n  OPTIONAL { ?acquisition odp:hasMethod ?method . }\n  OPTIONAL { ?acquisition odp:hasObservation ?observation . }\n  OPTIONAL { ?acquisition odp:hasParameter ?parameter . }\n  OPTIONAL { ?acquisition odp:hasPostProcessedOutput ?postProcessedOutput . }\n  OPTIONAL { ?acquisition odp:hasRole ?role . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Acquisition` Class**: Ensure that the `:Acquisition` class is defined in the ontology with appropriate characteristics and relationships.\n\n2. **Add Object Properties**: Define the following object properties to establish relationships between `:Acquisition` and other relevant classes:\n   - `odp:hasClaim` (domain: `:Acquisition`, range: `:Claim`)\n   - `odp:hasEquipmentConfiguration` (domain: `:Acquisition`, range: `:EquipmentConfiguration`)\n   - `odp:hasExpert` (domain: `:Acquisition`, range: `:Expert`)\n   - `odp:hasMethod` (domain: `:Acquisition`, range: `:Method`)\n   - `odp:hasObservation` (domain: `:Acquisition`, range: `:Observation`)\n   - `odp:hasParameter` (domain: `:Acquisition`, range: `:Parameter`)\n   - `odp:hasPostProcessedOutput` (domain: `:Acquisition`, range: `:PostProcessedOutput`)\n   - `odp:hasRole` (domain: `:Acquisition`, range: `:Role`)\n\n3. **Define Related Classes**: Ensure that the classes referenced in the properties (e.g., `:Claim`, `:EquipmentConfiguration`, `:Expert`,"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a rdfs:Class .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a rdfs:Property .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete steps:\n\n1. **Define Classes**: Add at least one class to your ontology, for example:\n   ```turtle\n   :ExampleClass a rdfs:Class ;\n       rdfs:label \"Example Class\" ;\n       rdfs:comment \"This is an example class for demonstration purposes.\" .\n   ```\n\n2. **Define Properties**: Add at least one property to your ontology, for example:\n   ```turtle\n   :exampleProperty a rdf:Property ;\n       rdfs:label \"Example Property\" ;\n       rdfs:comment \"This is an example property for demonstration purposes.\" .\n   ```\n\n3. **Ensure Annotations**: Verify that all existing classes and properties in your ontology have `rdfs:label` and `rdfs:comment` annotations. If any are missing, add them accordingly.\n\n4. **Use a Consistent Naming Convention**: Ensure that all classes and properties follow a consistent naming convention that makes it easy to generate meaningful labels and comments.\n\n5. **Validation**: Implement a validation mechanism (e.g., a SPARQL query) to check for the presence of `rdfs:label` and `rdfs:comment` for all classes and properties, and report any that are missing."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX : <http://example.org/odp#>\n\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?label }\n  OPTIONAL { ?ontology rdfs:comment ?comment }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?acquisition ?claim ?equipmentConfiguration ?expert ?method ?observation ?parameter ?postProcessedOutput ?role WHERE {\n  ?acquisition a odp:Acquisition .\n  OPTIONAL { ?acquisition odp:hasClaim ?claim . }\n  OPTIONAL { ?acquisition odp:hasEquipmentConfiguration ?equipmentConfiguration . }\n  OPTIONAL { ?acquisition odp:hasExpert ?expert . }\n  OPTIONAL { ?acquisition odp:hasMethod ?method . }\n  OPTIONAL { ?acquisition odp:hasObservation ?observation . }\n  OPTIONAL { ?acquisition odp:hasParameter ?parameter . }\n  OPTIONAL { ?acquisition odp:hasPostProcessedOutput ?postProcessedOutput . }\n  OPTIONAL { ?acquisition odp:hasRole ?role . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can effectively answer the competency question while remaining minimal and reusable, consider the following suggestions:\n\n1. **Define Classes**: Ensure that the classes used in your query (e.g., `Acquisition`, `Claim`, `EquipmentConfiguration`, `Expert`, `Method`, `Observation`, `Parameter`, `PostProcessedOutput`, `Role`) are explicitly defined in your ontology. If any of these classes are missing, the query will return no results.\n\n2. **Add Object Properties**: Verify that the object properties used in your query (e.g., `hasClaim`, `hasEquipmentConfiguration`, `hasExpert`, `hasMethod`, `hasObservation`, `hasParameter`, `hasPostProcessedOutput`, `hasRole`) are defined in the ontology. If they are not present, you need to create them to establish relationships between the `Acquisition` class and the other classes.\n\n3. **Include Instances**: Populate your ontology with instances of the `Acquisition` class and related classes. Ensure that there are actual data entries that link these instances through the defined properties. Without instances, the query will not return any results.\n\n4. **Check for Data Consistency**: Ensure that the data types and ranges for properties are correctly defined. For example, if `hasExpert` is expected to link to an instance of `Expert`, make sure that the `Expert` class is correctly defined and that instances of `Expert` exist.\n\n5. **Use a Reason"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

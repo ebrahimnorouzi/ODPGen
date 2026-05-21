@@ -1,0 +1,97 @@
+{
+  "id": "2024-145-01",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 64,
+    "classes_count": 11,
+    "object_properties_count": 2,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 7,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.6363636363636364
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 64,
+    "triples_after": 285,
+    "inferred_triples": 221,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "List all district courts in a given state.?",
+    "In which state is a given district court instance located?",
+    "How many districts are in a given state of India?",
+    "Which court has authority over a given court?",
+    "What is the check transaction type for a bad check?",
+    "When is a check payment of a bad check?",
+    "What is the transaction status of a given check payment?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 1,
+    "cqs_failed": 6,
+    "pass_rate": 0.1429,
+    "results": [
+      {
+        "cq": "List all district courts in a given state.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?districtCourt WHERE {\n  ?districtCourt a odp:DistrictCourt .\n  ?districtCourt odp:hasLocation ?stateLocation .\n  ?stateLocation a odp:State .\n  FILTER(?stateLocation = <http://example.org/odp#GivenState>) \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding listing all district courts in a given state, consider the following additions to the ontology:\n\n1. **Define a `State` Class**: Ensure that there is a class representing states, if not already present. This class should encompass all relevant states.\n\n2. **Add a `hasDistrictCourt` Property**: Introduce a property `odp:hasDistrictCourt` that relates a `State` to its corresponding `DistrictCourt` instances. This will allow for a direct relationship between states and their district courts.\n\n3. **Modify `hasLocation` Property**: If `hasLocation` is intended to link courts to their locations, ensure it is clearly defined to relate `DistrictCourt` instances to `State` instances, or consider renaming it to `isLocatedIn` for clarity.\n\n4. **Include Instances of States and District Courts**: Populate the ontology with instances of `State` and `DistrictCourt`, ensuring that each district court is correctly linked to its respective state using the new properties.\n\n5. **Ensure Consistent URIs**: Verify that the URI used in the FILTER clause (`<http://example.org/odp#GivenState>`) matches the actual URI of the state instance in the ontology to avoid mismatches. \n\nBy implementing these changes, the ontology will be better equipped to handle queries related to district courts by state."
+      },
+      {
+        "cq": "In which state is a given district court instance located?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?state WHERE {\n  ?districtCourt a odp:DistrictCourt .\n  ?districtCourt odp:hasLocation ?location .\n  OPTIONAL { ?location a odp:State . }\n  BIND(?location AS ?state)\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the state location of a district court instance, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that there is a class for `State` (if not already defined) to represent the states in the ontology.\n   ```ttl\n   :State a owl:Class .\n   ```\n\n2. **Property Definition**: Define a property `hasLocation` that relates a `DistrictCourt` to its `State`. Ensure that this property is correctly typed to link to the `State` class.\n   ```ttl\n   :hasLocation a owl:ObjectProperty ;\n                rdfs:domain odp:DistrictCourt ;\n                rdfs:range odp:State .\n   ```\n\n3. **Instance Data**: Ensure that instances of `DistrictCourt` are correctly linked to instances of `State` using the `hasLocation` property in the data.\n   ```ttl\n   :DistrictCourt1 a odp:DistrictCourt ;\n                   odp:hasLocation :State1 .\n   :State1 a odp:State .\n   ```\n\n4. **Query Adjustment**: Modify the SPARQL query to directly bind the `?state` variable to the `?location` variable, ensuring that the `?location` is of type `State`.\n   ```sparql\n   SELECT ?state WHERE {\n     ?districtCourt a odp:DistrictCourt .\n     ?districtCourt odp:hasLocation ?state .\n     ?state a odp:State"
+      },
+      {
+        "cq": "How many districts are in a given state of India?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT (COUNT(?district) AS ?districtCount) WHERE {\n  ?district a odp:DistrictCourt .\n  ?district odp:hasLocation ?state .\n  ?state a odp:State .\n  FILTER(?state = <http://example.org/odp#GivenState>) \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Which court has authority over a given court?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?court ?authority WHERE {\n  ?court a odp:Court .\n  OPTIONAL { ?court odp:hasAuthority ?authority }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which court has authority over a given court, consider the following additions to the ontology:\n\n1. **Class Addition**: Ensure there is a class for `Court` if not already present, and consider adding a subclass for `HigherCourt` to represent courts that have authority over other courts.\n\n2. **Property Addition**: Introduce a property `hasAuthorityOver` (or `isAuthorityOver`) to establish a relationship between a `HigherCourt` and a `Court`. This property should be defined as a hierarchical relationship.\n\n3. **Axiom Definition**: Define an axiom that specifies that if a court `A` has authority over court `B`, then `A` is a `HigherCourt` and `B` is a `Court`. This can help in reasoning about the relationships.\n\n4. **Data Population**: Populate the ontology with instances of courts and their authority relationships to ensure that the data is available for querying.\n\n5. **Property Characteristics**: Optionally, define characteristics for the `hasAuthorityOver` property, such as being transitive, to facilitate reasoning about authority hierarchies."
+      },
+      {
+        "cq": "What is the check transaction type for a bad check?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?checkTransactionType WHERE {\n  ?badCheck a odp:BadCheck .\n  ?checkTransactionType a odp:CheckTransaction .\n  ?badCheck odp:hasAuthority ?checkTransactionType .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the check transaction type for a bad check, consider the following additions to the ontology:\n\n1. **Define a Property**: Introduce a property `odp:hasTransactionType` that relates a `BadCheck` to its corresponding `CheckTransaction` type.\n   - Example: `odp:hasTransactionType a rdf:Property; rdfs:domain odp:BadCheck; rdfs:range odp:CheckTransaction.`\n\n2. **Create Specific Transaction Types**: Define specific subclasses of `CheckTransaction` that represent different types of check transactions, including a subclass for bad checks.\n   - Example: `odp:BadCheckTransaction a rdfs:subClassOf odp:CheckTransaction.`\n\n3. **Establish Relationships**: Ensure that instances of `BadCheck` are linked to their respective transaction types using the new property.\n   - Example: `:badCheckInstance odp:hasTransactionType :badCheckTransactionInstance.`\n\n4. **Add Instances**: Create instances of `BadCheck` and `CheckTransaction` to populate the ontology and facilitate querying.\n   - Example: `:badCheckInstance a odp:BadCheck; odp:hasTransactionType :badCheckTransactionInstance.`\n\n5. **Ensure Consistency**: Verify that the ontology is consistent and that the relationships accurately reflect the domain knowledge regarding bad checks and their transaction types.\n\nBy implementing these changes, the SPARQL query should return the expected results."
+      },
+      {
+        "cq": "When is a check payment of a bad check?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?checkPayment ?badCheck ?transaction WHERE {\n  ?checkPayment a odp:CheckPayment .\n  ?checkPayment odp:hasAuthority ?badCheck .\n  ?badCheck a odp:BadCheck .\n  OPTIONAL { ?checkPayment odp:hasLocation ?location . }\n  OPTIONAL { ?transaction a odp:CheckTransaction . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding when a check payment is considered a bad check, consider the following additions to the ontology:\n\n1. **Define a Relationship**: Introduce a property `odp:resultsInBadCheck` that links a `CheckPayment` to a `BadCheck`. This property can indicate that a specific check payment has resulted in a bad check status.\n\n2. **Add Status Properties**: Create a property `odp:checkStatus` for `CheckPayment` that can have values such as `odp:Valid`, `odp:Pending`, and `odp:Bad`. This will allow for the classification of check payments based on their status.\n\n3. **Create a Check Transaction Class**: Ensure that the `CheckTransaction` class is well-defined and includes properties that can relate it to both `CheckPayment` and `BadCheck`, such as `odp:involvesCheckPayment` and `odp:involvesBadCheck`.\n\n4. **Define Conditions for Bad Checks**: Introduce axioms or rules that specify the conditions under which a check payment is classified as a bad check, such as insufficient funds or account closure.\n\n5. **Link to Financial Institutions**: Optionally, add a property `odp:issuedBy` to link `CheckPayment` to a `FinancialInstitution`, which can help in determining the legitimacy of the check and its status. \n\nThese additions will enhance the ontology's ability to represent and query the relationships and conditions surrounding check payments"
+      },
+      {
+        "cq": "What is the transaction status of a given check payment?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?checkPayment ?transactionStatus WHERE {\n  ?checkPayment a odp:CheckPayment .\n  OPTIONAL { ?checkPayment odp:hasAuthority ?transactionStatus }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the transaction status of a given check payment, consider the following additions to the ontology:\n\n1. **Define `TransactionStatus` Class**: Create a class `TransactionStatus` to represent the various statuses a transaction can have (e.g., Pending, Completed, Failed).\n\n2. **Add `hasTransactionStatus` Property**: Introduce a property `odp:hasTransactionStatus` that links `CheckPayment` instances to their corresponding `TransactionStatus` instances.\n\n3. **Include Status Values**: Define specific instances of `TransactionStatus` (e.g., `odp:Pending`, `odp:Completed`, `odp:Failed`) to provide concrete values for the status.\n\n4. **Ensure Proper Relationships**: Verify that the `CheckPayment` class has a relationship with the `TransactionStatus` class through the `hasTransactionStatus` property in the ontology.\n\n5. **Update Data Instances**: Ensure that existing instances of `CheckPayment` in the dataset are populated with appropriate `TransactionStatus` values using the new property.\n\nBy implementing these changes, the SPARQL query should be able to retrieve the transaction status of check payments effectively."
+      }
+    ]
+  },
+  "oops": {
+    "error": "OOPS request failed (status 200)",
+    "raw_response": "<rdf:RDF\nxmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\nxmlns:oops=\"http://oops.linkeddata.es/def#\" > \n<rdf:Description rdf:about=\"http://oops.linkeddata.es/data/wrong_execution\">\n    <oops:hasTitle rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\">OOPS! something went wrong.</oops:hasTitle>\n    <oops:hasMessage rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\">If you have entered a URI make sure that it is available on-line using, for example, Vapour or Hyperthing.</oops:hasM"
+  }
+}

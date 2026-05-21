@@ -1,0 +1,110 @@
+{
+  "id": "2023-134-02",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 95,
+    "classes_count": 9,
+    "object_properties_count": 9,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.1111111111111111,
+    "relationship_richness": 0.9,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 95,
+    "triples_after": 357,
+    "inferred_triples": 262,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "What type of action, e.g., create, update, erase, is being performed on the data?",
+    "Who is the entity interacting with the data?",
+    "Who is the entity publishing the log?",
+    "When was the log issued?",
+    "Where is the data being stored?",
+    "What application/service is being used to generate the data, if any?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "What type of action, e.g., create, update, erase, is being performed on the data?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?action ?data WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:Use ?data . }\n  OPTIONAL { ?action odp:Change ?data . }\n  OPTIONAL { ?action odp:Publish ?data . }\n  OPTIONAL { ?action odp:Withdraw ?data . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 3
+      },
+      {
+        "cq": "Who is the entity interacting with the data?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?entity ?data WHERE {\n  ?entity a odp:Entity .\n  ?entity odp:Use ?data .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the entity interacting with the data, consider the following additions to the ontology:\n\n1. **Define Classes**:\n   - Create a class `odp:Entity` to represent entities that interact with data.\n   - Create a class `odp:Data` to represent the data being interacted with.\n\n2. **Define Properties**:\n   - Introduce a property `odp:interactsWith` to link `Entity` instances to `Data` instances, allowing for a more intuitive relationship.\n   - Optionally, define a property `odp:uses` to specify the type of interaction (e.g., read, write, modify).\n\n3. **Add Axioms**:\n   - Ensure that `odp:interactsWith` is defined as a property that can connect instances of `odp:Entity` to instances of `odp:Data`, establishing a clear relationship in the ontology.\n\nBy implementing these changes, the ontology will better support queries related to entities interacting with data."
+      },
+      {
+        "cq": "Who is the entity publishing the log?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?entity ?log WHERE {\n  ?log a odp:Log .\n  ?entity odp:Publish ?log .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the entity publishing the log, consider adding the following elements to the ontology:\n\n1. **Class Definition**: Ensure there is a class for `Entity` (if not already present) to represent any entity that can publish logs.\n   - `odp:Entity`\n\n2. **Property Definition**: Define a property to link the entity to the log it publishes.\n   - `odp:publishes` (or `odp:Publish`) as a property with the domain `odp:Entity` and range `odp:Log`.\n\n3. **Inverse Property**: Optionally, define an inverse property to facilitate querying from the log back to the entity.\n   - `odp:publishedBy` as an inverse of `odp:publishes`.\n\n4. **Axiom for Relationships**: Ensure that there are axioms or instances that establish relationships between entities and logs, e.g., `:Entity1 odp:publishes :Log1`.\n\n5. **Data Population**: Populate the ontology with instances of `Entity` and `Log`, ensuring that there are relationships defined using the `publishes` property.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding the entity publishing the log."
+      },
+      {
+        "cq": "When was the log issued?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?log ?issue WHERE {\n  ?log a odp:Log .\n  OPTIONAL { ?log odp:Issue ?issue }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"When was the log issued?\", consider the following additions to the ontology:\n\n1. **Class Addition**: Ensure that there is a class `Log` defined in the ontology, if not already present. This class should represent the logs in your domain.\n\n2. **Property Addition**: Introduce a new property `odp:issuedOn` (or similar) that relates a `Log` to a date or timestamp indicating when the log was issued. This property should have a domain of `Log` and a range of `xsd:dateTime`.\n\n3. **Axiom Definition**: Define an axiom that specifies that every instance of `Log` must have an `odp:issuedOn` property to ensure that the issuance date is always recorded.\n\n4. **Data Population**: Ensure that existing instances of `Log` in your dataset have corresponding values for the `odp:issuedOn` property to allow for meaningful query results.\n\n5. **SPARQL Query Update**: Modify the SPARQL query to retrieve the `issuedOn` property instead of `Issue`, as follows:\n   ```sparql\n   PREFIX odp: <http://example.org/odp#>\n   SELECT ?log ?issuedOn WHERE {\n     ?log a odp:Log .\n     OPTIONAL { ?log odp:issuedOn ?issuedOn }\n   } LIMIT 10\n   ``` \n\nThese steps will help ensure that the ontology can effectively answer the competency question regarding"
+      },
+      {
+        "cq": "Where is the data being stored?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?data ?location WHERE {\n  ?data a odp:Data .\n  OPTIONAL { ?data odp:Store ?location }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question \"Where is the data being stored?\", consider adding the following elements:\n\n1. **Class Definition**: Define a class `odp:StorageLocation` to represent various storage locations (e.g., databases, cloud storage, file systems).\n\n2. **Property Definition**: Create a property `odp:storedAt` that relates instances of `odp:Data` to instances of `odp:StorageLocation`. This property should be defined as an object property.\n\n3. **Axiom Addition**: Ensure that the `odp:Data` class has a relationship with the `odp:StorageLocation` class through the `odp:storedAt` property, allowing for the expression of where data is stored.\n\n4. **Examples**: Add instances of `odp:StorageLocation` (e.g., `odp:Database1`, `odp:CloudStorage`) and link them to instances of `odp:Data` using the `odp:storedAt` property to provide concrete examples.\n\n5. **Documentation**: Include documentation or comments in the ontology to clarify the intended use of the `odp:storedAt` property and the `odp:StorageLocation` class for future users."
+      },
+      {
+        "cq": "What application/service is being used to generate the data, if any?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?application ?data WHERE {\n  ?data a odp:Data .\n  OPTIONAL { ?data odp:Generate ?application . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the application or service generating the data, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a new class `odp:Application` to represent applications or services that generate data.\n\n2. **Property Addition**: Define a property `odp:generates` (or `odp:Generate`) that relates instances of `odp:Application` to instances of `odp:Data`. This property should be a predicate that indicates which application is responsible for generating specific data.\n\n3. **Data Type Property**: Optionally, add a data type property `odp:applicationName` to the `odp:Application` class to store the name or identifier of the application.\n\n4. **Domain and Range Specification**: Ensure that the `odp:generates` property has its domain set to `odp:Application` and its range set to `odp:Data` to enforce the relationship between applications and the data they generate.\n\n5. **Example Instances**: Create example instances of `odp:Application` and `odp:Data` in the ontology to demonstrate the relationship and facilitate testing of the SPARQL query.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the applications or services generating data."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

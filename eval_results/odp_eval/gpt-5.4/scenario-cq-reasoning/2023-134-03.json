@@ -1,0 +1,104 @@
+{
+  "id": "2023-134-03",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-reasoning",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 60,
+    "classes_count": 6,
+    "object_properties_count": 5,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 1,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 1,
+    "attribute_richness": 0.3333333333333333,
+    "relationship_richness": 0.7142857142857143,
+    "avg_subclass_per_class": 0.16666666666666666
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 60,
+    "triples_after": 276,
+    "inferred_triples": 216,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Who is maintaining the registry?",
+    "When was the registry created/updated?",
+    "What types of data are available?",
+    "Where is a specific type of data being stored?",
+    "What policy is associated with the data?"
+  ],
+  "cqs_count": 5,
+  "cq_verification": {
+    "cqs_total": 5,
+    "cqs_passed": 0,
+    "cqs_failed": 5,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Who is maintaining the registry?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?agent WHERE {\n  ?registry a odp:Registry .\n  ?registry odp:maintainedBy ?agent .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question \"Who is maintaining the registry?\" and ensure that the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that there is a class defined for `odp:Registry` if it is not already present. This class should represent the registry entity.\n\n2. **Property Definition**: Define a property `odp:maintainedBy` as an object property that links instances of `odp:Registry` to instances of an `odp:Agent` class (or similar) that represents the entities responsible for maintaining the registry.\n\n3. **Agent Class**: Create a class `odp:Agent` to represent individuals or organizations that can maintain registries. This class should include relevant subclasses if needed (e.g., `odp:Person`, `odp:Organization`).\n\n4. **Instance Creation**: Ensure that there are instances of `odp:Registry` and `odp:Agent` in the ontology, and that the `odp:maintainedBy` property is used to link them appropriately.\n\n5. **Axiom for Maintenance**: Optionally, add an axiom or rule that specifies the conditions under which an agent is considered to maintain a registry, if there are specific criteria or roles involved.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question through the SPARQL query."
+      },
+      {
+        "cq": "When was the registry created/updated?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?createdAt ?updatedAt WHERE {\n  ?registry a odp:Registry .\n  OPTIONAL { ?registry odp:createdAt ?createdAt }\n  OPTIONAL { ?registry odp:updatedAt ?updatedAt }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the creation and update timestamps of a registry, consider the following additions to the ontology:\n\n1. **Add Properties**:\n   - Define a property `odp:createdAt` of type `xsd:dateTime` to represent the creation timestamp of a registry.\n   - Define a property `odp:updatedAt` of type `xsd:dateTime` to represent the last updated timestamp of a registry.\n\n2. **Define Class Hierarchy**:\n   - Ensure that `odp:Registry` is properly defined as a class in the ontology, if not already present.\n\n3. **Include Axioms**:\n   - Add axioms to specify that `odp:createdAt` and `odp:updatedAt` are functional properties, meaning each registry can have only one creation and one update timestamp.\n\n4. **Data Population**:\n   - Ensure that instances of `odp:Registry` in the dataset are populated with appropriate values for `odp:createdAt` and `odp:updatedAt`.\n\n5. **Documentation**:\n   - Provide clear documentation for the properties to ensure users understand their intended use and format (e.g., ISO 8601 for dateTime). \n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the creation and update times of registries."
+      },
+      {
+        "cq": "What types of data are available?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?dataCategory WHERE {\n  ?registryEntry a odp:RegistryEntry .\n  ?registryEntry odp:describesDataCategory ?dataCategory .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding the types of data available, consider the following additions:\n\n1. **Define a `DataCategory` Class**: Create a class `DataCategory` to represent different types of data. This will allow for the categorization of data types within the ontology.\n\n2. **Add a `describesDataCategory` Property**: Ensure that the property `describesDataCategory` is defined as a relationship between `RegistryEntry` and `DataCategory`. This property should be an object property linking instances of `RegistryEntry` to instances of `DataCategory`.\n\n3. **Create Instances of `DataCategory`**: Populate the ontology with instances of `DataCategory` (e.g., `odp:ImageData`, `odp:TextData`, `odp:SensorData`) to provide specific examples of data types.\n\n4. **Link Existing Registry Entries to Data Categories**: Ensure that existing instances of `RegistryEntry` are linked to the appropriate `DataCategory` instances using the `describesDataCategory` property.\n\n5. **Define Additional Properties if Necessary**: If there are specific attributes or characteristics of data categories that need to be captured (e.g., `hasFormat`, `hasSource`), consider adding those properties to enrich the ontology further."
+      },
+      {
+        "cq": "Where is a specific type of data being stored?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?storageLocation WHERE {\n  ?dataCategory a odp:DataCategory .\n  ?registryEntry odp:describesDataCategory ?dataCategory .\n  ?registryEntry odp:storedAt ?storageLocation .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding where a specific type of data is being stored, consider adding the following elements to your ontology:\n\n1. **Class Definition**: Ensure that `odp:DataCategory` is well-defined and includes subclasses or specific instances that represent different types of data (e.g., `odp:PersonalData`, `odp:FinancialData`).\n\n2. **Property Definition**: Introduce a property `odp:storedAt` that links a `odp:RegistryEntry` to a `odp:StorageLocation`. This property should be defined as an object property.\n\n3. **Class for Storage Locations**: Create a class `odp:StorageLocation` to represent various storage locations (e.g., databases, cloud services, physical storage) and ensure it has instances that can be referenced.\n\n4. **Linking Data Categories to Storage Locations**: Ensure that there are instances of `odp:RegistryEntry` that describe specific data categories and are linked to instances of `odp:StorageLocation` using the `odp:storedAt` property.\n\n5. **Data Population**: Populate the ontology with relevant instances of `odp:RegistryEntry`, `odp:DataCategory`, and `odp:StorageLocation` to ensure that the query can return meaningful results.\n\nBy implementing these suggestions, you will enhance the ontology's ability to answer the competency question effectively."
+      },
+      {
+        "cq": "What policy is associated with the data?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?policy WHERE {\n  ?dataCategory a odp:DataCategory .\n  ?dataCategory odp:hasAssociatedPolicy ?policy .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the association of policies with data, consider the following additions to the ontology:\n\n1. **Define a `Policy` Class**: Create a class `Policy` to represent different policies that can be associated with data categories.\n\n   ```ttl\n   :Policy a owl:Class .\n   ```\n\n2. **Add a `hasAssociatedPolicy` Property**: Ensure that the property `hasAssociatedPolicy` is defined to link `DataCategory` instances to `Policy` instances.\n\n   ```ttl\n   :hasAssociatedPolicy a owl:ObjectProperty ;\n       rdfs:domain :DataCategory ;\n       rdfs:range :Policy .\n   ```\n\n3. **Create a `DataCategory` Class**: If not already defined, ensure that there is a `DataCategory` class to represent the categories of data.\n\n   ```ttl\n   :DataCategory a owl:Class .\n   ```\n\n4. **Add Instances of Policies**: Populate the ontology with instances of `Policy` that can be linked to `DataCategory` instances.\n\n   ```ttl\n   :Policy1 a :Policy .\n   :Policy2 a :Policy .\n   ```\n\n5. **Link Data Categories to Policies**: Create specific relationships between `DataCategory` instances and `Policy` instances using the `hasAssociatedPolicy` property.\n\n   ```ttl\n   :DataCategory1 a :DataCategory ;\n       :hasAssociatedPolicy :Policy1 .\n   ```\n\nBy implementing these"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

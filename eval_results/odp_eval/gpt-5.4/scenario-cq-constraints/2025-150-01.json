@@ -1,0 +1,112 @@
+{
+  "id": "2025-150-01",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-constraints",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 65,
+    "classes_count": 19,
+    "object_properties_count": 0,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 5,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 0.2631578947368421
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 65,
+    "triples_after": 308,
+    "inferred_triples": 243,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?actuation ?actuator ?featureOfInterest WHERE {\n  ?actuation a <http://example.org/odp#Actuation> .\n  OPTIONAL { ?actuation <http://example.org/odp#Actuator> ?actuator . }\n  OPTIONAL { ?actuation <http://example.org/odp#FeatureOfInterest> ?featureOfInterest . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `Actuation` Class**: Ensure that the `Actuation` class is properly defined in the ontology with relevant properties that link it to actuators and features of interest.\n\n2. **Add `Actuator` Property**: Introduce a property `hasActuator` (or similar) that relates an `Actuation` instance to an `Actuator` instance. This property should be defined as:\n   ```turtle\n   <http://example.org/odp#hasActuator> a rdf:Property ;\n       rdfs:domain <http://example.org/odp#Actuation> ;\n       rdfs:range <http://example.org/odp#Actuator> .\n   ```\n\n3. **Add `FeatureOfInterest` Property**: Introduce a property `hasFeatureOfInterest` that connects an `Actuation` instance to a `FeatureOfInterest` instance. This property should be defined as:\n   ```turtle\n   <http://example.org/odp#hasFeatureOfInterest> a rdf:Property ;\n       rdfs:domain <http://example.org/odp#Actuation> ;\n       rdfs:range <http://example.org/odp#FeatureOfInterest> .\n   ```\n\n4. **Create Instances**: Ensure that there are instances of `Act"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?actuation ?actuator ?featureOfInterest ?observation WHERE {\n  ?actuation a <http://example.org/odp#Actuation> .\n  OPTIONAL { ?actuation <http://example.org/odp#Actuator> ?actuator . }\n  OPTIONAL { ?actuation <http://example.org/odp#FeatureOfInterest> ?featureOfInterest . }\n  OPTIONAL { ?actuation <http://example.org/odp#Observation> ?observation . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define Classes**: Ensure that the classes `Actuation`, `Actuator`, `FeatureOfInterest`, and `Observation` are explicitly defined in the ontology schema. For example:\n   ```turtle\n   :Actuation a owl:Class .\n   :Actuator a owl:Class .\n   :FeatureOfInterest a owl:Class .\n   :Observation a owl:Class .\n   ```\n\n2. **Define Object Properties**: Create object properties that link the `Actuation` class to the other classes. For example:\n   ```turtle\n   :hasActuator a owl:ObjectProperty ;\n       rdfs:domain :Actuation ;\n       rdfs:range :Actuator .\n\n   :hasFeatureOfInterest a owl:ObjectProperty ;\n       rdfs:domain :Actuation ;\n       rdfs:range :FeatureOfInterest .\n\n   :hasObservation a owl:ObjectProperty ;\n       rdfs:domain :Actuation ;\n       rdfs:range :Observation .\n   ```\n\n3. **Add Domain and Range Restrictions**: Ensure that the properties have appropriate domain and range restrictions to facilitate querying. This will help in establishing clear relationships between the classes.\n\n4. **Create Subclass Relationships (if applicable)**: If there are more specific types of actuations, actuators, features of interest, or observations, consider creating subclass relationships to enhance"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?label ?comment WHERE {\n  { ?class a <http://example.org/odp#Actuation> . }\n  UNION { ?class a <http://example.org/odp#ActuationCollection> . }\n  UNION { ?class a <http://example.org/odp#Actuator> . }\n  UNION { ?class a <http://example.org/odp#FeatureOfInterest> . }\n  UNION { ?class a <http://example.org/odp#MQTTBroker> . }\n  UNION { ?class a <http://example.org/odp#MQTTClient> . }\n  UNION { ?class a <http://example.org/odp#MQTTControlPacket> . }\n  UNION { ?class a <http://example.org/odp#MQTTParticipant> . }\n  UNION { ?class a <http://example.org/odp#NetworkConnection> . }\n  UNION { ?class a <http://example.org/odp#ObservableProperty> . }\n  UNION { ?class a <http://example.org/odp#Observation> . }\n  UNION { ?class a <http://example.org/odp#ObservationCollection> . }\n  UNION { ?class a <http://example.org/odp#Platform> . }\n  UNION { ?class a <http://example.org/odp#PublishPacket> . }\n  UNION { ?class a <http://example.org/odp#Sensor> . }\n  UNION { ?class a <http://example.org/odp#System> . }\n  UNION { ?class a <http://example.org/odp#Topic> . }\n  UNION { ?class a <http://example.org/odp#TopicFilter> . }\n  UNION { ?class a <http://example.org/odp#TopicSubject> . }\n  OPTIONAL { ?class rdfs:label ?label . }\n  OPTIONAL { ?class rdfs:comment ?comment . }\n} LIMIT",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected end of text, found 'LIMIT'  (at char 1339), (line:24, col:3)",
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete steps:\n\n1. **Add rdfs:label and rdfs:comment for Each Class**: For each class in your ontology (e.g., `Actuation`, `Actuator`, etc.), add a `rdfs:label` and a `rdfs:comment` that describes the purpose and usage of the class.\n\n   ```turtle\n   <http://example.org/odp#Actuation>\n       rdfs:label \"Actuation\" ;\n       rdfs:comment \"Represents the act of causing a change in a system.\" .\n   ```\n\n2. **Add rdfs:label and rdfs:comment for Each Property**: Similarly, for each property in your ontology, ensure that there is a `rdfs:label` and a `rdfs:comment` that clearly defines what the property represents.\n\n   ```turtle\n   <http://example.org/odp#hasActuator>\n       rdfs:label \"has Actuator\" ;\n       rdfs:comment \"Indicates the actuator associated with a specific actuation.\" .\n   ```\n\n3. **Create a Validation Rule**: Implement a validation rule or a SPARQL query that checks for the presence of `rdfs:label` and `rdfs:comment` for all classes and properties. This can help in identifying"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Ontology> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology header can be queried successfully and to answer the competency question, you should add the following elements to your ontology:\n\n1. **Declare the Ontology Class**: Define the `Ontology` class in your ontology:\n   ```turtle\n   :Ontology a owl:Class .\n   ```\n\n2. **Define the `rdfs:label` and `rdfs:comment` Properties**: Ensure that the properties `rdfs:label` and `rdfs:comment` are properly defined and can be used with instances of the `Ontology` class:\n   ```turtle\n   rdfs:label a rdf:Property .\n   rdfs:comment a rdf:Property .\n   ```\n\n3. **Create an Instance of the Ontology**: Declare an instance of the `Ontology` class and provide values for `rdfs:label` and `rdfs:comment`:\n   ```turtle\n   :MyOntology a :Ontology ;\n               rdfs:label \"My Ontology\" ;\n               rdfs:comment \"This ontology describes...\" .\n   ```\n\n4. **Import Necessary Vocabularies**: Ensure that you import the necessary vocabularies (e.g., RDFS, OWL) to use their classes and properties:\n   ```turtle\n   @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n   @prefix owl: <http://www.w3.org"
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "SELECT ?system ?actuator ?sensor WHERE {\n  ?system a <http://example.org/odp#System> .\n  OPTIONAL { ?system <http://example.org/odp#Actuator> ?actuator . }\n  OPTIONAL { ?system <http://example.org/odp#Sensor> ?sensor . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the ontology is minimal and reusable, consider the following additions:\n\n1. **Define Classes**:\n   - Ensure that the classes `System`, `Actuator`, and `Sensor` are explicitly defined in the ontology. For example:\n     ```ttl\n     :System a owl:Class .\n     :Actuator a owl:Class .\n     :Sensor a owl:Class .\n     ```\n\n2. **Define Object Properties**:\n   - Create object properties to relate `System` to `Actuator` and `Sensor`. For example:\n     ```ttl\n     :hasActuator a owl:ObjectProperty ;\n       rdfs:domain :System ;\n       rdfs:range :Actuator .\n\n     :hasSensor a owl:ObjectProperty ;\n       rdfs:domain :System ;\n       rdfs:range :Sensor .\n     ```\n\n3. **Add Instances**:\n   - Ensure that there are instances of `System`, `Actuator`, and `Sensor` in the ontology. For example:\n     ```ttl\n     :System1 a :System ;\n       :hasActuator :Actuator1 ;\n       :hasSensor :Sensor1 .\n\n     :Actuator1 a :Actuator .\n     :Sensor1 a :Sensor .\n     ```\n\n4. **Check Namespace and URIs**:\n   - Verify that the URIs used in the SPARQL query match those defined in the ontology. Ensure that the namespace `<http://example.org/odp"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

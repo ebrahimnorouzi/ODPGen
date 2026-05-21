@@ -1,0 +1,119 @@
+{
+  "id": "2025-153-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 87,
+    "classes_count": 6,
+    "object_properties_count": 8,
+    "datatype_properties_count": 5,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.8333333333333334,
+    "relationship_richness": 0.6153846153846154,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 87,
+    "triples_after": 332,
+    "inferred_triples": 245,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 1,
+    "cqs_failed": 6,
+    "pass_rate": 0.1429,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?hasStartTime ?hasEndTime WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:hasStartTime ?hasStartTime }\n  OPTIONAL { ?observation odp:hasEndTime ?hasEndTime }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can effectively answer the competency question regarding observations and their start and end times, consider the following additions:\n\n1. **Define the `Observation` Class**: Ensure that the `odp:Observation` class is properly defined in the ontology, including its intended use and relationships.\n\n2. **Add Properties for Time**: Introduce the properties `odp:hasStartTime` and `odp:hasEndTime` as datatype properties that link `Observation` instances to time values (e.g., xsd:dateTime).\n\n3. **Include Time Data Types**: Ensure that the ontology imports or defines the necessary data types for time representation, such as `xsd:dateTime`, to facilitate the storage and querying of temporal information.\n\n4. **Establish Relationships**: If not already present, define relationships between `Observation` and any relevant classes (e.g., `Event`, `Measurement`) to provide context for the observations.\n\n5. **Add Instances**: Populate the ontology with instances of `Observation` that include values for `hasStartTime` and `hasEndTime` to ensure that the query can return results based on actual data."
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?binding ?startTime ?endTime WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:hasBinding ?binding . }\n  OPTIONAL { ?binding odp:hasStartTime ?startTime . }\n  OPTIONAL { ?binding odp:hasEndTime ?endTime . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding observations and their bindings, the following classes and properties should be added:\n\n1. **Class Definitions**:\n   - Ensure the class `odp:Observation` is defined to represent observations.\n   - Define a class `odp:Binding` to represent the bindings associated with observations.\n\n2. **Property Definitions**:\n   - Add the property `odp:hasBinding` to link `odp:Observation` to `odp:Binding`.\n   - Define properties `odp:hasStartTime` and `odp:hasEndTime` within the `odp:Binding` class to represent the temporal aspects of the binding.\n\n3. **Data Type Properties**:\n   - Ensure that `odp:hasStartTime` and `odp:hasEndTime` are defined as data type properties with a range of `xsd:dateTime` to capture the time information accurately.\n\n4. **Axioms**:\n   - Include axioms that specify the relationships between these classes and properties, ensuring that every `odp:Observation` must have at least one `odp:Binding` and that each `odp:Binding` must have both a `odp:hasStartTime` and `odp:hasEndTime`.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding observations and their associated bindings."
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?hasStartTime ?hasEndTime WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:hasStartTime ?hasStartTime }\n  OPTIONAL { ?observation odp:hasEndTime ?hasEndTime }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `Observation` Class**: Ensure that the `odp:Observation` class is properly defined in the ontology, including its relationship to other relevant classes if necessary.\n\n2. **Add `hasStartTime` and `hasEndTime` Properties**: Define the properties `odp:hasStartTime` and `odp:hasEndTime` as object properties or datatype properties, depending on whether they link to other classes or represent literal values (e.g., dateTime).\n\n3. **Specify Data Types for Time Properties**: If `hasStartTime` and `hasEndTime` are datatype properties, specify their range as `xsd:dateTime` to ensure that the values assigned to these properties are valid date-time formats.\n\n4. **Create Instances of `Observation`**: Add instances of the `Observation` class in the ontology with appropriate values for `hasStartTime` and `hasEndTime` to ensure that there are actual data points to query.\n\n5. **Check for Consistency**: Ensure that the ontology is consistent and that there are no conflicting definitions or missing relationships that could prevent the query from returning results.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question and return meaningful results from the SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#Observation> }\n  UNION\n  { ?class a <http://example.org/odp#PersistentIdentifier> }\n  UNION\n  { ?class a <http://example.org/odp#Referent> }\n  UNION\n  { ?class a <http://example.org/odp#Rule> }\n  UNION\n  { ?class a <http://example.org/odp#TemporalBinding> }\n  UNION\n  { ?class a <http://example.org/odp#Transition> }\n  OPTIONAL { ?property a <http://example.org/odp#bindsTo> }\n  OPTIONAL { ?property a <http://example.org/odp#endsBinding> }\n  OPTIONAL { ?property a <http://example.org/odp#hasBinding> }\n  OPTIONAL { ?property a <http://example.org/odp#hasObservation> }\n  OPTIONAL { ?property a <http://example.org/odp#nextBinding> }\n  OPTIONAL { ?property a <http://example.org/odp#previousBinding> }\n  OPTIONAL { ?property a <http://example.org/odp#startsBinding> }\n  OPTIONAL { ?property a <http://example.org/odp#triggeredBy> }\n  OPTIONAL { ?property a <http://example.org/odp#hasEndTime> }\n  OPTIONAL { ?property a <http://example.org/odp#hasStartTime> }\n  OPTIONAL { ?property a <http://example.org/odp#isCurrentBinding> }\n  OPTIONAL { ?property a <http://example.org/odp#observationTime> }\n  OPTIONAL { ?property a <http://example.org/odp#transitionTime> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology can return results for classes and properties, consider the following suggestions:\n\n1. **Declare Classes**: Ensure that all relevant classes are declared in the ontology using `owl:Class`. For example:\n   ```turtle\n   :Observation a owl:Class .\n   :PersistentIdentifier a owl:Class .\n   :Referent a owl:Class .\n   :Rule a owl:Class .\n   :TemporalBinding a owl:Class .\n   :Transition a owl:Class .\n   ```\n\n2. **Declare Properties**: Ensure that all relevant properties are declared using the appropriate OWL property types. For example:\n   ```turtle\n   :bindsTo a owl:ObjectProperty .\n   :endsBinding a owl:ObjectProperty .\n   :hasBinding a owl:ObjectProperty .\n   :hasObservation a owl:ObjectProperty .\n   :nextBinding a owl:ObjectProperty .\n   :previousBinding a owl:ObjectProperty .\n   :startsBinding a owl:ObjectProperty .\n   :triggeredBy a owl:ObjectProperty .\n   :hasEndTime a owl:DatatypeProperty .\n   :hasStartTime a owl:DatatypeProperty .\n   :isCurrentBinding a owl:ObjectProperty .\n   :observationTime a owl:DatatypeProperty .\n   :transitionTime a owl:DatatypeProperty .\n   ```\n\n3. **Check Namespace**: Ensure that the namespace `<http://example.org/odp#>` is correctly defined in the ontology and that all classes and properties"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?hasStartTime ?hasEndTime ?isCurrentBinding WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:hasStartTime ?hasStartTime }\n  OPTIONAL { ?observation odp:hasEndTime ?hasEndTime }\n  OPTIONAL { ?observation odp:isCurrentBinding ?isCurrentBinding }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following schema axioms to the ontology:\n\n1. **Define the `Observation` Class**: Ensure that the class `Observation` is defined in the ontology with the appropriate characteristics.\n   ```turtle\n   :Observation a rdfs:Class .\n   ```\n\n2. **Define Properties**: Add the properties `hasStartTime`, `hasEndTime`, and `isCurrentBinding` to the ontology, specifying their domains and ranges.\n   ```turtle\n   :hasStartTime a rdf:Property ;\n       rdfs:domain :Observation ;\n       rdfs:range xsd:dateTime .\n\n   :hasEndTime a rdf:Property ;\n       rdfs:domain :Observation ;\n       rdfs:range xsd:dateTime .\n\n   :isCurrentBinding a rdf:Property ;\n       rdfs:domain :Observation ;\n       rdfs:range xsd:boolean .\n   ```\n\n3. **Add Class Hierarchy (if applicable)**: If `Observation` is a subclass of another class, define that relationship to provide context.\n   ```turtle\n   :SomeSuperClass a rdfs:Class .\n   :Observation a rdfs:subClassOf :SomeSuperClass .\n   ```\n\n4. **Include Documentation**: Optionally, add rdfs:label or rdfs:comment to provide human-readable descriptions of the classes and properties for better understanding."
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:Observation .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:PersistentIdentifier .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Referent .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Rule .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:TemporalBinding .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Transition .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?property a odp:bindsTo .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  } UNION {\n    ?property a odp:endsBinding .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  } UNION {\n    ?property a odp:hasBinding .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } \n  } UNION {\n    ?property a odp:hasObservation .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL {",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1366), (line:40, col:5)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class (e.g., `Observation`, `PersistentIdentifier`, `Referent`, `Rule`, `TemporalBinding`, `Transition`), add `rdfs:label` and `rdfs:comment` properties that provide a human-readable name and a description of the class's purpose.\n\n   Example:\n   ```turtle\n   odp:Observation rdfs:label \"Observation\" ;\n                   rdfs:comment \"A record of a specific event or phenomenon.\" .\n   ```\n\n2. **Define Annotations for Each Property**: Similarly, for each property (e.g., `bindsTo`, `endsBinding`, `hasBinding`, `hasObservation`), include `rdfs:label` and `rdfs:comment` to clarify the role of the property in the ontology.\n\n   Example:\n   ```turtle\n   odp:bindsTo rdfs:label \"Binds To\" ;\n                rdfs:comment \"Indicates a relationship where one entity binds to another.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are consistent in style and terminology, making it easier for users to understand the ontology.\n\n4. **Document the Purpose of the Ontology**: Consider adding an"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

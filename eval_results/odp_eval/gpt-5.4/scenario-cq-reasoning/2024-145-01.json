@@ -1,0 +1,132 @@
+{
+  "id": "2024-145-01",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-reasoning",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 78,
+    "classes_count": 7,
+    "object_properties_count": 5,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 6,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 4,
+    "attribute_richness": 0.2857142857142857,
+    "relationship_richness": 0.7142857142857143,
+    "avg_subclass_per_class": 0.8571428571428571
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 78,
+    "triples_after": 316,
+    "inferred_triples": 238,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "List all district courts in a given state.?",
+    "In which state is a given district court instance located?",
+    "How many districts are in a given state of India?",
+    "Which court has authority over a given court?",
+    "What is the check transaction type for a bad check?",
+    "When is a check payment of a bad check?",
+    "What is the transaction status of a given check payment?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 1,
+    "cqs_failed": 6,
+    "pass_rate": 0.1429,
+    "results": [
+      {
+        "cq": "List all district courts in a given state.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?districtCourt WHERE {\n  ?districtCourt a odp:DistrictCourt .\n  ?districtCourt odp:locatedInState ?state .\n  ?state a odp:State .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding listing all district courts in a given state, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that `odp:DistrictCourt` is defined as a subclass of a broader class (e.g., `odp:Court`) to establish its context within the ontology.\n\n2. **Property Definition**: Introduce a property `odp:locatedInState` that links `odp:DistrictCourt` instances to `odp:State` instances. This property should be defined with a domain of `odp:DistrictCourt` and a range of `odp:State`.\n\n3. **State Instances**: Ensure that instances of `odp:State` are properly defined in the ontology, with unique identifiers for each state to facilitate querying.\n\n4. **Data Population**: Populate the ontology with instances of `odp:DistrictCourt` and their corresponding `odp:locatedInState` relationships to specific `odp:State` instances to ensure there is data to query against.\n\n5. **Query Adjustment**: Modify the SPARQL query to include a specific state filter, such as `?state = <http://example.org/odp#StateName>` to retrieve district courts for that particular state. \n\nBy implementing these changes, the ontology will be better equipped to answer the competency question effectively."
+      },
+      {
+        "cq": "In which state is a given district court instance located?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?state WHERE {\n  ?court a odp:DistrictCourt .\n  ?court odp:locatedInState ?state .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To answer the competency question regarding the location of a district court instance, consider the following additions to the ontology:\n\n1. **Class Addition**: Ensure that there is a class for `State` (e.g., `odp:State`) to represent the states in which district courts are located.\n\n2. **Property Addition**: Define a property `odp:locatedInState` that relates instances of `DistrictCourt` to instances of `State`. This property should be defined as an object property.\n\n3. **Axiom Specification**: Add an axiom that states that every instance of `DistrictCourt` must be related to exactly one instance of `State` through the `odp:locatedInState` property, ensuring that the relationship is clear and enforceable.\n\n4. **Data Population**: Populate the ontology with instances of `DistrictCourt` and corresponding instances of `State`, ensuring that the `locatedInState` property is correctly populated for each district court instance.\n\n5. **Hierarchy and Relationships**: If applicable, consider adding a hierarchy or relationships between `DistrictCourt` and other relevant classes (e.g., `Court`, `JudicialSystem`) to provide additional context and facilitate more complex queries."
+      },
+      {
+        "cq": "How many districts are in a given state of India?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT (COUNT(?district) AS ?districtCount) WHERE {\n  ?district a odp:District .\n  ?district odp:inState ?state .\n  ?state a odp:State .\n  ?state odp:locatedInState \"India\" .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Which court has authority over a given court?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?court ?authority WHERE {\n  ?court a odp:DistrictCourt .\n  OPTIONAL { ?court odp:hasAuthorityOver ?authority . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which court has authority over a given court, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a class `Court` that serves as a superclass for all types of courts (e.g., `DistrictCourt`, `SupremeCourt`, etc.). This will provide a common type for all court entities.\n\n2. **Property Addition**: Define a property `hasAuthorityOver` with the domain `Court` and range `Court`. This property will explicitly represent the hierarchical authority relationship between courts.\n\n3. **Axiom Addition**: Establish axioms that define the relationships between different court types, such as `SupremeCourt` has authority over `DistrictCourt`, to ensure that the ontology captures the intended hierarchy.\n\n4. **Instance Creation**: Create instances of various court types (e.g., `SupremeCourt1`, `DistrictCourt1`) and use the `hasAuthorityOver` property to link them appropriately, ensuring that the data reflects the real-world relationships.\n\n5. **Data Population**: Populate the ontology with relevant data that reflects the authority relationships among courts, ensuring that the SPARQL query can retrieve meaningful results based on the defined structure."
+      },
+      {
+        "cq": "What is the check transaction type for a bad check?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?checkTransactionType WHERE {\n  ?badCheck a odp:BadCheck .\n  ?badCheck odp:hasCheckPayment ?checkPayment .\n  ?checkPayment odp:hasTransactionType ?checkTransactionType .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the check transaction type for a bad check, consider the following additions to the ontology:\n\n1. **Class Addition**: Ensure that there is a class for `CheckPayment` if it does not already exist. This class should represent all types of check payments, including bad checks.\n\n2. **Property Addition**: Define a property `odp:hasTransactionType` that links `CheckPayment` instances to their corresponding transaction types. This property should be applicable to all check payments, including bad checks.\n\n3. **Axiom Addition**: Create an axiom that specifies that a `BadCheck` is a subclass of `CheckPayment`. This will allow bad checks to inherit properties related to check payments, including transaction types.\n\n4. **Property Definition**: Ensure that the property `odp:hasCheckPayment` is correctly defined to link instances of `BadCheck` to their respective `CheckPayment` instances.\n\n5. **Transaction Type Enumeration**: If not already present, define an enumeration or class for `TransactionType` that includes various types of transactions (e.g., valid, bad, etc.) to categorize the transaction types associated with check payments.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the transaction type of a bad check."
+      },
+      {
+        "cq": "When is a check payment of a bad check?",
+        "sparql": "SELECT ?checkPaymentDate WHERE { \n  ?badCheck a <http://example.org/odp#BadCheck> .\n  ?badCheck <http://example.org/odp#hasCheckPayment> ?checkPayment .\n  OPTIONAL { \n    ?checkPayment <http://example.org/odp#hasCheckPaymentDate> ?checkPaymentDate \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding when a check payment of a bad check occurs, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that there is a class for `CheckPayment` if it does not already exist. This class should represent instances of check payments.\n\n2. **Property Definition**: Define a property `hasCheckPaymentDate` that links `CheckPayment` instances to a date (e.g., `xsd:date`) representing when the payment was made.\n\n3. **Relationship Property**: Ensure that the property `hasCheckPayment` is correctly defined to relate `BadCheck` instances to their corresponding `CheckPayment` instances.\n\n4. **Axiom for Payment Status**: Introduce an axiom or property (e.g., `isPaymentValid`) that indicates whether a `CheckPayment` is valid or invalid, which can help in identifying bad checks.\n\n5. **Data Type Property**: If not already present, define a data type property for `checkPaymentAmount` to capture the monetary value of the check payment, which can be useful for further queries related to bad checks.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding the timing of check payments related to bad checks."
+      },
+      {
+        "cq": "What is the transaction status of a given check payment?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?checkPayment ?transactionType ?badCheckStatus WHERE {\n  ?checkPayment a odp:CheckPayment .\n  OPTIONAL { ?checkPayment odp:hasTransactionType ?transactionType }\n  OPTIONAL { ?checkPayment odp:hasCheckPayment ?badCheckStatus }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the transaction status of a given check payment, consider the following additions to the ontology:\n\n1. **Define `odp:CheckPayment` Class**: Ensure that the `odp:CheckPayment` class is properly defined and includes necessary properties related to transaction status.\n\n2. **Add `odp:hasTransactionStatus` Property**: Introduce a property `odp:hasTransactionStatus` that links a `CheckPayment` to its transaction status (e.g., pending, completed, failed).\n\n3. **Define `TransactionStatus` Class**: Create a class `TransactionStatus` to represent various statuses of transactions, such as `Pending`, `Completed`, `Failed`, and `Cancelled`.\n\n4. **Link `TransactionStatus` to `CheckPayment`**: Ensure that the `odp:hasTransactionStatus` property is used to relate instances of `CheckPayment` to instances of `TransactionStatus`.\n\n5. **Correct Property Usage**: Review and correct the property `odp:hasCheckPayment` in the SPARQL query to ensure it reflects the intended relationship, possibly renaming it to `odp:hasBadCheckStatus` if it is meant to indicate the status of a bad check.\n\nBy implementing these changes, the ontology will be better equipped to provide the necessary information to answer the competency question."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P34",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://example.org/odp#hasTransactionStatus"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

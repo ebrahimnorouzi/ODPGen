@@ -1,0 +1,112 @@
+{
+  "id": "2025-153-01",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-constraints",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 66,
+    "classes_count": 6,
+    "object_properties_count": 9,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 66,
+    "triples_after": 286,
+    "inferred_triples": 220,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?referent ?transitionRule WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:hasObservation ?referent . }\n  OPTIONAL { ?observation odp:triggeredByRule ?transitionRule . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class Definition**: Ensure that the class `odp:Observation` is defined in the ontology with appropriate characteristics and relationships.\n\n2. **Property Definitions**:\n   - **`odp:hasObservation`**: Define this property to link an `odp:Observation` to its related observations or referents.\n   - **`odp:triggeredByRule`**: Define this property to associate an `odp:Observation` with the transition rules that triggered it.\n\n3. **Instance Data**: Add instances of `odp:Observation` with values for `odp:hasObservation` and `odp:triggeredByRule` to ensure that there are actual data points in the ontology that can be queried.\n\n4. **RDF Triples**: Create RDF triples that connect instances of `odp:Observation` to their respective referents and transition rules, ensuring that the data is populated correctly.\n\n5. **Domain and Range**: Specify the domain and range for the properties `odp:hasObservation` and `odp:triggeredByRule` to ensure they are correctly linked to the `odp:Observation` class and any relevant classes for referents and rules."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?referent ?transitionRule WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:hasObservation ?referent . }\n  OPTIONAL { ?observation odp:triggeredByRule ?transitionRule . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define the `Observation` Class**:\n   - Ensure that the class `odp:Observation` is defined in the ontology with appropriate characteristics (e.g., `rdf:type`).\n\n2. **Add Properties**:\n   - Define the property `odp:hasObservation` to link an `Observation` to its referent. This property should have a domain of `odp:Observation` and a range that specifies the type of referent (e.g., `rdf:Resource` or a more specific class).\n   - Define the property `odp:triggeredByRule` to link an `Observation` to a transition rule. This property should also have a domain of `odp:Observation` and a range that specifies the type of transition rule (e.g., `odp:TransitionRule`).\n\n3. **Define the `TransitionRule` Class**:\n   - Ensure that the class `odp:TransitionRule` is defined in the ontology to represent the rules that can trigger observations.\n\n4. **Add Axioms for Relationships**:\n   - Create axioms that specify the relationships between `Observation`, `hasObservation`, and `triggeredByRule` to ensure that the ontology captures the intended semantics.\n\n5. **Example Axiom**:\n   - Add an axiom such as: `:Observation rdfs:"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a <http://example.org/odp#Observation> .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#appliesToReferent> .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#bindsIdentifier> .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#bindsReferent> .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#fromBinding> .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#hasBinding> .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#hasObservation> .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a <http://example.org/odp#hasTransition> .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL {",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1290), (line:44, col:3)",
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete steps:\n\n1. **Define a Class for Annotations**: Create a class (e.g., `http://example.org/odp#AnnotatedEntity`) that serves as a superclass for all classes and properties that require annotations.\n\n2. **Add rdfs:label and rdfs:comment Properties**: Ensure that all classes and properties inherit from `rdfs:label` and `rdfs:comment` by defining them as mandatory properties in the ontology. You can use OWL constraints or SHACL shapes to enforce this requirement.\n\n3. **Create a SHACL Shape**: Implement a SHACL shape that specifies that any instance of `http://example.org/odp#AnnotatedEntity` must have at least one `rdfs:label` and one `rdfs:comment`. This will allow for validation of the ontology.\n\n4. **Update Existing Classes and Properties**: Go through the existing classes and properties in your ontology and add `rdfs:label` and `rdfs:comment` annotations where they are missing.\n\n5. **Validation Mechanism**: Implement a validation mechanism (e.g., using a reasoner or SHACL validation tool) to check for compliance with the requirement that all classes and properties have the necessary annotations.\n\nBy following these steps, you can ensure that your ontology meets the competency question's requirements"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Observation> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider adding the following elements to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is declared as an instance of `owl:Ontology`. For example:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include a `rdfs:label` property for the ontology to provide a human-readable name. For example:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Name\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include a `rdfs:comment` property to provide a description of the ontology. For example:\n   ```turtle\n   :Ontology rdfs:comment \"This ontology describes...\" .\n   ```\n\n4. **Define Namespace**: Ensure that the namespace for your ontology is properly defined at the beginning of your ontology file, e.g.:\n   ```turtle\n   @prefix : <http://example.org/your-ontology#> .\n   ```\n\n5. **Use owl:imports if Necessary**: If your ontology imports other ontologies, include the `owl:imports` property to specify those dependencies.\n\nBy implementing these elements, your ontology will have the necessary structure to answer the competency question effectively."
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?referent ?transitionRule WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:hasObservation ?referent . }\n  OPTIONAL { ?observation odp:triggeredByRule ?transitionRule . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the ontology is minimal and reusable, consider the following additions:\n\n1. **Define the `Observation` Class**: Ensure that the `Observation` class is properly defined in the ontology with necessary attributes or characteristics that clarify its purpose.\n\n2. **Add `hasObservation` Property**: Create a property `hasObservation` that links an `Observation` to its referent. This property should be defined with a domain of `Observation` and a range that specifies the type of referent (e.g., `Referent` class).\n\n3. **Introduce `TriggeredByRule` Property**: Define the `triggeredByRule` property to connect an `Observation` to a `TransitionRule`. This property should have a domain of `Observation` and a range of `TransitionRule`.\n\n4. **Define the `TransitionRule` Class**: Create a `TransitionRule` class that encapsulates the rules that can trigger observations, ensuring it is clearly defined and reusable.\n\n5. **Ensure Proper Data Population**: Verify that instances of `Observation`, `Referent`, and `TransitionRule` are populated in the dataset to ensure that the SPARQL query can return results.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question while maintaining minimalism and reusability."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

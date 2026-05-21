@@ -1,0 +1,113 @@
+{
+  "id": "2025-153-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 74,
+    "classes_count": 5,
+    "object_properties_count": 6,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.4,
+    "relationship_richness": 0.75,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 74,
+    "triples_after": 292,
+    "inferred_triples": 218,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Which entity does a persistent identifier currently reference?",
+    "Which entity was referenced at a past timestamp?",
+    "When did referent transitions occur?",
+    "What observations are associated with specific referents?",
+    "What is the full sequence of referents over time?",
+    "Which rules triggered specific transitions?",
+    "Are there gaps or overlaps in temporal bindings?",
+    "Can complete context be rebuilt for any time point?"
+  ],
+  "cqs_count": 8,
+  "cq_verification": {
+    "cqs_total": 8,
+    "cqs_passed": 0,
+    "cqs_failed": 8,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Which entity does a persistent identifier currently reference?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?persistentIdentifier ?referent WHERE {\n  ?persistentIdentifier a odp:PersistentIdentifier .\n  OPTIONAL { ?persistentIdentifier odp:resolvesTo ?referent }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which entity a persistent identifier currently references, consider the following additions to the ontology:\n\n1. **Define the `resolvesTo` Property**: Ensure that the property `odp:resolvesTo` is explicitly defined in the ontology, linking `PersistentIdentifier` to the entities it references. This property should have a domain of `PersistentIdentifier` and a range that includes the relevant entities (e.g., `Entity`, `Resource`).\n\n2. **Add a Class for Referenced Entities**: If not already present, create a class (e.g., `odp:Entity`) that encompasses all entities that can be referenced by persistent identifiers. This will provide a clear structure for what types of entities can be linked.\n\n3. **Include Inverse Properties**: Consider adding an inverse property (e.g., `odp:isReferencedBy`) to facilitate queries that might need to find all persistent identifiers referencing a specific entity.\n\n4. **Define Instances of Persistent Identifiers**: Ensure that there are instances of `PersistentIdentifier` in the ontology that are linked to actual entities using the `resolvesTo` property. This will provide data for the SPARQL query to return results.\n\n5. **Add Documentation and Examples**: Include documentation or examples in the ontology to clarify how persistent identifiers are used and how they relate to other entities, which can help users understand the structure and usage of the ontology better."
+      },
+      {
+        "cq": "Which entity was referenced at a past timestamp?",
+        "sparql": "SELECT ?referent ?validFrom ?validTo WHERE {\n  ?observation a <http://example.org/odp#Observation> ;\n               <http://example.org/odp#hasObservation> ?referent ;\n               <http://example.org/odp#validFrom> ?validFrom ;\n               <http://example.org/odp#validTo> ?validTo .\n  FILTER(?validFrom < NOW())\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which entity was referenced at a past timestamp, consider the following additions to the ontology:\n\n1. **Temporal Properties**: Ensure that the properties `validFrom` and `validTo` are defined as temporal properties with appropriate data types (e.g., `xsd:dateTime`) to accurately represent time intervals.\n\n2. **Observation Class Enhancements**: Introduce a subclass of `Observation` that specifically captures historical observations, such as `HistoricalObservation`, to differentiate between current and past observations.\n\n3. **Time Interval Class**: Create a class `TimeInterval` that encapsulates the `validFrom` and `validTo` properties, allowing for more complex queries related to time periods.\n\n4. **Temporal Reasoning Axioms**: Add axioms that support temporal reasoning, such as defining relationships between observations and their validity periods, to facilitate querying based on time.\n\n5. **Indexed Timestamps**: Consider implementing an indexing mechanism for timestamps to optimize queries that filter based on temporal conditions, improving performance and ensuring accurate results."
+      },
+      {
+        "cq": "When did referent transitions occur?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?referent ?validFrom ?validTo WHERE {\n  ?transitionRule odp:triggeredBy ?referent .\n  OPTIONAL { ?transitionRule odp:validFrom ?validFrom }\n  OPTIONAL { ?transitionRule odp:validTo ?validTo }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding when referent transitions occur, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a class `Transition` to represent the concept of a transition event, which can encapsulate the details of referent transitions.\n\n2. **Property Addition**: Add properties `odp:hasTransition` to link `Referent` instances to `Transition` instances, and `odp:occursAt` to specify the time of the transition.\n\n3. **Temporal Properties**: Define `odp:validFrom` and `odp:validTo` as properties of the `Transition` class to capture the start and end times of the transition.\n\n4. **Relationship Definition**: Ensure that `Transition` is related to `Referent` through the `odp:triggeredBy` property, allowing for a clear connection between the transition and the referent it affects.\n\n5. **Axiom Specification**: Create axioms that enforce the relationship between `Transition`, `Referent`, and the temporal properties, ensuring that every transition must have a valid time frame (validFrom and validTo). \n\nThese additions will provide the necessary structure to query for the timing of referent transitions effectively."
+      },
+      {
+        "cq": "What observations are associated with specific referents?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?observation ?referent WHERE {\n  ?observation a odp:Observation .\n  ?observation odp:hasObservation ?referent .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the association of observations with specific referents, consider the following additions to the ontology:\n\n1. **Define the `odp:hasReferent` Property**: Introduce a property `odp:hasReferent` that links an `odp:Observation` to its associated referent. This property should be defined as:\n   ```turtle\n   odp:hasReferent a rdf:Property ;\n       rdfs:domain odp:Observation ;\n       rdfs:range odp:Referent .\n   ```\n\n2. **Create a `Referent` Class**: Ensure that there is a class `odp:Referent` that represents the entities being observed. This class should be defined as:\n   ```turtle\n   odp:Referent a rdfs:Class .\n   ```\n\n3. **Add Instances of `Referent`**: Populate the ontology with instances of `odp:Referent` that can be linked to observations. For example:\n   ```turtle\n   :referent1 a odp:Referent .\n   ```\n\n4. **Link Observations to Referents**: Ensure that existing or new instances of `odp:Observation` are linked to instances of `odp:Referent` using the `odp:hasReferent` property. For example:\n   ```turtle\n   :observation1 a odp:Observation ;\n       odp:hasReferent :referent1 .\n   ```\n\n5. **Review and"
+      },
+      {
+        "cq": "What is the full sequence of referents over time?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?referent ?validFrom ?validTo WHERE {\n  ?observation a odp:Observation ;\n               odp:hasObservation ?referent ;\n               odp:validFrom ?validFrom ;\n               odp:validTo ?validTo .\n  OPTIONAL { ?observation odp:hasBinding ?binding . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the full sequence of referents over time, consider the following suggestions for enhancing the ontology:\n\n1. **Define a `Referent` Class**: Introduce a class `Referent` to explicitly represent the entities being observed. This will help in clearly associating observations with their respective referents.\n\n2. **Add Temporal Properties**: Ensure that the properties `validFrom` and `validTo` are defined as temporal properties (e.g., using a datatype like `xsd:dateTime`) to accurately capture the time intervals during which the referents are valid.\n\n3. **Establish Relationships**: Create a property `odp:hasReferent` that links `Observation` instances to `Referent` instances. This will clarify the relationship and allow for easier querying of referents associated with observations.\n\n4. **Incorporate Versioning**: If referents can change over time, consider adding a versioning mechanism (e.g., `odp:hasVersion`) to track different states or versions of a referent, allowing for a more comprehensive historical view.\n\n5. **Temporal Context Class**: Introduce a class `TemporalContext` that can encapsulate the time-related aspects of observations, allowing for more complex queries regarding the sequence and validity of referents over time.\n\nBy implementing these enhancements, the ontology will be better equipped to answer the competency question regarding the sequence of referents over time."
+      },
+      {
+        "cq": "Which rules triggered specific transitions?",
+        "sparql": "SELECT ?transitionRule ?triggeredBy WHERE { \n  ?transitionRule a <http://example.org/odp#TransitionRule> .\n  OPTIONAL { ?transitionRule <http://example.org/odp#triggeredBy> ?triggeredBy }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding which rules triggered specific transitions, consider adding the following elements to the ontology:\n\n1. **Class for Transition**: Introduce a class, e.g., `<http://example.org/odp#Transition>`, to represent specific transitions within the ontology.\n\n2. **Property for Transition Association**: Define a property, e.g., `<http://example.org/odp#hasTransition>`, to link `TransitionRule` instances to their corresponding `Transition` instances.\n\n3. **Property for Triggering Rules**: Create a property, e.g., `<http://example.org/odp#triggeredBy>`, to associate a `Transition` with the `TransitionRule` that triggered it.\n\n4. **Axioms for Relationships**: Establish axioms that define the relationships between `Transition`, `TransitionRule`, and any other relevant classes to ensure that the ontology captures the necessary semantics of transitions and rules.\n\n5. **Data Properties for Contextual Information**: Optionally, add data properties to capture contextual information about the transitions, such as timestamps or conditions under which the transitions occur, to enrich the data available for querying. \n\nThese additions will enable the ontology to represent and query the relationships between transitions and the rules that trigger them effectively."
+      },
+      {
+        "cq": "Are there gaps or overlaps in temporal bindings?",
+        "sparql": "SELECT ?binding1 ?validFrom1 ?validTo1 ?binding2 ?validFrom2 ?validTo2 WHERE {\n  ?binding1 a <http://example.org/odp#TemporalBinding> ;\n            <http://example.org/odp#validFrom> ?validFrom1 ;\n            <http://example.org/odp#validTo> ?validTo1 .\n  ?binding2 a <http://example.org/odp#TemporalBinding> ;\n            <http://example.org/odp#validFrom> ?validFrom2 ;\n            <http://example.org/odp#validTo> ?validTo2 .\n  FILTER (?validFrom1 < ?validTo2 && ?validFrom2 < ?validTo1)\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively address the competency question regarding gaps or overlaps in temporal bindings, consider the following additions to the ontology:\n\n1. **Temporal Binding Class Enhancements**:\n   - Introduce a subclass of `TemporalBinding` called `OverlappingBinding` to explicitly represent bindings that overlap in time.\n\n2. **Properties for Temporal Relationships**:\n   - Add properties such as `http://example.org/odp#overlapsWith` and `http://example.org/odp#isGapWith` to define relationships between temporal bindings that indicate overlaps and gaps.\n\n3. **Temporal Gap Definition**:\n   - Define a new class `TemporalGap` that represents periods of time where no bindings exist, and create a property `http://example.org/odp#hasGap` to link `TemporalBinding` instances to their corresponding gaps.\n\n4. **Temporal Comparison Axioms**:\n   - Introduce axioms that define the conditions for overlapping and gaps, such as:\n     - `OverlappingBinding` if `validFrom1 < validTo2` and `validFrom2 < validTo1`.\n     - `TemporalGap` if `validTo1 < validFrom2` or `validTo2 < validFrom1`.\n\n5. **Temporal Binding Validity**:\n   - Ensure that the `validFrom` and `validTo` properties are defined with appropriate data types (e.g., xsd:dateTime) and constraints to facilitate accurate temporal comparisons.\n\nThese enhancements will allow for more"
+      },
+      {
+        "cq": "Can complete context be rebuilt for any time point?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?observation ?binding ?validFrom ?validTo WHERE {\n  ?binding a odp:TemporalBinding .\n  ?binding odp:hasObservation ?observation .\n  OPTIONAL { ?binding odp:validFrom ?validFrom }\n  OPTIONAL { ?binding odp:validTo ?validTo }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding the ability to rebuild complete context for any time point, consider the following additions:\n\n1. **Temporal Context Class**: Introduce a class `odp:TemporalContext` that encapsulates the temporal aspects of observations, allowing for the representation of different time points and their associated contexts.\n\n2. **Time Point Property**: Add a property `odp:hasTimePoint` that links `odp:TemporalContext` to specific time instances (e.g., using a datatype property with xsd:dateTime).\n\n3. **Contextual Binding Property**: Define a property `odp:hasTemporalContext` that connects `odp:TemporalBinding` to `odp:TemporalContext`, enabling the association of observations with their relevant temporal contexts.\n\n4. **Validity Period Properties**: Ensure that `validFrom` and `validTo` are defined as object properties of `odp:TemporalContext`, allowing for the specification of the time range during which the context is valid.\n\n5. **Observation Contextualization**: Introduce a property `odp:contextualizes` that links `odp:Observation` to `odp:TemporalContext`, facilitating the retrieval of observations relevant to a specific time point.\n\nThese additions will enhance the ontology's ability to represent and query temporal contexts effectively."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [],
+    "pitfall_instance_counts": {},
+    "pitfall_affected_elements_counts": {},
+    "pitfalls_total": 0,
+    "pitfalls": [],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 0,
+    "critical_count": 0
+  }
+}

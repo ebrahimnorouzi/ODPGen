@@ -1,0 +1,95 @@
+{
+  "id": "2023-133-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 45,
+    "classes_count": 3,
+    "object_properties_count": 4,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 2,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 2,
+    "attribute_richness": 0.3333333333333333,
+    "relationship_richness": 0.8,
+    "avg_subclass_per_class": 0.6666666666666666
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 45,
+    "triples_after": 235,
+    "inferred_triples": 190,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "What events are responsible for the pavement being slippery?",
+    "What would be the outcome of turning the sprinkler system on(off)?",
+    "How strong is the causal link between the sprinkler being on and the pavement being wet?",
+    "What if the pavement is not wet, how would it effect the pavement being slippery?"
+  ],
+  "cqs_count": 4,
+  "cq_verification": {
+    "cqs_total": 4,
+    "cqs_passed": 0,
+    "cqs_failed": 4,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "What events are responsible for the pavement being slippery?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?event WHERE {\n  ?event a odp:Event .\n  ?event odp:hasEffect ?effect .\n  ?effect a odp:CausalRelation .\n  ?effect odp:hasCause ?cause .\n  ?cause odp:hasEffectWeight ?weight .\n  FILTER(?weight > 0)\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding events that cause pavement to be slippery, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - `odp:WeatherEvent`: A subclass of `odp:Event` that includes specific weather-related events (e.g., rain, snow, ice).\n   - `odp:SurfaceCondition`: A class representing various conditions of surfaces (e.g., wet, icy, oily).\n\n2. **Properties**:\n   - `odp:causesSurfaceCondition`: A property linking `odp:Event` to `odp:SurfaceCondition`, indicating that a specific event can lead to a change in surface condition.\n   - `odp:hasSurfaceCondition`: A property linking `odp:SurfaceCondition` to `odp:Event`, indicating the condition of the pavement resulting from an event.\n\n3. **Axioms**:\n   - Define axioms that specify that certain `odp:WeatherEvent` instances (like rain or snow) lead to specific `odp:SurfaceCondition` instances (like wet or icy), establishing a causal relationship.\n\nBy implementing these additions, the ontology will better represent the relationships between events and their effects on pavement conditions, allowing for more effective querying."
+      },
+      {
+        "cq": "What would be the outcome of turning the sprinkler system on(off)?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?event ?effect ?weight WHERE {\n  ?event a odp:Event .\n  ?event odp:hasEffect ?effect .\n  OPTIONAL { ?event odp:hasEffectWeight ?weight }\n  { \n    ?event odp:hasCause odp:SprinklerSystemOn .\n  } UNION {\n    ?event odp:hasCause odp:SprinklerSystemOff .\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding the effects of turning the sprinkler system on or off, consider adding the following:\n\n1. **Classes**:\n   - Define a class `SprinklerSystem` to represent the sprinkler system itself.\n   - Define a class `Effect` to represent the various outcomes that can result from events.\n\n2. **Properties**:\n   - Add a property `odp:hasEffect` to link `Event` instances to their corresponding `Effect` instances.\n   - Add a property `odp:hasCause` to link `Event` instances to their causes, specifically for `SprinklerSystemOn` and `SprinklerSystemOff`.\n\n3. **Instances**:\n   - Create instances for `SprinklerSystemOn` and `SprinklerSystemOff` under the `Event` class to represent the specific events of turning the sprinkler system on and off.\n\n4. **Axioms**:\n   - Define axioms that specify the effects of turning the sprinkler system on or off, linking these events to specific effects (e.g., `odp:hasEffect` for outcomes like \"increased soil moisture\" or \"decreased soil moisture\").\n\nBy implementing these additions, the ontology will be better equipped to provide answers to the competency question regarding the outcomes of the sprinkler system's operation."
+      },
+      {
+        "cq": "How strong is the causal link between the sprinkler being on and the pavement being wet?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?effectWeight WHERE {\n  ?causalRelation a odp:CausalRelation .\n  ?causalRelation odp:hasCause ?sprinklerEvent .\n  ?causalRelation odp:hasEffect ?pavementEvent .\n  ?sprinklerEvent a odp:Event .\n  ?pavementEvent a odp:Event .\n  OPTIONAL { ?causalRelation odp:hasEffectWeight ?effectWeight }\n  FILTER(?sprinklerEvent = <http://example.org/odp#SprinklerOn> && ?pavementEvent = <http://example.org/odp#PavementWet>)\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the causal link between the sprinkler being on and the pavement being wet, consider the following additions to the ontology:\n\n1. **CausalRelation Class**: Ensure that the `odp:CausalRelation` class is defined with properties that can capture the strength of the causal link, such as `odp:hasEffectWeight`.\n\n2. **Event Class**: Define a more specific `odp:Event` class that includes subclasses for different types of events, such as `odp:SprinklerEvent` and `odp:PavementEvent`, to better categorize the events involved.\n\n3. **Properties for Causal Relationships**: Introduce properties like `odp:hasCause` and `odp:hasEffect` to link specific events to their causal relationships, ensuring that they can be instantiated with specific events (e.g., `odp:SprinklerOn` and `odp:PavementWet`).\n\n4. **Effect Weight Data Type**: Define `odp:hasEffectWeight` as a datatype property that can hold numerical values (e.g., float or integer) representing the strength of the causal link, allowing for quantitative analysis.\n\n5. **Instances of Causal Relations**: Create instances of `odp:CausalRelation` that specifically relate `odp:SprinklerOn` to `odp:PavementWet`, including the `odp:hasEffectWeight` property to provide the necessary data for the query. \n\nBy implementing these suggestions, the ontology"
+      },
+      {
+        "cq": "What if the pavement is not wet, how would it effect the pavement being slippery?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?event ?state ?effectWeight WHERE {\n  ?event a odp:Event .\n  ?event odp:hasState ?state .\n  OPTIONAL { ?event odp:hasEffectWeight ?effectWeight }\n  FILTER(?state != odp:CausalRelation) \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the relationship between pavement wetness and slipperiness, consider the following additions to the ontology:\n\n1. **Classes**:\n   - **PavementCondition**: A class to represent different conditions of the pavement (e.g., Wet, Dry, Icy).\n   - **Slipperiness**: A class to represent the state of being slippery.\n\n2. **Properties**:\n   - **hasCondition**: A property to link an event to a specific pavement condition (e.g., `odp:hasCondition`).\n   - **affectsSlipperiness**: A property to define the relationship between pavement conditions and their effect on slipperiness (e.g., `odp:affectsSlipperiness`).\n\n3. **Axioms**:\n   - Define axioms that specify the conditions under which pavement is considered slippery (e.g., \"If pavement hasCondition Wet, then it affectsSlipperiness to a high degree\").\n   - Include a rule or axiom that states \"If pavement hasCondition Dry, then it affectsSlipperiness to a low degree\".\n\nThese additions will help model the relationship between pavement conditions and slipperiness, allowing for effective querying."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

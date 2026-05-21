@@ -1,0 +1,123 @@
+{
+  "id": "2024-145-01",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 76,
+    "classes_count": 9,
+    "object_properties_count": 4,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 3,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 3,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.3333333333333333
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 76,
+    "triples_after": 310,
+    "inferred_triples": 234,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?check ?checkType ?courtType ?location WHERE {\n  ?check a odp:Check .\n  OPTIONAL { ?check odp:hasCheckType ?checkType . }\n  OPTIONAL { ?check odp:hasCourtType ?courtType . }\n  OPTIONAL { ?check odp:hasLocation ?location . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following elements to the ontology:\n\n1. **Class Definition**: Define the class `odp:Check` to represent the checks being queried.\n   \n2. **Property Definitions**:\n   - **`odp:hasCheckType`**: Define this property to link a `Check` to its type (e.g., `odp:CheckType`).\n   - **`odp:hasCourtType`**: Define this property to link a `Check` to its associated court type (e.g., `odp:CourtType`).\n   - **`odp:hasLocation`**: Define this property to link a `Check` to its location (e.g., `odp:Location`).\n\n3. **Instances**: Create instances of `Check`, `CheckType`, `CourtType`, and `Location` to ensure there are actual data entries that can be queried.\n\nBy implementing these elements, the ontology will be structured to support the SPARQL query and return meaningful results."
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?check ?checkType ?courtType ?location WHERE {\n  ?check a odp:Check .\n  OPTIONAL { ?check odp:hasCheckType ?checkType . }\n  OPTIONAL { ?check odp:hasCourtType ?courtType . }\n  OPTIONAL { ?check odp:hasLocation ?location . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Check` Class**: Ensure that the `Check` class is properly defined in the ontology with relevant properties that can be used in the query.\n\n2. **Add Properties**:\n   - **`hasCheckType`**: Define this property to link a `Check` to its type (e.g., `odp:CheckType`).\n   - **`hasCourtType`**: Define this property to link a `Check` to its associated court type (e.g., `odp:CourtType`).\n   - **`hasLocation`**: Define this property to link a `Check` to its location (e.g., `odp:Location`).\n\n3. **Create Instances**: Ensure that there are instances of the `Check` class in the ontology with values for the properties `hasCheckType`, `hasCourtType`, and `hasLocation`. For example:\n   - `:check1 a odp:Check; odp:hasCheckType :checkType1; odp:hasCourtType :courtType1; odp:hasLocation :location1.`\n\n4. **Define Enumerations or Classes for Types**: Create specific classes or enumerations for `CheckType`, `CourtType`, and `Location` to provide a structured vocabulary for these properties.\n\n5. **Add Data**: Populate the ontology"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?check ?checkType ?court ?courtType ?location ?stateCourt ?districtCourt WHERE {\n  ?check a odp:Check .\n  OPTIONAL { ?check odp:hasCheckType ?checkType . }\n  OPTIONAL { ?check odp:hasCourtType ?courtType . }\n  OPTIONAL { ?check odp:hasLocation ?location . }\n  OPTIONAL { ?court a odp:Court . }\n  OPTIONAL { ?court a odp:StateCourt . }\n  OPTIONAL { ?court a odp:DistrictCourt . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the classes `odp:Check`, `odp:Court`, `odp:StateCourt`, and `odp:DistrictCourt` are defined in the ontology.\n\n2. **Define Properties**:\n   - Add the property `odp:hasCheckType` to link `odp:Check` instances to their types.\n   - Add the property `odp:hasCourtType` to link `odp:Check` instances to their associated court types.\n   - Add the property `odp:hasLocation` to link `odp:Check` instances to their locations.\n\n3. **Subclass Relationships**:\n   - Define `odp:StateCourt` and `odp:DistrictCourt` as subclasses of `odp:Court` to establish a hierarchy.\n\n4. **Domain and Range Axioms**:\n   - Specify the domain of `odp:hasCheckType` as `odp:Check` and the range as the appropriate check type class (e.g., `odp:CheckType`).\n   - Specify the domain of `odp:hasCourtType` as `odp:Check` and the range as the appropriate court type class (e.g., `odp:CourtType`).\n   - Specify the domain of `odp:hasLocation` as `odp:Check` and the range as"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?label ?comment WHERE {\n  { \n    ?class a odp:BadCheck .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Check .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:CheckType .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Court .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:CourtType .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:DistrictCourt .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:Location .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:State .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a odp:StateCourt .\n    OPTIONAL { ?class r",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1210), (line:52, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Classes**: For each class in your ontology (e.g., `odp:BadCheck`, `odp:Check`, `odp:CheckType`, etc.), add `rdfs:label` and `rdfs:comment` annotations that provide a human-readable name and a description of the class's purpose.\n\n   Example:\n   ```turtle\n   odp:BadCheck rdfs:label \"Bad Check\" ;\n                rdfs:comment \"A check that is not honored by the bank due to insufficient funds or other reasons.\" .\n   ```\n\n2. **Define Annotations for Properties**: Similarly, for each property in your ontology, add `rdfs:label` and `rdfs:comment` annotations that describe the relationship and its intended use.\n\n   Example:\n   ```turtle\n   odp:hasCheckType rdfs:label \"Has Check Type\" ;\n                    rdfs:comment \"Relates a check to its type, indicating the nature of the check.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are consistent in terms of naming conventions (e.g., using singular or plural forms) and that comments are clear and concise to enhance understanding.\n\n4. **Include Examples**: If applicable, provide"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX : <http://example.org/odp#>\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  :Ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P34": 1
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P34",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://example.org/odp#TransactionType"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

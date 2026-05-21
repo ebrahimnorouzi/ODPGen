@@ -1,0 +1,96 @@
+{
+  "id": "2025-150-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 6,
+    "classes_count": 1,
+    "object_properties_count": 0,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 6,
+    "triples_after": 123,
+    "inferred_triples": 117,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 1,
+    "cqs_failed": 5,
+    "pass_rate": 0.1667,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?platform WHERE { \n  ?platform a sosa:Platform \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `sosa:Platform` Class**: Ensure that the `sosa:Platform` class is explicitly defined in the ontology, including its relationship to other relevant classes (e.g., `sosa:Observation`, `sosa:Sensor`).\n\n2. **Add Instances of `sosa:Platform`**: Create instances of the `sosa:Platform` class in the ontology. For example, add specific platforms like \"Platform1\", \"Platform2\", etc., to ensure that there are actual data points to query.\n\n3. **Establish Relevant Properties**: If not already present, define properties that relate platforms to other entities, such as `sosa:hasSensor` or `sosa:observes`, to enrich the ontology and provide context for the platforms.\n\n4. **Include Axioms for Relationships**: Add axioms that specify how platforms interact with other components in the system, such as linking platforms to observations or sensors, to create a more interconnected ontology.\n\n5. **Check Namespace and Prefixes**: Ensure that the SPARQL query uses the correct namespace and prefixes for `sosa` and any other relevant ontologies to avoid issues with unrecognized terms.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question and return meaningful results in the SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?platform WHERE { \n  ?platform a sosa:Platform \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the existence of `sosa:Platform` instances in your ontology, consider adding the following schema axioms:\n\n1. **Define the `sosa:Platform` Class**: Ensure that the `sosa:Platform` class is explicitly defined in your ontology. This can be done by including an axiom like:\n   ```ttl\n   :Platform a rdfs:Class .\n   ```\n\n2. **Add Subclasses or Related Classes**: If applicable, define subclasses or related classes that extend the concept of `sosa:Platform`, such as `:SocialMediaPlatform` or `:IoTPlatform`, to provide more context and potential instances:\n   ```ttl\n   :SocialMediaPlatform a rdfs:Class ; rdfs:subClassOf sosa:Platform .\n   ```\n\n3. **Define Properties Related to `sosa:Platform`**: Introduce properties that relate to `sosa:Platform`, such as `:hasUser`, `:supportsData`, or `:operatesOn`, to facilitate the creation of instances in the future:\n   ```ttl\n   :hasUser a rdf:Property ; rdfs:domain sosa:Platform ; rdfs:range :User .\n   ```\n\n4. **Add Example Instances (Optional)**: While the request specifies not to create individual instances, consider providing example instances in documentation or comments to guide future ontology users on how to instantiate `sosa:Platform`:"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?label ?comment WHERE {\n  ?class a sosa:Platform .\n  OPTIONAL { ?class rdfs:label ?label . }\n  OPTIONAL { ?class rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, consider the following concrete actions:\n\n1. **Define Classes and Properties**: Ensure that all relevant classes (e.g., `sosa:Platform`) and properties in your ontology are explicitly defined. If they are not already present, add them to the ontology.\n\n2. **Add rdfs:label Annotations**: For each class and property, add an `rdfs:label` annotation that provides a human-readable name. For example:\n   ```turtle\n   sosa:Platform rdfs:label \"Platform\" .\n   ```\n\n3. **Add rdfs:comment Annotations**: Include an `rdfs:comment` annotation for each class and property to describe its purpose or usage. For example:\n   ```turtle\n   sosa:Platform rdfs:comment \"A platform is a physical or virtual entity that supports the deployment of sensors.\" .\n   ```\n\n4. **Use Ontology Design Patterns**: Implement ontology design patterns that encourage the inclusion of metadata annotations (like `rdfs:label` and `rdfs:comment`) for all classes and properties.\n\n5. **Validation and Consistency Checks**: Implement validation rules or use ontology editing tools to check for the presence of `rdfs:label` and `rdfs:comment` for all classes and properties, ensuring compliance with the competency question.\n\nBy following"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a sosa:Platform .\n  OPTIONAL { ?ontology rdfs:label ?label }\n  OPTIONAL { ?ontology rdfs:comment ?comment }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can answer the competency question regarding the mandatory ontology header, you should consider the following additions:\n\n1. **Define the Ontology Class**: Ensure that the ontology is defined as an instance of `owl:Ontology`. You can create a specific ontology instance, e.g., `:MyOntology a owl:Ontology .`\n\n2. **Add rdfs:label Property**: Include the `rdfs:label` property to provide a human-readable name for the ontology. For example: `:MyOntology rdfs:label \"My Ontology\" .`\n\n3. **Add rdfs:comment Property**: Include the `rdfs:comment` property to provide a description of the ontology. For example: `:MyOntology rdfs:comment \"This ontology describes...\" .`\n\n4. **Use the Correct Namespace**: Ensure that you are using the correct namespace for the ontology instance and properties. For example, if your ontology is defined in a specific namespace, use that consistently (e.g., `:MyOntology` should be defined in the same namespace).\n\n5. **Check Class and Property Definitions**: Ensure that the `sosa:Platform` class and any other relevant classes or properties are correctly defined in your ontology, as they may be necessary for the context of your query.\n\nBy implementing these changes, your ontology will be able to provide the necessary information to answer the competency question."
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "SELECT ?platform WHERE { \n  ?platform a sosa:Platform \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the ontology is minimal and reusable, consider the following suggestions:\n\n1. **Define the `sosa:Platform` Class**: Ensure that the `sosa:Platform` class is explicitly defined in your ontology. If it is part of an external ontology (like SOSA), make sure to import that ontology correctly.\n\n2. **Add Instances of `sosa:Platform`**: Create instances of the `sosa:Platform` class in your ontology. For example, you could add instances like `:Platform1`, `:Platform2`, etc., to ensure that there are actual data points to query.\n\n3. **Use a Namespace**: Ensure that you are using the correct namespace for `sosa`. If you are using a prefix, make sure it is correctly defined in your SPARQL query (e.g., `PREFIX sosa: <http://www.w3.org/ns/sosa/>`).\n\n4. **Check for Data Population**: Verify that your ontology has been populated with data. If the class exists but has no instances, the query will return no results.\n\n5. **Include Relevant Properties**: If applicable, consider adding properties that relate platforms to other entities (e.g., `sosa:hasObservation`, `sosa:observes`) to enhance the ontology's usability and context.\n\nBy implementing these suggestions, you should be able to retrieve results for your SPARQL query."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [],
+    "pitfall_instance_counts": {},
+    "pitfall_affected_elements_counts": {},
+    "pitfalls_total": 0,
+    "pitfalls": [],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 0,
+    "critical_count": 0
+  }
+}

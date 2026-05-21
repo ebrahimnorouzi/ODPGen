@@ -1,0 +1,119 @@
+{
+  "id": "2023-134-02",
+  "model": "mistralai_Mistral-7B-Instruct-v0.3",
+  "config": "scenario-cq",
+  "ontometrics": {
+    "triples_count": 56,
+    "classes_count": 11,
+    "object_properties_count": 3,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.09090909090909091,
+    "relationship_richness": 0.75,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 56,
+    "triples_after": 276,
+    "inferred_triples": 220,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Prioritize semantic faithfulness to the scenario.?",
+    "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 7,
+  "cq_verification": {
+    "cqs_total": 7,
+    "cqs_passed": 1,
+    "cqs_failed": 6,
+    "pass_rate": 0.1429,
+    "results": [
+      {
+        "cq": "Prioritize semantic faithfulness to the scenario.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?action ?dataCategory ?dataHandlingPractice ?dataRequest ?log ?pod ?privacyNotice ?privacyPolicy ?role ?solidActor ?solidSpecification\nWHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:DataLocation ?dataCategory . }\n  OPTIONAL { ?action odp:EntityInteracting ?dataHandlingPractice . }\n  OPTIONAL { ?action odp:PublishingEntity ?dataRequest . }\n  OPTIONAL { ?action odp:Log ?log . }\n  OPTIONAL { ?action odp:Pod ?pod . }\n  OPTIONAL { ?action odp:PrivacyNotice ?privacyNotice . }\n  OPTIONAL { ?action odp:PrivacyPolicy ?privacyPolicy . }\n  OPTIONAL { ?action odp:Role ?role . }\n  OPTIONAL { ?action odp:SolidActor ?solidActor . }\n  OPTIONAL { ?action odp:SolidSpecification ?solidSpecification . }\n}\nLIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns meaningful results, consider the following additions to the ontology:\n\n1. **Define Action Types**: Introduce specific subclasses of `odp:Action` to represent different types of actions (e.g., `odp:DataAccess`, `odp:DataModification`, `odp:DataSharing`) to provide more context for the actions being queried.\n\n2. **Enhance Data Handling Practices**: Create a class `odp:DataHandlingPractice` with properties that define specific practices (e.g., `odp:DataEncryption`, `odp:DataAnonymization`) and link them to actions to clarify how data is handled.\n\n3. **Specify Data Categories**: Introduce a class `odp:DataCategory` that categorizes data types (e.g., `odp:PersonalData`, `odp:SensitiveData`) and establish relationships between actions and these categories to clarify the nature of the data involved.\n\n4. **Link Entities and Roles**: Define a class `odp:Role` that specifies different roles (e.g., `odp:DataSubject`, `odp:DataController`, `odp:DataProcessor`) and create properties to link these roles to actions, enhancing the understanding of who is involved in each action.\n\n5. **Clarify Privacy Notices and Policies**: Create properties that link `odp:PrivacyNotice` and `odp:PrivacyPolicy` to specific actions, ensuring that each action can be associated with relevant privacy documentation"
+      },
+      {
+        "cq": "Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?action ?dataCategory ?dataHandlingPractice ?dataRequest ?log ?pod ?privacyNotice ?privacyPolicy ?role ?solidActor ?solidSpecification WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:DataLocation ?dataCategory . }\n  OPTIONAL { ?action odp:EntityInteracting ?dataHandlingPractice . }\n  OPTIONAL { ?action odp:DataRequest ?dataRequest . }\n  OPTIONAL { ?action odp:Log ?log . }\n  OPTIONAL { ?action odp:Pod ?pod . }\n  OPTIONAL { ?action odp:PrivacyNotice ?privacyNotice . }\n  OPTIONAL { ?action odp:PrivacyPolicy ?privacyPolicy . }\n  OPTIONAL { ?action odp:Role ?role . }\n  OPTIONAL { ?action odp:SolidActor ?solidActor . }\n  OPTIONAL { ?action odp:SolidSpecification ?solidSpecification . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure the ontology design pattern (ODP) structurally supports the competency question (CQ) regarding the presence of necessary classes and properties, consider adding the following:\n\n1. **Classes for Data Handling Practices**: Introduce a class `odp:DataHandlingPractice` to represent various data handling practices, ensuring that actions can be linked to specific practices.\n\n2. **Properties for Data Relationships**: Define properties such as `odp:hasDataHandlingPractice`, `odp:hasDataRequest`, and `odp:hasLog` to establish relationships between actions and their corresponding data handling practices, requests, and logs.\n\n3. **Classes for Privacy Notices and Policies**: Add classes `odp:PrivacyNotice` and `odp:PrivacyPolicy` to represent privacy-related documents, allowing actions to be associated with relevant privacy notices and policies.\n\n4. **Role and Actor Classes**: Create a class `odp:Role` to define different roles involved in actions and a class `odp:SolidActor` to represent entities that interact with the data, linking them to actions through properties like `odp:hasRole` and `odp:involvesActor`.\n\n5. **Data Location Class**: Introduce a class `odp:DataLocation` to represent the categories of data locations, allowing actions to be associated with specific data categories through a property like `odp:hasDataLocation`.\n\nBy implementing these additions, the ontology will be better equipped to support the competency question and provide meaningful results in SPAR"
+      },
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?dataCategory ?dataHandlingPractice ?dataRequest ?log ?pod ?privacyNotice ?privacyPolicy ?role ?solidActor ?solidSpecification WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:DataLocation ?dataCategory . }\n  OPTIONAL { ?action odp:EntityInteracting ?dataHandlingPractice . }\n  OPTIONAL { ?action odp:PublishingEntity ?dataRequest . }\n  OPTIONAL { ?action odp:Log ?log . }\n  OPTIONAL { ?action odp:Pod ?pod . }\n  OPTIONAL { ?action odp:PrivacyNotice ?privacyNotice . }\n  OPTIONAL { ?action odp:PrivacyPolicy ?privacyPolicy . }\n  OPTIONAL { ?action odp:Role ?role . }\n  OPTIONAL { ?action odp:SolidActor ?solidActor . }\n  OPTIONAL { ?action odp:SolidSpecification ?solidSpecification . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes and properties to the ontology:\n\n1. **Classes**:\n   - `odp:Action`: Ensure this class is defined with relevant instances that represent specific actions in the scenario.\n   - `odp:DataCategory`: Define this class to categorize different types of data involved in actions.\n   - `odp:DataHandlingPractice`: Create this class to represent various practices for handling data.\n\n2. **Properties**:\n   - `odp:DataLocation`: Define this property to link actions to specific data categories.\n   - `odp:EntityInteracting`: Create this property to associate actions with data handling practices.\n   - `odp:PublishingEntity`: Establish this property to connect actions with entities that request data.\n\n3. **Instances**:\n   - Add specific instances of `odp:Action`, `odp:DataCategory`, and `odp:DataHandlingPractice` that are relevant to the scenario to ensure the query can retrieve meaningful results.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question and yield results from the SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  OPTIONAL { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?dataCategory ?dataHandlingPractice ?dataRequest ?log ?pod ?privacyNotice ?privacyPolicy ?role ?solidActor ?solidSpecification WHERE {\n  ?action a odp:Action .\n  OPTIONAL { ?action odp:DataLocation ?dataCategory . }\n  OPTIONAL { ?action odp:EntityInteracting ?dataHandlingPractice . }\n  OPTIONAL { ?action odp:PublishingEntity ?dataRequest . }\n  OPTIONAL { ?action odp:DataLocation ?log . }\n  OPTIONAL { ?action odp:EntityInteracting ?pod . }\n  OPTIONAL { ?action odp:PublishingEntity ?privacyNotice . }\n  OPTIONAL { ?action odp:DataLocation ?privacyPolicy . }\n  OPTIONAL { ?action odp:EntityInteracting ?role . }\n  OPTIONAL { ?action odp:PublishingEntity ?solidActor . }\n  OPTIONAL { ?action odp:DataLocation ?solidSpecification . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the classes `:Action`, `:DataCategory`, `:DataHandlingPractice`, `:DataRequest`, `:Log`, `:POD`, `:PrivacyNotice`, `:PrivacyPolicy`, `:Role`, `:SolidActor`, and `:SolidSpecification` are defined in the ontology.\n\n2. **Define Object Properties**:\n   - Create object properties to establish relationships between the `:Action` class and the other classes:\n     - `odp:hasDataCategory` (domain: `:Action`, range: `:DataCategory`)\n     - `odp:interactsWithDataHandlingPractice` (domain: `:Action`, range: `:DataHandlingPractice`)\n     - `odp:hasDataRequest` (domain: `:Action`, range: `:DataRequest`)\n     - `odp:hasLog` (domain: `:Action`, range: `:Log`)\n     - `odp:interactsWithPOD` (domain: `:Action`, range: `:POD`)\n     - `odp:hasPrivacyNotice` (domain: `:Action`, range: `:PrivacyNotice`)\n     - `odp:hasPrivacyPolicy` (domain: `:Action`, range: `:PrivacyPolicy`)\n     - `"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a <http://example.org/odp#Action> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#DataCategory> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#DataHandlingPractice> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#DataRequest> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#Log> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#Pod> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#PrivacyNotice> .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  }\n  UNION\n  { \n    ?class a <http://example.org/odp#PrivacyPolicy> .",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1206), (line:44, col:3)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class in your ontology (e.g., `Action`, `DataCategory`, `DataHandlingPractice`, etc.), add an `rdfs:label` that provides a human-readable name and an `rdfs:comment` that describes the purpose or role of the class.\n\n   Example:\n   ```turtle\n   <http://example.org/odp#Action>\n       rdfs:label \"Action\" ;\n       rdfs:comment \"Represents an action taken in the context of data handling.\" .\n   ```\n\n2. **Define Annotations for Each Property**: Similarly, for each property in your ontology, add `rdfs:label` and `rdfs:comment` annotations to clarify their usage and meaning.\n\n   Example:\n   ```turtle\n   <http://example.org/odp#hasDataCategory>\n       rdfs:label \"has Data Category\" ;\n       rdfs:comment \"Links an action to a specific data category.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are consistent in terms of style (e.g., capitalization) and that comments are concise yet informative, providing enough context for users to understand the role of each class and property.\n\n4. **Autom"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX : <http://example.org/odp#>\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a :Action .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the competency question regarding the ontology header can be answered, you should consider the following additions to your ontology:\n\n1. **Define the Ontology Class**: Add a class for the ontology itself, such as:\n   ```turtle\n   :Ontology a owl:Class .\n   ```\n\n2. **Declare the Ontology Header**: Create an instance of the ontology and declare it as an `owl:Ontology`:\n   ```turtle\n   :MyOntology a owl:Ontology ; \n               rdfs:label \"My Ontology\" ; \n               rdfs:comment \"This ontology describes...\" .\n   ```\n\n3. **Add Necessary Properties**: Ensure that the properties `rdfs:label` and `rdfs:comment` are properly defined and can be used with the ontology instance:\n   ```turtle\n   rdfs:label a rdf:Property .\n   rdfs:comment a rdf:Property .\n   ```\n\n4. **Use the Correct Prefixes**: Ensure that you have the correct prefixes defined in your SPARQL query, particularly for `rdfs` and `owl`:\n   ```turtle\n   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n   PREFIX owl: <http://www.w3.org/2002/07/owl#>\n   ```\n\nBy implementing these changes, your ontology will have the necessary structure to respond to the competency question regarding the ontology"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

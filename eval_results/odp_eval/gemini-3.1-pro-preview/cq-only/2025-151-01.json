@@ -1,0 +1,109 @@
+{
+  "id": "2025-151-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 43,
+    "classes_count": 5,
+    "object_properties_count": 4,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.2,
+    "relationship_richness": 0.8,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 43,
+    "triples_after": 228,
+    "inferred_triples": 185,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?evaluationRequest ?issuedBy ?issuedAt ?requestedAction ?targetAsset ?contextualInformation WHERE {\n  ?evaluationRequest a odp:EvaluationRequest .\n  OPTIONAL { ?evaluationRequest odp:issuedBy ?issuedBy . }\n  OPTIONAL { ?evaluationRequest odp:issuedAt ?issuedAt . }\n  OPTIONAL { ?evaluationRequest odp:hasRequestedAction ?requestedAction . }\n  OPTIONAL { ?evaluationRequest odp:hasTargetAsset ?targetAsset . }\n  OPTIONAL { ?evaluationRequest odp:hasContextualInformation ?contextualInformation . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes and properties to the ontology:\n\n1. **Class Definition**: Define the class `EvaluationRequest` to represent evaluation requests explicitly.\n   ```ttl\n   :EvaluationRequest a rdfs:Class .\n   ```\n\n2. **Properties**:\n   - **issuedBy**: Define a property to link an `EvaluationRequest` to the entity that issued it.\n     ```ttl\n     :issuedBy a rdf:Property ; rdfs:domain :EvaluationRequest ; rdfs:range :Entity .\n     ```\n   - **issuedAt**: Define a property to capture the timestamp of when the request was issued.\n     ```ttl\n     :issuedAt a rdf:Property ; rdfs:domain :EvaluationRequest ; rdfs:range xsd:dateTime .\n     ```\n   - **hasRequestedAction**: Define a property to specify the action requested in the evaluation.\n     ```ttl\n     :hasRequestedAction a rdf:Property ; rdfs:domain :EvaluationRequest ; rdfs:range :Action .\n     ```\n   - **hasTargetAsset**: Define a property to link the evaluation request to the asset being evaluated.\n     ```ttl\n     :hasTargetAsset a rdf:Property ; rdfs:domain :EvaluationRequest ; rdfs:range :Asset .\n     ```\n   - **hasContextualInformation**: Define a property to include any additional contextual information related"
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?asset ?contextualInfo ?party ?issuedAt WHERE {\n  ?evaluationRequest odp:hasRequestedAction ?action .\n  ?evaluationRequest odp:hasTargetAsset ?asset .\n  OPTIONAL { ?evaluationRequest odp:hasContextualInformation ?contextualInfo . }\n  OPTIONAL { ?evaluationRequest odp:issuedBy ?party . }\n  OPTIONAL { ?evaluationRequest odp:issuedAt ?issuedAt . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `EvaluationRequest` Class**: Ensure that there is a class representing `EvaluationRequest` to encapsulate the relevant properties. This class should be explicitly defined in the ontology.\n\n2. **Add Properties for Relationships**:\n   - **`hasRequestedAction`**: Ensure this property is defined to link `EvaluationRequest` to the action being requested.\n   - **`hasTargetAsset`**: Confirm this property exists to associate the evaluation request with the asset in question.\n   - **`hasContextualInformation`**: Define this property to capture any additional contextual information related to the evaluation request.\n   - **`issuedBy`**: Ensure this property is present to indicate the party that issued the evaluation request.\n   - **`issuedAt`**: Define this property to record the timestamp of when the evaluation request was issued.\n\n3. **Populate the Ontology with Instances**: Ensure that there are instances of `EvaluationRequest` in the ontology that utilize the defined properties. This will provide the necessary data for the SPARQL query to return results.\n\n4. **Check for Data Consistency**: Verify that the data types and ranges for the properties are correctly defined and that instances are populated with valid data that adheres to these definitions.\n\n5. **Review Namespace and Prefixes**: Ensure that the namespace (`http"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX owl: <http://www.w3.org/2002/07/owl#>\nSELECT ?class ?property WHERE {\n  { \n    ?class a owl:Class \n  } UNION { \n    ?property a owl:ObjectProperty \n  } UNION { \n    ?property a owl:DatatypeProperty \n  } \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?action ?asset ?contextualInfo ?party ?issuedAt WHERE {\n  ?evaluationRequest a odp:EvaluationRequest .\n  ?evaluationRequest odp:hasRequestedAction ?action .\n  ?evaluationRequest odp:hasTargetAsset ?asset .\n  OPTIONAL { ?evaluationRequest odp:hasContextualInformation ?contextualInfo . }\n  OPTIONAL { ?evaluationRequest odp:issuedBy ?party . }\n  OPTIONAL { ?evaluationRequest odp:issuedAt ?issuedAt . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Class Definitions**:\n   - Define the class `:EvaluationRequest` to represent the requests being evaluated.\n   - Define classes for `:Action`, `:Asset`, `:ContextualInformation`, and `:Party` to represent the respective entities involved in the evaluation process.\n\n2. **Property Definitions**:\n   - Create the property `odp:hasRequestedAction` to link `:EvaluationRequest` to `:Action`.\n   - Create the property `odp:hasTargetAsset` to link `:EvaluationRequest` to `:Asset`.\n   - Create the property `odp:hasContextualInformation` to link `:EvaluationRequest` to `:ContextualInformation`.\n   - Create the property `odp:issuedBy` to link `:EvaluationRequest` to `:Party`.\n   - Create the property `odp:issuedAt` to link `:EvaluationRequest` to a temporal entity (e.g., `xsd:dateTime`).\n\n3. **Axioms**:\n   - Add axioms to specify that `:EvaluationRequest` is a subclass of a more general class (if applicable, e.g., `:Request`).\n   - Define domain and range for each property to ensure proper relationships (e.g., `odp:hasRequestedAction` has domain `:EvaluationRequest"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a rdfs:Class .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a rdf:Property .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete steps:\n\n1. **Define Classes**: Ensure that you have defined classes in your ontology. For example:\n   - `odp:Person`\n   - `odp:Organization`\n   - `odp:Event`\n\n2. **Define Properties**: Ensure that you have defined properties in your ontology. For example:\n   - `odp:hasName`\n   - `odp:hasLocation`\n   - `odp:participatesIn`\n\n3. **Add Annotations**: For each class and property, add `rdfs:label` and `rdfs:comment` annotations. For example:\n   - For `odp:Person`:\n     ```turtle\n     odp:Person rdfs:label \"Person\" .\n     odp:Person rdfs:comment \"A human being.\" .\n     ```\n   - For `odp:hasName`:\n     ```turtle\n     odp:hasName rdfs:label \"Name\" .\n     odp:hasName rdfs:comment \"The name of a person or organization.\" .\n     ```\n\n4. **Check RDF Schema**: Ensure that your ontology is correctly using RDF Schema (RDFS) and that the classes and properties are properly declared as `rdf:Class` and `rdf:Property`.\n\n5. **Validate Ontology**: Use an ontology"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX : <http://example.org/odp#>\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?label }\n  OPTIONAL { ?ontology rdfs:comment ?comment }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

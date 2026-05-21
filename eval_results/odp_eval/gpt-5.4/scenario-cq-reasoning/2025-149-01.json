@@ -1,0 +1,264 @@
+{
+  "id": "2025-149-01",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-reasoning",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 69,
+    "classes_count": 22,
+    "object_properties_count": 0,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 0.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 69,
+    "triples_after": 333,
+    "inferred_triples": 264,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Can the ontology represent a relational database as a first-class schema entity?",
+    "Can the ontology represent tables belonging to a database?",
+    "Can the ontology represent columns belonging to a table?",
+    "Can the ontology represent primary-key relationships in the schema?",
+    "Can the ontology represent foreign-key relationships and distinguish same-named columns across different tables when they are not semantically linked?",
+    "Can the ontology define a policy for a specific agent?",
+    "Can a policy specify a high-level ReadAction?",
+    "Can a policy specify a high-level ModifyAction?",
+    "Can a policy specify a ViewActionScope for read operations?",
+    "Can a policy specify a ProcessActionScope for read operations?",
+    "Can a policy be defined at table level?",
+    "Can a policy be defined at column level?",
+    "Can a policy be defined at row level using conditions?",
+    "Can the ontology express a prohibited modify action on a table?",
+    "Can the ontology express a table-level read prohibition for processing?",
+    "Can the ontology express a table-level read prohibition for viewing?",
+    "Can the ontology express a conditional row-level read restriction for later enforcement?",
+    "Can the ontology represent a SQL query as an AST-based semantic graph?",
+    "Can a SQL statement such as SelectStatement or UpdateStatement be mapped to its semantic action type?",
+    "Can a query statement be linked to the executing agent?",
+    "Can SQL clauses be assigned operational scopes such as view or process?",
+    "Can scope be propagated to reference nodes as an effectiveActionScope?",
+    "Can a TableRef in the query be linked to its corresponding schema Table?",
+    "Can a ColumnRef in the query be linked to its corresponding schema Column?",
+    "Can the reasoner infer whether a referenced table or column is Violated or RowTag based on the matching policy, action, and scope?"
+  ],
+  "cqs_count": 25,
+  "cq_verification": {
+    "cqs_total": 25,
+    "cqs_passed": 0,
+    "cqs_failed": 25,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Can the ontology represent a relational database as a first-class schema entity?",
+        "sparql": "SELECT ?database WHERE { \n  ?database a <http://example.org/odp#RelationalDatabase> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to represent a relational database as a first-class schema entity, consider adding the following:\n\n1. **Class Definition**: Define a class for `RelationalDatabase` in the ontology:\n   ```ttl\n   :RelationalDatabase a rdfs:Class .\n   ```\n\n2. **Properties for Database Characteristics**: Introduce properties to describe key attributes of a relational database, such as:\n   - `hasTable`: to link a database to its tables.\n   - `hasSchema`: to define the schema of the database.\n   - `hasConnectionString`: to specify how to connect to the database.\n\n   Example:\n   ```ttl\n   :hasTable a rdf:Property ; rdfs:domain :RelationalDatabase ; rdfs:range :Table .\n   :hasSchema a rdf:Property ; rdfs:domain :RelationalDatabase ; rdfs:range :Schema .\n   :hasConnectionString a rdf:Property ; rdfs:domain :RelationalDatabase ; rdfs:range xsd:string .\n   ```\n\n3. **Table and Schema Classes**: Define classes for `Table` and `Schema` to represent the components of a relational database:\n   ```ttl\n   :Table a rdfs:Class .\n   :Schema a rdfs:Class .\n   ```\n\n4. **Axioms for Relationships**: Establish axioms that define the relationships between the `RelationalDatabase`, `Table`, and `Schema` classes to"
+      },
+      {
+        "cq": "Can the ontology represent tables belonging to a database?",
+        "sparql": "SELECT ?table WHERE { \n  ?table a <http://example.org/odp#Table> \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to represent tables belonging to a database and answer the competency question, consider the following additions:\n\n1. **Define a `Table` Class**: Ensure that there is a class in the ontology specifically for tables, e.g., `http://example.org/odp#Table`.\n\n2. **Create Properties for Table Attributes**: Introduce properties to describe the characteristics of tables, such as:\n   - `http://example.org/odp#hasColumn` (to link a table to its columns)\n   - `http://example.org/odp#hasPrimaryKey` (to specify the primary key of the table)\n\n3. **Define a `Column` Class**: Create a class for columns, e.g., `http://example.org/odp#Column`, which can have properties like `http://example.org/odp#hasDataType` to specify the data type of each column.\n\n4. **Establish Relationships**: Use object properties to establish relationships between tables and their columns, ensuring that instances of `Table` can be linked to instances of `Column`.\n\n5. **Add Instances of Tables**: Populate the ontology with instances of the `Table` class to ensure that the query can return results. For example, create instances like `http://example.org/odp#EmployeeTable`.\n\nBy implementing these suggestions, the ontology will be better equipped to represent database tables and respond to the competency question effectively."
+      },
+      {
+        "cq": "Can the ontology represent columns belonging to a table?",
+        "sparql": "SELECT ?column ?table WHERE {\n  ?column a <http://example.org/odp#Column> .\n  OPTIONAL { ?column <http://example.org/odp#Table> ?table }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to represent columns belonging to a table and to answer the competency question, consider the following additions:\n\n1. **Define Classes**:\n   - Ensure that there is a class for `Table` (e.g., `<http://example.org/odp#Table>`) if it doesn't already exist.\n\n2. **Define Properties**:\n   - Create a property to represent the relationship between columns and tables, such as `<http://example.org/odp#hasColumn>` to link a `Table` to its `Column`.\n   - Optionally, define a reverse property like `<http://example.org/odp#belongsToTable>` to link a `Column` back to its `Table`.\n\n3. **Axioms**:\n   - Add axioms to specify that a `Column` is related to a `Table` through the `hasColumn` property, e.g., `Table` `hasColumn` `Column`.\n\n4. **Data Population**:\n   - Ensure that instances of `Table` and `Column` are created in the ontology, and that the `hasColumn` property is used to link them appropriately.\n\n5. **SPARQL Query Update**:\n   - Modify the SPARQL query to use the new property, e.g., `?table <http://example.org/odp#hasColumn> ?column` to retrieve the correct relationships.\n\nBy implementing these changes, the ontology will be able to represent and query the relationship between tables and"
+      },
+      {
+        "cq": "Can the ontology represent primary-key relationships in the schema?",
+        "sparql": "SELECT ?primaryKey ?foreignKey WHERE {\n  ?primaryKey a <http://example.org/odp#PrimaryKey> .\n  OPTIONAL { ?foreignKey a <http://example.org/odp#ForeignKey> . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to represent primary-key relationships in the schema and answer the competency question, consider the following additions:\n\n1. **Define Classes**:\n   - Create a class `PrimaryKey` and a class `ForeignKey` under the namespace `<http://example.org/odp#>` to represent primary and foreign keys explicitly.\n\n2. **Define Properties**:\n   - Introduce a property `hasForeignKey` to link a `PrimaryKey` to its corresponding `ForeignKey`. This property can be defined as:\n     ```turtle\n     :hasForeignKey rdf:type owl:ObjectProperty .\n     ```\n\n3. **Establish Relationships**:\n   - Use an axiom to specify that a `ForeignKey` references a `PrimaryKey`. For example:\n     ```turtle\n     :ForeignKey rdfs:subClassOf :hasForeignKey :PrimaryKey .\n     ```\n\n4. **Add Instances**:\n   - Populate the ontology with instances of `PrimaryKey` and `ForeignKey`, ensuring that the relationships are established using the `hasForeignKey` property.\n\n5. **Define Constraints**:\n   - Optionally, define constraints or rules to enforce that a `ForeignKey` must reference an existing `PrimaryKey`, ensuring data integrity within the ontology.\n\nBy implementing these changes, the ontology will be able to represent primary-key relationships effectively, allowing the SPARQL query to return relevant results."
+      },
+      {
+        "cq": "Can the ontology represent foreign-key relationships and distinguish same-named columns across different tables when they are not semantically linked?",
+        "sparql": "SELECT ?foreignKey ?table1 ?column1 ?table2 ?column2 WHERE {\n  ?foreignKey a <http://example.org/odp#ForeignKey> .\n  OPTIONAL { ?foreignKey <http://example.org/odp#Column> ?column1 . }\n  OPTIONAL { ?foreignKey <http://example.org/odp#Table> ?table1 . }\n  OPTIONAL { ?foreignKey <http://example.org/odp#Column> ?column2 . }\n  OPTIONAL { ?foreignKey <http://example.org/odp#Table> ?table2 . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively represent foreign-key relationships and distinguish same-named columns across different tables in your ontology, consider the following additions:\n\n1. **Classes**:\n   - Define a class for `ForeignKey` to represent foreign key relationships explicitly.\n   - Define a class for `Column` to represent individual columns in tables.\n\n2. **Properties**:\n   - Create a property `hasColumn` to link `Table` instances to their respective `Column` instances.\n   - Create a property `references` to link a `ForeignKey` instance to the `Column` it references in another table.\n\n3. **Distinct Naming**:\n   - Introduce a property `hasName` for both `Column` and `Table` classes to allow for unique identification of columns and tables, even if they share the same name.\n\n4. **Axioms**:\n   - Add axioms to enforce that a `ForeignKey` must reference a `Column` in a different `Table`, ensuring semantic clarity in relationships.\n\nBy implementing these suggestions, your ontology will be better equipped to handle the specified competency question."
+      },
+      {
+        "cq": "Can the ontology define a policy for a specific agent?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?policy ?agent WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:PolicyTarget ?target . }\n  OPTIONAL { ?target a odp:Agent . BIND(?target AS ?agent) }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to define a policy for a specific agent and to ensure that your SPARQL query returns results, consider adding the following elements:\n\n1. **Define the `Agent` Class**: Ensure that there is a class `odp:Agent` in the ontology to represent agents explicitly.\n\n2. **Create a `PolicyTarget` Property**: If not already defined, create a property `odp:PolicyTarget` that links a `Policy` to its target, which can be an `Agent`.\n\n3. **Establish Relationships**: Define a relationship between `Policy` and `Agent` through the `PolicyTarget` property, allowing policies to be associated with specific agents.\n\n4. **Add Instances**: Populate the ontology with instances of `Policy` and `Agent`, ensuring that at least one `Policy` has a `PolicyTarget` that points to an `Agent`.\n\n5. **Consider Additional Properties**: If necessary, add properties that describe the nature of the policy (e.g., `odp:hasRule`, `odp:appliesTo`, etc.) to enrich the ontology and provide more context for policies.\n\nBy implementing these suggestions, your ontology will be better equipped to answer the competency question regarding policies for specific agents."
+      },
+      {
+        "cq": "Can a policy specify a high-level ReadAction?",
+        "sparql": "SELECT ?policy WHERE { \n  ?policy a <http://example.org/odp#Policy> .\n  OPTIONAL { \n    ?policy <http://example.org/odp#ReadAction> ?readAction .\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding whether a policy can specify a high-level ReadAction, consider the following additions:\n\n1. **Define a ReadAction Class**: Create a class `ReadAction` under the namespace `<http://example.org/odp#>` to represent high-level read actions.\n\n2. **Create a Property for Action Specification**: Introduce a property `specifiesAction` (e.g., `<http://example.org/odp#specifiesAction>`) that relates a `Policy` to a `ReadAction`. This property should have a domain of `Policy` and a range of `ReadAction`.\n\n3. **Add Subclasses or Instances of ReadAction**: If applicable, define subclasses or specific instances of `ReadAction` to represent different types of read actions (e.g., `HighLevelReadAction`).\n\n4. **Establish Relationships**: Ensure that the ontology includes axioms that allow for the relationship between `Policy` and `ReadAction` to be meaningful, such as defining how a `Policy` can enforce or govern a `ReadAction`.\n\n5. **Example Instances**: Optionally, create example instances of `Policy` and `ReadAction` to demonstrate the relationship and facilitate testing of the SPARQL query.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the relationship between policies and read actions."
+      },
+      {
+        "cq": "Can a policy specify a high-level ModifyAction?",
+        "sparql": "SELECT ?policy ?modifyAction WHERE {\n  ?policy a <http://example.org/odp#Policy> .\n  OPTIONAL {\n    ?policy <http://example.org/odp#specifies> ?modifyAction .\n    ?modifyAction a <http://example.org/odp#ModifyAction> .\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding whether a policy can specify a high-level ModifyAction, consider the following additions:\n\n1. **Define the `ModifyAction` Class**: Ensure that the `ModifyAction` class is explicitly defined in the ontology, including its properties and relationships to other classes.\n\n2. **Add a `specifies` Property**: If not already present, define the `specifies` property to link `Policy` instances to `ModifyAction` instances. This property should have a domain of `Policy` and a range of `ModifyAction`.\n\n3. **Create Subclasses of `ModifyAction`**: If there are specific types of modify actions (e.g., `AddAction`, `DeleteAction`, `UpdateAction`), define these as subclasses of `ModifyAction` to allow for more granular queries.\n\n4. **Include Axioms for Relationships**: Add axioms that clarify the relationship between `Policy` and `ModifyAction`, such as stating that a `Policy` can have zero or more `ModifyAction` instances associated with it.\n\n5. **Example Instances**: Create example instances of `Policy` and `ModifyAction` in the ontology to ensure that the query can return results for testing purposes.\n\nBy implementing these changes, the ontology will be better equipped to handle the competency question regarding the relationship between policies and modify actions."
+      },
+      {
+        "cq": "Can a policy specify a ViewActionScope for read operations?",
+        "sparql": "SELECT ?policy ?viewActionScope WHERE {\n  ?policy a <http://example.org/odp#Policy> .\n  OPTIONAL { ?policy <http://example.org/odp#ViewActionScope> ?viewActionScope . }\n  ?viewActionScope a <http://example.org/odp#ViewActionScope> .\n  ?readAction a <http://example.org/odp#ReadAction> .\n  ?policy <http://example.org/odp#ActionScope> ?viewActionScope .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding whether a policy can specify a ViewActionScope for read operations, consider the following additions:\n\n1. **Define a Relationship Between Policy and ViewActionScope**:\n   - Ensure that there is a property that explicitly links a `Policy` to a `ViewActionScope`. For example:\n     ```turtle\n     <http://example.org/odp#hasViewActionScope> a rdf:Property ;\n       rdfs:domain <http://example.org/odp#Policy> ;\n       rdfs:range <http://example.org/odp#ViewActionScope> .\n     ```\n\n2. **Link ReadAction to ViewActionScope**:\n   - Create a property that associates `ReadAction` with `ViewActionScope`. For example:\n     ```turtle\n     <http://example.org/odp#appliesToViewActionScope> a rdf:Property ;\n       rdfs:domain <http://example.org/odp#ReadAction> ;\n       rdfs:range <http://example.org/odp#ViewActionScope> .\n     ```\n\n3. **Add an Axiom for ActionScope**:\n   - Define that a `Policy` can have an `ActionScope` that includes `ViewActionScope`. This can be done through an axiom or a property that indicates that `ViewActionScope` is a valid type of `ActionScope`.\n\n4. **Ensure Instances of ReadAction are Linked to ViewActionScope"
+      },
+      {
+        "cq": "Can a policy specify a ProcessActionScope for read operations?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?policy ?processActionScope WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:ProcessActionScope ?processActionScope . }\n  ?policy odp:PolicyTarget ?target .\n  ?target a odp:ReadAction .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding whether a policy can specify a `ProcessActionScope` for read operations, consider the following additions:\n\n1. **Define `ProcessActionScope` Class**: Ensure that `ProcessActionScope` is defined as a class in the ontology, if it is not already. This class should represent the scope of actions that a policy can govern.\n\n2. **Create a Property for `ProcessActionScope`**: Introduce a property, such as `odp:specifiesProcessActionScope`, that relates a `Policy` to a `ProcessActionScope`. This will allow policies to explicitly define their associated action scopes.\n\n3. **Establish a Relationship Between `ReadAction` and `ProcessActionScope`**: Define a property, such as `odp:canBeScopedBy`, that links `ReadAction` to `ProcessActionScope`. This will indicate that read operations can be included within the scope of a policy.\n\n4. **Add Axioms for Policy-Action Relationships**: Create axioms that specify that a `Policy` can have multiple `ProcessActionScope` instances, and that these scopes can include various action types, including `ReadAction`.\n\n5. **Ensure Inference Rules**: Implement inference rules that allow the ontology reasoner to deduce when a `Policy` is applicable to a `ReadAction` based on its associated `ProcessActionScope`.\n\nThese additions will help structure the ontology to support the competency question effectively"
+      },
+      {
+        "cq": "Can a policy be defined at table level?",
+        "sparql": "SELECT ?policy WHERE { \n  ?policy a <http://example.org/odp#Policy> .\n  OPTIONAL { \n    ?policy a <http://example.org/odp#TablePolicyTarget> \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding whether a policy can be defined at the table level, consider the following additions to the ontology:\n\n1. **Define a Class for Table Policies**: Create a class `TablePolicy` (e.g., `<http://example.org/odp#TablePolicy>`) that represents policies specifically associated with tables.\n\n2. **Create a Property for Table Association**: Introduce a property `appliesToTable` (e.g., `<http://example.org/odp#appliesToTable>`) that links a `Policy` to a `Table`. This property should have a domain of `Policy` and a range of `Table`.\n\n3. **Define a Class for Tables**: Ensure there is a class `Table` (e.g., `<http://example.org/odp#Table>`) that represents the tables in your ontology, allowing for clear relationships between policies and tables.\n\n4. **Add Inheritance or Subclass Relationships**: If applicable, make `TablePolicy` a subclass of `Policy` to indicate that it is a specific type of policy, inheriting properties from the general `Policy` class.\n\n5. **Include Examples or Instances**: Add instances of `Table` and `TablePolicy` to the ontology to provide concrete examples, which can help in testing and validating the SPARQL queries.\n\nThese additions will enable the ontology to clearly represent policies that are specifically defined at the table level and facilitate querying for such relationships."
+      },
+      {
+        "cq": "Can a policy be defined at column level?",
+        "sparql": "SELECT ?policy WHERE {\n  ?policy a <http://example.org/odp#Policy> .\n  OPTIONAL { ?policy a <http://example.org/odp#ColumnPolicyTarget> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding whether a policy can be defined at the column level, consider the following additions:\n\n1. **Define a `ColumnPolicyTarget` Class**: Ensure that there is a class specifically for column-level policies, such as `<http://example.org/odp#ColumnPolicyTarget>`, which can be a subclass of `Policy`.\n\n2. **Create a `hasTargetColumn` Property**: Introduce a property, e.g., `<http://example.org/odp#hasTargetColumn>`, that links a `Policy` to a specific column (which could be represented as an instance of a `Column` class).\n\n3. **Define a `Column` Class**: If not already present, define a `Column` class to represent the columns in your data model, allowing policies to be associated with specific columns.\n\n4. **Add Domain and Range for Properties**: Specify the domain of `hasTargetColumn` as `Policy` and the range as `Column` to enforce the relationship between policies and columns.\n\n5. **Create Example Instances**: Add example instances of `Policy` and `Column` to demonstrate the relationship and ensure that the ontology can be queried effectively.\n\nThese additions will help clarify the relationship between policies and columns, allowing the competency question to be answered positively."
+      },
+      {
+        "cq": "Can a policy be defined at row level using conditions?",
+        "sparql": "SELECT ?policy ?condition WHERE {\n  ?policy a <http://example.org/odp#Policy> .\n  ?policy a <http://example.org/odp#RowPolicyTarget> .\n  OPTIONAL { ?policy <http://example.org/odp#Condition> ?condition }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding defining a policy at the row level using conditions, consider the following additions:\n\n1. **Define a Class for Row-Level Policies**: \n   - Create a subclass of `Policy`, such as `RowLevelPolicy`, to explicitly represent policies that apply at the row level.\n\n2. **Introduce a Condition Property**: \n   - Define a property, such as `hasCondition`, to link `RowLevelPolicy` instances to their respective conditions. This property should have a domain of `RowLevelPolicy` and a range that can accommodate the type of conditions (e.g., a new class `Condition`).\n\n3. **Create a Condition Class**: \n   - Define a class `Condition` that can represent various conditions applicable to row-level policies. This class can include specific types of conditions as subclasses if needed.\n\n4. **Add Specific Instances**: \n   - Ensure that there are instances of `RowLevelPolicy` and `Condition` in the ontology to test the SPARQL query effectively.\n\n5. **Update the SPARQL Query**: \n   - Modify the SPARQL query to reflect the new class and property names, ensuring it queries for `RowLevelPolicy` and uses `hasCondition` to retrieve conditions.\n\nBy implementing these changes, the ontology will be better equipped to handle the competency question regarding row-level policies and their conditions."
+      },
+      {
+        "cq": "Can the ontology express a prohibited modify action on a table?",
+        "sparql": "SELECT ?prohibition ?modifyAction ?table WHERE {\n  ?prohibition a <http://example.org/odp#Prohibition> .\n  ?prohibition <http://example.org/odp#Effect> ?modifyAction .\n  ?modifyAction a <http://example.org/odp#ModifyAction> .\n  ?modifyAction <http://example.org/odp#PolicyTarget> ?table .\n  ?table a <http://example.org/odp#Table> .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to express a prohibited modify action on a table and to ensure the SPARQL query can return results, consider adding the following:\n\n1. **Classes**:\n   - Ensure that `ModifyAction`, `Prohibition`, and `Table` are defined as classes in the ontology if they are not already.\n\n2. **Properties**:\n   - Define a property `hasProhibitedAction` (or similar) to link a `Prohibition` to a `ModifyAction`.\n   - Define a property `targetsTable` (or similar) to link a `ModifyAction` to a `Table`.\n\n3. **Axioms**:\n   - Create an axiom that states that a `Prohibition` must have at least one `ModifyAction` that targets a `Table`. This can be done using a restriction on the `Prohibition` class.\n\n4. **Instances**:\n   - Add instances of `Prohibition`, `ModifyAction`, and `Table` to the ontology to ensure there are actual data points for the query to retrieve.\n\n5. **Example Data**:\n   - Populate the ontology with example data that includes a `Prohibition` instance linked to a `ModifyAction` instance, which in turn is linked to a `Table` instance to test the query effectively. \n\nBy implementing these suggestions, the ontology will be better equipped to express and retrieve information about prohibited modify actions on tables."
+      },
+      {
+        "cq": "Can the ontology express a table-level read prohibition for processing?",
+        "sparql": "SELECT ?prohibition WHERE { \n  ?prohibition a <http://example.org/odp#Prohibition> .\n  OPTIONAL { ?prohibition a <http://example.org/odp#TablePolicyTarget> } .\n  OPTIONAL { ?prohibition a <http://example.org/odp#ReadAction> } .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to express a table-level read prohibition for processing, consider adding the following elements:\n\n1. **Classes**:\n   - Define a class `TableReadProhibition` as a subclass of `Prohibition` to specifically represent read prohibitions at the table level.\n\n2. **Properties**:\n   - Create a property `targetsTable` (domain: `TableReadProhibition`, range: `Table`) to link the prohibition to specific tables.\n   - Create a property `appliesToAction` (domain: `TableReadProhibition`, range: `Action`) to specify that the prohibition applies to read actions.\n\n3. **Axioms**:\n   - Add an axiom stating that `TableReadProhibition` is a type of `Prohibition` and that it specifically targets `ReadAction` to clarify the relationship between the prohibition and the action.\n\nBy implementing these changes, the ontology will be able to express and query table-level read prohibitions effectively."
+      },
+      {
+        "cq": "Can the ontology express a table-level read prohibition for viewing?",
+        "sparql": "SELECT ?prohibition WHERE { \n  ?prohibition a <http://example.org/odp#Prohibition> .\n  ?prohibition <http://example.org/odp#PolicyTarget> ?tablePolicyTarget .\n  ?tablePolicyTarget a <http://example.org/odp#TablePolicyTarget> .\n  ?tablePolicyTarget <http://example.org/odp#Action> <http://example.org/odp#ReadAction> .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to express a table-level read prohibition for viewing, consider adding the following elements:\n\n1. **Class Definition**: Ensure that the class `<http://example.org/odp#TablePolicyTarget>` is defined in the ontology to represent the target of policies specifically related to tables.\n\n2. **Property Definition**: Define a property `<http://example.org/odp#PolicyTarget>` that links a prohibition to its target, ensuring it can relate to instances of `<http://example.org/odp#TablePolicyTarget>`.\n\n3. **Action Property**: Define an action property `<http://example.org/odp#Action>` that can link to specific actions like `<http://example.org/odp#ReadAction>`, ensuring that it can be used to specify the type of action being prohibited.\n\n4. **Prohibition Class**: Ensure that the class `<http://example.org/odp#Prohibition>` is defined to represent prohibitions, and that it can relate to both the target and the action.\n\n5. **Axiom for Prohibition**: Create an axiom or rule that states that if a `Prohibition` has a `PolicyTarget` of type `TablePolicyTarget` and an `Action` of type `ReadAction`, then it represents a prohibition on reading that table.\n\nBy implementing these elements, the ontology will be able to express and query for table-level read prohibitions effectively."
+      },
+      {
+        "cq": "Can the ontology express a conditional row-level read restriction for later enforcement?",
+        "sparql": "SELECT ?policy ?condition ?rowPolicyTarget WHERE {\n  ?policy a <http://example.org/odp#Policy> .\n  ?policy a <http://example.org/odp#Prohibition> .\n  ?policy <http://example.org/odp#Condition> ?condition .\n  ?policy <http://example.org/odp#RowPolicyTarget> ?rowPolicyTarget .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to express a conditional row-level read restriction for later enforcement, consider adding the following elements:\n\n1. **Class Definitions**:\n   - Define a class `RowPolicy` to represent policies specifically related to row-level access restrictions.\n\n2. **Property Definitions**:\n   - Create a property `hasCondition` (e.g., `<http://example.org/odp#hasCondition>`) to link a `RowPolicy` to its conditional expression.\n   - Create a property `appliesToRow` (e.g., `<http://example.org/odp#appliesToRow>`) to specify which rows the policy applies to.\n\n3. **Axiom Definitions**:\n   - Establish an axiom that states that a `RowPolicy` can be a subclass of `Policy` and `Prohibition`, ensuring it inherits relevant characteristics.\n\n4. **Example Instances**:\n   - Add example instances of `RowPolicy` with specific conditions and targets to demonstrate usage and ensure the query can return results.\n\nBy implementing these suggestions, the ontology will be better equipped to express and enforce conditional row-level read restrictions."
+      },
+      {
+        "cq": "Can the ontology represent a SQL query as an AST-based semantic graph?",
+        "sparql": "SELECT ?action ?scope WHERE {\n  ?action a <http://example.org/odp#Action> .\n  OPTIONAL { ?action a ?scope . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to represent a SQL query as an AST-based semantic graph and to answer the competency question, consider the following additions:\n\n1. **Class for SQL Queries**: Introduce a class `SQLQuery` to represent SQL queries in the ontology. This class can serve as a parent for different types of SQL queries (e.g., `SelectQuery`, `InsertQuery`, etc.).\n\n2. **Properties for Query Components**: Define properties such as `hasAction` and `hasScope` to link `SQLQuery` instances to their respective components. For example:\n   - `hasAction` (domain: `SQLQuery`, range: `Action`)\n   - `hasScope` (domain: `SQLQuery`, range: `Scope`)\n\n3. **Class for Action**: Ensure that the class `Action` is properly defined and linked to the `SQLQuery` class through the `hasAction` property. This class should represent the actions performed in the SQL query (e.g., SELECT, INSERT).\n\n4. **Class for Scope**: Define a class `Scope` to represent the context or scope of the action in the SQL query. This can include aspects like the target table or dataset.\n\n5. **Axioms for Relationships**: Add axioms to specify the relationships between `SQLQuery`, `Action`, and `Scope`, ensuring that the ontology can infer the connections between these elements when a SQL query is represented.\n\nBy implementing these suggestions, the ontology"
+      },
+      {
+        "cq": "Can a SQL statement such as SelectStatement or UpdateStatement be mapped to its semantic action type?",
+        "sparql": "SELECT ?sqlStatement ?actionType WHERE {\n  { ?sqlStatement a <http://example.org/odp#SelectStatement> . }\n  UNION\n  { ?sqlStatement a <http://example.org/odp#UpdateStatement> . }\n  OPTIONAL { ?sqlStatement <http://example.org/odp#Action> ?actionType . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the mapping of SQL statements to their semantic action types, consider the following additions to the ontology:\n\n1. **Define ActionType Class**: Introduce a class `ActionType` to represent different types of actions that SQL statements can perform (e.g., `SELECT`, `UPDATE`, `DELETE`, etc.).\n\n2. **Create Action Property**: Establish a property `hasActionType` (or similar) that links SQL statement classes (e.g., `SelectStatement`, `UpdateStatement`) to their corresponding action types in the `ActionType` class.\n\n3. **Add Specific Action Instances**: Create instances of the `ActionType` class for each specific action type (e.g., `http://example.org/odp#Select`, `http://example.org/odp#Update`) and link them to the relevant SQL statement classes using the `hasActionType` property.\n\n4. **Define Subclass Relationships**: If applicable, define subclass relationships between `SelectStatement` and `UpdateStatement` and their respective action types to facilitate inference.\n\n5. **Include Inference Rules**: Optionally, implement inference rules that allow the ontology reasoner to deduce the action type based on the SQL statement class, enhancing the ability to answer queries without explicit links. \n\nThese additions will enable the ontology to effectively map SQL statements to their semantic action types, allowing for successful SPARQL queries."
+      },
+      {
+        "cq": "Can a query statement be linked to the executing agent?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?query ?agent WHERE {\n  ?query a odp:Action .\n  OPTIONAL { ?query odp:Agent ?agent }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding linking a query statement to the executing agent, consider the following additions:\n\n1. **Define Classes**:\n   - Ensure that `odp:Action` is properly defined as a class that can represent various actions, including query execution.\n\n2. **Add Properties**:\n   - Introduce a property `odp:executedBy` to link an `odp:Action` (query) to an `odp:Agent`. This property should have a domain of `odp:Action` and a range of `odp:Agent`.\n\n3. **Create Agent Class**:\n   - Define `odp:Agent` as a class that represents entities capable of executing actions, ensuring it is distinct and well-defined.\n\n4. **Establish Relationships**:\n   - Create instances of `odp:Action` and `odp:Agent` in the ontology, and use the `odp:executedBy` property to establish relationships between them.\n\n5. **Add Axioms**:\n   - Include axioms that specify the nature of the relationship, such as \"Every action can be executed by one or more agents,\" to support the optional linking in queries.\n\nBy implementing these changes, the ontology will be better equipped to answer queries about the relationship between actions and their executing agents."
+      },
+      {
+        "cq": "Can SQL clauses be assigned operational scopes such as view or process?",
+        "sparql": "SELECT ?scope WHERE { \n  { ?scope a <http://example.org/odp#ViewActionScope> }\n  UNION \n  { ?scope a <http://example.org/odp#ProcessActionScope> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the assignment of operational scopes to SQL clauses, consider the following additions to the ontology:\n\n1. **Define Classes for Operational Scopes**:\n   - Create classes such as `ViewActionScope` and `ProcessActionScope` to represent the different operational scopes.\n\n2. **Create a Class for SQL Clauses**:\n   - Introduce a class called `SQLClause` to represent various SQL clauses (e.g., SELECT, INSERT, UPDATE, DELETE).\n\n3. **Establish Relationships**:\n   - Define a property, such as `hasOperationalScope`, to link `SQLClause` instances to their respective operational scope classes (`ViewActionScope` or `ProcessActionScope`).\n\n4. **Add Instances**:\n   - Populate the ontology with instances of `SQLClause` and assign them operational scopes using the `hasOperationalScope` property.\n\n5. **Define Axioms**:\n   - Create axioms that specify the characteristics of each operational scope, such as which SQL clauses can be associated with each scope.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the operational scopes of SQL clauses."
+      },
+      {
+        "cq": "Can scope be propagated to reference nodes as an effectiveActionScope?",
+        "sparql": "SELECT ?scope ?effectiveActionScope WHERE {\n  ?scope a <http://example.org/odp#ActionScope> .\n  OPTIONAL { ?scope <http://example.org/odp#effectiveActionScope> ?effectiveActionScope }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the propagation of scope to reference nodes as an effectiveActionScope, consider the following additions to the ontology:\n\n1. **Define a Property for Propagation**: Introduce a property such as `http://example.org/odp#propagatesTo` that links an `ActionScope` to the nodes it affects, allowing for the representation of scope propagation.\n\n2. **Create a Class for Reference Nodes**: Define a class, e.g., `http://example.org/odp#ReferenceNode`, to represent nodes that can receive the propagated scope.\n\n3. **Establish a Relationship Between ActionScope and ReferenceNode**: Use the newly defined property to establish a relationship between `ActionScope` instances and `ReferenceNode` instances, indicating that the scope can be propagated to these nodes.\n\n4. **Define Effective Action Scope**: Ensure that the `effectiveActionScope` property is clearly defined and linked to both `ActionScope` and `ReferenceNode`, indicating that a reference node can have an effective action scope derived from its associated action scope.\n\n5. **Add Inference Rules (if applicable)**: If using a reasoning engine, consider adding rules that infer the `effectiveActionScope` for `ReferenceNode` instances based on their linked `ActionScope` instances.\n\nThese additions will facilitate the querying of effective action scopes and their propagation to reference nodes."
+      },
+      {
+        "cq": "Can a TableRef in the query be linked to its corresponding schema Table?",
+        "sparql": "SELECT ?tableRef ?schemaTable WHERE {\n  ?tableRef a <http://example.org/odp#Table> .\n  OPTIONAL { ?tableRef <http://example.org/odp#SchemaResource> ?schemaTable . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the competency question regarding the linkage between a `TableRef` in a query and its corresponding schema `Table`, consider the following additions to the ontology:\n\n1. **Define a `TableRef` Class**: Ensure that there is a class for `TableRef` that represents references to tables in queries. This class should be explicitly defined in the ontology.\n\n2. **Define a `SchemaTable` Class**: Create a class for `SchemaTable` that represents the tables defined in the schema. This will help in distinguishing between query references and schema definitions.\n\n3. **Establish a Property for Linking**: Introduce a property, such as `hasSchemaTable`, that links `TableRef` instances to their corresponding `SchemaTable` instances. This property should be defined as an object property.\n\n4. **Add Domain and Range**: Specify the domain of the `hasSchemaTable` property as `TableRef` and the range as `SchemaTable` to enforce the relationship between these two classes.\n\n5. **Include Axioms for Instances**: Ensure that instances of `TableRef` are created in the ontology and that they are linked to their corresponding `SchemaTable` instances using the `hasSchemaTable` property.\n\nBy implementing these changes, the ontology will support the query and allow for the retrieval of the desired relationships."
+      },
+      {
+        "cq": "Can a ColumnRef in the query be linked to its corresponding schema Column?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?columnRef ?column WHERE {\n  ?columnRef a odp:Column .\n  OPTIONAL { ?columnRef a odp:SchemaResource . }\n  OPTIONAL { ?columnRef a odp:Table . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the linking of a `ColumnRef` in a query to its corresponding schema `Column`, consider the following additions to the ontology:\n\n1. **Define a `ColumnRef` Class**: Create a class `ColumnRef` that represents references to columns in queries. This class should be distinct from the `Column` class.\n\n2. **Establish a Property for Linking**: Introduce a property, such as `odp:refersTo`, that links a `ColumnRef` to its corresponding `Column`. This property should have a domain of `ColumnRef` and a range of `Column`.\n\n3. **Define a `Column` Class**: Ensure that there is a class `Column` that represents the actual columns in the schema, which can be linked to `ColumnRef`.\n\n4. **Add Schema and Table Relationships**: If not already present, define properties that link `Column` to `Schema` and `Table`, such as `odp:belongsToSchema` and `odp:partOfTable`, to provide context for the columns.\n\n5. **Create Instances**: Ensure that instances of `ColumnRef` and `Column` are created in the ontology, and that the `odp:refersTo` property is used to establish the relationship between them.\n\nBy implementing these changes, you will facilitate the ability to query and link `ColumnRef` instances to their corresponding `Column` instances effectively."
+      },
+      {
+        "cq": "Can the reasoner infer whether a referenced table or column is Violated or RowTag based on the matching policy, action, and scope?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?table ?column ?policy ?action ?scope WHERE {\n  ?policy a odp:Policy .\n  ?action a odp:Action .\n  ?scope a odp:ActionScope .\n  OPTIONAL { ?policy odp:TablePolicyTarget ?table . }\n  OPTIONAL { ?policy odp:ColumnPolicyTarget ?column . }\n  OPTIONAL { ?policy odp:RowPolicyTarget ?rowTag . }\n  FILTER(?rowTag = \"Violated\" || ?rowTag = \"RowTag\")\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the reasoner to infer whether a referenced table or column is \"Violated\" or \"RowTag\" based on the matching policy, action, and scope, consider the following additions to the ontology:\n\n1. **Define a Class for Row Tags**: Introduce a class `odp:RowTag` to represent the different types of row tags, including \"Violated\" and any other relevant tags.\n\n2. **Add Properties for Row Tag Relationships**: Create properties such as `odp:hasRowTag` to link policies to their corresponding row tags, allowing for explicit relationships between policies and their row tag classifications.\n\n3. **Introduce a Matching Policy Mechanism**: Define a property `odp:matchesPolicy` that connects actions and scopes to policies, enabling the reasoner to determine which policies apply based on the action and scope context.\n\n4. **Create Axioms for Inference**: Implement logical axioms that specify the conditions under which a policy is considered to result in a \"Violated\" or \"RowTag\" status, based on the relationships established in the previous steps.\n\n5. **Enhance the ActionScope Class**: Ensure that the `odp:ActionScope` class has properties that can relate it to specific policies and actions, allowing for a more comprehensive understanding of how scopes influence policy outcomes.\n\nThese enhancements will provide the necessary structure for the reasoner to infer the status of tables and columns based on the defined policies, actions, and scopes."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

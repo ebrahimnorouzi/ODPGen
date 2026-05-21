@@ -1,0 +1,107 @@
+{
+  "id": "2025-151-01",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 80,
+    "classes_count": 8,
+    "object_properties_count": 9,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 3,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.125,
+    "relationship_richness": 0.9,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 80,
+    "triples_after": 314,
+    "inferred_triples": 234,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "What is the requested action?",
+    "Who is the party issuing the evaluation request?",
+    "What is the target asset of the evaluation request?",
+    "When was the evaluation request issued?",
+    "What additional contextual information can be included in the evaluation request to further constrain it?"
+  ],
+  "cqs_count": 5,
+  "cq_verification": {
+    "cqs_total": 5,
+    "cqs_passed": 0,
+    "cqs_failed": 5,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "What is the requested action?",
+        "sparql": "SELECT ?action WHERE { \n  ?evaluationRequest a <http://example.org/odp#EvaluationRequest> .\n  ?evaluationRequest <http://example.org/odp#hasAction> ?action \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the requested action in the ontology, consider the following additions:\n\n1. **Define the `hasAction` Property**: Ensure that the property `<http://example.org/odp#hasAction>` is explicitly defined in the ontology, linking `EvaluationRequest` to an `Action` class.\n\n2. **Create an `Action` Class**: Introduce a new class `<http://example.org/odp#Action>` to represent the various actions that can be requested in an evaluation context.\n\n3. **Add Subclasses of `Action`**: Define specific subclasses of `Action` (e.g., `<http://example.org/odp#Review>`, `<http://example.org/odp#Approval>`) to categorize different types of actions that can be requested.\n\n4. **Establish Relationships**: If applicable, create additional properties to relate `Action` to other relevant entities (e.g., `hasEvaluator`, `hasEvaluationCriteria`) to provide more context for the actions.\n\n5. **Include Instances of `EvaluationRequest`**: Ensure that there are instances of `EvaluationRequest` in the ontology that utilize the `hasAction` property to link to specific actions, allowing for meaningful query results."
+      },
+      {
+        "cq": "Who is the party issuing the evaluation request?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?issuer WHERE {\n  ?evaluationRequest a odp:EvaluationRequest .\n  ?evaluationRequest odp:issuedBy ?issuer .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the party issuing the evaluation request, consider the following additions to the ontology:\n\n1. **Class Addition**: Ensure there is a class for `Party` (or a more specific term like `Organization`, `Individual`, etc.) to represent entities that can issue evaluation requests.\n\n2. **Property Addition**: Define a property `issuedBy` (if not already defined) that relates an `EvaluationRequest` to a `Party`. This property should be of the type `Party`.\n\n3. **Axiom Definition**: Create an axiom stating that an `EvaluationRequest` must have exactly one `issuedBy` relationship to a `Party`, ensuring that every evaluation request is associated with an issuer.\n\n4. **Instance Creation**: Ensure that instances of `EvaluationRequest` and `Party` are created in the ontology, with appropriate relationships established to test the query effectively.\n\n5. **Data Population**: Populate the ontology with sample data that includes at least one `EvaluationRequest` linked to a `Party` using the `issuedBy` property to validate the SPARQL query."
+      },
+      {
+        "cq": "What is the target asset of the evaluation request?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?evaluationRequest ?targetAsset WHERE {\n  ?evaluationRequest a odp:EvaluationRequest .\n  OPTIONAL { ?evaluationRequest odp:targets ?targetAsset }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the target asset of the evaluation request, consider the following additions to the ontology:\n\n1. **Define the `targets` Property**: Ensure that the property `odp:targets` is defined in the ontology with a clear domain and range. For example:\n   - Domain: `odp:EvaluationRequest`\n   - Range: `odp:Asset` (or a more specific class representing the type of assets)\n\n2. **Create an `Asset` Class**: If not already present, define an `odp:Asset` class to represent the target assets. This class can include subclasses for different types of assets if needed (e.g., `odp:PhysicalAsset`, `odp:DigitalAsset`).\n\n3. **Add Instances of EvaluationRequest and Asset**: Ensure that there are instances of `odp:EvaluationRequest` and corresponding instances of `odp:Asset` in the ontology, and that they are linked using the `odp:targets` property.\n\n4. **Include Inverse Properties (Optional)**: Consider adding an inverse property, such as `odp:isTargetedBy`, to facilitate queries in both directions, enhancing the expressiveness of the ontology.\n\n5. **Document Relationships and Constraints**: Clearly document any relationships and constraints between `EvaluationRequest` and `Asset` to ensure proper understanding and usage of the ontology.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding the target asset of evaluation requests."
+      },
+      {
+        "cq": "When was the evaluation request issued?",
+        "sparql": "SELECT ?issuedAt WHERE { \n  ?evaluationRequest a <http://example.org/odp#EvaluationRequest> .\n  OPTIONAL { \n    ?evaluationRequest <http://example.org/odp#issuedAt> ?issuedAt \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enable the ontology to answer the competency question regarding when the evaluation request was issued, consider the following additions:\n\n1. **Class Definition**: Ensure that the class `EvaluationRequest` is defined in the ontology, if not already present. This class should represent the concept of an evaluation request.\n\n2. **Property Definition**: Add a property `issuedAt` to the ontology, defined as a datatype property that links an `EvaluationRequest` to a date or timestamp (e.g., `xsd:dateTime`). This property should be used to capture the issuance date of the evaluation request.\n\n3. **Axiom Specification**: Create an axiom that specifies that the `issuedAt` property is a required attribute of the `EvaluationRequest` class, ensuring that every instance of `EvaluationRequest` must have an associated issuance date.\n\n4. **Example Instances**: Provide example instances of `EvaluationRequest` in the ontology that include the `issuedAt` property populated with actual date values to facilitate testing and validation of the query.\n\n5. **Documentation**: Include documentation or comments in the ontology to clarify the intended use of the `issuedAt` property and its relationship to the `EvaluationRequest` class, aiding future users in understanding its purpose."
+      },
+      {
+        "cq": "What additional contextual information can be included in the evaluation request to further constrain it?",
+        "sparql": "SELECT ?context WHERE {\n  ?evaluationRequest a <http://example.org/odp#EvaluationRequest> .\n  OPTIONAL { ?evaluationRequest <http://example.org/odp#hasRequestCapabilityContext> ?context . }\n  OPTIONAL { ?evaluationRequest <http://example.org/odp#hasRoleContext> ?context . }\n  OPTIONAL { ?evaluationRequest <http://example.org/odp#hasSpatialContext> ?context . }\n  OPTIONAL { ?evaluationRequest <http://example.org/odp#hasTemporalContext> ?context . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To enhance the ontology and enable the evaluation of additional contextual information for evaluation requests, consider the following suggestions:\n\n1. **Define Contextual Classes**: Introduce specific classes for different types of context, such as:\n   - `http://example.org/odp#CapabilityContext`\n   - `http://example.org/odp#RoleContext`\n   - `http://example.org/odp#SpatialContext`\n   - `http://example.org/odp#TemporalContext`\n\n2. **Create Properties for Contextual Relationships**: Establish properties that link evaluation requests to these contextual classes, such as:\n   - `http://example.org/odp#hasCapabilityContext` (linking to `CapabilityContext`)\n   - `http://example.org/odp#hasRoleContext` (linking to `RoleContext`)\n   - `http://example.org/odp#hasSpatialContext` (linking to `SpatialContext`)\n   - `http://example.org/odp#hasTemporalContext` (linking to `TemporalContext`)\n\n3. **Add Contextual Attributes**: For each context class, define relevant attributes that can provide more detailed information, such as:\n   - For `CapabilityContext`: properties like `http://example.org/odp#requiresSkill` or `http://example.org/odp#hasTool`\n   - For `RoleContext`: properties like `http://example.org/odp#involvesRole` or `http://example.org/odp#has"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P34"
+    ],
+    "pitfall_instance_counts": {
+      "P34": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P34": 2
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P34",
+        "affected_elements_count": 2,
+        "importance": "Important",
+        "name": "Untyped class",
+        "description": "An ontology element is used as a class without having been explicitly declared as such using the primitives owl:Class or rdfs:Class. This pitfall is related with the common problems listed in [8].",
+        "affected_elements_sample": [
+          "http://example.org/odp#Employee",
+          "http://example.org/odp#Weekday"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

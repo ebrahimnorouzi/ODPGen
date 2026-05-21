@@ -1,0 +1,124 @@
+{
+  "id": "2023-133-02",
+  "model": "gpt-5.4",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 60,
+    "classes_count": 5,
+    "object_properties_count": 6,
+    "datatype_properties_count": 3,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 1,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.6,
+    "relationship_richness": 0.6666666666666666,
+    "avg_subclass_per_class": 0.2
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 60,
+    "triples_after": 264,
+    "inferred_triples": 204,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?patient ?symptom ?medicationIntake ?effectStrength ?presenceStatus WHERE {\n  ?patient a odp:Patient .\n  ?patient odp:experiencesSymptom ?symptom .\n  OPTIONAL { ?patient odp:hasMedicationIntake ?medicationIntake . }\n  OPTIONAL { ?medicationIntake odp:hasEffectStrengthOnMedicationIntake ?effectStrength . }\n  OPTIONAL { ?medicationIntake odp:hasPresenceStatus ?presenceStatus . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - Define `odp:Patient`, `odp:Symptom`, and `odp:MedicationIntake` as classes to represent the relevant entities.\n\n2. **Properties**:\n   - Add the property `odp:experiencesSymptom` to link `Patient` to `Symptom`.\n   - Add the property `odp:hasMedicationIntake` to link `Patient` to `MedicationIntake`.\n   - Define properties `odp:hasEffectStrengthOnMedicationIntake` and `odp:hasPresenceStatus` to link `MedicationIntake` to its respective attributes.\n\n3. **Axioms**:\n   - Ensure that the properties are correctly typed, e.g., `odp:experiencesSymptom` should have a domain of `odp:Patient` and a range of `odp:Symptom`, and similarly for the other properties.\n\nBy implementing these additions, the ontology will be structured to support the query and return meaningful results."
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?patient ?symptom ?medicationIntake ?effectStrength ?presenceStatus WHERE {\n  ?patient a odp:Patient .\n  ?patient odp:experiencesSymptom ?symptom .\n  OPTIONAL { ?patient odp:hasMedicationIntake ?medicationIntake . }\n  OPTIONAL { ?medicationIntake odp:hasEffectStrengthOnMedicationIntake ?effectStrength . }\n  OPTIONAL { ?medicationIntake odp:hasPresenceStatus ?presenceStatus . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `Symptom` Class**: Ensure that the `odp:Symptom` class is defined in the ontology to represent various symptoms that patients may experience.\n\n2. **Add `hasSymptom` Property**: Rename `odp:experiencesSymptom` to `odp:hasSymptom` for clarity and consistency, and ensure it is properly defined as a property linking `Patient` to `Symptom`.\n\n3. **Define the `MedicationIntake` Class**: Ensure that the `odp:MedicationIntake` class is defined to represent instances of medication intake by patients.\n\n4. **Clarify Properties**: Ensure that properties like `hasEffectStrengthOnMedicationIntake` and `hasPresenceStatus` are clearly defined and linked to the appropriate classes (e.g., `EffectStrength` and `PresenceStatus`).\n\n5. **Add Instances**: Populate the ontology with instances of `Patient`, `Symptom`, and `MedicationIntake` to ensure that there are actual data entries that the query can retrieve.\n\nBy implementing these suggestions, the ontology will be better structured to support the SPARQL query and return meaningful results."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  OPTIONAL { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?patient ?symptom ?medicationIntake ?outdoorAllergen ?effectStrength ?hypotheticalEffect ?presenceStatus WHERE {\n  ?patient a odp:Patient.\n  ?patient odp:experiencesSymptom ?symptom.\n  OPTIONAL { ?patient odp:hasMedicationIntake ?medicationIntake. }\n  OPTIONAL { ?patient odp:hasProbableCause ?outdoorAllergen. }\n  OPTIONAL { ?medicationIntake odp:hasEffectStrengthOnMedicationIntake ?effectStrength. }\n  OPTIONAL { ?medicationIntake odp:hasHypotheticalEffectOnMedicationIntake ?hypotheticalEffect. }\n  OPTIONAL { ?medicationIntake odp:hasPresenceStatus ?presenceStatus. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - Define a class for `MedicationIntake` to represent instances of medication intake.\n   - Define a class for `OutdoorAllergen` to represent allergens that can affect patients.\n\n2. **Properties**:\n   - Create a property `odp:experiencesSymptom` to link `Patient` to `Symptom`.\n   - Create a property `odp:hasMedicationIntake` to link `Patient` to `MedicationIntake`.\n   - Create a property `odp:hasProbableCause` to link `Patient` to `OutdoorAllergen`.\n   - Define properties for `MedicationIntake` such as `odp:hasEffectStrengthOnMedicationIntake`, `odp:hasHypotheticalEffectOnMedicationIntake`, and `odp:hasPresenceStatus`.\n\n3. **Axioms**:\n   - Specify that `MedicationIntake` is a subclass of `Thing` or a relevant superclass.\n   - Define domain and range for the properties to ensure proper relationships, e.g., `odp:experiencesSymptom` has domain `Patient` and range `Symptom`.\n\nBy implementing these suggestions, the ontology will be better structured to support the queries related to patient experiences and medication intake."
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a rdfs:Class .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a rdfs:Property .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Classes**: Ensure that you have defined classes in your ontology. For example:\n   - `odp:Person`\n   - `odp:Organization`\n   - `odp:Event`\n\n2. **Define Properties**: Ensure that you have defined properties in your ontology. For example:\n   - `odp:hasName`\n   - `odp:hasLocation`\n   - `odp:participatesIn`\n\n3. **Add Annotations**: For each class and property, add `rdfs:label` and `rdfs:comment` annotations. For example:\n   ```turtle\n   odp:Person rdfs:label \"Person\" ;\n               rdfs:comment \"A human being.\" .\n\n   odp:hasName rdfs:label \"has Name\" ;\n                rdfs:comment \"Property indicating the name of a person or organization.\" .\n   ```\n\n4. **Check RDF Schema**: Ensure that your ontology is correctly using RDF Schema (RDFS) and that the classes and properties are properly typed as `rdfs:Class` and `rdf:Property`, respectively.\n\n5. **Validate Ontology**: Use an ontology editor or validation tool to check for any missing definitions or annotations, ensuring that all classes and properties are represented and annotated as required."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 3
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 3,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#isCausedBy",
+          "http://example.org/odp#affectsMedicationIntake",
+          "http://example.org/odp#hasProbableCause"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

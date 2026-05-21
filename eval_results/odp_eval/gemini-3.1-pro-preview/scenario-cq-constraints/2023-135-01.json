@@ -1,0 +1,109 @@
+{
+  "id": "2023-135-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 89,
+    "classes_count": 12,
+    "object_properties_count": 9,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 4,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.3333333333333333
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 89,
+    "triples_after": 352,
+    "inferred_triples": 263,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?author ?book ?role ?name ?pseudonym WHERE {\n  ?author a odp:Author.\n  ?author odp:publishes ?book.\n  OPTIONAL { ?author odp:assumesRole ?role. }\n  OPTIONAL { ?author odp:hasName ?name. }\n  OPTIONAL { ?author odp:hasPseudonym ?pseudonym. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define the `Author` Class**: Ensure that the `odp:Author` class is properly defined in the ontology with relevant properties that link authors to their works.\n\n2. **Add `publishes` Property**: Confirm that the `odp:publishes` property is defined as a relationship between `Author` and `Book` classes, indicating that an author can publish one or more books.\n\n3. **Define `Book` Class**: Ensure that the `Book` class is defined in the ontology to represent the books being published by authors.\n\n4. **Add `assumesRole`, `hasName`, and `hasPseudonym` Properties**: Ensure that the properties `odp:assumesRole`, `odp:hasName`, and `odp:hasPseudonym` are defined and linked to the `Author` class, allowing for optional attributes related to the author.\n\n5. **Create Instances**: Add instances of `Author` and `Book` in the ontology to provide data for the query, ensuring that at least one author is linked to a book and has associated roles, names, or pseudonyms.\n\nBy implementing these suggestions, the ontology will be better equipped to return results for the given SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  UNION\n  { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?author ?book ?role ?pseudonym ?name ?trajectory WHERE {\n  ?author a odp:Author.\n  ?book a odp:Book.\n  ?author odp:publishes ?book.\n  OPTIONAL { ?author odp:assumesRole ?role. }\n  OPTIONAL { ?author odp:hasPseudonym ?pseudonym. }\n  OPTIONAL { ?author odp:hasName ?name. }\n  OPTIONAL { ?author odp:hasTrajectory ?trajectory. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that the classes `:Author` and `:Book` are defined in the ontology with appropriate characteristics.\n\n2. **Define Object Properties**:\n   - Add the object property `odp:publishes` to link `:Author` to `:Book`.\n   - Add the object property `odp:assumesRole` to link `:Author` to a new class `:Role`.\n   - Add the object property `odp:hasPseudonym` to link `:Author` to a new class `:Pseudonym`.\n   - Add the object property `odp:hasTrajectory` to link `:Author` to a new class `:Trajectory`.\n\n3. **Define Data Properties**:\n   - Add a data property `odp:hasName` to link `:Author` to a literal representing the author's name.\n\n4. **Define New Classes**:\n   - Create classes for `:Role`, `:Pseudonym`, and `:Trajectory` to provide structure for the optional properties.\n\n5. **Add Axioms**:\n   - Specify domain and range axioms for the properties to ensure they are correctly associated with their respective classes (e.g., `odp:publishes` has domain `:Author` and range `:Book`).\n\nBy"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a ?type .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a ?type .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "SELECT ?ontology ?label ?comment WHERE {\n  ?ontology a <http://example.org/odp#Author> .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider adding the following elements to your ontology:\n\n1. **Declare the Ontology Class**: Ensure that the ontology is defined as an instance of `owl:Ontology`. For example:\n   ```turtle\n   :Ontology a owl:Ontology .\n   ```\n\n2. **Add rdfs:label Property**: Include a `rdfs:label` property to provide a human-readable name for the ontology:\n   ```turtle\n   :Ontology rdfs:label \"Your Ontology Name\" .\n   ```\n\n3. **Add rdfs:comment Property**: Include a `rdfs:comment` property to provide a description of the ontology:\n   ```turtle\n   :Ontology rdfs:comment \"A brief description of your ontology.\" .\n   ```\n\n4. **Define Namespace**: Ensure that the ontology has a defined namespace (e.g., `http://example.org/odp#`) to avoid ambiguity in URIs.\n\n5. **Use Correct Prefixes**: Make sure to declare the necessary prefixes in your ontology file, such as `@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .` and `@prefix owl: <http://www.w3.org/2002/07/owl#> .`.\n\nBy implementing these elements, your ontology will be structured to answer the competency question effectively."
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?author ?book ?role ?pseudonym WHERE {\n  ?author a odp:Author.\n  ?author odp:publishes ?book.\n  OPTIONAL { ?author odp:assumesRole ?role. }\n  OPTIONAL { ?author odp:hasPseudonym ?pseudonym. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that the ontology can answer the competency question regarding authors, their published books, roles, and pseudonyms, consider adding the following classes, properties, and axioms:\n\n1. **Classes**:\n   - Define `Author`, `Book`, and `Role` as classes in the ontology to represent the respective entities.\n\n2. **Properties**:\n   - Add the following object properties:\n     - `publishes` (domain: `Author`, range: `Book`)\n     - `assumesRole` (domain: `Author`, range: `Role`)\n     - `hasPseudonym` (domain: `Author`, range: `xsd:string`) to represent pseudonyms as literal strings.\n\n3. **Axioms**:\n   - Ensure that there are instances of `Author`, `Book`, and `Role` in the ontology. For example, create instances like `:Author1`, `:Book1`, and `:Role1` to provide data for the query.\n\n4. **Data Population**:\n   - Populate the ontology with sample data that includes authors, their published books, roles they assume, and any pseudonyms they may have to ensure the query can return results.\n\nBy implementing these suggestions, the ontology will be better equipped to provide meaningful results for the competency question."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

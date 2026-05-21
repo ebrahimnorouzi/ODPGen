@@ -1,0 +1,127 @@
+{
+  "id": "2023-134-01",
+  "model": "gemini-3.1-pro-preview",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 77,
+    "classes_count": 8,
+    "object_properties_count": 8,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.25,
+    "relationship_richness": 0.8,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 77,
+    "triples_after": 317,
+    "inferred_triples": 240,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "What is the unique identifier of the policy?",
+    "Who is the creator of the policy?",
+    "When was the policy issued?",
+    "Who is the assignee of the policy?",
+    "What application/service is being used to access the data?",
+    "What access mode is being requested?",
+    "What personal data is being accessed?",
+    "What is the purpose for accessing the data?"
+  ],
+  "cqs_count": 8,
+  "cq_verification": {
+    "cqs_total": 8,
+    "cqs_passed": 0,
+    "cqs_failed": 8,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "What is the unique identifier of the policy?",
+        "sparql": "SELECT ?policyIdentifier WHERE {\n  ?policy a <http://example.org/odp#Policy> .\n  OPTIONAL { ?policy <http://example.org/odp#hasIdentifier> ?policyIdentifier }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the unique identifier of the policy, consider the following additions to the ontology:\n\n1. **Define a Unique Identifier Property**: \n   - Create a property `hasIdentifier` (or similar) that explicitly links a `Policy` instance to its unique identifier. Ensure it is defined as a datatype property (e.g., `xsd:string`).\n\n2. **Specify Identifier Uniqueness**: \n   - Add an axiom or constraint that enforces the uniqueness of the identifier for each `Policy` instance, ensuring that no two policies can share the same identifier.\n\n3. **Include a Policy Class**: \n   - Ensure that the `Policy` class is well-defined in the ontology, with appropriate subclassing if necessary, to clarify its role and relationships within the ontology.\n\n4. **Add Examples or Instances**: \n   - Populate the ontology with example instances of `Policy` that include unique identifiers to validate the structure and ensure that queries return results.\n\n5. **Documentation and Comments**: \n   - Provide clear documentation or comments within the ontology to explain the purpose of the `hasIdentifier` property and its expected usage, aiding future users in understanding its significance. \n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding the unique identifier of a policy."
+      },
+      {
+        "cq": "Who is the creator of the policy?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?policy ?creator WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasCreator ?creator }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"Who is the creator of the policy?\", consider the following additions to the ontology:\n\n1. **Define the `hasCreator` Property**: Ensure that the property `odp:hasCreator` is defined as a relationship between `Policy` and a `Creator` class (or equivalent). This property should be explicitly stated in the ontology.\n\n2. **Create a `Creator` Class**: Introduce a class `Creator` to represent entities that can create policies. This could include individuals, organizations, or roles.\n\n3. **Establish Domain and Range**: Specify the domain of `odp:hasCreator` as `odp:Policy` and the range as `odp:Creator` to enforce the relationship between policies and their creators.\n\n4. **Add Instances**: Ensure that there are instances of `Policy` and `Creator` in the ontology, and that at least some policies have their creators assigned using the `hasCreator` property.\n\n5. **Include Inference Rules (if applicable)**: If using a reasoning engine, consider adding rules that infer the creator based on other relationships or properties, if relevant.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding policy creators."
+      },
+      {
+        "cq": "When was the policy issued?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?policy ?issuedAt WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:issuedAt ?issuedAt }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"When was the policy issued?\" and ensure that the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Define the `issuedAt` Property**: \n   - Create a property `odp:issuedAt` with a domain of `odp:Policy` and a range of `xsd:dateTime` to specify the issuance date of policies.\n\n2. **Add Instances of `Policy`**: \n   - Ensure that there are instances of `odp:Policy` in the ontology that have the `odp:issuedAt` property populated with appropriate date values.\n\n3. **Include Relevant Data**: \n   - Populate the ontology with data that includes at least one policy instance with a defined `issuedAt` date to ensure that the query can return results.\n\n4. **Check for Consistency**: \n   - Verify that the ontology is consistent and that the `issuedAt` property is correctly linked to the policy instances to avoid any issues with querying.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding the issuance date of policies."
+      },
+      {
+        "cq": "Who is the assignee of the policy?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?assignee WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasAssignee ?assignee }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the assignee of a policy, consider the following additions to the ontology:\n\n1. **Define the `hasAssignee` Property**: Ensure that the property `odp:hasAssignee` is defined as a relationship between `Policy` and `Assignee`. This property should be explicitly stated in the ontology to link policies to their respective assignees.\n\n2. **Create the `Assignee` Class**: Introduce a new class `Assignee` in the ontology to represent individuals or entities that can be assigned to a policy. This class should be defined to allow for various types of assignees (e.g., individuals, organizations).\n\n3. **Add Domain and Range for `hasAssignee`**: Specify the domain of `odp:hasAssignee` as `odp:Policy` and the range as `odp:Assignee`. This will enforce the relationship and ensure that any instance of `hasAssignee` is correctly linked to a policy and an assignee.\n\n4. **Include Instances of Policies and Assignees**: Ensure that there are instances of `Policy` and `Assignee` in the ontology data. For example, create specific policies and assign them to instances of the `Assignee` class to provide data for querying.\n\n5. **Consider Cardinality Constraints**: If applicable, define cardinality constraints on the `hasAssignee` property to specify whether a policy can have multiple assignees or just"
+      },
+      {
+        "cq": "What application/service is being used to access the data?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?application WHERE {\n  ?pod odp:accessesData ?personalData .\n  ?pod odp:usesApplication ?application .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the application/service used to access the data, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a new class `Application` to represent different applications or services that can access data.\n\n2. **Property Addition**: Define a new object property `usesApplication` that links a `Pod` (or relevant entity) to an `Application`. This property should be used to indicate which application is being utilized.\n\n3. **Property Addition**: Ensure that the existing property `accessesData` is correctly defined to link `Pod` entities to the data they access, ensuring it is clear that this relationship is distinct from the application used.\n\n4. **Domain and Range Specification**: Specify the domain of `usesApplication` as `Pod` and the range as `Application` to enforce the relationship structure in the ontology.\n\n5. **Example Instances**: Create example instances of `Pod` and `Application` to demonstrate the relationships and ensure that the ontology can return meaningful results when queried.\n\nThese additions will help ensure that the ontology can effectively answer the competency question regarding the applications or services accessing the data."
+      },
+      {
+        "cq": "What access mode is being requested?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?accessMode WHERE {\n  ?record odp:hasAccessMode ?accessMode .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the access mode being requested, consider the following additions to the ontology:\n\n1. **Class Definition**: Define a class `AccessMode` to represent different types of access modes (e.g., \"read\", \"write\", \"execute\").\n\n2. **Property Definition**: Create a property `hasAccessMode` that links records (or relevant entities) to instances of the `AccessMode` class.\n\n3. **Instance Creation**: Add instances of the `AccessMode` class to represent specific access modes, such as `odp:Read`, `odp:Write`, and `odp:Execute`.\n\n4. **Relationship Definition**: Ensure that the `hasAccessMode` property is properly defined with appropriate domain and range, where the domain is the class of records (e.g., `Record`) and the range is the `AccessMode` class.\n\n5. **Data Population**: Populate the ontology with records that utilize the `hasAccessMode` property to link to the appropriate `AccessMode` instances, ensuring that the data is structured to allow for meaningful queries."
+      },
+      {
+        "cq": "What personal data is being accessed?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?personalData WHERE {\n  ?pod odp:accessesData ?personalData .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding what personal data is being accessed, consider the following additions to the ontology:\n\n1. **Class Definition**: Introduce a class `PersonalData` to represent different types of personal data (e.g., `Name`, `Email`, `Address`, etc.).\n\n2. **Property Definition**: Define a property `accessesData` that relates an entity (e.g., a `Pod`) to instances of the `PersonalData` class. Ensure this property is appropriately typed to link to `PersonalData`.\n\n3. **Data Instances**: Create instances of the `PersonalData` class for each type of personal data that may be accessed, such as `odp:Name`, `odp:Email`, `odp:PhoneNumber`, etc.\n\n4. **Domain and Range Specification**: Specify the domain of the `accessesData` property as the class that represents the entities accessing the data (e.g., `Pod`) and the range as the `PersonalData` class.\n\n5. **Axiom for Data Access**: Optionally, add axioms or rules that define conditions under which personal data can be accessed, enhancing the ontology's expressiveness regarding data access scenarios.\n\nThese additions will help structure the ontology to effectively query and retrieve information about the personal data being accessed."
+      },
+      {
+        "cq": "What is the purpose for accessing the data?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?purpose WHERE {\n  ?data odp:hasPurpose ?purpose .\n  ?data odp:accessesData ?access .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the purpose for accessing data, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class Addition**: Introduce a class `DataAccessPurpose` to represent different purposes for accessing data.\n\n2. **Property Addition**: Define a property `odp:hasAccessPurpose` that links a `Data` instance to a `DataAccessPurpose` instance, allowing for the specification of the purpose behind accessing the data.\n\n3. **Property Addition**: Ensure that the existing property `odp:accessesData` is correctly defined to relate a `User` or `System` to the `Data` being accessed.\n\n4. **Axiom Addition**: Create an axiom that specifies that every `Data` instance must have at least one `DataAccessPurpose` associated with it, ensuring that the purpose is always defined.\n\n5. **Example Instances**: Populate the ontology with example instances of `DataAccessPurpose` (e.g., `Research`, `Analysis`, `Compliance`) to provide concrete values for querying. \n\nThese additions will enable the ontology to effectively capture and query the purposes for accessing data."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

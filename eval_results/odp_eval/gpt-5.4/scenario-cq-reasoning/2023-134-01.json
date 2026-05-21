@@ -1,0 +1,128 @@
+{
+  "id": "2023-134-01",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-reasoning",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 64,
+    "classes_count": 6,
+    "object_properties_count": 6,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 1,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.3333333333333333,
+    "relationship_richness": 0.75,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 64,
+    "triples_after": 279,
+    "inferred_triples": 215,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "What is the unique identifier of the policy?",
+    "Who is the creator of the policy?",
+    "When was the policy issued?",
+    "Who is the assignee of the policy?",
+    "What application/service is being used to access the data?",
+    "What access mode is being requested?",
+    "What personal data is being accessed?",
+    "What is the purpose for accessing the data?"
+  ],
+  "cqs_count": 8,
+  "cq_verification": {
+    "cqs_total": 8,
+    "cqs_passed": 0,
+    "cqs_failed": 8,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "What is the unique identifier of the policy?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?policyIdentifier WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:policyIdentifier ?policyIdentifier }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the unique identifier of the policy, consider the following additions to the ontology:\n\n1. **Define a Unique Identifier Property**: \n   - Add a property `odp:policyIdentifier` with a domain of `odp:Policy` and a range of `xsd:string` to ensure that each policy can have a unique identifier.\n\n2. **Ensure Policy Instances Have Identifiers**: \n   - When creating instances of `odp:Policy`, ensure that each instance has a unique value for `odp:policyIdentifier` to facilitate retrieval.\n\n3. **Add a Class for Policy Identifiers (Optional)**: \n   - If needed, create a class `odp:PolicyIdentifier` to encapsulate the concept of identifiers, allowing for more complex relationships or attributes in the future.\n\n4. **Include RDFS/OWL Annotations**: \n   - Use rdfs:label or rdfs:comment to provide human-readable descriptions for `odp:policyIdentifier` to enhance clarity and usability.\n\n5. **Define Constraints (Optional)**: \n   - Implement OWL constraints (e.g., `owl:FunctionalProperty`) on `odp:policyIdentifier` to ensure that each policy can only have one unique identifier.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding the unique identifier of policies."
+      },
+      {
+        "cq": "Who is the creator of the policy?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?policy ?creator WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasCreator ?creator }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"Who is the creator of the policy?\" in your ontology, consider the following additions:\n\n1. **Define the `Creator` Class**: Introduce a class `Creator` to represent entities that can create policies. This could include individuals, organizations, or systems.\n\n   ```ttl\n   :Creator a rdfs:Class .\n   ```\n\n2. **Add `hasCreator` Property**: Ensure that the `hasCreator` property is explicitly defined to link policies to their creators. This property should have a domain of `Policy` and a range of `Creator`.\n\n   ```ttl\n   :hasCreator a rdf:Property ;\n       rdfs:domain odp:Policy ;\n       rdfs:range odp:Creator .\n   ```\n\n3. **Create Instances of `Creator`**: Populate the ontology with instances of the `Creator` class, linking them to specific policies using the `hasCreator` property.\n\n   ```ttl\n   :JohnDoe a odp:Creator .\n   :Policy1 a odp:Policy ;\n       odp:hasCreator :JohnDoe .\n   ```\n\n4. **Ensure Proper Data Population**: Verify that the data in your ontology includes policies with associated creators, ensuring that the relationships are correctly established.\n\n5. **Review SPARQL Query**: After making these changes, ensure your SPARQL query is correctly structured to retrieve the desired information, as your initial query structure is appropriate.\n\nBy implementing these suggestions, you"
+      },
+      {
+        "cq": "When was the policy issued?",
+        "sparql": "SELECT ?issuedAt WHERE { \n  ?policy a <http://example.org/odp#Policy> .\n  OPTIONAL { ?policy <http://example.org/odp#issuedAt> ?issuedAt }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"When was the policy issued?\", consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that the class `Policy` is defined in the ontology, if not already present. This class should represent the policies being queried.\n\n2. **Property Definition**: Add a property `issuedAt` to the ontology, defined as a datatype property that links a `Policy` to a date or datetime value. This property should be defined as follows:\n   - `issuedAt` rdfs:domain `Policy`\n   - `issuedAt` rdfs:range xsd:dateTime\n\n3. **Axiom for Instances**: Ensure that instances of the `Policy` class have the `issuedAt` property populated with appropriate date values. This may involve creating or updating existing policy instances to include this information.\n\n4. **Data Population**: Populate the ontology with sample data for policies, ensuring that at least some instances have the `issuedAt` property set with valid date values.\n\n5. **Documentation**: Update the ontology documentation to clarify the meaning and usage of the `issuedAt` property, ensuring that users understand how to utilize it in queries."
+      },
+      {
+        "cq": "Who is the assignee of the policy?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?assignee WHERE {\n  ?policy a odp:Policy .\n  ?policy odp:hasAssignee ?assignee .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the assignee of a policy, consider the following additions to the ontology:\n\n1. **Define the `Policy` Class**: Ensure that the `Policy` class is properly defined in the ontology, if not already present. This class should represent the policies in your domain.\n\n2. **Add `hasAssignee` Property**: Create a property `hasAssignee` (if it doesn't exist) that links a `Policy` to an `Assignee`. This property should be defined with the appropriate domain and range:\n   - Domain: `odp:Policy`\n   - Range: `odp:Assignee` (or a suitable class representing individuals or entities that can be assignees)\n\n3. **Define the `Assignee` Class**: If not already defined, create an `Assignee` class to represent the entities that can be assigned to policies. This could include individuals, organizations, or roles.\n\n4. **Add Instances**: Ensure that there are instances of `Policy` and `Assignee` in your ontology, and that the `hasAssignee` property is used to link them appropriately.\n\n5. **Check for Data Population**: Verify that the data is populated correctly in your knowledge base, ensuring that there are policies with assigned assignees to retrieve meaningful results from your SPARQL query."
+      },
+      {
+        "cq": "What application/service is being used to access the data?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?application WHERE {\n  ?personalData odp:hasAccessMode ?accessMode .\n  ?accessMode odp:usesApplication ?application .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the application/service used to access the data, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a new class `Application` to represent different applications or services that can access data.\n\n2. **Property Addition**: Define a property `usesApplication` that relates `AccessMode` to `Application`. This property should be a direct relationship indicating which application is used for a specific access mode.\n\n3. **Property Addition**: Ensure that the `AccessMode` class has a property `hasAccessMode` that links to the `Application` class, allowing for a clear relationship between personal data, access modes, and applications.\n\n4. **Axiom Definition**: Create an axiom that specifies that each `AccessMode` must be associated with at least one `Application`, ensuring that every access mode is linked to a specific application.\n\n5. **Data Population**: Populate the ontology with instances of `Application` and `AccessMode` to ensure that there are actual data entries that can be queried against."
+      },
+      {
+        "cq": "What access mode is being requested?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?accessMode WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasAccessMode ?accessMode }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the access mode being requested, consider the following additions to the ontology:\n\n1. **Define the `AccessMode` Class**: Create a class `AccessMode` to represent different types of access modes (e.g., read, write, execute).\n\n2. **Add `hasAccessMode` Property**: Ensure that the property `hasAccessMode` is defined as a relationship between the `Policy` class and the `AccessMode` class, allowing policies to specify their associated access modes.\n\n3. **Create Instances of Access Modes**: Add instances of the `AccessMode` class (e.g., `odp:Read`, `odp:Write`, `odp:Execute`) to represent specific access modes that can be referenced in policies.\n\n4. **Link Policies to Access Modes**: Ensure that existing or new instances of the `Policy` class are linked to the appropriate `AccessMode` instances using the `hasAccessMode` property.\n\n5. **Review Class Hierarchies**: If applicable, ensure that the `Policy` class is correctly defined within the ontology hierarchy to facilitate proper querying and inference.\n\nBy implementing these changes, the ontology will be better equipped to answer the competency question regarding requested access modes."
+      },
+      {
+        "cq": "What personal data is being accessed?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?personalData WHERE {\n  ?policy a odp:Policy .\n  ?policy odp:hasPersonalData ?personalData .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the personal data being accessed, consider the following additions to the ontology:\n\n1. **Define a `PersonalData` Class**: Create a class `PersonalData` to represent different types of personal data (e.g., name, email, address).\n\n2. **Add `hasPersonalData` Property**: Ensure that the property `odp:hasPersonalData` is defined as a relationship between `Policy` and `PersonalData`, allowing policies to specify the types of personal data they access.\n\n3. **Create Specific Personal Data Instances**: Populate the ontology with instances of `PersonalData`, such as `odp:Name`, `odp:Email`, and `odp:Address`, to represent specific types of personal data.\n\n4. **Link Policies to Personal Data**: Ensure that existing policies in the ontology are linked to the relevant instances of `PersonalData` using the `hasPersonalData` property.\n\n5. **Define Data Access Context**: Optionally, introduce a `DataAccess` class to represent the context or conditions under which personal data is accessed, linking it to `Policy` and `PersonalData` as needed. \n\nThese additions will enable the SPARQL query to retrieve relevant personal data associated with policies."
+      },
+      {
+        "cq": "What is the purpose for accessing the data?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?purpose WHERE {\n  ?policy a odp:Policy .\n  OPTIONAL { ?policy odp:hasPurpose ?purpose }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the purpose for accessing the data, consider the following additions to the ontology:\n\n1. **Class Addition**: Introduce a new class `odp:Purpose` to represent the various purposes for which data can be accessed.\n\n2. **Property Addition**: Define a new property `odp:hasPurpose` that relates instances of `odp:Policy` to instances of `odp:Purpose`. This property should be a domain of `odp:Policy` and a range of `odp:Purpose`.\n\n3. **Axiom Addition**: Create axioms that specify the relationship between `odp:Policy` and `odp:Purpose`, ensuring that each policy can have one or more associated purposes.\n\n4. **Instance Creation**: Populate the ontology with instances of `odp:Purpose` (e.g., `odp:Research`, `odp:Compliance`, `odp:Analysis`) and link them to relevant `odp:Policy` instances using the `odp:hasPurpose` property.\n\n5. **Documentation**: Provide clear documentation for the new classes and properties to ensure users understand how to utilize them in queries effectively. \n\nThese additions will enable the ontology to capture and query the purposes associated with data access policies."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

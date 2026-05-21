@@ -1,0 +1,127 @@
+{
+  "id": "2023-134-03",
+  "model": "meta-llama_Llama-3.1-8B-Instruct",
+  "config": "scenario-cq-reasoning",
+  "ontometrics": {
+    "triples_count": 79,
+    "classes_count": 8,
+    "object_properties_count": 8,
+    "datatype_properties_count": 4,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.5,
+    "relationship_richness": 0.6666666666666666,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 79,
+    "triples_after": 295,
+    "inferred_triples": 216,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Who is maintaining the registry?",
+    "When was the registry created/updated?",
+    "What types of data are available?",
+    "Where is a specific type of data being stored?",
+    "What policy is associated with the data?"
+  ],
+  "cqs_count": 5,
+  "cq_verification": {
+    "cqs_total": 5,
+    "cqs_passed": 0,
+    "cqs_failed": 5,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Who is maintaining the registry?",
+        "sparql": "SELECT ?maintainer WHERE { \n  ?registry a <http://example.org/odp#Registry> .\n  ?registry <http://example.org/odp#RegistryMaintainer> ?maintainer \n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question \"Who is maintaining the registry?\", consider adding the following elements to the ontology:\n\n1. **Class Definition**: Ensure that there is a class defined for `RegistryMaintainer`, which could represent individuals or organizations responsible for maintaining the registry.\n\n2. **Object Property**: Define an object property `hasMaintainer` (or similar) that links instances of the `Registry` class to instances of the `RegistryMaintainer` class. This property should be used instead of `RegistryMaintainer` in the query.\n\n3. **Data Property (Optional)**: If maintainers have specific attributes (e.g., name, contact information), consider adding relevant data properties (e.g., `maintainerName`, `maintainerEmail`) to the `RegistryMaintainer` class.\n\n4. **Axiom for Relationships**: Create axioms that specify the relationship between `Registry` and `RegistryMaintainer`, ensuring that the ontology captures the intended semantics of maintenance.\n\n5. **Example Instances**: Add example instances of `Registry` and `RegistryMaintainer` to the ontology to facilitate testing and validation of the SPARQL query.\n\nBy implementing these suggestions, the ontology will be better equipped to provide answers to the competency question regarding who maintains the registry."
+      },
+      {
+        "cq": "When was the registry created/updated?",
+        "sparql": "SELECT ?created ?updated WHERE {\n  ?registry a <http://example.org/odp#Registry> .\n  OPTIONAL { ?registry <http://example.org/odp#Created> ?created . }\n  OPTIONAL { ?registry <http://example.org/odp#Updated> ?updated . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding when the registry was created or updated, consider the following additions to the ontology:\n\n1. **Class Definition**: Ensure that the `Registry` class is properly defined in the ontology, if not already present. This should include its relationships and context within the ontology.\n\n2. **Properties**:\n   - **Created Property**: Define a property `Created` (e.g., `http://example.org/odp#Created`) with a domain of `Registry` and a range of `xsd:dateTime` to capture the creation date.\n   - **Updated Property**: Define a property `Updated` (e.g., `http://example.org/odp#Updated`) with a domain of `Registry` and a range of `xsd:dateTime` to capture the last updated date.\n\n3. **Axioms**: Add axioms to ensure that every instance of `Registry` must have at least one `Created` and one `Updated` date, if applicable, to enforce data integrity.\n\n4. **Data Population**: Ensure that existing instances of `Registry` in the dataset are populated with values for the `Created` and `Updated` properties to enable retrieval through SPARQL queries.\n\n5. **Documentation**: Update the ontology documentation to include descriptions of the new properties and their intended use, ensuring clarity for future users and developers."
+      },
+      {
+        "cq": "What types of data are available?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?dataType WHERE {\n  ?dataType a odp:DataCategory .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question \"What types of data are available?\" and ensure that the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Define a Class for Data Categories**: \n   - Create a class `odp:DataCategory` to represent different types of data. This class will serve as the foundation for categorizing various data types.\n\n2. **Add Subclasses for Specific Data Types**: \n   - Introduce subclasses under `odp:DataCategory`, such as `odp:NumericalData`, `odp:TextData`, `odp:ImageData`, etc., to represent specific categories of data.\n\n3. **Create Instances of Data Categories**: \n   - Add instances of the `odp:DataCategory` class (e.g., `odp:NumericalData`, `odp:TextData`) to ensure that there are actual data types available in the ontology.\n\n4. **Define Properties for Data Characteristics**: \n   - Introduce properties like `odp:hasDataType` to link data instances to their respective categories, allowing for more detailed queries about the characteristics of each data type.\n\n5. **Include Axioms for Relationships**: \n   - Establish axioms that define relationships between data types and other relevant entities in the ontology, enhancing the semantic richness and enabling more complex queries.\n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question regarding available data types."
+      },
+      {
+        "cq": "Where is a specific type of data being stored?",
+        "sparql": "SELECT ?storageLocation WHERE { \n  ?dataCategory a <http://example.org/odp#DataCategory> .\n  ?dataCategory <http://example.org/odp#DataStorageLocation> ?storageLocation .\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding the storage location of a specific type of data, consider the following additions to the ontology:\n\n1. **Define a Class for Data Storage Locations**: \n   - Create a class `DataStorageLocation` to represent various storage locations (e.g., databases, cloud storage, file systems).\n\n2. **Add a Property for Data Storage**: \n   - Introduce a property `hasStorageLocation` (or `DataStorageLocation`) that links instances of `DataCategory` to instances of `DataStorageLocation`.\n\n3. **Specify Data Categories**: \n   - Ensure that the `DataCategory` class has instances that represent specific types of data (e.g., `CustomerData`, `TransactionData`).\n\n4. **Create Instances of Storage Locations**: \n   - Populate the ontology with instances of `DataStorageLocation` (e.g., `DatabaseA`, `CloudStorageB`) and link them to relevant `DataCategory` instances using the `hasStorageLocation` property.\n\n5. **Use RDFS or OWL for Relationships**: \n   - Utilize RDFS or OWL to define the relationships and constraints between `DataCategory` and `DataStorageLocation` to ensure semantic clarity and inferencing capabilities.\n\nBy implementing these suggestions, the ontology will be better equipped to answer queries about where specific types of data are stored."
+      },
+      {
+        "cq": "What policy is associated with the data?",
+        "sparql": "SELECT ?policy WHERE { \n  ?data a <http://example.org/odp#DataHandlingPractice> .\n  OPTIONAL { ?data <http://example.org/odp#PrivacyPolicy> ?policy }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the association of policies with data, consider the following additions to the ontology:\n\n1. **Define a Policy Class**: Introduce a class `Policy` (e.g., `<http://example.org/odp#Policy>`) to represent different types of policies, including privacy policies.\n\n2. **Create a Data-Policy Relationship**: Add a property `hasPolicy` (e.g., `<http://example.org/odp#hasPolicy>`) that links instances of `DataHandlingPractice` to instances of `Policy`. This property should be defined as an object property.\n\n3. **Specify Policy Types**: If applicable, create subclasses of `Policy` (e.g., `PrivacyPolicy`, `SecurityPolicy`) to categorize different policies, allowing for more specific queries.\n\n4. **Add Domain and Range**: Define the domain of `hasPolicy` as `DataHandlingPractice` and the range as `Policy` to ensure that the ontology enforces the relationship correctly.\n\n5. **Include Examples**: Populate the ontology with example instances of `DataHandlingPractice` and associated `Policy` instances to facilitate testing and validation of the SPARQL queries.\n\nThese additions will enable the SPARQL query to retrieve the associated policies for the specified data handling practices."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 12
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 12,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#LegalComplianceCheck",
+          "http://example.org/odp#DataHandlingPractice",
+          "http://example.org/odp#Data",
+          "http://example.org/odp#Updated",
+          "http://example.org/odp#Created",
+          "http://example.org/odp#DataCategory",
+          "http://example.org/odp#ProvenanceMetadata",
+          "http://example.org/odp#StorageLocation",
+          "http://example.org/odp#DataStorageLocation",
+          "http://example.org/odp#RegistryMaintainer",
+          "http://example.org/odp#Registry",
+          "http://example.org/odp#PrivacyPolicy"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

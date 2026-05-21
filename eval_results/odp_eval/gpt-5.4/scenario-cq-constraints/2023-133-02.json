@@ -1,0 +1,110 @@
+{
+  "id": "2023-133-02",
+  "model": "gpt-5.4",
+  "config": "scenario-cq-constraints",
+  "extracted_from_raw": true,
+  "ontometrics": {
+    "triples_count": 49,
+    "classes_count": 6,
+    "object_properties_count": 4,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 3,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.16666666666666666,
+    "relationship_richness": 0.8,
+    "avg_subclass_per_class": 0.5
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 49,
+    "triples_after": 241,
+    "inferred_triples": 192,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?patient ?symptom ?medication ?feature ?weight WHERE {\n  ?patient a odp:Patient .\n  ?symptom a odp:Symptom .\n  ?medication a odp:MedicationIntake .\n  ?feature a odp:ObservationFeature .\n  ?patient odp:affectsPatient ?symptom .\n  ?medication odp:hasEffect ?symptom .\n  OPTIONAL { ?medication odp:hasFeature ?feature }\n  OPTIONAL { ?medication odp:effectWeight ?weight }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Define Relationships**:\n   - Add a property `odp:affectsPatient` that links `Patient` to `Symptom`, indicating which symptoms are affected by which patients.\n   - Ensure that `MedicationIntake` has a property `odp:hasEffect` that links it to `Symptom`, specifying the effects of medications.\n\n2. **Add Observation Features**:\n   - Introduce a property `odp:hasFeature` that connects `MedicationIntake` to `ObservationFeature`, allowing for the association of specific features with medications.\n\n3. **Include Effect Weights**:\n   - Define a property `odp:effectWeight` for `MedicationIntake` to quantify the strength or significance of the effect on symptoms.\n\n4. **Create Instances**:\n   - Ensure that there are instances of `Patient`, `Symptom`, `MedicationIntake`, and `ObservationFeature` in the dataset to provide data for the query.\n\n5. **Check Data Consistency**:\n   - Verify that the ontology is populated with relevant data that adheres to the defined classes and properties, ensuring that relationships are correctly established. \n\nBy implementing these suggestions, the ontology will be better equipped to answer the competency question effectively."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { \n    ?class a owl:Class \n  } UNION { \n    ?property a owl:ObjectProperty \n  } UNION { \n    ?property a owl:DatatypeProperty \n  } \n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\n\nSELECT ?patient ?medicationIntake ?symptom ?outdoorEnvironmentalFactor ?observationFeature ?causalRelation ?effectWeight WHERE {\n  ?patient a odp:Patient.\n  OPTIONAL { ?medicationIntake a odp:MedicationIntake; odp:affectsPatient ?patient. }\n  OPTIONAL { ?symptom a odp:Symptom; odp:hasEffect ?medicationIntake. }\n  OPTIONAL { ?outdoorEnvironmentalFactor a odp:OutdoorEnvironmentalFactor; odp:hasCause ?symptom. }\n  OPTIONAL { ?observationFeature a odp:ObservationFeature; odp:hasFeature ?outdoorEnvironmentalFactor. }\n  OPTIONAL { ?causalRelation a odp:CausalRelation; odp:hasCause ?observationFeature; odp:hasEffect ?symptom. }\n  OPTIONAL { ?causalRelation odp:effectWeight ?effectWeight. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Classes**:\n   - Define the class `:MedicationIntake` to represent instances of medication intake.\n   - Define the class `:Symptom` to represent instances of symptoms experienced by patients.\n   - Define the class `:OutdoorEnvironmentalFactor` to represent environmental factors that may affect health.\n   - Define the class `:ObservationFeature` to represent features observed in relation to health conditions.\n   - Define the class `:CausalRelation` to represent relationships between causes and effects.\n\n2. **Properties**:\n   - Add the property `odp:affectsPatient` to link `:MedicationIntake` to `:Patient`.\n   - Add the property `odp:hasEffect` to link `:MedicationIntake` to `:Symptom`.\n   - Add the property `odp:hasCause` to link `:Symptom` to `:OutdoorEnvironmentalFactor`.\n   - Add the property `odp:hasFeature` to link `:OutdoorEnvironmentalFactor` to `:ObservationFeature`.\n   - Add the property `odp:effectWeight` to link `:CausalRelation` to a quantitative measure of the effect.\n\n3. **Axioms**:\n   - Create axioms that define the relationships between these classes and properties, ensuring that they are appropriately linked to reflect the intended semantics"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a rdfs:Class .\n    OPTIONAL { ?class rdfs:label ?label . }\n    OPTIONAL { ?class rdfs:comment ?comment . }\n  }\n  UNION\n  { \n    ?property a rdf:Property .\n    OPTIONAL { ?property rdfs:label ?label . }\n    OPTIONAL { ?property rdfs:comment ?comment . }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following steps:\n\n1. **Define Classes**: Add at least one class to your ontology, for example:\n   ```turtle\n   :ExampleClass a rdfs:Class ;\n       rdfs:label \"Example Class\" ;\n       rdfs:comment \"This is an example class for demonstration purposes.\" .\n   ```\n\n2. **Define Properties**: Add at least one property to your ontology, for example:\n   ```turtle\n   :exampleProperty a rdf:Property ;\n       rdfs:label \"Example Property\" ;\n       rdfs:comment \"This is an example property for demonstration purposes.\" .\n   ```\n\n3. **Ensure Annotations**: Verify that all existing classes and properties in your ontology have corresponding `rdfs:label` and `rdfs:comment` annotations. If any are missing, add them accordingly.\n\n4. **Use a Reasoner**: Optionally, use a reasoner to check for any classes or properties that lack the required annotations and address those gaps.\n\n5. **Test the SPARQL Query**: After making these additions, re-run your SPARQL query to confirm that it returns the expected results."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?patient ?medication ?symptom ?feature ?effectWeight WHERE {\n  ?patient a odp:Patient.\n  OPTIONAL { ?medication a odp:MedicationIntake; odp:affectsPatient ?patient. }\n  OPTIONAL { ?symptom a odp:Symptom; odp:hasEffect ?medication. }\n  OPTIONAL { ?feature a odp:ObservationFeature; odp:hasFeature ?symptom. }\n  OPTIONAL { ?medication odp:effectWeight ?effectWeight. }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can effectively answer the competency question while remaining minimal and reusable, consider adding the following classes and properties:\n\n1. **Classes**:\n   - **Medication**: A class to represent medications, which can include both `MedicationIntake` and any other relevant medication types.\n   - **Patient**: Ensure this class is defined to represent individuals receiving treatment.\n   - **Symptom**: A class to represent symptoms that patients may experience.\n   - **ObservationFeature**: A class to represent features observed in symptoms.\n\n2. **Properties**:\n   - **affectsPatient**: A property linking `Medication` to `Patient`, indicating which medication affects which patient.\n   - **hasEffect**: A property linking `Medication` to `Symptom`, indicating the symptoms that a medication can cause or alleviate.\n   - **hasFeature**: A property linking `Symptom` to `ObservationFeature`, indicating specific features associated with a symptom.\n   - **effectWeight**: A property associated with `Medication`, representing the weight or significance of the effect on the patient.\n\n3. **Axioms**:\n   - Define necessary relationships and constraints, such as `Medication` must affect at least one `Patient`, and `Symptom` must be linked to at least one `Medication` through `hasEffect`.\n\nBy implementing these additions, you should be able to retrieve meaningful results from your SPARQL query."
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 1,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

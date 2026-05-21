@@ -1,0 +1,110 @@
+{
+  "id": "2026-155-01",
+  "model": "gpt-5.4",
+  "config": "cq-only",
+  "ontometrics": {
+    "triples_count": 61,
+    "classes_count": 16,
+    "object_properties_count": 2,
+    "datatype_properties_count": 0,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.0,
+    "relationship_richness": 1.0,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 61,
+    "triples_after": 302,
+    "inferred_triples": 241,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+    "Use clear, self-explanatory class and property names.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Model only what is needed to answer these CQs; do not add concepts not implied by them.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?culturalProperty ?featureOfInterest WHERE {\n  ?observation a odp:Observation .\n  OPTIONAL { ?observation odp:performedOnCulturalProperty ?culturalProperty }\n  OPTIONAL { ?observation odp:performedOnFeatureOfInterest ?featureOfInterest }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider the following additions to the ontology:\n\n1. **Define the `Observation` Class**: Ensure that the `odp:Observation` class is properly defined in the ontology, including its properties and relationships.\n\n2. **Add Properties for Relationships**:\n   - **`odp:performedOnCulturalProperty`**: Define this property to link an `Observation` to a `CulturalProperty`.\n   - **`odp:performedOnFeatureOfInterest`**: Define this property to link an `Observation` to a `FeatureOfInterest`.\n\n3. **Define `CulturalProperty` and `FeatureOfInterest` Classes**: Ensure that both `CulturalProperty` and `FeatureOfInterest` classes are defined in the ontology, allowing for instances to be created and linked to observations.\n\n4. **Create Instances**: Add instances of `Observation`, `CulturalProperty`, and `FeatureOfInterest` to the ontology to ensure that there are data points for the query to retrieve.\n\nBy implementing these changes, the ontology will be better equipped to return results for the given SPARQL query."
+      },
+      {
+        "cq": "Use clear, self-explanatory class and property names.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?culturalProperty ?featureOfInterest WHERE {\n  ?acquisitionParameter a odp:AcquisitionParameter .\n  OPTIONAL { ?acquisitionParameter odp:performedOnCulturalProperty ?culturalProperty . }\n  OPTIONAL { ?acquisitionParameter odp:performedOnFeatureOfInterest ?featureOfInterest . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define Classes**:\n   - Ensure that `odp:CulturalProperty` and `odp:FeatureOfInterest` are explicitly defined as classes in the ontology. This will allow instances of these classes to be associated with `odp:AcquisitionParameter`.\n\n2. **Define Properties**:\n   - Confirm that the properties `odp:performedOnCulturalProperty` and `odp:performedOnFeatureOfInterest` are defined as object properties linking `odp:AcquisitionParameter` to instances of `odp:CulturalProperty` and `odp:FeatureOfInterest`, respectively.\n\n3. **Add Instances**:\n   - Create instances of `odp:CulturalProperty` and `odp:FeatureOfInterest` in the ontology to ensure there are actual data points for the query to retrieve.\n\n4. **Check Relationships**:\n   - Ensure that there are valid relationships established between instances of `odp:AcquisitionParameter` and the defined instances of `odp:CulturalProperty` and `odp:FeatureOfInterest` using the defined properties.\n\n5. **Review Data Population**:\n   - Verify that the ontology is populated with data that reflects the relationships and instances needed to satisfy the query, ensuring that the data is correctly formatted and adheres to the ontology structure. \n\nBy implementing these suggestions, the ontology will be better equipped to return results for the given SPARQL query"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property WHERE {\n  { \n    ?class a owl:Class \n  } UNION { \n    ?property a owl:ObjectProperty \n  } UNION { \n    ?property a owl:DatatypeProperty \n  } UNION { \n    ?property a owl:AnnotationProperty \n  }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?acquisitionParameter ?culturalProperty ?featureOfInterest WHERE {\n  ?acquisitionParameter a odp:AcquisitionParameter .\n  OPTIONAL { ?acquisitionParameter odp:performedOnCulturalProperty ?culturalProperty . }\n  OPTIONAL { ?acquisitionParameter odp:performedOnFeatureOfInterest ?featureOfInterest . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Classes**:\n   - Ensure that `:AcquisitionParameter`, `:CulturalProperty`, and `:FeatureOfInterest` are defined as classes in the ontology.\n\n2. **Define Object Properties**:\n   - Create the object properties:\n     - `odp:performedOnCulturalProperty` with a domain of `odp:AcquisitionParameter` and a range of `odp:CulturalProperty`.\n     - `odp:performedOnFeatureOfInterest` with a domain of `odp:AcquisitionParameter` and a range of `odp:FeatureOfInterest`.\n\n3. **Add Subclass Relationships** (if applicable):\n   - If there are specific types of cultural properties or features of interest, define subclasses under `:CulturalProperty` and `:FeatureOfInterest` to provide more granularity.\n\n4. **Add Axioms for Instances** (optional for testing):\n   - While the request is to avoid individual instances, consider adding a few example instances of `:CulturalProperty` and `:FeatureOfInterest` to test the query effectively.\n\n5. **Define Relationships**:\n   - Ensure that there are relationships or axioms that link `:AcquisitionParameter` to actual instances of `:CulturalProperty` and `:FeatureOfInterest` to facilitate query results. \n\nBy implementing"
+      },
+      {
+        "cq": "Add rdfs:label and rdfs:comment annotations to every class and property.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:AcquisitionParameter .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:CulturalProperty .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Expert .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:FeatureOfInterest .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Hardware .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Interpretation .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Method .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Observation .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:ParameterType .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } \n  } UNION {\n    ?class a odp:Participation .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?",
+        "status": "fail",
+        "result_count": 0,
+        "sparql_error": "Expected SelectQuery, found 'UNION'  (at char 1354), (line:40, col:5)",
+        "suggestion": "To address the competency question of adding `rdfs:label` and `rdfs:comment` annotations to every class and property in your ontology, consider the following concrete suggestions:\n\n1. **Define Annotations for Each Class**: For each class in your ontology (e.g., `odp:AcquisitionParameter`, `odp:CulturalProperty`, etc.), add `rdfs:label` and `rdfs:comment` annotations that provide a human-readable name and a description of the class's purpose or role within the ontology.\n\n   Example:\n   ```turtle\n   odp:AcquisitionParameter rdfs:label \"Acquisition Parameter\" ;\n                            rdfs:comment \"Parameters related to the acquisition of cultural properties.\" .\n   ```\n\n2. **Define Annotations for Each Property**: Similarly, for each property in your ontology, add `rdfs:label` and `rdfs:comment` annotations that describe the property and its intended use.\n\n   Example:\n   ```turtle\n   odp:hasFeatureOfInterest rdfs:label \"Has Feature of Interest\" ;\n                             rdfs:comment \"Links an observation to a specific feature of interest.\" .\n   ```\n\n3. **Use a Consistent Naming Convention**: Ensure that the labels are consistent in terms of naming conventions (e.g., using camel case or underscores) and that comments are clear and concise to enhance understanding.\n\n4. **Automate Annotation Generation**: If feasible, consider creating a script or"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology .\n  OPTIONAL { ?ontology rdfs:label ?ontologyLabel }\n  OPTIONAL { ?ontology rdfs:comment ?ontologyComment }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1
+    },
+    "pitfalls_total": 1,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 1,
+    "critical_count": 0
+  }
+}

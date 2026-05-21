@@ -1,0 +1,136 @@
+{
+  "id": "2023-134-03",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 60,
+    "classes_count": 6,
+    "object_properties_count": 11,
+    "datatype_properties_count": 2,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.3333333333333333,
+    "relationship_richness": 0.8461538461538461,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 60,
+    "triples_after": 280,
+    "inferred_triples": 220,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 0,
+    "cqs_failed": 6,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?entry ?maintainer ?location ?created ?updated WHERE {\n  ?entry a odp:Registry-entry .\n  OPTIONAL { ?entry odp:Maintainer ?maintainer }\n  OPTIONAL { ?entry odp:Location ?location }\n  OPTIONAL { ?entry odp:Created ?created }\n  OPTIONAL { ?entry odp:Updated ?updated }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider adding the following classes, properties, or axioms to the ontology:\n\n1. **Class Definition**: Ensure that `odp:Registry-entry` is defined as a class in the ontology. This class should represent the entities you are querying.\n\n2. **Property Definitions**: Define the following properties if they are not already present:\n   - `odp:Maintainer` (Object Property): Relates a `Registry-entry` to its maintainer.\n   - `odp:Location` (Object Property): Relates a `Registry-entry` to its location.\n   - `odp:Created` (Data Property): Represents the creation date of a `Registry-entry`.\n   - `odp:Updated` (Data Property): Represents the last updated date of a `Registry-entry`.\n\n3. **Instance Data**: Add instances of `odp:Registry-entry` with values for the properties `odp:Maintainer`, `odp:Location`, `odp:Created`, and `odp:Updated` to ensure that there is data to query against.\n\nBy implementing these suggestions, the ontology will be better equipped to return results for the given SPARQL query."
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a <http://example.org/odp#Registry-entry> }\n  UNION { ?class a <http://example.org/odp#Registry> }\n  UNION { ?class a <http://example.org/odp#Solid> }\n  UNION { ?class a <http://example.org/odp#Solidactor> }\n  UNION { ?class a <http://example.org/odp#Solidapp> }\n  UNION { ?class a <http://example.org/odp#Solidpod> }\n  UNION { ?property a <http://example.org/odp#Availability> }\n  UNION { ?property a <http://example.org/odp#Compliance> }\n  UNION { ?property a <http://example.org/odp#Discovery> }\n  UNION { ?property a <http://example.org/odp#Identity> }\n  UNION { ?property a <http://example.org/odp#Location> }\n  UNION { ?property a <http://example.org/odp#Maintainer> }\n  UNION { ?property a <http://example.org/odp#Metadata> }\n  UNION { ?property a <http://example.org/odp#Policy> }\n  UNION { ?property a <http://example.org/odp#Privacy> }\n  UNION { ?property a <http://example.org/odp#Role> }\n  UNION { ?property a <http://example.org/odp#Type> }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can answer the competency question regarding the declaration of classes and properties, consider the following concrete suggestions:\n\n1. **Declare Classes**: Ensure that each class is explicitly declared in the ontology using `a owl:Class`. For example:\n   ```turtle\n   :Registry-entry a owl:Class .\n   :Registry a owl:Class .\n   :Solid a owl:Class .\n   :Solidactor a owl:Class .\n   :Solidapp a owl:Class .\n   :Solidpod a owl:Class .\n   ```\n\n2. **Declare Object Properties**: Ensure that each property that relates two individuals is declared as an `owl:ObjectProperty`. For example:\n   ```turtle\n   :Availability a owl:ObjectProperty .\n   :Compliance a owl:ObjectProperty .\n   :Discovery a owl:ObjectProperty .\n   :Identity a owl:ObjectProperty .\n   :Location a owl:ObjectProperty .\n   :Maintainer a owl:ObjectProperty .\n   :Metadata a owl:ObjectProperty .\n   :Policy a owl:ObjectProperty .\n   :Privacy a owl:ObjectProperty .\n   :Role a owl:ObjectProperty .\n   :Type a owl:ObjectProperty .\n   ```\n\n3. **Declare Datatype Properties**: If any properties are intended to hold literal values (e.g., strings, numbers), declare them as `owl:DatatypeProperty`. For example:\n   ```turtle\n   :SomeLiteralProperty a owl:DatatypeProperty .\n   ```\n\n4. **Use a Consistent"
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?entry ?availability ?compliance ?discovery ?identity ?location ?maintainer ?metadata ?policy ?privacy ?role ?type ?created ?updated WHERE {\n  ?entry a odp:Registry-entry .\n  OPTIONAL { ?entry odp:Availability ?availability . }\n  OPTIONAL { ?entry odp:Compliance ?compliance . }\n  OPTIONAL { ?entry odp:Discovery ?discovery . }\n  OPTIONAL { ?entry odp:Identity ?identity . }\n  OPTIONAL { ?entry odp:Location ?location . }\n  OPTIONAL { ?entry odp:Maintainer ?maintainer . }\n  OPTIONAL { ?entry odp:Metadata ?metadata . }\n  OPTIONAL { ?entry odp:Policy ?policy . }\n  OPTIONAL { ?entry odp:Privacy ?privacy . }\n  OPTIONAL { ?entry odp:Role ?role . }\n  OPTIONAL { ?entry odp:Type ?type . }\n  OPTIONAL { ?entry odp:Created ?created . }\n  OPTIONAL { ?entry odp:Updated ?updated . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure that the SPARQL query returns results, consider the following suggestions for enhancing the ontology:\n\n1. **Define the `:Registry-entry` Class**: Ensure that the class `:Registry-entry` is defined in the ontology with appropriate subclass relationships if necessary.\n\n2. **Add Object Properties**: Define the following object properties to represent the relationships between `:Registry-entry` and other entities:\n   - `odp:Availability`\n   - `odp:Compliance`\n   - `odp:Discovery`\n   - `odp:Identity`\n   - `odp:Location`\n   - `odp:Maintainer`\n   - `odp:Metadata`\n   - `odp:Policy`\n   - `odp:Privacy`\n   - `odp:Role`\n   - `odp:Type`\n\n3. **Add Data Properties**: If any of the attributes (e.g., `:Created`, `:Updated`) are meant to hold literal values (like dates or strings), define them as data properties:\n   - `odp:Created` (xsd:dateTime)\n   - `odp:Updated` (xsd:dateTime)\n\n4. **Establish Domain and Range**: For each property, specify the domain and range to clarify the relationships:\n   - For example, `odp:Availability` could have a domain of `:Registry-entry` and a range of a suitable class (e.g., `:AvailabilityType`).\n\n5. **Add"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a odp:Registry-entry .\n    OPTIONAL { ?class odp:Metadata ?label . }\n    OPTIONAL { ?class odp:Metadata ?comment . }\n  }\n  UNION\n  { \n    ?property a odp:Registry .\n    OPTIONAL { ?property odp:Metadata ?label . }\n    OPTIONAL { ?property odp:Metadata ?comment . }\n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property has `rdfs:label` and `rdfs:comment` annotations in your ontology, consider the following concrete additions:\n\n1. **Define Classes and Properties**:\n   - Ensure that you have defined classes and properties in your ontology, such as `odp:Class1`, `odp:Property1`, etc., that are subclasses of `odp:Registry-entry` and `odp:Registry`, respectively.\n\n2. **Add rdfs:label Annotations**:\n   - For each class and property, add `rdfs:label` annotations. For example:\n     ```turtle\n     odp:Class1 rdfs:label \"Class 1\" .\n     odp:Property1 rdfs:label \"Property 1\" .\n     ```\n\n3. **Add rdfs:comment Annotations**:\n   - Similarly, add `rdfs:comment` annotations to provide descriptions. For example:\n     ```turtle\n     odp:Class1 rdfs:comment \"This is a description of Class 1.\" .\n     odp:Property1 rdfs:comment \"This property relates to Class 1.\" .\n     ```\n\n4. **Ensure Metadata Relationships**:\n   - Verify that the relationships for `odp:Metadata` are correctly defined to point to `rdfs:label` and `rdfs:comment`. For example:\n     ```turtle\n     odp:Metadata rdfs:subPropertyOf rdfs:label ."
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX : <http://example.org/odp#>\nSELECT ?ontology ?label ?comment WHERE {\n  ?ontology a :Registry-entry .\n  OPTIONAL { ?ontology rdfs:label ?label . }\n  OPTIONAL { ?ontology rdfs:comment ?comment . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question regarding the mandatory ontology header, you should consider the following additions to your ontology:\n\n1. **Define the `owl:Ontology` Class**: Ensure that the ontology includes a declaration for the `owl:Ontology` class, which is necessary for the ontology header.\n\n   ```turtle\n   :Ontology a rdfs:Class .\n   ```\n\n2. **Declare the `rdfs:label` and `rdfs:comment` Properties**: Ensure that the properties `rdfs:label` and `rdfs:comment` are defined and can be used with instances of the `owl:Ontology`.\n\n   ```turtle\n   rdfs:label a rdf:Property .\n   rdfs:comment a rdf:Property .\n   ```\n\n3. **Create an Instance of the Ontology**: Add an instance of the ontology that uses the `owl:Ontology` class and includes the required properties.\n\n   ```turtle\n   :MyOntology a owl:Ontology ;\n       rdfs:label \"My Ontology\" ;\n       rdfs:comment \"This ontology describes...\" .\n   ```\n\n4. **Ensure Proper Namespace Usage**: Make sure that the prefixes for `owl`, `rdfs`, and any other relevant namespaces are correctly defined at the beginning of your ontology file.\n\n   ```turtle\n   @prefix owl: <http://www.w3.org/2002/07/owl#> .\n   @prefix rdfs: <http"
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "PREFIX odp: <http://example.org/odp#>\nSELECT ?entry ?maintainer ?location ?type WHERE {\n  ?entry a odp:Registry-entry .\n  OPTIONAL { ?entry odp:Maintainer ?maintainer }\n  OPTIONAL { ?entry odp:Location ?location }\n  OPTIONAL { ?entry odp:Type ?type }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that your ontology can effectively answer the competency question regarding registry entries, consider adding the following classes, properties, and axioms:\n\n1. **Classes**:\n   - Define a class `odp:Registry-entry` to represent the entries in the registry.\n\n2. **Properties**:\n   - Add the property `odp:Maintainer` to link a `odp:Registry-entry` to its maintainer (e.g., a person or organization).\n   - Add the property `odp:Location` to specify the location associated with a `odp:Registry-entry`.\n   - Add the property `odp:Type` to categorize the type of the `odp:Registry-entry`.\n\n3. **Axioms**:\n   - Ensure that the properties `odp:Maintainer`, `odp:Location`, and `odp:Type` are defined with appropriate ranges (e.g., `xsd:string` for `odp:Location` and `odp:Type`, and a class for `odp:Maintainer` if it represents a specific entity).\n\n4. **Data Population**:\n   - Populate the ontology with sample data for `odp:Registry-entry` instances, including values for `odp:Maintainer`, `odp:Location`, and `odp:Type` to ensure that the SPARQL query can return results.\n\n5. **Namespace Declaration**:\n   - Ensure that the ontology is correctly defined with the appropriate namespace (e.g., `http://example.org/odp#`) and"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 13
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      },
+      {
+        "code": "P11",
+        "affected_elements_count": 13,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#Metadata",
+          "http://example.org/odp#Created",
+          "http://example.org/odp#Privacy",
+          "http://example.org/odp#Policy",
+          "http://example.org/odp#Location",
+          "http://example.org/odp#Role",
+          "http://example.org/odp#Compliance",
+          "http://example.org/odp#Discovery",
+          "http://example.org/odp#Maintainer",
+          "http://example.org/odp#Identity",
+          "http://example.org/odp#Updated",
+          "http://example.org/odp#Type",
+          "http://example.org/odp#Availability"
+        ]
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}

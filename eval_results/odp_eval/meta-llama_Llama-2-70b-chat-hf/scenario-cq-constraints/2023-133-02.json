@@ -1,0 +1,126 @@
+{
+  "id": "2023-133-02",
+  "model": "meta-llama_Llama-2-70b-chat-hf",
+  "config": "scenario-cq-constraints",
+  "ontometrics": {
+    "triples_count": 48,
+    "classes_count": 10,
+    "object_properties_count": 4,
+    "datatype_properties_count": 1,
+    "annotation_properties_count": 0,
+    "individuals_count": 0,
+    "subclass_axioms": 0,
+    "equivalence_axioms": 0,
+    "disjoint_axioms": 0,
+    "restriction_axioms": 0,
+    "attribute_richness": 0.1,
+    "relationship_richness": 0.8,
+    "avg_subclass_per_class": 0.0
+  },
+  "reasoner": {
+    "consistent": true,
+    "triples_before": 48,
+    "triples_after": 257,
+    "inferred_triples": 209,
+    "unsatisfiable_classes": []
+  },
+  "cqs": [
+    "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+    "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+    "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+    "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+    "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+    "Keep the ontology minimal and reusable.?"
+  ],
+  "cqs_count": 6,
+  "cq_verification": {
+    "cqs_total": 6,
+    "cqs_passed": 2,
+    "cqs_failed": 4,
+    "pass_rate": 0.3333,
+    "results": [
+      {
+        "cq": "Do not add concepts or axioms not grounded in the scenario or CQs.?",
+        "sparql": "SELECT ?symptom ?effectWeight WHERE { \n  ?symptom a <http://example.org/odp#Symptom> .\n  OPTIONAL { \n    ?symptom <http://example.org/odp#EffectWeight> ?effectWeight \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the SPARQL query returns results, consider adding the following elements to the ontology:\n\n1. **Define the `Symptom` Class**: Ensure that the class `http://example.org/odp#Symptom` is properly defined in the ontology, including its relationship to other relevant classes (e.g., diseases, conditions).\n\n2. **Add the `EffectWeight` Property**: Create the property `http://example.org/odp#EffectWeight` and define its domain as `http://example.org/odp#Symptom` and its range (e.g., a numeric type or a specific scale) to represent the weight or severity of the symptom.\n\n3. **Populate Instances**: Add instances of the `Symptom` class with associated `EffectWeight` values to the ontology. For example:\n   - `http://example.org/odp#Symptom1` a `http://example.org/odp#Symptom` ; `http://example.org/odp#EffectWeight` \"5\" .\n\n4. **Ensure Proper Data Types**: If `EffectWeight` is intended to be a numeric value, ensure that the ontology specifies the correct data type (e.g., xsd:integer or xsd:float) for the property.\n\n5. **Check for Consistency**: Validate that there are no conflicting axioms or missing relationships that could prevent the query from returning results, ensuring that the ontology is coherent and complete.\n\nBy"
+      },
+      {
+        "cq": "Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.?",
+        "sparql": "SELECT ?class ?property WHERE {\n  { ?class a owl:Class }\n  UNION\n  { ?property a owl:ObjectProperty }\n  UNION\n  { ?property a owl:DatatypeProperty }\n  OPTIONAL { ?property a owl:AnnotationProperty }\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 10
+      },
+      {
+        "cq": "Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.?",
+        "sparql": "SELECT ?symptom ?asthma ?cough ?wheezing ?chestTightness ?breathingPatterns ?pollen ?outdoorEnvironment ?medication ?aqi WHERE {\n  ?symptom a <http://example.org/odp#Symptom> .\n  OPTIONAL { ?symptom <http://example.org/odp#AsthmaSymptom> ?asthma . }\n  OPTIONAL { ?symptom <http://example.org/odp#Cough> ?cough . }\n  OPTIONAL { ?symptom <http://example.org/odp#Wheezing> ?wheezing . }\n  OPTIONAL { ?symptom <http://example.org/odp#ChestTightness> ?chestTightness . }\n  OPTIONAL { ?symptom <http://example.org/odp#BreathingPatterns> ?breathingPatterns . }\n  OPTIONAL { ?symptom <http://example.org/odp#Pollen> ?pollen . }\n  OPTIONAL { ?symptom <http://example.org/odp#OutdoorEnvironment> ?outdoorEnvironment . }\n  OPTIONAL { ?symptom <http://example.org/odp#Medication> ?medication . }\n  OPTIONAL { ?symptom <http://example.org/odp#AQI> ?aqi . }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To effectively answer the competency question regarding symptoms related to asthma and their associations with various factors, consider adding the following classes, properties, and axioms to the ontology:\n\n1. **Define Symptom Class Hierarchy**:\n   - Create a class hierarchy under `:Symptom` that includes subclasses such as `:AsthmaSymptom`, `:Cough`, `:Wheezing`, `:ChestTightness`, and `:BreathingPatterns`. This will allow for more specific categorization of symptoms.\n\n2. **Create Object Properties**:\n   - Define object properties to establish relationships between symptoms and their associated factors:\n     - `:hasAssociatedFactor` to link symptoms to environmental factors (e.g., pollen, outdoor environment).\n     - `:hasMedication` to link symptoms to relevant medications.\n     - `:hasAQI` to link symptoms to air quality index values.\n\n3. **Define Environmental Factors Class**:\n   - Introduce a class `:EnvironmentalFactor` with subclasses such as `:Pollen` and `:OutdoorEnvironment` to categorize different environmental influences on asthma symptoms.\n\n4. **Define Medication Class**:\n   - Create a class `:Medication` to represent various medications that can be associated with asthma symptoms, allowing for a structured way to link symptoms to treatments.\n\n5. **Add Data Properties**:\n   - Introduce data properties such as `:hasAQIValue` to represent the air quality index as a numerical value, which"
+      },
+      {
+        "cq": "Every class and property must have rdfs:label and rdfs:comment annotations.?",
+        "sparql": "SELECT ?class ?property ?label ?comment WHERE {\n  { \n    ?class a ?type .\n    OPTIONAL { ?class rdfs:label ?label } .\n    OPTIONAL { ?class rdfs:comment ?comment } .\n  }\n  UNION\n  { \n    ?property a ?type .\n    OPTIONAL { ?property rdfs:label ?label } .\n    OPTIONAL { ?property rdfs:comment ?comment } .\n  }\n  VALUES ?type { \n    <http://example.org/odp#AQI> \n    <http://example.org/odp#Asthma> \n    <http://example.org/odp#BreathingPatterns> \n    <http://example.org/odp#ChestTightness> \n    <http://example.org/odp#Cough> \n    <http://example.org/odp#Medication> \n    <http://example.org/odp#OutdoorEnvironment> \n    <http://example.org/odp#Pollen> \n    <http://example.org/odp#Symptom> \n    <http://example.org/odp#Wheezing> \n    <http://example.org/odp#AsthmaSymptom> \n    <http://example.org/odp#CausalRelation> \n    <http://example.org/odp#Intake> \n    <http://example.org/odp#ProbableCause> \n    <http://example.org/odp#EffectWeight> \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To ensure that every class and property in your ontology has `rdfs:label` and `rdfs:comment` annotations, you can take the following concrete steps:\n\n1. **Add rdfs:label Annotations**: For each class and property, add a human-readable label using `rdfs:label`. For example:\n   ```turtle\n   <http://example.org/odp#AQI> rdfs:label \"Air Quality Index\" .\n   <http://example.org/odp#Asthma> rdfs:label \"Asthma\" .\n   ```\n\n2. **Add rdfs:comment Annotations**: Provide a description for each class and property using `rdfs:comment`. For example:\n   ```turtle\n   <http://example.org/odp#AQI> rdfs:comment \"A measure of air quality.\" .\n   <http://example.org/odp#Asthma> rdfs:comment \"A chronic respiratory condition.\" .\n   ```\n\n3. **Define a Consistency Rule**: Implement a rule or axiom in your ontology that mandates the presence of `rdfs:label` and `rdfs:comment` for all classes and properties. This can be done using SHACL or OWL constraints.\n\n4. **Review Existing Classes and Properties**: Audit your existing ontology to identify any classes or properties that lack these annotations and update them accordingly.\n\n5. **Automate Annotation Process**: Consider creating a script"
+      },
+      {
+        "cq": "Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label \"...\" ; rdfs:comment \"...\" .`?",
+        "sparql": "PREFIX owl: <http://www.w3.org/2002/07/owl#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX odp: <http://example.org/odp#>\n\nSELECT ?ontologyLabel ?ontologyComment WHERE {\n  ?ontology a owl:Ontology ;\n            rdfs:label ?ontologyLabel ;\n            rdfs:comment ?ontologyComment .\n} LIMIT 10",
+        "status": "pass",
+        "result_count": 1
+      },
+      {
+        "cq": "Keep the ontology minimal and reusable.?",
+        "sparql": "SELECT ?symptom ?effectWeight WHERE { \n  ?symptom a <http://example.org/odp#Symptom> .\n  OPTIONAL { \n    ?symptom <http://example.org/odp#EffectWeight> ?effectWeight \n  }\n} LIMIT 10",
+        "status": "fail",
+        "result_count": 0,
+        "suggestion": "To address the competency question and ensure the ontology is minimal and reusable, consider the following additions:\n\n1. **Define the `Symptom` Class**: Ensure that the `Symptom` class is explicitly defined in the ontology with a clear URI (e.g., `<http://example.org/odp#Symptom>`).\n\n2. **Add the `EffectWeight` Property**: Create a property `EffectWeight` with a clear definition and domain and range. For example:\n   - Property URI: `<http://example.org/odp#EffectWeight>`\n   - Domain: `<http://example.org/odp#Symptom>`\n   - Range: xsd:float (or an appropriate datatype)\n\n3. **Include Instances of Symptoms**: Add instances of the `Symptom` class in the ontology, ensuring that at least some of them have the `EffectWeight` property defined. For example:\n   ```turtle\n   <http://example.org/odp#Symptom1> a <http://example.org/odp#Symptom> ;\n       <http://example.org/odp#EffectWeight> 0.75 .\n   ```\n\n4. **Use RDFS or OWL for Class and Property Definitions**: Utilize RDFS or OWL to define the `Symptom` class and `EffectWeight` property, ensuring they are properly annotated for better interoperability and reuse.\n\n5. **Check for Consistency**: Validate the ontology to ensure that all classes and properties"
+      }
+    ]
+  },
+  "oops": {
+    "status_code": 200,
+    "pitfall_codes": [
+      "P10",
+      "P11"
+    ],
+    "pitfall_instance_counts": {
+      "P10": 1,
+      "P11": 1
+    },
+    "pitfall_affected_elements_counts": {
+      "P10": 1,
+      "P11": 5
+    },
+    "pitfalls_total": 2,
+    "pitfalls": [
+      {
+        "code": "P11",
+        "affected_elements_count": 5,
+        "importance": "Important",
+        "name": "Missing domain or range in properties",
+        "description": "Object and/or datatype properties without domain or range (or none of them) are included in the ontology.",
+        "affected_elements_sample": [
+          "http://example.org/odp#CausalRelation",
+          "http://example.org/odp#EffectWeight",
+          "http://example.org/odp#Intake",
+          "http://example.org/odp#ProbableCause",
+          "http://example.org/odp#AsthmaSymptom"
+        ]
+      },
+      {
+        "code": "P10",
+        "affected_elements_count": 1,
+        "importance": "Important",
+        "name": "Missing disjointness",
+        "description": "The ontology lacks disjoint axioms between classes or between properties that should be defined as disjoint. This pitfall is related with the guidelines provided in [6], [2] and [7]."
+      }
+    ],
+    "minor_pitfalls_skipped": 2,
+    "important_count": 2,
+    "critical_count": 0
+  }
+}
