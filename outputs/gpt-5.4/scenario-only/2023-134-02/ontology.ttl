@@ -1,1 +1,305 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Solid governance challenges ontology design pattern" ;
+  rdfs:comment "An ontology design pattern for representing governance-relevant information gaps and governance artifacts for Solid apps and Pods, including actors, roles, infrastructure metadata, data categories and storage, data handling practices, privacy preferences and requests, logging and provenance, and legal compliance support." .
+
+### Classes
+
+:SolidActor a owl:Class ;
+  rdfs:label "Solid actor" ;
+  rdfs:comment "An entity participating in the Solid ecosystem, such as a user or a provider." .
+
+:SolidUser a owl:Class ;
+  rdfs:label "Solid user" ;
+  rdfs:comment "A user of Solid Pods or Solid apps." ;
+  rdfs:subClassOf :SolidActor .
+
+:Provider a owl:Class ;
+  rdfs:label "Provider" ;
+  rdfs:comment "An entity that provides a Pod or an app in the Solid ecosystem." ;
+  rdfs:subClassOf :SolidActor .
+
+:PodProvider a owl:Class ;
+  rdfs:label "Pod provider" ;
+  rdfs:comment "A provider that provides a Pod." ;
+  rdfs:subClassOf :Provider .
+
+:AppProvider a owl:Class ;
+  rdfs:label "App provider" ;
+  rdfs:comment "A provider that provides a Solid app." ;
+  rdfs:subClassOf :Provider .
+
+:Authority a owl:Class ;
+  rdfs:label "Authority" ;
+  rdfs:comment "An authority that may perform auditing or investigations." ;
+  rdfs:subClassOf :SolidActor .
+
+:Role a owl:Class ;
+  rdfs:label "Role" ;
+  rdfs:comment "A role played by a Solid actor." .
+
+:Pod a owl:Class ;
+  rdfs:label "Pod" ;
+  rdfs:comment "A Solid Pod used to store data." .
+
+:SolidApp a owl:Class ;
+  rdfs:label "Solid app" ;
+  rdfs:comment "An application used in the Solid ecosystem." .
+
+:SolidSpecification a owl:Class ;
+  rdfs:label "Solid specification" ;
+  rdfs:comment "A Solid specification that a Pod may run." .
+
+:Functionality a owl:Class ;
+  rdfs:label "Functionality" ;
+  rdfs:comment "A functionality installed within a Pod." .
+
+:DataCategory a owl:Class ;
+  rdfs:label "Data category" ;
+  rdfs:comment "A category of data used to support granular access and discovery in a Pod." .
+
+:DataStorageLocation a owl:Class ;
+  rdfs:label "Data storage location" ;
+  rdfs:comment "A location in a Pod where data of a given category is stored." .
+
+:DataHandlingPractice a owl:Class ;
+  rdfs:label "Data handling practice" ;
+  rdfs:comment "A practice describing how data is handled by a Pod or app provider." .
+
+:PrivacyNotice a owl:Class ;
+  rdfs:label "Privacy notice" ;
+  rdfs:comment "A machine-readable notice describing data handling practices." .
+
+:DataRequirement a owl:Class ;
+  rdfs:label "Data requirement" ;
+  rdfs:comment "A declaration of what data an app needs to function." .
+
+:PrivacyPolicy a owl:Class ;
+  rdfs:label "Privacy policy" ;
+  rdfs:comment "A privacy policy expressed by a Solid user." .
+
+:PrivacyPreference a owl:Class ;
+  rdfs:label "Privacy preference" ;
+  rdfs:comment "A privacy preference or requirement expressed by a Solid user." .
+
+:DataRequest a owl:Class ;
+  rdfs:label "Data request" ;
+  rdfs:comment "A request for the use of data that a user may manage." .
+
+:Decision a owl:Class ;
+  rdfs:label "Decision" ;
+  rdfs:comment "A decision regarding an incoming data request or the use of data." .
+
+:ProvenanceRecord a owl:Class ;
+  rdfs:label "Provenance record" ;
+  rdfs:comment "A record kept for accountability about data access, data use, or policy changes." .
+
+:ConsentRecord a owl:Class ;
+  rdfs:label "Consent record" ;
+  rdfs:comment "A provenance record documenting consent." ;
+  rdfs:subClassOf :ProvenanceRecord .
+
+:DataAccessRecord a owl:Class ;
+  rdfs:label "Data access record" ;
+  rdfs:comment "A provenance record documenting who accessed data." ;
+  rdfs:subClassOf :ProvenanceRecord .
+
+:DataUseRecord a owl:Class ;
+  rdfs:label "Data use record" ;
+  rdfs:comment "A provenance record documenting what is being done with data." ;
+  rdfs:subClassOf :ProvenanceRecord .
+
+:PolicyChangeRecord a owl:Class ;
+  rdfs:label "Policy change record" ;
+  rdfs:comment "A provenance record documenting changes to data handling policies." ;
+  rdfs:subClassOf :ProvenanceRecord .
+
+:ComplianceCheck a owl:Class ;
+  rdfs:label "Compliance check" ;
+  rdfs:comment "A check related to legal compliance." .
+
+:GDPRElatedRight a owl:Class ;
+  rdfs:label "GDPR-related right" ;
+  rdfs:comment "A right that a user may exercise in relation to GDPR." .
+
+:ConsentWithdrawal a owl:Class ;
+  rdfs:label "Consent withdrawal" ;
+  rdfs:comment "An exercise of the GDPR-related right to withdraw consent." ;
+  rdfs:subClassOf :GDPRElatedRight .
+
+:AuditInformation a owl:Class ;
+  rdfs:label "Audit information" ;
+  rdfs:comment "Information used by authorities to perform auditing or investigations." .
+
+### Disjointness
+
+:Pod owl:disjointWith :SolidApp .
+
+:SolidUser owl:disjointWith :Provider, :Authority .
+
+:PodProvider owl:disjointWith :AppProvider .
+
+:PrivacyNotice owl:disjointWith :PrivacyPolicy .
+
+### Object Properties
+
+:hasRole a owl:ObjectProperty ;
+  rdfs:label "has role" ;
+  rdfs:comment "Relates a Solid actor to a role it plays." ;
+  rdfs:domain :SolidActor ;
+  rdfs:range :Role .
+
+:providesPod a owl:ObjectProperty ;
+  rdfs:label "provides Pod" ;
+  rdfs:comment "Relates a Pod provider to a Pod it provides." ;
+  rdfs:domain :PodProvider ;
+  rdfs:range :Pod .
+
+:providesApp a owl:ObjectProperty ;
+  rdfs:label "provides app" ;
+  rdfs:comment "Relates an app provider to a Solid app it provides." ;
+  rdfs:domain :AppProvider ;
+  rdfs:range :SolidApp .
+
+:runsSpecification a owl:ObjectProperty ;
+  rdfs:label "runs specification" ;
+  rdfs:comment "Relates a Pod to the Solid specification it is running." ;
+  rdfs:domain :Pod ;
+  rdfs:range :SolidSpecification .
+
+:hasInstalledFunctionality a owl:ObjectProperty ;
+  rdfs:label "has installed functionality" ;
+  rdfs:comment "Relates a Pod to a functionality installed within it." ;
+  rdfs:domain :Pod ;
+  rdfs:range :Functionality .
+
+:hasDataCategory a owl:ObjectProperty ;
+  rdfs:label "has data category" ;
+  rdfs:comment "Relates a Pod to a data category that exists in it." ;
+  rdfs:domain :Pod ;
+  rdfs:range :DataCategory .
+
+:storedAt a owl:ObjectProperty ;
+  rdfs:label "stored at" ;
+  rdfs:comment "Relates a data category to the location where it is stored in a Pod." ;
+  rdfs:domain :DataCategory ;
+  rdfs:range :DataStorageLocation .
+
+:hasPrivacyNotice a owl:ObjectProperty ;
+  rdfs:label "has privacy notice" ;
+  rdfs:comment "Relates a Pod or app to a machine-readable privacy notice." ;
+  rdfs:range :PrivacyNotice .
+
+:declaresDataRequirement a owl:ObjectProperty ;
+  rdfs:label "declares data requirement" ;
+  rdfs:comment "Relates a Solid app to the data it declares it needs to function." ;
+  rdfs:domain :SolidApp ;
+  rdfs:range :DataRequirement .
+
+:describesDataHandlingPractice a owl:ObjectProperty ;
+  rdfs:label "describes data handling practice" ;
+  rdfs:comment "Relates a privacy notice to a data handling practice it describes." ;
+  rdfs:domain :PrivacyNotice ;
+  rdfs:range :DataHandlingPractice .
+
+:expressesPrivacyPolicy a owl:ObjectProperty ;
+  rdfs:label "expresses privacy policy" ;
+  rdfs:comment "Relates a Solid user to a privacy policy they express." ;
+  rdfs:domain :SolidUser ;
+  rdfs:range :PrivacyPolicy .
+
+:hasPrivacyPreference a owl:ObjectProperty ;
+  rdfs:label "has privacy preference" ;
+  rdfs:comment "Relates a privacy policy to a privacy preference or requirement." ;
+  rdfs:domain :PrivacyPolicy ;
+  rdfs:range :PrivacyPreference .
+
+:hasIncomingDataRequest a owl:ObjectProperty ;
+  rdfs:label "has incoming data request" ;
+  rdfs:comment "Relates a Solid user to an incoming data request they may manage." ;
+  rdfs:domain :SolidUser ;
+  rdfs:range :DataRequest .
+
+:hasDecision a owl:ObjectProperty ;
+  rdfs:label "has decision" ;
+  rdfs:comment "Relates a data request to a decision about the use of data." ;
+  rdfs:domain :DataRequest ;
+  rdfs:range :Decision .
+
+:hasProvenanceRecord a owl:ObjectProperty ;
+  rdfs:label "has provenance record" ;
+  rdfs:comment "Relates a Pod to a provenance record kept for accountability." ;
+  rdfs:domain :Pod ;
+  rdfs:range :ProvenanceRecord .
+
+:recordsAccessBy a owl:ObjectProperty ;
+  rdfs:label "records access by" ;
+  rdfs:comment "Relates a data access record to the actor who accessed data." ;
+  rdfs:domain :DataAccessRecord ;
+  rdfs:range :SolidActor .
+
+:recordsDataUseBy a owl:ObjectProperty ;
+  rdfs:label "records data use by" ;
+  rdfs:comment "Relates a data use record to the actor who is doing something with data." ;
+  rdfs:domain :DataUseRecord ;
+  rdfs:range :SolidActor .
+
+:recordsPolicyChangeOf a owl:ObjectProperty ;
+  rdfs:label "records policy change of" ;
+  rdfs:comment "Relates a policy change record to the data handling practice that changed." ;
+  rdfs:domain :PolicyChangeRecord ;
+  rdfs:range :DataHandlingPractice .
+
+:recordsConsentDecision a owl:ObjectProperty ;
+  rdfs:label "records consent decision" ;
+  rdfs:comment "Relates a consent record to a decision it documents." ;
+  rdfs:domain :ConsentRecord ;
+  rdfs:range :Decision .
+
+:hasComplianceCheck a owl:ObjectProperty ;
+  rdfs:label "has compliance check" ;
+  rdfs:comment "Relates a Pod or app to a legal compliance check." ;
+  rdfs:range :ComplianceCheck .
+
+:enablesExerciseOfRight a owl:ObjectProperty ;
+  rdfs:label "enables exercise of right" ;
+  rdfs:comment "Relates a compliance check to a GDPR-related right it supports." ;
+  rdfs:domain :ComplianceCheck ;
+  rdfs:range :GDPRElatedRight .
+
+:providesAuditInformation a owl:ObjectProperty ;
+  rdfs:label "provides audit information" ;
+  rdfs:comment "Relates a Pod to audit information for authorities." ;
+  rdfs:domain :Pod ;
+  rdfs:range :AuditInformation .
+
+:usedByAuthority a owl:ObjectProperty ;
+  rdfs:label "used by authority" ;
+  rdfs:comment "Relates audit information to an authority that may use it for auditing or investigation." ;
+  rdfs:domain :AuditInformation ;
+  rdfs:range :Authority .
+
+### Datatype Properties
+
+:storagePath a owl:DatatypeProperty ;
+  rdfs:label "storage path" ;
+  rdfs:comment "A literal path, identifier, or locator for a data storage location in a Pod." ;
+  rdfs:domain :DataStorageLocation ;
+  rdfs:range xsd:string .
+
+:specificationIdentifier a owl:DatatypeProperty ;
+  rdfs:label "specification identifier" ;
+  rdfs:comment "A literal identifier or version string for a Solid specification." ;
+  rdfs:domain :SolidSpecification ;
+  rdfs:range xsd:string .
+
+:functionalityName a owl:DatatypeProperty ;
+  rdfs:label "functionality name" ;
+  rdfs:comment "A literal name for a functionality installed within a Pod." ;
+  rdfs:domain :Functionality ;
+  rdfs:range xsd:string .

@@ -1,6 +1,4 @@
-1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
-
-```turtle
+1. ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -9,34 +7,29 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "Author naming and publication role ODP" ;
-  rdfs:comment "An ontology design pattern for representing authors who adopt different names, including pseudonyms and name changes, in relation to publishing books and assuming the role of book writer." .
-
-:Person a owl:Class ;
-  rdfs:label "Person" ;
-  rdfs:comment "A human individual, such as an author, who may use different names." .
+  rdfs:comment "An ontology design pattern for representing an author who adopts different names, including pseudonyms and name changes, in order to publish books. It supports linking authors, names they use, publications, and the authorship role assumed under a particular name." .
 
 :Author a owl:Class ;
   rdfs:label "Author" ;
-  rdfs:comment "A person who authors published works such as books." ;
-  rdfs:subClassOf :Person .
+  rdfs:comment "A person who authors books or other written works." .
 
 :Name a owl:Class ;
   rdfs:label "Name" ;
-  rdfs:comment "A name used by a person." .
+  rdfs:comment "A name used by an author, including legal names, changed names, or pseudonyms." .
 
 :Pseudonym a owl:Class ;
   rdfs:label "Pseudonym" ;
-  rdfs:comment "An alternative name adopted by an author for publishing." ;
+  rdfs:comment "A name adopted by an author for publishing that is not the author's primary personal name." ;
   rdfs:subClassOf :Name .
 
 :ChangedName a owl:Class ;
   rdfs:label "Changed name" ;
-  rdfs:comment "A name borne by a person as the result of a name change, for example after marriage." ;
+  rdfs:comment "A name borne by an author after a name change, for example after marriage." ;
   rdfs:subClassOf :Name .
 
 :WrittenWork a owl:Class ;
   rdfs:label "Written work" ;
-  rdfs:comment "A written creative work produced by an author." .
+  rdfs:comment "A written publication such as a book or a collection of poems." .
 
 :Book a owl:Class ;
   rdfs:label "Book" ;
@@ -46,40 +39,35 @@
 :CollectionOfPoems a owl:Class ;
   rdfs:label "Collection of poems" ;
   rdfs:comment "A written work consisting of a collection of poems." ;
-  rdfs:subClassOf :Book .
+  rdfs:subClassOf :WrittenWork .
 
-:Role a owl:Class ;
-  rdfs:label "Role" ;
-  rdfs:comment "A role that a person may assume in a given context." .
-
-:BookWriterRole a owl:Class ;
-  rdfs:label "Book writer role" ;
-  rdfs:comment "The role of being a writer of a book." ;
-  rdfs:subClassOf :Role .
+:AuthorshipRole a owl:Class ;
+  rdfs:label "Authorship role" ;
+  rdfs:comment "The role of being the writer of a written work, possibly assumed under a particular name." .
 
 :usesName a owl:ObjectProperty ;
   rdfs:label "uses name" ;
-  rdfs:comment "Relates a person to a name that the person uses." ;
-  rdfs:domain :Person ;
+  rdfs:comment "Relates an author to a name that the author uses or has used." ;
+  rdfs:domain :Author ;
   rdfs:range :Name .
 
 :hasPseudonym a owl:ObjectProperty ;
   rdfs:label "has pseudonym" ;
-  rdfs:comment "Relates an author to a pseudonym used for publishing." ;
+  rdfs:comment "Relates an author to a pseudonym adopted for publishing." ;
   rdfs:domain :Author ;
   rdfs:range :Pseudonym ;
   rdfs:subPropertyOf :usesName .
 
 :hasChangedName a owl:ObjectProperty ;
   rdfs:label "has changed name" ;
-  rdfs:comment "Relates a person to a name used after a name change, for example after marriage." ;
-  rdfs:domain :Person ;
+  rdfs:comment "Relates an author to a name used after a name change, for example after marriage." ;
+  rdfs:domain :Author ;
   rdfs:range :ChangedName ;
   rdfs:subPropertyOf :usesName .
 
-:authoredWork a owl:ObjectProperty ;
-  rdfs:label "authored work" ;
-  rdfs:comment "Relates an author to a written work they authored." ;
+:publishedWork a owl:ObjectProperty ;
+  rdfs:label "published work" ;
+  rdfs:comment "Relates an author to a written work that the author published." ;
   rdfs:domain :Author ;
   rdfs:range :WrittenWork .
 
@@ -89,12 +77,142 @@
   rdfs:domain :WrittenWork ;
   rdfs:range :Name .
 
-:assumesRole a owl:ObjectProperty ;
-  rdfs:label "assumes role" ;
-  rdfs:comment "Relates a person to a role that the person assumes." ;
-  rdfs:domain :Person ;
-  rdfs:range :Role .
+:assumesAuthorshipRole a owl:ObjectProperty ;
+  rdfs:label "assumes authorship role" ;
+  rdfs:comment "Relates an author to the role of being a writer." ;
+  rdfs:domain :Author ;
+  rdfs:range :AuthorshipRole .
 
-:assumesRoleUsingName a owl:ObjectProperty ;
-  rdfs:label "assumes role using name" ;
-  rdfs:comment "Relates a role assumption by a person to the name used to assume
+:roleForWork a owl:ObjectProperty ;
+  rdfs:label "role for work" ;
+  rdfs:comment "Relates an authorship role to the written work for which the role is assumed." ;
+  rdfs:domain :AuthorshipRole ;
+  rdfs:range :WrittenWork .
+
+:roleUnderName a owl:ObjectProperty ;
+  rdfs:label "role under name" ;
+  rdfs:comment "Relates an authorship role to the name under which the role is assumed." ;
+  rdfs:domain :AuthorshipRole ;
+  rdfs:range :Name .
+
+:hasTitle a owl:DatatypeProperty ;
+  rdfs:label "has title" ;
+  rdfs:comment "Gives the title of a written work." ;
+  rdfs:domain :WrittenWork ;
+  rdfs:range xsd:string .
+
+:hasNameString a owl:DatatypeProperty ;
+  rdfs:label "has name string" ;
+  rdfs:comment "Gives the literal form of a name used by an author." ;
+  rdfs:domain :Name ;
+  rdfs:range xsd:string .
+```
+
+2. Scenario-requirement-to-axiom mapping
+
+- Requirement: There is an author.
+  - Axioms:
+    - `:Author a owl:Class .`
+
+- Requirement: An author may adopt different names.
+  - Axioms:
+    - `:Name a owl:Class .`
+    - `:usesName a owl:ObjectProperty ; rdfs:domain :Author ; rdfs:range :Name .`
+
+- Requirement: Some adopted names are pseudonyms.
+  - Axioms:
+    - `:Pseudonym a owl:Class ; rdfs:subClassOf :Name .`
+    - `:hasPseudonym a owl:ObjectProperty ; rdfs:domain :Author ; rdfs:range :Pseudonym ; rdfs:subPropertyOf :usesName .`
+
+- Requirement: Authors may undergo name changes, e.g., after marriage.
+  - Axioms:
+    - `:ChangedName a owl:Class ; rdfs:subClassOf :Name .`
+    - `:hasChangedName a owl:ObjectProperty ; rdfs:domain :Author ; rdfs:range :ChangedName ; rdfs:subPropertyOf :usesName .`
+
+- Requirement: Authors publish books / written works.
+  - Axioms:
+    - `:WrittenWork a owl:Class .`
+    - `:Book a owl:Class ; rdfs:subClassOf :WrittenWork .`
+    - `:CollectionOfPoems a owl:Class ; rdfs:subClassOf :WrittenWork .`
+    - `:publishedWork a owl:ObjectProperty ; rdfs:domain :Author ; rdfs:range :WrittenWork .`
+
+- Requirement: A written work can be published under a particular name.
+  - Axioms:
+    - `:publishedUnderName a owl:ObjectProperty ; rdfs:domain :WrittenWork ; rdfs:range :Name .`
+
+- Requirement: The scenario mentions assuming the role of a book writer.
+  - Axioms:
+    - `:AuthorshipRole a owl:Class .`
+    - `:assumesAuthorshipRole a owl:ObjectProperty ; rdfs:domain :Author ; rdfs:range :AuthorshipRole .`
+    - `:roleForWork a owl:ObjectProperty ; rdfs:domain :AuthorshipRole ; rdfs:range :WrittenWork .`
+    - `:roleUnderName a owl:ObjectProperty ; rdfs:domain :AuthorshipRole ; rdfs:range :Name .`
+
+- Requirement: Works and names need textual identifiers.
+  - Axioms:
+    - `:hasTitle a owl:DatatypeProperty ; rdfs:domain :WrittenWork ; rdfs:range xsd:string .`
+    - `:hasNameString a owl:DatatypeProperty ; rdfs:domain :Name ; rdfs:range xsd:string .`
+
+3. CQ-to-axiom mapping
+
+- CQ: Under what pseudonym did the author C. S. Lewis published a collection of poems, Spirit in Bondage?
+  - Needed classes:
+    - `:Author`
+    - `:Pseudonym`
+    - `:CollectionOfPoems`
+    - `:WrittenWork`
+  - Needed properties:
+    - `:publishedWork`
+    - `:publishedUnderName`
+    - `:hasPseudonym`
+    - `:hasTitle`
+    - `:hasNameString`
+  - How supported:
+    - Identify the author and the work via `:Author`, `:CollectionOfPoems`, and `:hasTitle`.
+    - Link author to work with `:publishedWork`.
+    - Link work to the publishing name with `:publishedUnderName`.
+    - Constrain that name as a pseudonym via `:hasPseudonym` / `:Pseudonym`.
+
+- CQ: What alternative did C. S. Lewis used to assume the role of a book writer?
+  - Needed classes:
+    - `:Author`
+    - `:AuthorshipRole`
+    - `:Name`
+    - `:Book` or `:WrittenWork`
+  - Needed properties:
+    - `:assumesAuthorshipRole`
+    - `:roleUnderName`
+    - `:roleForWork`
+    - `:usesName`
+    - `:hasPseudonym`
+    - `:hasChangedName`
+    - `:hasNameString`
+  - How supported:
+    - Represent the writer role with `:AuthorshipRole`.
+    - Link the author to that role using `:assumesAuthorshipRole`.
+    - Link the role to the alternative name using `:roleUnderName`.
+    - Optionally characterize the alternative as a pseudonym or changed name via `:hasPseudonym` or `:hasChangedName`.
+    - Link the role to a book/work using `:roleForWork`.
+
+- CQ: Show the trajectories of rivers which cross national parks?
+  - Not supported by the scenario.
+  - No river, trajectory, or national park classes/properties were added because they are not grounded in the scenario about authors, names, and publications.
+
+4. Intentionally excluded concepts
+
+- River
+  - Excluded because it appears only in a competency question that is unrelated to the scenario. Adding it would violate the requirement not to add concepts not grounded in the scenario or relevant grounded CQs.
+
+- Trajectory
+  - Excluded for the same reason as River; it is unrelated to author naming and publication.
+
+- National park
+  - Excluded because it is outside the scenario domain.
+
+- Marriage as an event
+  - Excluded because the scenario only gives marriage as an example cause of name change. A dedicated event model is not necessary to satisfy the stated scenario or the grounded CQs.
+
+- Publisher, publication date, edition
+  - Excluded because they are not mentioned in the scenario or CQs.
+
+- Distinct person/name identity constraints or temporal validity of names
+  - Excluded because the scenario does not explicitly require temporal modeling or identity axioms beyond representing different names and changed names.

@@ -1,6 +1,4 @@
-1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
-
-```turtle
+1. ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -8,23 +6,23 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Court hierarchy and bad check regulation ODP" ;
-  rdfs:comment "A minimal ontology design pattern for representing state and district court hierarchies and core bad check transaction information needed to answer the stated competency questions." .
+  rdfs:label "Court Hierarchy and Bad Check Regulation ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing court hierarchies, Indian states and districts, and bad check related check payment information." .
 
 :State a owl:Class ;
   rdfs:label "State" ;
-  rdfs:comment "A first-level administrative region used to locate districts and courts." .
+  rdfs:comment "A state-level administrative region." .
 
 :District a owl:Class ;
   rdfs:label "District" ;
-  rdfs:comment "An administrative district located within a state." .
+  rdfs:comment "A district administrative region located within a state." .
 
 :Court a owl:Class ;
   rdfs:label "Court" ;
   rdfs:comment "A judicial body within a court hierarchy." .
 
 :DistrictCourt a owl:Class ;
-  rdfs:label "District court" ;
+  rdfs:label "District Court" ;
   rdfs:comment "A court operating at the district level." ;
   rdfs:subClassOf :Court ,
     [ a owl:Restriction ;
@@ -32,50 +30,47 @@
       owl:someValuesFrom :State
     ] .
 
-:CheckTransaction a owl:Class ;
-  rdfs:label "Check transaction" ;
-  rdfs:comment "A transaction involving a check." .
+:CheckPayment a owl:Class ;
+  rdfs:label "Check Payment" ;
+  rdfs:comment "A payment transaction performed using a check." .
 
 :BadCheck a owl:Class ;
-  rdfs:label "Bad check" ;
-  rdfs:comment "A check transaction that is considered invalid or dishonored under relevant regulation." ;
-  rdfs:subClassOf :CheckTransaction ,
+  rdfs:label "Bad Check" ;
+  rdfs:comment "A check payment that is considered invalid or dishonored." ;
+  rdfs:subClassOf :CheckPayment ,
     [ a owl:Restriction ;
       owl:onProperty :hasTransactionType ;
-      owl:someValuesFrom xsd:string
+      owl:someValuesFrom :TransactionType
     ] ,
     [ a owl:Restriction ;
-      owl:onProperty :hasCheckPaymentDate ;
-      owl:someValuesFrom xsd:date
-    ] .
-
-:CheckPayment a owl:Class ;
-  rdfs:label "Check payment" ;
-  rdfs:comment "A payment event or record associated with a check transaction." ;
-  rdfs:subClassOf
-    [ a owl:Restriction ;
       owl:onProperty :hasTransactionStatus ;
-      owl:someValuesFrom xsd:string
+      owl:someValuesFrom :TransactionStatus
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :paymentDate ;
+      owl:someValuesFrom xsd:dateTime
     ] .
 
-:hasDistrict a owl:ObjectProperty ;
-  rdfs:label "has district" ;
-  rdfs:comment "Relates a state to a district located within it." ;
-  rdfs:domain :State ;
-  rdfs:range :District ;
-  owl:inverseOf :inState .
+:TransactionType a owl:Class ;
+  rdfs:label "Transaction Type" ;
+  rdfs:comment "A category describing the type of a check transaction." .
 
-:inState a owl:ObjectProperty ;
-  rdfs:label "in state" ;
-  rdfs:comment "Relates a district to the state in which it is located." ;
-  rdfs:domain :District ;
-  rdfs:range :State .
+:TransactionStatus a owl:Class ;
+  rdfs:label "Transaction Status" ;
+  rdfs:comment "A category describing the status of a check payment transaction." .
 
 :locatedInState a owl:ObjectProperty ;
   rdfs:label "located in state" ;
-  rdfs:comment "Relates a court to the state in which it is located." ;
-  rdfs:domain :Court ;
+  rdfs:comment "Relates an entity such as a district or district court to the state in which it is located." ;
+  rdfs:domain owl:Thing ;
   rdfs:range :State .
+
+:hasDistrict a owl:ObjectProperty ;
+  rdfs:label "has district" ;
+  rdfs:comment "Relates a state to a district that is part of it." ;
+  rdfs:domain :State ;
+  rdfs:range :District ;
+  owl:inverseOf :locatedInState .
 
 :hasAuthorityOver a owl:ObjectProperty ;
   rdfs:label "has authority over" ;
@@ -83,26 +78,97 @@
   rdfs:domain :Court ;
   rdfs:range :Court .
 
-:hasCheckPayment a owl:ObjectProperty ;
-  rdfs:label "has check payment" ;
-  rdfs:comment "Relates a bad check transaction to its associated check payment." ;
-  rdfs:domain :BadCheck ;
-  rdfs:range :CheckPayment .
-
-:hasTransactionType a owl:DatatypeProperty ;
+:hasTransactionType a owl:ObjectProperty ;
   rdfs:label "has transaction type" ;
-  rdfs:comment "Specifies the transaction type of a check transaction." ;
-  rdfs:domain :CheckTransaction ;
-  rdfs:range xsd:string .
-
-:hasCheckPaymentDate a owl:DatatypeProperty ;
-  rdfs:label "has check payment date" ;
-  rdfs:comment "Specifies the date of payment associated with a bad check." ;
-  rdfs:domain :BadCheck ;
-  rdfs:range xsd:date .
-
-:hasTransactionStatus a owl:DatatypeProperty ;
-  rdfs:label "has transaction status" ;
-  rdfs:comment "Specifies the status of a check payment transaction." ;
+  rdfs:comment "Relates a check payment to its transaction type." ;
   rdfs:domain :CheckPayment ;
-  rdfs:range x
+  rdfs:range :TransactionType .
+
+:hasTransactionStatus a owl:ObjectProperty ;
+  rdfs:label "has transaction status" ;
+  rdfs:comment "Relates a check payment to its transaction status." ;
+  rdfs:domain :CheckPayment ;
+  rdfs:range :TransactionStatus .
+
+:paymentDate a owl:DatatypeProperty ;
+  rdfs:label "payment date" ;
+  rdfs:comment "The date and time at which a check payment occurs." ;
+  rdfs:domain :CheckPayment ;
+  rdfs:range xsd:dateTime .
+
+:State owl:disjointWith :District, :Court, :CheckPayment, :TransactionType, :TransactionStatus .
+:District owl:disjointWith :Court, :CheckPayment, :TransactionType, :TransactionStatus .
+:Court owl:disjointWith :CheckPayment, :TransactionType, :TransactionStatus .
+:CheckPayment owl:disjointWith :TransactionType, :TransactionStatus .
+:TransactionType owl:disjointWith :TransactionStatus .
+```
+
+2. Reasoning summary:
+- 1. Extracted requirements for court hierarchy, state/district geography, court authority, and bad-check payment descriptors needed by the CQs.
+- 2. Proposed minimal classes for State, District, Court, DistrictCourt, CheckPayment, BadCheck, TransactionType, and TransactionStatus plus location/authority/payment properties.
+- 3. Drafted subclass, domain/range, inverse, existential restrictions, and disjointness axioms to constrain the pattern without adding instances.
+- 4. Checked each CQ against the draft and found the need for explicit state–district linkage, district-court state linkage, authority relation, and payment date/type/status properties.
+- 5. Refined with `hasDistrict` inverse of `locatedInState` and existential restrictions on `BadCheck` and `DistrictCourt` to support all CQs.
+- 6. Removed any unneeded constructs such as separate regulation/document classes because they were not required by the scenario or CQs.
+
+3. Traceability table:
+
+- Requirement: Represent court hierarchies.
+  - Axioms: `:Court a owl:Class .`
+  - Axioms: `:DistrictCourt a owl:Class ; rdfs:subClassOf :Court .`
+  - Axioms: `:hasAuthorityOver a owl:ObjectProperty ; rdfs:domain :Court ; rdfs:range :Court .`
+
+- Requirement: Represent states and districts.
+  - Axioms: `:State a owl:Class .`
+  - Axioms: `:District a owl:Class .`
+  - Axioms: `:hasDistrict a owl:ObjectProperty ; rdfs:domain :State ; rdfs:range :District ; owl:inverseOf :locatedInState .`
+  - Axioms: `:locatedInState a owl:ObjectProperty ; rdfs:range :State .`
+
+- Requirement: Represent district courts as courts located in states.
+  - Axioms: `:DistrictCourt rdfs:subClassOf :Court .`
+  - Axioms: `:DistrictCourt rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :locatedInState ; owl:someValuesFrom :State ] .`
+
+- Requirement: Represent bad check related check payment information.
+  - Axioms: `:CheckPayment a owl:Class .`
+  - Axioms: `:BadCheck a owl:Class ; rdfs:subClassOf :CheckPayment .`
+
+- Requirement: Represent check transaction type for bad checks.
+  - Axioms: `:TransactionType a owl:Class .`
+  - Axioms: `:hasTransactionType a owl:ObjectProperty ; rdfs:domain :CheckPayment ; rdfs:range :TransactionType .`
+  - Axioms: `:BadCheck rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :hasTransactionType ; owl:someValuesFrom :TransactionType ] .`
+
+- Requirement: Represent when a bad check payment occurs.
+  - Axioms: `:paymentDate a owl:DatatypeProperty ; rdfs:domain :CheckPayment ; rdfs:range xsd:dateTime .`
+  - Axioms: `:BadCheck rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :paymentDate ; owl:someValuesFrom xsd:dateTime ] .`
+
+- Requirement: Represent transaction status of a check payment.
+  - Axioms: `:TransactionStatus a owl:Class .`
+  - Axioms: `:hasTransactionStatus a owl:ObjectProperty ; rdfs:domain :CheckPayment ; rdfs:range :TransactionStatus .`
+  - Axioms: `:BadCheck rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :hasTransactionStatus ; owl:someValuesFrom :TransactionStatus ] .`
+
+- CQ: List all district courts in a given state.
+  - Axioms: `:DistrictCourt a owl:Class .`
+  - Axioms: `:locatedInState a owl:ObjectProperty ; rdfs:range :State .`
+  - Axioms: `:DistrictCourt rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :locatedInState ; owl:someValuesFrom :State ] .`
+
+- CQ: In which state is a given district court instance located?
+  - Axioms: `:locatedInState a owl:ObjectProperty ; rdfs:range :State .`
+  - Axioms: `:DistrictCourt rdfs:subClassOf [ a owl:Restriction ; owl:onProperty :locatedInState ; owl:someValuesFrom :State ] .`
+
+- CQ: How many districts are in a given state of India?
+  - Axioms: `:hasDistrict a owl:ObjectProperty ; rdfs:domain :State ; rdfs:range :District .`
+  - Axioms: `owl:inverseOf` between `:hasDistrict` and `:locatedInState`.
+
+- CQ: Which court has authority over a given court?
+  - Axioms: `:hasAuthorityOver a owl:ObjectProperty ; rdfs:domain :Court ; rdfs:range :Court .`
+
+- CQ: What is the check transaction type for a bad check?
+  - Axioms: `:hasTransactionType a owl:ObjectProperty ; rdfs:domain :CheckPayment ; rdfs:range :TransactionType .`
+  - Axioms: `:BadCheck rdfs:subClassOf :CheckPayment .`
+
+- CQ: When is a check payment of a bad check?
+  - Axioms: `:paymentDate a owl:DatatypeProperty ; rdfs:domain :CheckPayment ; rdfs:range xsd:dateTime .`
+  - Axioms: `:BadCheck rdfs:subClassOf :CheckPayment .`
+
+- CQ: What is the transaction status of a given check payment?
+  - Axioms: `:hasTransactionStatus a owl:ObjectProperty ; rdfs:domain :CheckPayment ; rdfs:range :TransactionStatus .`

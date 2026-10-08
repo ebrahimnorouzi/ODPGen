@@ -1,1 +1,153 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Author naming and publication role ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing authors who publish works under alternative names, including name changes and pseudonyms, and the use of a name in the role of book writer. The pattern is intentionally limited to the author-name-publication scenario." .
+
+:Agent a owl:Class ;
+  rdfs:label "Agent" ;
+  rdfs:comment "An entity capable of bearing names and performing roles such as authorship." .
+
+:Author a owl:Class ;
+  rdfs:label "Author" ;
+  rdfs:comment "An agent who writes books or other written works." ;
+  rdfs:subClassOf :Agent .
+
+:Name a owl:Class ;
+  rdfs:label "Name" ;
+  rdfs:comment "A name or naming form associated with an agent." .
+
+:Pseudonym a owl:Class ;
+  rdfs:label "Pseudonym" ;
+  rdfs:comment "A name adopted by an author for publication instead of another name." ;
+  rdfs:subClassOf :Name .
+
+:ChangedName a owl:Class ;
+  rdfs:label "Changed name" ;
+  rdfs:comment "A name borne by an agent as the result of a name change, for example after marriage." ;
+  rdfs:subClassOf :Name .
+
+:WrittenWork a owl:Class ;
+  rdfs:label "Written work" ;
+  rdfs:comment "A written intellectual work." .
+
+:Book a owl:Class ;
+  rdfs:label "Book" ;
+  rdfs:comment "A written work published as a book." ;
+  rdfs:subClassOf :WrittenWork .
+
+:CollectionOfPoems a owl:Class ;
+  rdfs:label "Collection of poems" ;
+  rdfs:comment "A written work consisting of a collection of poems." ;
+  rdfs:subClassOf :Book .
+
+:Authorship a owl:Class ;
+  rdfs:label "Authorship" ;
+  rdfs:comment "A contextualized authorship relation linking an author, a written work, and the name used in that authorship." .
+
+:hasName a owl:ObjectProperty ;
+  rdfs:label "has name" ;
+  rdfs:comment "Relates an agent to a name associated with that agent." ;
+  rdfs:domain :Agent ;
+  rdfs:range :Name .
+
+:hasPseudonym a owl:ObjectProperty ;
+  rdfs:label "has pseudonym" ;
+  rdfs:comment "Relates an author to a pseudonym used by that author." ;
+  rdfs:subPropertyOf :hasName ;
+  rdfs:domain :Author ;
+  rdfs:range :Pseudonym .
+
+:hasChangedName a owl:ObjectProperty ;
+  rdfs:label "has changed name" ;
+  rdfs:comment "Relates an agent to a name acquired through a name change, for example after marriage." ;
+  rdfs:subPropertyOf :hasName ;
+  rdfs:domain :Agent ;
+  rdfs:range :ChangedName .
+
+:hasAuthorship a owl:ObjectProperty ;
+  rdfs:label "has authorship" ;
+  rdfs:comment "Relates an author to an authorship situation in which the author wrote a work under a particular name." ;
+  rdfs:domain :Author ;
+  rdfs:range :Authorship .
+
+:authorshipAuthor a owl:ObjectProperty ;
+  rdfs:label "authorship author" ;
+  rdfs:comment "Relates an authorship situation to the author participating in it." ;
+  rdfs:domain :Authorship ;
+  rdfs:range :Author ;
+  owl:inverseOf :hasAuthorship .
+
+:authorshipWork a owl:ObjectProperty ;
+  rdfs:label "authorship work" ;
+  rdfs:comment "Relates an authorship situation to the written work authored in that situation." ;
+  rdfs:domain :Authorship ;
+  rdfs:range :WrittenWork .
+
+:usedName a owl:ObjectProperty ;
+  rdfs:label "used name" ;
+  rdfs:comment "Relates an authorship situation to the name used by the author in that situation." ;
+  rdfs:domain :Authorship ;
+  rdfs:range :Name .
+
+:wrote a owl:ObjectProperty ;
+  rdfs:label "wrote" ;
+  rdfs:comment "Relates an author to a written work authored by that author." ;
+  rdfs:domain :Author ;
+  rdfs:range :WrittenWork ;
+  owl:propertyChainAxiom ( :hasAuthorship :authorshipWork ) .
+
+:usedNameForWriting a owl:ObjectProperty ;
+  rdfs:label "used name for writing" ;
+  rdfs:comment "Relates an author to a name the author used in an authorship situation." ;
+  rdfs:domain :Author ;
+  rdfs:range :Name ;
+  owl:propertyChainAxiom ( :hasAuthorship :usedName ) .
+
+:isNameUsedInAuthorshipOf a owl:ObjectProperty ;
+  rdfs:label "is name used in authorship of" ;
+  rdfs:comment "Relates a name to a written work for which that name was used in an authorship situation." ;
+  rdfs:domain :Name ;
+  rdfs:range :WrittenWork ;
+  owl:propertyChainAxiom ( ^:usedName :authorshipWork ) .
+
+:nameString a owl:DatatypeProperty ;
+  rdfs:label "name string" ;
+  rdfs:comment "The literal textual form of a name." ;
+  rdfs:domain :Name ;
+  rdfs:range xsd:string .
+
+:title a owl:DatatypeProperty ;
+  rdfs:label "title" ;
+  rdfs:comment "The title of a written work." ;
+  rdfs:domain :WrittenWork ;
+  rdfs:range xsd:string .
+
+:Author rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasName ;
+    owl:someValuesFrom :Name
+  ] .
+
+:Authorship rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :authorshipAuthor ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Author
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :authorshipWork ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :WrittenWork
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :usedName ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Name
+  ] .
+
+:Pseudonym owl:disjointWith :ChangedName .

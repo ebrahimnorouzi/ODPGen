@@ -1,0 +1,375 @@
+{
+  "corpus": "adversarial/b",
+  "angle": "STRUCTURAL EXPLOITS - attacks on the concept of a connectivity-based ODP structural score.",
+  "author": "prosecution agent (blind: the measure under attack did not exist when these were written)",
+  "generated": "2026-08-29",
+  "measureUnderAttack": "unknown by construction; these fixtures attack the CONCEPT of scoring an ODP by its connectivity, not any implementation",
+  "howToUse": [
+    "Every entry carries an expectedVerdict. LOW and EXACT_ZERO entries are exploits: the measure fails if they score at or near the top. HIGH entries are over-correction guards: the measure fails if they score low. EQUAL_TO_* entries are oracles: the measure fails on any difference at all, in either direction.",
+    "The corpus deliberately contains both directions. A measure that passes only the LOW entries has over-corrected, which is failure mode E3 and is a real failure.",
+    "Most mustAlsoSatisfy clauses are stated as inequalities between two fixtures in THIS directory, so they need no magic constant, no threshold, and no access to the gold set. Prefer those; they cannot be satisfied by tuning.",
+    "Where a clause says EXACTLY or ZERO TOLERANCE, do not use pytest.approx. The exploits live in the epsilon.",
+    "27_truncated_midaxiom.ttl.broken is the only file here that is not valid Turtle. Feed it as bytes.",
+    "No file in this directory was produced by, or requires, any network call or any LLM. Fixtures 09, 10, 11, 17, 19, 20, 21 and 22 are derived offline from data/scenarios/cq_signatures.json and data/ground_truth/ by the prosecution; the MEASURE must never read those paths (I9)."
+  ],
+  "keyPairs": [
+    {
+      "pair": [
+        "11_shuffle_gold_2023_133_01.ttl",
+        "19_gold_2023_133_01_baseline.ttl"
+      ],
+      "why": "Identical triple count, identical per-predicate histogram, identical class and property counts, identical annotation coverage. Only the model differs. M(11) == M(19) proves the measure is purely count-based. This is the single most load-bearing pair in the corpus."
+    },
+    {
+      "pair": [
+        "07_dangling_domain_range.ttl",
+        "25_domain_only_genuine.ttl"
+      ],
+      "why": "07 has 100% domain AND range coverage over 12 properties and resolves nothing; 25 has domain-only coverage over 5 properties and resolves everything. Coverage vs resolution."
+    },
+    {
+      "pair": [
+        "13_abox_star_hub.ttl",
+        "23_abox_minimal_genuine.ttl"
+      ],
+      "why": "Both class-free ABox artifacts. 13 has 204 triples and 51 individuals in a star; 23 has 12 triples and 5 individuals in a real pattern. 23 must win, or the measure cannot handle the three published ABox ODPs without being trivially gamed."
+    },
+    {
+      "pair": [
+        "12_restriction_cross_product.ttl",
+        "24_tiny_restriction_odp.ttl"
+      ],
+      "why": "288 restrictions vs 2. Are restrictions counted or read?"
+    },
+    {
+      "pair": [
+        "06_deep_subclass_chain_no_properties.ttl",
+        "26_large_genuine_taxonomy.ttl"
+      ],
+      "why": "40 meaningless classes in a chain vs 61 meaningful classes in a real tree with resolving properties. Hierarchy shape vs hierarchy content."
+    },
+    {
+      "pair": [
+        "04_equivalent_class_clique.ttl",
+        "05_equivalent_class_clique_reversed.ttl"
+      ],
+      "why": "Logically identical, byte-different. Any difference in score is a direction-asymmetric traversal over a symmetric predicate - the literal E5 bug - and is detectable without reference to any attack."
+    },
+    {
+      "pair": [
+        "14_core_small_genuine.ttl",
+        "16_replication_x3_of_core.ttl"
+      ],
+      "why": "Exact equality required. Fails a size-rewarding measure and a size-punishing one with one assertion."
+    },
+    {
+      "pair": [
+        "14_core_small_genuine.ttl",
+        "15_core_plus_selfconnected_padding.ttl"
+      ],
+      "why": "Self-connected padding attached to nothing. Defeats a groundedness ratio that counts padding-to-padding edges."
+    },
+    {
+      "pair": [
+        "19_gold_2023_133_01_baseline.ttl",
+        "20_gold_2023_133_01_minus_one_subclassof.ttl"
+      ],
+      "why": "E6, singleton form. Deleting one correct rdfs:subClassOf must never pay."
+    },
+    {
+      "pair": [
+        "21_gold_2025_153_01_baseline.ttl",
+        "22_gold_2025_153_01_minus_two_subclassof.ttl"
+      ],
+      "why": "E6, subset form, over axioms whose objects are EXTERNAL upper-ontology classes. Punishing unresolved endpoints must not become punishing DUL alignment."
+    }
+  ],
+  "notCovered": [
+    "Byte-level and encoding attacks (invalid UTF-8, 100MB filler, binary) - I1 territory, not a structural exploit.",
+    "The empty / whitespace / prefix-only vacuous family (I2's base cases). Fixtures 17 and 18 cover the INTERESTING end of that family - the decorated non-answers - which is where E2 lived.",
+    "Serialisation round trips and blank-node relabelling (I15 b/c/d), except incidentally via fixtures 19 and 21.",
+    "OOPS!/reasoner MISSING plumbing (I13 a-e), except via fixture 27."
+  ],
+  "fixtures": [
+    {
+      "file": "01_cross_product_domain_range.ttl",
+      "attack": "Eight classes and eight object properties; every property is given rdfs:domain and rdfs:range over ALL eight classes (128 domain/range axioms). Maximal domain/range density, maximal class-property incidence, and every endpoint resolves to a locally declared class, so nothing dangles.",
+      "targets": "I7 (roster-determined content is worthless - this is f=universal_dr generalised to the full roster cross product); the naive 'connectivity density' or 'mean degree of the class-property incidence graph' optimum.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(01) < min over the parseable gold set. Strictly below fixtures 14, 23, 24, 25 and 26.",
+      "whyItShouldScoreLow": "The construction is a function of the entity roster alone - no knowledge of the modelling problem was used, and none is recoverable from the result. Saying every property applies to every class is exactly equivalent to saying nothing about which property applies to which class. A measure that rewards this pays a generator to emit a cross product instead of a model, which is a strictly easier task than the one being evaluated.",
+      "triples": 163,
+      "parseable": true
+    },
+    {
+      "file": "02_universal_top_hub.ttl",
+      "attack": "Twelve unrelated classes, each rdfs:subClassOf a single fresh :Everything class. Every class now has an ancestor; the subsumption graph is fully rooted and connected with one component.",
+      "targets": "I7 f=top(R) (E5, hub evasion, ancestor direction). Also the 'fraction of classes participating in a subsumption axiom' metric, which this drives to 1.0.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(02) == M(03) is NOT required, but both must be strictly below every genuine fixture (14, 23-26) and below the gold minimum. Paired with 03: a measure that catches one and not the other has a direction-asymmetric traversal.",
+      "whyItShouldScoreLow": "Rooting a flat vocabulary under a fresh universal class is computable from the class roster with no domain knowledge. It adds no discrimination between the classes and answers no competency question.",
+      "triples": 39,
+      "parseable": true
+    },
+    {
+      "file": "03_bottom_hub_subclass_of_everything.ttl",
+      "attack": "The mirror image of 02: twelve unrelated classes plus a single fresh :Bottom declared rdfs:subClassOf ALL twelve. Every class now has a descendant, the subsumption graph is connected, and no class is a leaf.",
+      "targets": "I7 f=bottom(R). This is the literal E5 witness: it defeated a universal-hub detector that counted only descendants, because the hub itself has zero descendants and each victim class has exactly one.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(03) must be within the same degenerate band as M(02). If M(03) > M(02) by any appreciable margin, the hub detector is descendant-counting and E5 has returned.",
+      "whyItShouldScoreLow": "Same argument as 02 with the arrows reversed. Any detector written against the top-hub shape alone is defeated by reversing it, which is why the contract states the roster principle rather than a hub heuristic.",
+      "triples": 39,
+      "parseable": true
+    },
+    {
+      "file": "04_equivalent_class_clique.ttl",
+      "attack": "Eight near-synonym classes plus owl:equivalentClass over all 28 unordered pairs, so the eight collapse into one equivalence class. One real property with a resolving domain and range is included so the file is not vacuous. Any reachability, endpoint-distinctness or 'does this domain resolve to a class the artifact introduces' check is trivially satisfied through the clique.",
+      "targets": "I7 f=clique(R) and I15(e) logical-equivalence invariance. E5: the previous round's ancestors() followed owl:equivalentClass while descendants() did not, so the clique made every class an ancestor of every other for free.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "EXACT equality with 05. Also: M(04) must not exceed M(04) with the 28 equivalentClass triples deleted - collapsing the roster must not pay.",
+      "whyItShouldScoreLow": "Asserting that every term means the same thing as every other term destroys the vocabulary rather than structuring it. It is computable from the class roster alone and is the cheapest way to make every endpoint check pass.",
+      "triples": 48,
+      "parseable": true
+    },
+    {
+      "file": "05_equivalent_class_clique_reversed.ttl",
+      "attack": "Byte-different, logically identical twin of 04: the same 28 owl:equivalentClass triples with subject and object swapped. owl:equivalentClass is symmetric, so 04 and 05 have identical deductive closures.",
+      "targets": "I7's EQUALITY clause and I15(e). This is a pure oracle: it does not test whether the measure is fooled, it tests whether the measure is SELF-CONSISTENT.",
+      "expectedVerdict": "EQUAL_TO_04",
+      "mustAlsoSatisfy": "M(05) == M(04) with zero tolerance, and no pytest.approx. A difference of any size proves the measure has a direction-asymmetric traversal over a symmetric predicate, which is a live bug independent of any attack.",
+      "whyItShouldScoreLow": "Same as 04, and it must score EXACTLY the same. This fixture fails a measure that happens to score 04 low for the wrong reason.",
+      "triples": 48,
+      "parseable": true
+    },
+    {
+      "file": "06_deep_subclass_chain_no_properties.ttl",
+      "attack": "Forty classes named :Class001..:Class040 in a linear rdfs:subClassOf chain of depth 39, every class labelled and commented, and zero properties, zero domains, zero ranges, zero restrictions.",
+      "targets": "I7 f=chain(R) - the chain is exactly 'sort the roster by IRI and link consecutive terms'. Also targets any 'maximum hierarchy depth' or 'mean path length' reward, and any measure that treats a large connected subsumption graph as sufficient evidence of modelling.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(06) must be strictly below M(26), which is a genuine 61-class taxonomy of comparable size with real subsumptions AND resolving properties. If M(06) >= M(26) the measure is rewarding hierarchy shape rather than hierarchy content.",
+      "whyItShouldScoreLow": "A chain over meaningless names carries no subsumption claim - :Class007 is not in any sense a kind of :Class008. It is the deepest possible hierarchy for the least possible thought, and no competency question is answerable from it.",
+      "triples": 161,
+      "parseable": true
+    },
+    {
+      "file": "07_dangling_domain_range.ttl",
+      "attack": "Twelve object properties, each with both an rdfs:domain and an rdfs:range - 100% domain coverage, 100% range coverage - but every domain and range points at an IRI (:DomainType00 .. :RangeType11) that is never declared, never a subject of any other triple, and never referenced twice.",
+      "targets": "I10.5-adjacent coherence: the difference between a domain existing and a domain RESOLVING. Directly falsifies any count-based or coverage-ratio measure ('fraction of properties with a domain').",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(07) must be strictly below M(25), which has FEWER connective axioms (23 triples, zero ranges) but whose domains all resolve to a class the artifact actually introduces. Ranking 07 above 25 is the failure.",
+      "whyItShouldScoreLow": "Twenty-four domain/range axioms that resolve to nothing define no relation. The artifact declares that :hasSubject relates one unknown to another unknown twelve times over. Every count statistic looks excellent; the model content is empty.",
+      "triples": 51,
+      "parseable": true
+    },
+    {
+      "file": "08_inverse_symmetric_reachability.ttl",
+      "attack": "Twenty classes declared and left entirely unconnected, plus twenty properties arranged in a ring, each simultaneously owl:SymmetricProperty, owl:TransitiveProperty, owl:inverseOf its successor and owl:equivalentProperty its successor. Rich OWL characteristic axioms and a strongly connected property graph; zero rdfs:domain, zero rdfs:range, zero rdfs:subClassOf, so no property touches any class.",
+      "targets": "Any measure that counts OWL expressivity constructs, or that builds reachability over the union of all predicates without asking WHICH entities are connected. Also I16: this is the shape that makes an 'expressivity' component look busy while measuring nothing.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(08) must be strictly below M(24), a nine-axiom pattern with one property that actually joins two classes.",
+      "whyItShouldScoreLow": "Properties are connected to each other and to nothing else. Twenty classes sit isolated. Symmetry and transitivity over a relation with no domain and no range constrain nothing. This is the Llama-2-70b pathology (declare relations, connect nothing) dressed in OWL 2 vocabulary.",
+      "triples": 162,
+      "parseable": true
+    },
+    {
+      "file": "09_sigderived_from_cq_key_2025_151_01.ttl",
+      "attack": "THE E4 ATTACK. Generated mechanically from data/scenarios/cq_signatures.json for scenario 2025-151-01 with no modelling judgement: one owl:Class per distinct slot surface form, one owl:ObjectProperty per distinct relation surface form, rdfs:domain and rdfs:range taken from the relation's from/to slots, rdfs:label set to the surface string. 257 triples, richly connected, every endpoint resolves.",
+      "targets": "I9 (intrinsicness) and I10.1. This is the construction that once scored 1.0000 against a gold of 0.6292. I2, I6 and I7 do NOT catch it: it is genuinely connected and is not a roster function of any artifact, because its roster comes from the answer key.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "STRICT: M(09) < M(gold 2025-151-01). Note gold 2025-151-01 has 23 triples and zero ranges while 09 has 257 triples and full range coverage, so any extensive or coverage-shaped measure ranks 09 above gold and is falsified here. Also M(09) must be identical under every scenario id passed to M (I9c).",
+      "whyItShouldScoreLow": "Every surface form of a slot becomes its own class, so 'evaluation request', 'request', 'access request' and 'policy request' are four unrelated classes rather than one concept with synonyms. Every synonym of a relation becomes its own property with identical domain and range. The result is a transcription of the question, not an answer to it, and the modelling decisions an ODP exists to record - which surfaces are the same concept, which distinctions are real - are precisely the ones it omits.",
+      "triples": 257,
+      "parseable": true
+    },
+    {
+      "file": "10_sigderived_from_cq_key_2023_133_01.ttl",
+      "attack": "The same mechanical answer-key derivation for scenario 2023-133-01 (the causal pattern). 623 triples - roughly seven times the 90-triple gold - because the causal signature has many surface synonyms per slot.",
+      "targets": "I9, I10.1. The scale-inflation variant: the E4 construction is not merely competitive with gold, it dwarfs it on every count.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "STRICT: M(10) < M(19) (the gold 2023-133-01 baseline in this same directory). The gap should be large, not marginal.",
+      "whyItShouldScoreLow": "Same as 09. Additionally the gold's actual modelling content - reifying the causal relation as a :Causes class and hanging hasTreatment/hasMediator/hasOutcome off it under owl:Restriction - is exactly what the mechanical derivation cannot produce, because that decision is nowhere in the CQ signature. The derived file instead asserts 'cause', 'causes', 'causal relation', 'causal link' and 'has cause' as five distinct object properties with identical semantics.",
+      "triples": 623,
+      "parseable": true
+    },
+    {
+      "file": "11_shuffle_gold_2023_133_01.ttl",
+      "attack": "THE SHARPEST FIXTURE. Gold 2023-133-01 with every connective axiom's named endpoints independently re-drawn from the gold's own roster, type-respecting (classes swap with classes, properties with properties, owl:onProperty fillers with properties). Every declaration, every annotation and every blank-node restriction skeleton is preserved verbatim. VERIFIED: identical triple count (90), identical per-predicate histogram, identical class count (5), identical object-property count (5), identical label and comment coverage - and NOT isomorphic to the gold.",
+      "targets": "I10.5 (Shuffle) and, through it, I9. Every count-based, coverage-based and ratio-based statistic of this file is bit-equal to the gold's. Only the model is destroyed.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(11) <= M(19) is the floor requirement; M(11) < M(19) STRICTLY is the real requirement. M(11) == M(19) is proof that the measure is a function of counts and nothing else, which is the single most likely way the next round fails.",
+      "whyItShouldScoreLow": "In the shuffled file :hasEffectWeight may have domain :Event and range :Causes, restrictions constrain the wrong properties on the wrong classes, and the reification is dissolved. The pattern no longer answers 'what events are responsible for the pavement being slippery'. Nothing countable changed; everything that matters did.",
+      "triples": 90,
+      "parseable": true
+    },
+    {
+      "file": "12_restriction_cross_product.ttl",
+      "attack": "Six classes, four properties, and every class given BOTH an owl:someValuesFrom and an owl:allValuesFrom restriction for every (property, class) pair - 288 restriction bodies, 1172 triples. The artifact is dense in exactly the construct that appears in only 3 of 11 parseable golds and is therefore the most tempting thing to reward.",
+      "targets": "Any 'owl:Restriction present' or 'restriction count' component, and the OWL-expressivity direction generally. Also I7: the cross product is a roster function.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(12) must be strictly below M(24), which contains exactly TWO restrictions, and strictly below M(19)/M(21). A measure on which 12 is the global maximum has a padding exploit that costs a generator four lines of code.",
+      "whyItShouldScoreLow": "Asserting simultaneously that every instance of every class has some and only relatives of every class under every property is close to contradictory and certainly vacuous as a model. Restrictions are evidence of modelling only when they encode a choice; a cross product encodes the absence of one.",
+      "triples": 1172,
+      "parseable": true
+    },
+    {
+      "file": "13_abox_star_hub.ttl",
+      "attack": "Individual-level hub evasion. One :Hub individual and fifty :NodeNN individuals, all typed owl:NamedIndividual, joined by a single fresh property in both directions - 100 assertions, every individual grounded, the ABox graph connected with diameter two. No classes, no domains, no ranges.",
+      "targets": "I7 f=star(R) transposed to the ABox. This is the fixture that matters because three published golds (2023-134-01/02/03) are class-free ABox patterns, so the measure MUST score individual-level connectivity - and the moment it does, this becomes the cheapest exploit in the corpus.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(13) must be strictly below M(23), a genuine 12-triple ABox pattern with five individuals. The pair (13, 23) is the test: the measure must reward 23 and reject 13, and both are class-free.",
+      "whyItShouldScoreLow": "Every individual is related to the same individual by the same relation. The graph is maximally connected and carries exactly one bit of information, repeated fifty times. The genuine ABox golds wire together individuals of DIFFERENT declared types through DIFFERENT relations, which is what makes them patterns.",
+      "triples": 204,
+      "parseable": true
+    },
+    {
+      "file": "14_core_small_genuine.ttl",
+      "attack": "NOT AN ATTACK - baseline and companion for 15 and 16. A genuine, small, complete sensor-reading ODP: 32 triples, four classes, one real subsumption, three properties with resolving domains and ranges, one owl:Restriction, full annotation.",
+      "targets": "Serves as the right-hand side of the I6 inequality (vs 15) and the I11 equality (vs 16). Also an E3 guard in its own right.",
+      "expectedVerdict": "HIGH",
+      "mustAlsoSatisfy": "M(14) >= M(15) and M(14) == M(16) exactly. M(14) must be well clear of the degenerate band and comparable to the gold band.",
+      "whyItShouldScoreLow": "N/A - this fixture must score HIGH. It is included so that the exploit fixtures have a fair, same-directory comparison target that does not depend on the gold set.",
+      "triples": 32,
+      "parseable": true
+    },
+    {
+      "file": "15_core_plus_selfconnected_padding.ttl",
+      "attack": "Fixture 14 verbatim, plus a block of 100 fresh classes :Pad000..:Pad099 arranged in a subClassOf cycle among themselves, each labelled and commented. The padding is internally connected - every pad class is both a subclass and a superclass - so a groundedness ratio that counts padding-to-padding edges as grounding is defeated. The padding touches nothing in the core.",
+      "targets": "I6, second family (the self-referential padding trap). Also I3, since this is a degenerate-family member built on a genuine base.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(15) <= M(14) with zero tolerance. This is a strict inequality against a fixture in this same directory, so it needs no gold set and no threshold. If M(15) > M(14) the measure pays for padding and every monotonicity requirement collapses into 'emit more terms'.",
+      "whyItShouldScoreLow": "Thirteen times the triple count of the core and not one additional modelling claim about sensors or readings. The padding is a disconnected component that answers no competency question the core did not already answer.",
+      "triples": 432,
+      "parseable": true
+    },
+    {
+      "file": "16_replication_x3_of_core.ttl",
+      "attack": "Three IRI-disjoint isomorphic copies of fixture 14 in fresh namespaces c1:, c2:, c3:, with no edge between copies. VERIFIED: exactly 96 triples against the core's 32.",
+      "targets": "I11 (replication invariance). Attacks both directions at once - a measure that rewards it has a copy-paste padding exploit; one that punishes it penalises the 1933-triple gold 2025-149-01 for being large.",
+      "expectedVerdict": "EQUAL_TO_14",
+      "mustAlsoSatisfy": "M(16) == M(14) EXACTLY, no tolerance. A measure that needs pytest.approx here is not intensive and will not survive the size range of the gold set. Note this fixture is neither an exploit nor a guard - it is an equality oracle, and it fails in both directions.",
+      "whyItShouldScoreLow": "Three copies of a pattern contain exactly as much information as one copy and three times as many of every countable thing.",
+      "triples": 96,
+      "parseable": true
+    },
+    {
+      "file": "17_vocab_only_gold_2023_133_01.ttl",
+      "attack": "Gold 2023-133-01 stripped to its declarations and annotations: all five classes, all five object properties, every rdfs:label, rdfs:comment, rdfs:seeAlso and rdfs:isDefinedBy, the owl:Ontology header - and VERIFIED zero connective axioms. 38 triples of authentic, expert-written, heavily documented ODP vocabulary that models nothing.",
+      "targets": "I2 (vacuity floor: exact zero), I10.3 (VocabOnly), I8 (annotation cannot reorder structure), I14(d).",
+      "expectedVerdict": "EXACT_ZERO",
+      "mustAlsoSatisfy": "M(17).score == 0.0 EXACTLY, and every float-valued key in the report is 0.0 or MISSING (I14d). Not 0.02, not 0.15. This is the hardest zero in the corpus to hold, because the file is real expert prose about real ODP concepts and carries every annotation the gold carries.",
+      "whyItShouldScoreLow": "Naming :Causes, :Event and :hasTreatment and describing them beautifully is not modelling them. Zero connective axioms means zero structure, and the vacuity floor must be exact so that it cannot be climbed by padding.",
+      "triples": 38,
+      "parseable": true
+    },
+    {
+      "file": "18_refusal_prose_plus_176_bare_properties.ttl",
+      "attack": "THE E2 WITNESS, at the corpus's own scale. An owl:Ontology header carrying a full model refusal as both rdfs:comment and dcterms:description, followed by exactly 176 bare owl:ObjectProperty declarations - the measured Llama-2-70b shape, which declares 176 object properties and connects nothing - each with rdfs:label, rdfs:comment and skos:definition. 708 triples. VERIFIED zero connective axioms.",
+      "targets": "I2, I3, I8's cheap corollary, I14(d). E2: 'a gate that floors 0 triples but lets a 10-line refusal wrapped in an rdfs:comment score 1.00, tying a 90-triple gold pattern'.",
+      "expectedVerdict": "EXACT_ZERO",
+      "mustAlsoSatisfy": "M(18).score == 0.0 EXACTLY. It has 708 triples, 176 properties and 100% annotation coverage; any measure with a size term, a coverage term or an annotation term that is not strictly gated on structure will return a non-zero value here.",
+      "whyItShouldScoreLow": "The artifact explicitly states it is not an answer, and it is structurally correct about that. It is the largest, best-annotated, most vacuous file in the corpus, which is the whole point.",
+      "triples": 708,
+      "parseable": true
+    },
+    {
+      "file": "19_gold_2023_133_01_baseline.ttl",
+      "attack": "NOT AN ATTACK - rdflib round trip of published gold 2023-133-01, unchanged (90 triples). Shipped so that fixtures 10, 11 and 20 can be compared against a same-directory, same-serialisation baseline without depending on how the harness reads data/ground_truth/.",
+      "targets": "Baseline for I4 (vs 20), I10.1 (vs 10), I10.5 (vs 11). Also a free I15(b) witness: M(19) must equal M(data/ground_truth/2023-133-01.ttl) despite the differing serialisation.",
+      "expectedVerdict": "HIGH",
+      "mustAlsoSatisfy": "M(19) > M(10), M(19) > M(11), M(19) >= M(20), and M(19) == M of the original gold file.",
+      "whyItShouldScoreLow": "N/A - this is a published ODP and must score in the gold band.",
+      "triples": 90,
+      "parseable": true
+    },
+    {
+      "file": "20_gold_2023_133_01_minus_one_subclassof.ttl",
+      "attack": "E6 DELETION VARIANT. Fixture 19 (the gold 2023-133-01 baseline) with exactly one correct load-bearing axiom removed: :AbstractEvent rdfs:subClassOf :Event. 89 triples against the baseline's 90; everything else byte-identical after serialisation. :AbstractEvent remains grounded (it is still the rdfs:range of :ofType), so this is a load-bearing deletion under D8, not the removal of an ungrounded declaration.",
+      "targets": "I4 (load-bearing deletion never pays). E6: 'a hub rule that made the metric PAY a modeller to delete correct rdfs:subClassOf axioms'.",
+      "expectedVerdict": "LOW_RELATIVE",
+      "mustAlsoSatisfy": "M(20) <= M(19) with ZERO tolerance. Strict decrease is desirable but the contract only forbids an increase. Any increase, however small, means the measure is paying for the deletion of a correct axiom - the exact E6 signature, and the one that a fan-out or hub-degree penalty reintroduces most easily, because deleting one edge lowers :Event's in-degree.",
+      "whyItShouldScoreLow": "Relative, not absolute: this file should score near the gold band, and must never exceed its own baseline. It is included precisely because a single-axiom change is what threshold-based penalties do NOT fire on - see fixture 22 for the multi-axiom form.",
+      "triples": 89,
+      "parseable": true
+    },
+    {
+      "file": "21_gold_2025_153_01_baseline.ttl",
+      "attack": "NOT AN ATTACK - rdflib round trip of published gold 2025-153-01, unchanged (202 triples). Baseline for fixture 22.",
+      "targets": "Baseline for I4 (vs 22). Also an I15(b) serialisation witness.",
+      "expectedVerdict": "HIGH",
+      "mustAlsoSatisfy": "M(21) >= M(22), and M(21) == M of the original gold file.",
+      "whyItShouldScoreLow": "N/A - published ODP, gold band.",
+      "triples": 202,
+      "parseable": true
+    },
+    {
+      "file": "22_gold_2025_153_01_minus_two_subclassof.ttl",
+      "attack": "E6 DELETION VARIANT, multi-axiom form. Fixture 21 (the gold 2025-153-01 baseline, 202 triples) with a two-element SUBSET of its load-bearing axioms removed: :ReferentEntity rdfs:subClassOf dul:Entity and :TransitionRule rdfs:subClassOf dul:Norm. Both classes remain grounded through property ranges and restriction fillers.",
+      "targets": "I4 quantified over SUBSETS rather than singletons - the brief notes that quantifying over single axioms is insufficient and is exactly how E5 survived a previous round, because threshold-based penalties do not fire on a one-axiom change.",
+      "expectedVerdict": "LOW_RELATIVE",
+      "mustAlsoSatisfy": "M(22) <= M(21) with ZERO tolerance. Both deleted axioms link a pattern class to an EXTERNAL upper-ontology class (DUL), so a measure that penalises unresolved external endpoints - dul:Entity and dul:Norm are not declared in the file - will REWARD this deletion. That is the specific trap: punishing dangling endpoints (correct, see fixture 07) must not become punishing upper-ontology alignment (wrong, and it is what half the golds do).",
+      "whyItShouldScoreLow": "Relative. Deleting two correct DUL alignments makes the pattern worse, not better.",
+      "triples": 200,
+      "parseable": true
+    },
+    {
+      "file": "23_abox_minimal_genuine.ttl",
+      "attack": "NOT AN ATTACK - over-correction guard. A genuine 12-triple ABox exemplification pattern in the exact shape of published pattern 2023-134-02: five typed individuals wired to one another through six distinct relations. Zero owl:Class, zero rdfs:subClassOf, zero rdfs:domain, zero rdfs:range, zero owl:Restriction.",
+      "targets": "I12(c) (no cap by size or construct) and E3 (over-correction). This is the shape of THREE of the fourteen published ODPs; a measure requiring TBox constructs scores 3/14 real patterns at zero.",
+      "expectedVerdict": "HIGH",
+      "mustAlsoSatisfy": "M(23) >= median over the gold set, and STRICTLY ABOVE M(13), the ABox star hub. The pair (13, 23) is the discriminating test for individual-level connectivity: 13 has 204 triples and 51 individuals, 23 has 12 triples and 5 - and 23 must win.",
+      "whyItShouldScoreLow": "N/A - must score HIGH. Failing this fixture means the measure has disqualified a fifth of the published corpus for the crime of being an ABox pattern.",
+      "triples": 12,
+      "parseable": true
+    },
+    {
+      "file": "24_tiny_restriction_odp.ttl",
+      "attack": "NOT AN ATTACK - over-correction guard. A complete, genuine, deliberately tiny n-ary role reification: 25 triples, three classes, two owl:Restriction bodies, two properties with resolving domains and ranges. Nothing is missing from it; it simply is small.",
+      "targets": "I12(c), E3 ('a genuine 9-triple owl:Restriction ODP capped at 0.50').",
+      "expectedVerdict": "HIGH",
+      "mustAlsoSatisfy": "M(24) >= median over the gold set. Strictly above M(12), the 1172-triple restriction cross product, and strictly above M(08). The pair (12, 24) tests whether restrictions are counted or read.",
+      "whyItShouldScoreLow": "N/A - must score HIGH. An OR-ladder over triple count caps this at 0.50 and that is the over-correction the contract forbids.",
+      "triples": 25,
+      "parseable": true
+    },
+    {
+      "file": "25_domain_only_genuine.ttl",
+      "attack": "NOT AN ATTACK - over-correction guard. A genuine 23-triple pattern in the exact shape of published pattern 2025-151-01: one class, five properties each carrying an rdfs:domain that resolves to that class, and ZERO rdfs:range, ZERO rdfs:subClassOf, ZERO owl:Restriction.",
+      "targets": "I12(c) BY ID (the contract names 2025-151-01 explicitly), and any measure demanding range coverage or subclass structure.",
+      "expectedVerdict": "HIGH",
+      "mustAlsoSatisfy": "M(25) >= median over the gold set, and STRICTLY ABOVE M(07), which has twice the connective axioms and 100% range coverage but resolves nothing. The pair (07, 25) tests resolution against coverage.",
+      "whyItShouldScoreLow": "N/A - must score HIGH. rdfs:range is absent from a real published ODP; requiring it disqualifies the pattern it was copied from.",
+      "triples": 23,
+      "parseable": true
+    },
+    {
+      "file": "26_large_genuine_taxonomy.ttl",
+      "attack": "NOT AN ATTACK - over-correction guard. A genuine 350-triple, 61-class, depth-4 specimen-curation taxonomy with meaningful names and real subsumptions (Basalt is a VolcanicRock is an IgneousRock is a RockSpecimen), plus 16 object properties and 6 datatype properties whose domains and ranges all resolve into that hierarchy.",
+      "targets": "I12(c) and E3 ('a genuine 239-triple 60-class taxonomy capped at 0.50'). Also I16's sanity direction.",
+      "expectedVerdict": "HIGH",
+      "mustAlsoSatisfy": "M(26) >= median over the gold set, and STRICTLY ABOVE M(06), the 40-class meaningless chain, and STRICTLY ABOVE M(01), the cross product. The pair (06, 26) tests hierarchy content against hierarchy shape; the pair (01, 26) tests domain/range content against domain/range density.",
+      "whyItShouldScoreLow": "N/A - must score HIGH. Note it must also not score above the small genuine fixtures 23/24/25 by virtue of size alone - I11 makes the measure intensive, and this fixture is where a residual size reward becomes visible.",
+      "triples": 350,
+      "parseable": true
+    },
+    {
+      "file": "27_truncated_midaxiom.ttl.broken",
+      "attack": "UNPARSEABLE BY DESIGN - the only fixture in this directory that is not valid Turtle. A realistic truncated model response: a line of English preamble outside any triple, then two object-property blocks cut off mid-object with the final IRI severed to ':Par'. VERIFIED to raise rdflib BadSyntax under the turtle parser. The .broken suffix is so that a naive glob does not pick it up; the measure must be handed its BYTES.",
+      "targets": "I13 (MISSING is not zero and is not one) and I1 (well-formed report on malformed input), plus I15(f) (format is content-sniffed, never extension-based - the .broken suffix must not change the outcome).",
+      "expectedVerdict": "EXACT_ZERO_AS_CANDIDATE",
+      "mustAlsoSatisfy": "M(27).score == 0.0 when scored as a CANDIDATE generation - a model that failed to emit RDF is a real quality signal - and MISSING when the same bytes are scored as a REFERENCE, where the tooling failed rather than the artifact. The call must not raise, and the report must survive a json round trip with MISSING preserved as null and distinguishable from 0. Compare with the two OWL/XML golds 2025-147-01.owl and 2025-150-01.owl, which rdflib cannot read and which are MISSING, not zero.",
+      "whyItShouldScoreLow": "It contains a plausible-looking partial ontology and would score well on any measure applied to the prefix that does parse. A lenient recovering parser that silently drops the broken tail is the exploit: it converts a failed generation into a scoreable one.",
+      "triples": null,
+      "parseable": false
+    },
+    {
+      "file": "28_universal_thing_domain_range.ttl",
+      "attack": "Fifteen classes and fifteen object properties; EVERY property is given rdfs:domain owl:Thing and rdfs:range owl:Thing. Domain coverage is exactly 1.0, range coverage is exactly 1.0, and unlike fixture 07 every endpoint RESOLVES - owl:Thing genuinely exists and every class is trivially a subclass of it. The classes and property names are plausible for the corpus's access-control scenarios.",
+      "targets": "I7 f=universal_dr, and specifically the repair a designer is most likely to reach for after seeing fixture 07: 'require that domains and ranges resolve'. owl:Thing resolves. This fixture exists to make sure that repair is not the whole answer.",
+      "expectedVerdict": "LOW",
+      "mustAlsoSatisfy": "M(28) must be strictly below M(25), which has domains on only 5 properties, no ranges at all, and 93 vs 23 triples against it - but whose single domain is an INFORMATIVE one. Also strictly below M(01): 01 at least restricts to the local roster, 28 does not restrict at all.",
+      "whyItShouldScoreLow": "'rdfs:domain owl:Thing' is the identity constraint - it is logically entailed for every property and asserting it adds nothing to the deductive closure. It is the cheapest possible way to make every coverage ratio and every endpoint-resolution check pass simultaneously, and it is computable from the property roster with zero knowledge of the domain. A measure on which this is a high scorer has a two-line degenerate optimum.",
+      "triples": 93,
+      "parseable": true
+    }
+  ]
+}

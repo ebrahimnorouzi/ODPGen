@@ -1,1 +1,68 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "kHealth Asthma causal monitoring ODP" ;
+  rdfs:comment "An ontology design pattern for representing asthma self-monitoring data about symptoms, medication intake, outdoor environmental allergens, and weighted causal relations among them." .
+
+:CausalFactor a owl:Class ;
+  rdfs:label "Causal factor" ;
+  rdfs:comment "A factor that can participate in weighted causal relations affecting another factor in the asthma monitoring setting." .
+
+:Symptom a owl:Class ;
+  rdfs:label "Symptom" ;
+  rdfs:comment "An asthma symptom observed or experienced by the patient, such as cough, chest tightness, wheezing, or breathing pattern." ;
+  rdfs:subClassOf :CausalFactor .
+
+:MedicationIntake a owl:Class ;
+  rdfs:label "Medication intake" ;
+  rdfs:comment "An intake of medication by the patient, represented as a factor that can be causally affected by symptoms or environmental allergens." ;
+  rdfs:subClassOf :CausalFactor .
+
+:OutdoorEnvironmentalAllergen a owl:Class ;
+  rdfs:label "Outdoor environmental allergen" ;
+  rdfs:comment "An outdoor environmental feature relevant to asthma, such as pollen or air quality index, that can causally affect symptoms or medication intake." ;
+  rdfs:subClassOf :CausalFactor .
+
+:CausalRelation a owl:Class ;
+  rdfs:label "Causal relation" ;
+  rdfs:comment "A weighted causal relation linking a cause factor to an effect factor." .
+
+:hasCause a owl:ObjectProperty ;
+  rdfs:label "has cause" ;
+  rdfs:comment "Relates a causal relation to the factor that acts as its cause." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :CausalFactor .
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has effect" ;
+  rdfs:comment "Relates a causal relation to the factor that acts as its effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :CausalFactor .
+
+:causes a owl:ObjectProperty ;
+  rdfs:label "causes" ;
+  rdfs:comment "Directly relates a causal factor to another causal factor that it causally affects." ;
+  rdfs:domain :CausalFactor ;
+  rdfs:range :CausalFactor .
+
+:hasEffectWeight a owl:DatatypeProperty ;
+  rdfs:label "has effect weight" ;
+  rdfs:comment "Associates a causal relation with a numeric weight expressing the strength of the causal effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal .
+
+:factorName a owl:DatatypeProperty ;
+  rdfs:label "factor name" ;
+  rdfs:comment "Provides a name or designation for a causal factor, such as cough, pollen, or AQI." ;
+  rdfs:domain :CausalFactor ;
+  rdfs:range xsd:string .
+
+:hasCause owl:propertyChainAxiom ( :hasCause ) .
+
+:hasEffect owl:propertyChainAxiom ( :hasEffect ) .
+
+:causes owl:propertyChainAxiom ( :hasCause :hasEffect ) .

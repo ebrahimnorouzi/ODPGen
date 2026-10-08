@@ -1,1 +1,488 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Maritime ship representation ontology design pattern" ;
+  rdfs:comment "A minimal and reusable OWL ontology design pattern for representing ships, identifiers, dimensions, ownership, flag state, trajectories, routes, propulsion systems, engines, propulsion technologies, fuels, and multimodal ship data resources in a machine-interpretable way." .
+
+### Classes
+
+:Ship a owl:Class ;
+  rdfs:label "Ship" ;
+  rdfs:comment "A vessel represented in the maritime domain." .
+
+:ShipType a owl:Class ;
+  rdfs:label "Ship type" ;
+  rdfs:comment "A category or type of ship, such as container ship." .
+
+:Identifier a owl:Class ;
+  rdfs:label "Identifier" ;
+  rdfs:comment "An identification entity used to clearly identify a ship." .
+
+:DimensionSpecification a owl:Class ;
+  rdfs:label "Dimension specification" ;
+  rdfs:comment "A specification describing one or more physical dimensions of a ship." .
+
+:Measurement a owl:Class ;
+  rdfs:label "Measurement" ;
+  rdfs:comment "A quantitative value associated with a unit." .
+
+:Unit a owl:Class ;
+  rdfs:label "Unit" ;
+  rdfs:comment "A unit of measurement." .
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "A place or area associated with a ship, route, or trajectory." .
+
+:Agent a owl:Class ;
+  rdfs:label "Agent" ;
+  rdfs:comment "An entity that can own a ship, such as an organization or person." .
+
+:Organization a owl:Class ;
+  rdfs:label "Organization" ;
+  rdfs:comment "An organization that can own ships or act in maritime contexts." ;
+  rdfs:subClassOf :Agent .
+
+:Person a owl:Class ;
+  rdfs:label "Person" ;
+  rdfs:comment "A person that can own a ship." ;
+  rdfs:subClassOf :Agent .
+
+:FlagState a owl:Class ;
+  rdfs:label "Flag state" ;
+  rdfs:comment "A state or registry under whose flag a ship is registered." .
+
+:Route a owl:Class ;
+  rdfs:label "Route" ;
+  rdfs:comment "A route associated with a ship, including planned or predicted routes." .
+
+:Trajectory a owl:Class ;
+  rdfs:label "Trajectory" ;
+  rdfs:comment "A trajectory describing the movement of a ship over time." .
+
+:TrajectoryPart a owl:Class ;
+  rdfs:label "Trajectory part" ;
+  rdfs:comment "A segment or part of a trajectory." .
+
+:TrajectoryType a owl:Class ;
+  rdfs:label "Trajectory type" ;
+  rdfs:comment "A category used to distinguish kinds of trajectories." .
+
+:SensorPlacement a owl:Class ;
+  rdfs:label "Sensor placement" ;
+  rdfs:comment "A relative placement of a sensor or antenna on a ship structure." .
+
+:PropulsionSystem a owl:Class ;
+  rdfs:label "Propulsion system" ;
+  rdfs:comment "A propulsion system installed on a ship." .
+
+:Engine a owl:Class ;
+  rdfs:label "Engine" ;
+  rdfs:comment "An engine used in a ship propulsion context." .
+
+:EngineType a owl:Class ;
+  rdfs:label "Engine type" ;
+  rdfs:comment "A category of engine." .
+
+:Fuel a owl:Class ;
+  rdfs:label "Fuel" ;
+  rdfs:comment "A fuel or energy carrier used to power an engine." .
+
+:DrivenComponent a owl:Class ;
+  rdfs:label "Driven component" ;
+  rdfs:comment "A component driven by an engine." .
+
+:PropulsionTechnology a owl:Class ;
+  rdfs:label "Propulsion technology" ;
+  rdfs:comment "A propulsion technology used within a propulsion system." .
+
+:MotorizedPropulsionTechnology a owl:Class ;
+  rdfs:label "Motorized propulsion technology" ;
+  rdfs:comment "A propulsion technology powered by an engine." ;
+  rdfs:subClassOf :PropulsionTechnology .
+
+:WindPropulsionTechnology a owl:Class ;
+  rdfs:label "Wind propulsion technology" ;
+  rdfs:comment "A propulsion technology based on wind." ;
+  rdfs:subClassOf :PropulsionTechnology .
+
+:JetPropulsor a owl:Class ;
+  rdfs:label "Jet propulsor" ;
+  rdfs:comment "A propulsion technology based on jet propulsion." ;
+  rdfs:subClassOf :MotorizedPropulsionTechnology .
+
+:BladedPropulsor a owl:Class ;
+  rdfs:label "Bladed propulsor" ;
+  rdfs:comment "A propulsion technology using blades." ;
+  rdfs:subClassOf :MotorizedPropulsionTechnology .
+
+:SpecialDesignBladedPropulsor a owl:Class ;
+  rdfs:label "Special design bladed propulsor" ;
+  rdfs:comment "A bladed propulsor following a special design." ;
+  rdfs:subClassOf :BladedPropulsor .
+
+:ScrewPropeller a owl:Class ;
+  rdfs:label "Screw propeller" ;
+  rdfs:comment "A screw propeller used as a bladed propulsor." ;
+  rdfs:subClassOf :BladedPropulsor .
+
+:FixedPitchPropeller a owl:Class ;
+  rdfs:label "Fixed pitch propeller" ;
+  rdfs:comment "A screw propeller with fixed pitch." ;
+  rdfs:subClassOf :ScrewPropeller .
+
+:SupercavitatingPropeller a owl:Class ;
+  rdfs:label "Supercavitating propeller" ;
+  rdfs:comment "A screw propeller designed for supercavitating operation." ;
+  rdfs:subClassOf :SpecialDesignBladedPropulsor, :ScrewPropeller .
+
+:CavitationPreventionDevice a owl:Class ;
+  rdfs:label "Cavitation prevention device" ;
+  rdfs:comment "A device used to prevent cavitation on motorized propulsion technologies." .
+
+:Sail a owl:Class ;
+  rdfs:label "Sail" ;
+  rdfs:comment "A sail-based wind propulsion technology." ;
+  rdfs:subClassOf :WindPropulsionTechnology .
+
+:DataResource a owl:Class ;
+  rdfs:label "Data resource" ;
+  rdfs:comment "A data resource used to represent a ship." .
+
+:SonarData a owl:Class ;
+  rdfs:label "Sonar data" ;
+  rdfs:comment "A sonar-related data resource for a ship." ;
+  rdfs:subClassOf :DataResource .
+
+:ImageResource a owl:Class ;
+  rdfs:label "Image resource" ;
+  rdfs:comment "An image resource depicting a ship." ;
+  rdfs:subClassOf :DataResource .
+
+:TextResource a owl:Class ;
+  rdfs:label "Text resource" ;
+  rdfs:comment "A textual resource describing a ship." ;
+  rdfs:subClassOf :DataResource .
+
+:StorageSpecification a owl:Class ;
+  rdfs:label "Storage specification" ;
+  rdfs:comment "A specification describing how a data resource is stored." .
+
+### Object Properties
+
+:hasIdentifier a owl:ObjectProperty ;
+  rdfs:label "has identifier" ;
+  rdfs:comment "Relates a ship to an identifier." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Identifier .
+
+:hasShipType a owl:ObjectProperty ;
+  rdfs:label "has ship type" ;
+  rdfs:comment "Relates a ship to its ship type." ;
+  rdfs:domain :Ship ;
+  rdfs:range :ShipType .
+
+:hasDimensionSpecification a owl:ObjectProperty ;
+  rdfs:label "has dimension specification" ;
+  rdfs:comment "Relates a ship to a specification of its dimensions." ;
+  rdfs:domain :Ship ;
+  rdfs:range :DimensionSpecification .
+
+:hasLength a owl:ObjectProperty ;
+  rdfs:label "has length" ;
+  rdfs:comment "Relates a dimension specification to a length measurement." ;
+  rdfs:domain :DimensionSpecification ;
+  rdfs:range :Measurement .
+
+:hasBeam a owl:ObjectProperty ;
+  rdfs:label "has beam" ;
+  rdfs:comment "Relates a dimension specification to a beam measurement." ;
+  rdfs:domain :DimensionSpecification ;
+  rdfs:range :Measurement .
+
+:hasDraught a owl:ObjectProperty ;
+  rdfs:label "has draught" ;
+  rdfs:comment "Relates a dimension specification to a draught measurement." ;
+  rdfs:domain :DimensionSpecification ;
+  rdfs:range :Measurement .
+
+:hasUnit a owl:ObjectProperty ;
+  rdfs:label "has unit" ;
+  rdfs:comment "Relates a measurement to its unit." ;
+  rdfs:domain :Measurement ;
+  rdfs:range :Unit .
+
+:hasTypicalLocation a owl:ObjectProperty ;
+  rdfs:label "has typical location" ;
+  rdfs:comment "Relates a ship to a typical location." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Location .
+
+:hasOwner a owl:ObjectProperty ;
+  rdfs:label "has owner" ;
+  rdfs:comment "Relates a ship to an owning agent." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Agent .
+
+:registeredUnderFlag a owl:ObjectProperty ;
+  rdfs:label "registered under flag" ;
+  rdfs:comment "Relates a ship to the flag state under which it is registered." ;
+  rdfs:domain :Ship ;
+  rdfs:range :FlagState .
+
+:hasGPSAntennaPlacement a owl:ObjectProperty ;
+  rdfs:label "has GPS antenna placement" ;
+  rdfs:comment "Relates a ship to the relative placement of its GPS antenna." ;
+  rdfs:domain :Ship ;
+  rdfs:range :SensorPlacement .
+
+:hasRoute a owl:ObjectProperty ;
+  rdfs:label "has route" ;
+  rdfs:comment "Relates a ship to a route." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Route .
+
+:hasPredictedRoute a owl:ObjectProperty ;
+  rdfs:label "has predicted route" ;
+  rdfs:comment "Relates a ship to a predicted route." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Route ;
+  rdfs:subPropertyOf :hasRoute .
+
+:hasTrajectory a owl:ObjectProperty ;
+  rdfs:label "has trajectory" ;
+  rdfs:comment "Relates a ship or route to a trajectory." ;
+  rdfs:range :Trajectory .
+
+:hasTrajectoryPart a owl:ObjectProperty ;
+  rdfs:label "has trajectory part" ;
+  rdfs:comment "Relates a trajectory to one of its parts." ;
+  rdfs:domain :Trajectory ;
+  rdfs:range :TrajectoryPart .
+
+:hasTrajectoryType a owl:ObjectProperty ;
+  rdfs:label "has trajectory type" ;
+  rdfs:comment "Relates a trajectory to its type." ;
+  rdfs:domain :Trajectory ;
+  rdfs:range :TrajectoryType .
+
+:startsAt a owl:ObjectProperty ;
+  rdfs:label "starts at" ;
+  rdfs:comment "Relates a route or trajectory part to its start location." ;
+  rdfs:range :Location .
+
+:endsAt a owl:ObjectProperty ;
+  rdfs:label "ends at" ;
+  rdfs:comment "Relates a route or trajectory part to its end location." ;
+  rdfs:range :Location .
+
+:hasPropulsionSystem a owl:ObjectProperty ;
+  rdfs:label "has propulsion system" ;
+  rdfs:comment "Relates a ship to a propulsion system." ;
+  rdfs:domain :Ship ;
+  rdfs:range :PropulsionSystem .
+
+:hasEngine a owl:ObjectProperty ;
+  rdfs:label "has engine" ;
+  rdfs:comment "Relates a ship or propulsion system to an engine." ;
+  rdfs:range :Engine .
+
+:hasEngineType a owl:ObjectProperty ;
+  rdfs:label "has engine type" ;
+  rdfs:comment "Relates an engine to its engine type." ;
+  rdfs:domain :Engine ;
+  rdfs:range :EngineType .
+
+:poweredByFuel a owl:ObjectProperty ;
+  rdfs:label "powered by fuel" ;
+  rdfs:comment "Relates an engine to the fuel that powers it." ;
+  rdfs:domain :Engine ;
+  rdfs:range :Fuel .
+
+:drives a owl:ObjectProperty ;
+  rdfs:label "drives" ;
+  rdfs:comment "Relates an engine to a driven component." ;
+  rdfs:domain :Engine ;
+  rdfs:range :DrivenComponent .
+
+:hasPropulsionTechnology a owl:ObjectProperty ;
+  rdfs:label "has propulsion technology" ;
+  rdfs:comment "Relates a propulsion system to a propulsion technology." ;
+  rdfs:domain :PropulsionSystem ;
+  rdfs:range :PropulsionTechnology .
+
+:assistsMotorizedPropulsion a owl:ObjectProperty ;
+  rdfs:label "assists motorized propulsion" ;
+  rdfs:comment "Relates a wind propulsion technology to a motorized propulsion technology that it assists." ;
+  rdfs:domain :WindPropulsionTechnology ;
+  rdfs:range :MotorizedPropulsionTechnology .
+
+:hasCavitationPreventionDevice a owl:ObjectProperty ;
+  rdfs:label "has cavitation prevention device" ;
+  rdfs:comment "Relates a motorized propulsion technology to a device used to prevent cavitation." ;
+  rdfs:domain :MotorizedPropulsionTechnology ;
+  rdfs:range :CavitationPreventionDevice .
+
+:hasDataResource a owl:ObjectProperty ;
+  rdfs:label "has data resource" ;
+  rdfs:comment "Relates a ship to a data resource representing it." ;
+  rdfs:domain :Ship ;
+  rdfs:range :DataResource .
+
+:hasStorageSpecification a owl:ObjectProperty ;
+  rdfs:label "has storage specification" ;
+  rdfs:comment "Relates a data resource to a storage specification." ;
+  rdfs:domain :DataResource ;
+  rdfs:range :StorageSpecification .
+
+### Datatype Properties
+
+:identifierValue a owl:DatatypeProperty ;
+  rdfs:label "identifier value" ;
+  rdfs:comment "The literal value of an identifier." ;
+  rdfs:domain :Identifier ;
+  rdfs:range xsd:string .
+
+:measurementValue a owl:DatatypeProperty ;
+  rdfs:label "measurement value" ;
+  rdfs:comment "The numeric value of a measurement." ;
+  rdfs:domain :Measurement ;
+  rdfs:range xsd:decimal .
+
+:averageSpeedOverGround a owl:DatatypeProperty ;
+  rdfs:label "average speed over ground" ;
+  rdfs:comment "The average speed over ground associated with a ship, route, trajectory, or trajectory part." ;
+  rdfs:range xsd:decimal .
+
+:relativeBowOffset a owl:DatatypeProperty ;
+  rdfs:label "relative bow offset" ;
+  rdfs:comment "The relative offset of a placement from the bow direction." ;
+  rdfs:domain :SensorPlacement ;
+  rdfs:range xsd:decimal .
+
+:relativeSternOffset a owl:DatatypeProperty ;
+  rdfs:label "relative stern offset" ;
+  rdfs:comment "The relative offset of a placement from the stern direction." ;
+  rdfs:domain :SensorPlacement ;
+  rdfs:range xsd:decimal .
+
+:relativePortOffset a owl:DatatypeProperty ;
+  rdfs:label "relative port offset" ;
+  rdfs:comment "The relative offset of a placement from the port side." ;
+  rdfs:domain :SensorPlacement ;
+  rdfs:range xsd:decimal .
+
+:relativeStarboardOffset a owl:DatatypeProperty ;
+  rdfs:label "relative starboard offset" ;
+  rdfs:comment "The relative offset of a placement from the starboard side." ;
+  rdfs:domain :SensorPlacement ;
+  rdfs:range xsd:decimal .
+
+:routeDescription a owl:DatatypeProperty ;
+  rdfs:label "route description" ;
+  rdfs:comment "A textual description of a route." ;
+  rdfs:domain :Route ;
+  rdfs:range xsd:string .
+
+:trajectoryPartDescription a owl:DatatypeProperty ;
+  rdfs:label "trajectory part description" ;
+  rdfs:comment "A textual description of a trajectory part." ;
+  rdfs:domain :TrajectoryPart ;
+  rdfs:range xsd:string .
+
+:observationDate a owl:DatatypeProperty ;
+  rdfs:label "observation date" ;
+  rdfs:comment "A date associated with a route, trajectory, or trajectory part observation." ;
+  rdfs:range xsd:date .
+
+:bladeCount a owl:DatatypeProperty ;
+  rdfs:label "blade count" ;
+  rdfs:comment "The number of blades of a bladed propulsor." ;
+  rdfs:domain :BladedPropulsor ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:diameterValue a owl:DatatypeProperty ;
+  rdfs:label "diameter value" ;
+  rdfs:comment "The diameter value of a bladed propulsor." ;
+  rdfs:domain :BladedPropulsor ;
+  rdfs:range xsd:decimal .
+
+:resourceURL a owl:DatatypeProperty ;
+  rdfs:label "resource URL" ;
+  rdfs:comment "A URL or locator for a data resource." ;
+  rdfs:domain :DataResource ;
+  rdfs:range xsd:anyURI .
+
+:textContent a owl:DatatypeProperty ;
+  rdfs:label "text content" ;
+  rdfs:comment "The textual content of a text resource." ;
+  rdfs:domain :TextResource ;
+  rdfs:range xsd:string .
+
+:storageFormat a owl:DatatypeProperty ;
+  rdfs:label "storage format" ;
+  rdfs:comment "The format in which a data resource is stored." ;
+  rdfs:domain :StorageSpecification ;
+  rdfs:range xsd:string .
+
+### Annotation Properties
+
+:usageNote a owl:AnnotationProperty ;
+  rdfs:label "usage note" ;
+  rdfs:comment "An annotation property for lightweight modeling guidance." .
+
+### Axioms
+
+:Organization owl:disjointWith :Person .
+
+:Ship rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasIdentifier ;
+    owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Identifier
+  ] .
+
+:Measurement rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasUnit ;
+    owl:someValuesFrom :Unit
+  ] .
+
+:Ship rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasDimensionSpecification ;
+    owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :DimensionSpecification
+  ] .
+
+:PropulsionSystem rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasPropulsionTechnology ;
+    owl:someValuesFrom :PropulsionTechnology
+  ] .
+
+:MotorizedPropulsionTechnology rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasEngine ;
+    owl:someValuesFrom :Engine
+  ] .
+
+:WindPropulsionTechnology owl:disjointWith :MotorizedPropulsionTechnology .
+
+:Sail rdfs:subClassOf :PropulsionTechnology .
+
+:Ship :usageNote "Counts such as number of container ships under a given flag or ships with sails can be answered by querying instances using hasShipType, registeredUnderFlag, hasPropulsionSystem, and hasPropulsionTechnology." .
+
+:averageSpeedOverGround :usageNote "This property may be attached to a ship, route, trajectory, or trajectory part depending on the granularity of available data." .
+
+:hasTrajectory :usageNote "This property is intentionally left without a fixed domain so it can relate either a ship or a route to a trajectory." .
+
+:hasEngine :usageNote "This property is intentionally left without a fixed domain so it can relate either a ship, a propulsion system, or a motorized propulsion technology to an engine." .
+
+:startsAt :usageNote "This property may be used for routes and trajectory parts." .
+
+:endsAt :usageNote "This property may be used for routes and trajectory parts." .

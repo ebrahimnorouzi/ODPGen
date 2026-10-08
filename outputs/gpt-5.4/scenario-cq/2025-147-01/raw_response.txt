@@ -1,4 +1,4 @@
-1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
 
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
@@ -8,8 +8,8 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Maritime ship, trajectory, propulsion, and representation ODP" ;
-  rdfs:comment "An ontology design pattern for representing ships, their identification and dimensions, ownership and flag registration, trajectories and routes, propulsion systems and technologies, engines and fuels, and multimodal ship representations such as images, sonar data, and textual descriptions." .
+  rdfs:label "Maritime ship representation ontology design pattern" ;
+  rdfs:comment "An ontology design pattern for representing ships, their identification, dimensions, ownership, flag registration, location and trajectory information, propulsion systems and technologies, engines, fuels, and multimodal ship data resources such as images, sonar data, and textual descriptions." .
 
 ### Classes
 
@@ -21,44 +21,37 @@
   rdfs:label "Ship type" ;
   rdfs:comment "A category or type of ship, such as container ship." .
 
-:DimensionSpecification a owl:Class ;
-  rdfs:label "Dimension specification" ;
-  rdfs:comment "A specification describing a ship's physical dimensions." .
-
-:Location a owl:Class ;
-  rdfs:label "Location" ;
-  rdfs:comment "A place or area associated with a ship, such as a typical location." .
-
-:Agent a owl:Class ;
-  rdfs:label "Agent" ;
-  rdfs:comment "An entity that can own a ship." .
-
 :Organization a owl:Class ;
   rdfs:label "Organization" ;
-  rdfs:comment "An organization that can own ships." ;
-  rdfs:subClassOf :Agent .
+  rdfs:comment "An organization that can own ships." .
 
 :Person a owl:Class ;
   rdfs:label "Person" ;
-  rdfs:comment "A person that can own a ship." ;
-  rdfs:subClassOf :Agent .
+  rdfs:comment "A person that can own ships." .
 
-:FlagState a owl:Class ;
-  rdfs:label "Flag state" ;
-  rdfs:comment "A state or registry under whose flag a ship is registered." .
+:Country a owl:Class ;
+  rdfs:label "Country" ;
+  rdfs:comment "A country used for flag registration." .
+
+:Dimension a owl:Class ;
+  rdfs:label "Dimension" ;
+  rdfs:comment "A measurable ship dimension such as length, beam, or draught." .
+
+:Unit a owl:Class ;
+  rdfs:label "Unit" ;
+  rdfs:comment "A unit used to express a measured value." .
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "A location associated with a ship, including typical location information." .
 
 :Route a owl:Class ;
   rdfs:label "Route" ;
-  rdfs:comment "A route associated with a ship, including actual or predicted routes." .
-
-:PredictedRoute a owl:Class ;
-  rdfs:label "Predicted route" ;
-  rdfs:comment "A route predicted for a ship." ;
-  rdfs:subClassOf :Route .
+  rdfs:comment "A route associated with a ship." .
 
 :Trajectory a owl:Class ;
   rdfs:label "Trajectory" ;
-  rdfs:comment "A trajectory describing the movement of a ship." .
+  rdfs:comment "A trajectory describing vessel movement." .
 
 :TrajectoryType a owl:Class ;
   rdfs:label "Trajectory type" ;
@@ -68,25 +61,33 @@
   rdfs:label "Trajectory part" ;
   rdfs:comment "A segment or part of a trajectory." .
 
-:GPSAntennaPlacement a owl:Class ;
-  rdfs:label "GPS antenna placement" ;
-  rdfs:comment "A relative placement of a GPS antenna with respect to the ship structure." .
-
-:Unit a owl:Class ;
-  rdfs:label "Unit" ;
-  rdfs:comment "A unit of measurement used for a quantitative ship property." .
-
 :PropulsionSystem a owl:Class ;
   rdfs:label "Propulsion system" ;
   rdfs:comment "A propulsion system installed on a ship." .
+
+:Engine a owl:Class ;
+  rdfs:label "Engine" ;
+  rdfs:comment "An engine used in ship propulsion." .
+
+:EngineType a owl:Class ;
+  rdfs:label "Engine type" ;
+  rdfs:comment "A category of engine used in ships." .
+
+:Fuel a owl:Class ;
+  rdfs:label "Fuel" ;
+  rdfs:comment "A fuel used to power ship engines." .
+
+:DrivenComponent a owl:Class ;
+  rdfs:label "Driven component" ;
+  rdfs:comment "A component driven by a ship engine." .
 
 :PropulsionTechnology a owl:Class ;
   rdfs:label "Propulsion technology" ;
   rdfs:comment "A propulsion technology used within a propulsion system." .
 
-:EnginePoweredPropulsionTechnology a owl:Class ;
-  rdfs:label "Engine-powered propulsion technology" ;
-  rdfs:comment "A propulsion technology powered by an engine." ;
+:MotorizedPropulsionTechnology a owl:Class ;
+  rdfs:label "Motorized propulsion technology" ;
+  rdfs:comment "A propulsion technology powered by engines." ;
   rdfs:subClassOf :PropulsionTechnology .
 
 :NonEnginePropulsionTechnology a owl:Class ;
@@ -94,12 +95,755 @@
   rdfs:comment "A propulsion technology that does not rely on an engine." ;
   rdfs:subClassOf :PropulsionTechnology .
 
-:MotorizedPropulsionTechnology a owl:Class ;
-  rdfs:label "Motorized propulsion technology" ;
-  rdfs:comment "A propulsion technology used for motorized propulsion." ;
-  rdfs:subClassOf :EnginePoweredPropulsionTechnology .
-
 :WindPropulsionTechnology a owl:Class ;
   rdfs:label "Wind propulsion technology" ;
   rdfs:comment "A propulsion technology based on wind." ;
-  rdfs
+  rdfs:subClassOf :NonEnginePropulsionTechnology .
+
+:JetPropulsor a owl:Class ;
+  rdfs:label "Jet propulsor" ;
+  rdfs:comment "A propulsion technology of the jet propulsor kind." ;
+  rdfs:subClassOf :MotorizedPropulsionTechnology .
+
+:BladedPropulsor a owl:Class ;
+  rdfs:label "Bladed propulsor" ;
+  rdfs:comment "A propulsion technology using blades." ;
+  rdfs:subClassOf :MotorizedPropulsionTechnology .
+
+:SpecialDesignBladedPropulsor a owl:Class ;
+  rdfs:label "Special design bladed propulsor" ;
+  rdfs:comment "A bladed propulsor following a special design." ;
+  rdfs:subClassOf :BladedPropulsor .
+
+:ScrewPropeller a owl:Class ;
+  rdfs:label "Screw propeller" ;
+  rdfs:comment "A screw propeller used as a bladed propulsor." ;
+  rdfs:subClassOf :BladedPropulsor .
+
+:FixedPitchPropeller a owl:Class ;
+  rdfs:label "Fixed pitch propeller" ;
+  rdfs:comment "A screw propeller with fixed pitch." ;
+  rdfs:subClassOf :ScrewPropeller .
+
+:SupercavitatingPropeller a owl:Class ;
+  rdfs:label "Supercavitating propeller" ;
+  rdfs:comment "A propeller designed for supercavitating operation." ;
+  rdfs:subClassOf :SpecialDesignBladedPropulsor .
+
+:CavitationPreventionTechnology a owl:Class ;
+  rdfs:label "Cavitation prevention technology" ;
+  rdfs:comment "A technology used to prevent cavitation on motorized propulsion technologies." .
+
+:Sail a owl:Class ;
+  rdfs:label "Sail" ;
+  rdfs:comment "A sail used as a wind propulsion technology." ;
+  rdfs:subClassOf :WindPropulsionTechnology .
+
+:DataRepresentation a owl:Class ;
+  rdfs:label "Data representation" ;
+  rdfs:comment "A kind of data used to represent a ship." .
+
+:SonarData a owl:Class ;
+  rdfs:label "Sonar data" ;
+  rdfs:comment "Sonar data resource representing a ship." ;
+  rdfs:subClassOf :DataRepresentation .
+
+:ImageResource a owl:Class ;
+  rdfs:label "Image resource" ;
+  rdfs:comment "An image resource representing a ship." ;
+  rdfs:subClassOf :DataRepresentation .
+
+:TextualInformation a owl:Class ;
+  rdfs:label "Textual information" ;
+  rdfs:comment "Textual information representing a ship." ;
+  rdfs:subClassOf :DataRepresentation .
+
+### Object Properties
+
+:hasShipType a owl:ObjectProperty ;
+  rdfs:label "has ship type" ;
+  rdfs:comment "Relates a ship to its ship type." ;
+  rdfs:domain :Ship ;
+  rdfs:range :ShipType .
+
+:hasOwner a owl:ObjectProperty ;
+  rdfs:label "has owner" ;
+  rdfs:comment "Relates a ship to its owner, which can be a person or organization." ;
+  rdfs:domain :Ship ;
+  rdfs:range owl:Thing .
+
+:registeredUnderFlag a owl:ObjectProperty ;
+  rdfs:label "registered under flag" ;
+  rdfs:comment "Relates a ship to the country under whose flag it is registered." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Country .
+
+:hasDimension a owl:ObjectProperty ;
+  rdfs:label "has dimension" ;
+  rdfs:comment "Relates a ship to a dimension description." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Dimension .
+
+:hasTypicalLocation a owl:ObjectProperty ;
+  rdfs:label "has typical location" ;
+  rdfs:comment "Relates a ship to information about its typical location." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Location .
+
+:hasRoute a owl:ObjectProperty ;
+  rdfs:label "has route" ;
+  rdfs:comment "Relates a ship to a route." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Route .
+
+:hasPredictedRoute a owl:ObjectProperty ;
+  rdfs:label "has predicted route" ;
+  rdfs:comment "Relates a ship to a predicted route." ;
+  rdfs:domain :Ship ;
+  rdfs:range :Route .
+
+:hasTrajectory a owl:ObjectProperty ;
+  rdfs:label "has trajectory" ;
+  rdfs:comment "Relates a ship or route to a trajectory." ;
+  rdfs:range :Trajectory .
+
+:hasTrajectoryPart a owl:ObjectProperty ;
+  rdfs:label "has trajectory part" ;
+  rdfs:comment "Relates a trajectory to one of its parts." ;
+  rdfs:domain :Trajectory ;
+  rdfs:range :TrajectoryPart .
+
+:hasTrajectoryType a owl:ObjectProperty ;
+  rdfs:label "has trajectory type" ;
+  rdfs:comment "Relates a trajectory to its trajectory type." ;
+  rdfs:domain :Trajectory ;
+  rdfs:range :TrajectoryType .
+
+:hasPropulsionSystem a owl:ObjectProperty ;
+  rdfs:label "has propulsion system" ;
+  rdfs:comment "Relates a ship to a propulsion system." ;
+  rdfs:domain :Ship ;
+  rdfs:range :PropulsionSystem .
+
+:hasEngine a owl:ObjectProperty ;
+  rdfs:label "has engine" ;
+  rdfs:comment "Relates a propulsion system or ship to an engine." ;
+  rdfs:range :Engine .
+
+:hasEngineType a owl:ObjectProperty ;
+  rdfs:label "has engine type" ;
+  rdfs:comment "Relates an engine to its engine type." ;
+  rdfs:domain :Engine ;
+  rdfs:range :EngineType .
+
+:poweredByFuel a owl:ObjectProperty ;
+  rdfs:label "powered by fuel" ;
+  rdfs:comment "Relates an engine to the fuel that powers it." ;
+  rdfs:domain :Engine ;
+  rdfs:range :Fuel .
+
+:drives a owl:ObjectProperty ;
+  rdfs:label "drives" ;
+  rdfs:comment "Relates an engine to the component it drives." ;
+  rdfs:domain :Engine ;
+  rdfs:range :DrivenComponent .
+
+:hasPropulsionTechnology a owl:ObjectProperty ;
+  rdfs:label "has propulsion technology" ;
+  rdfs:comment "Relates a propulsion system to a propulsion technology used by it." ;
+  rdfs:domain :PropulsionSystem ;
+  rdfs:range :PropulsionTechnology .
+
+:assists a owl:ObjectProperty ;
+  rdfs:label "assists" ;
+  rdfs:comment "Relates one propulsion technology to another propulsion technology that it assists." ;
+  rdfs:domain :PropulsionTechnology ;
+  rdfs:range :PropulsionTechnology .
+
+:hasCavitationPreventionTechnology a owl:ObjectProperty ;
+  rdfs:label "has cavitation prevention technology" ;
+  rdfs:comment "Relates a motorized propulsion technology to a technology used to prevent cavitation." ;
+  rdfs:domain :MotorizedPropulsionTechnology ;
+  rdfs:range :CavitationPreventionTechnology .
+
+:hasDataRepresentation a owl:ObjectProperty ;
+  rdfs:label "has data representation" ;
+  rdfs:comment "Relates a ship to a data representation resource." ;
+  rdfs:domain :Ship ;
+  rdfs:range :DataRepresentation .
+
+:hasSonarData a owl:ObjectProperty ;
+  rdfs:label "has sonar data" ;
+  rdfs:comment "Relates a ship to sonar data representing it." ;
+  rdfs:domain :Ship ;
+  rdfs:range :SonarData .
+
+:hasImageResource a owl:ObjectProperty ;
+  rdfs:label "has image resource" ;
+  rdfs:comment "Relates a ship to an image resource representing it." ;
+  rdfs:domain :Ship ;
+  rdfs:range :ImageResource .
+
+:hasTextualInformation a owl:ObjectProperty ;
+  rdfs:label "has textual information" ;
+  rdfs:comment "Relates a ship to textual information representing it." ;
+  rdfs:domain :Ship ;
+  rdfs:range :TextualInformation .
+
+### Datatype Properties
+
+:identifier a owl:DatatypeProperty ;
+  rdfs:label "identifier" ;
+  rdfs:comment "A clear identifier for a ship." ;
+  rdfs:domain :Ship ;
+  rdfs:range xsd:string .
+
+:dimensionType a owl:DatatypeProperty ;
+  rdfs:label "dimension type" ;
+  rdfs:comment "The kind of dimension being described, such as length, beam, or draught." ;
+  rdfs:domain :Dimension ;
+  rdfs:range xsd:string .
+
+:dimensionValue a owl:DatatypeProperty ;
+  rdfs:label "dimension value" ;
+  rdfs:comment "The numeric value of a ship dimension." ;
+  rdfs:domain :Dimension ;
+  rdfs:range xsd:decimal .
+
+:hasUnitLabel a owl:DatatypeProperty ;
+  rdfs:label "has unit label" ;
+  rdfs:comment "The label or symbol of a unit used for a measured value." ;
+  rdfs:domain :Unit ;
+  rdfs:range xsd:string .
+
+:usesUnit a owl:ObjectProperty ;
+  rdfs:label "uses unit" ;
+  rdfs:comment "Relates a dimension to the unit used to express it." ;
+  rdfs:domain :Dimension ;
+  rdfs:range :Unit .
+
+:averageSpeedOverGround a owl:DatatypeProperty ;
+  rdfs:label "average speed over ground" ;
+  rdfs:comment "The average speed over ground associated with a ship, route, trajectory, or trajectory part." ;
+  rdfs:range xsd:decimal .
+
+:bowOffset a owl:DatatypeProperty ;
+  rdfs:label "bow offset" ;
+  rdfs:comment "The relative placement of the GPS antenna toward the bow or stern." ;
+  rdfs:domain :Ship ;
+  rdfs:range xsd:decimal .
+
+:sternOffset a owl:DatatypeProperty ;
+  rdfs:label "stern offset" ;
+  rdfs:comment "The relative placement of the GPS antenna toward the stern." ;
+  rdfs:domain :Ship ;
+  rdfs:range xsd:decimal .
+
+:portOffset a owl:DatatypeProperty ;
+  rdfs:label "port offset" ;
+  rdfs:comment "The relative placement of the GPS antenna toward the port side." ;
+  rdfs:domain :Ship ;
+  rdfs:range xsd:decimal .
+
+:starboardOffset a owl:DatatypeProperty ;
+  rdfs:label "starboard offset" ;
+  rdfs:comment "The relative placement of the GPS antenna toward the starboard side." ;
+  rdfs:domain :Ship ;
+  rdfs:range xsd:decimal .
+
+:routeDescription a owl:DatatypeProperty ;
+  rdfs:label "route description" ;
+  rdfs:comment "A textual description of a ship route." ;
+  rdfs:domain :Route ;
+  rdfs:range xsd:string .
+
+:trajectoryPartDescription a owl:DatatypeProperty ;
+  rdfs:label "trajectory part description" ;
+  rdfs:comment "A textual description of a single trajectory part." ;
+  rdfs:domain :TrajectoryPart ;
+  rdfs:range xsd:string .
+
+:date a owl:DatatypeProperty ;
+  rdfs:label "date" ;
+  rdfs:comment "A date associated with a route, trajectory, or trajectory part." ;
+  rdfs:range xsd:date .
+
+:diameter a owl:DatatypeProperty ;
+  rdfs:label "diameter" ;
+  rdfs:comment "The diameter of a bladed propulsor or propeller." ;
+  rdfs:domain :BladedPropulsor ;
+  rdfs:range xsd:decimal .
+
+:bladeCount a owl:DatatypeProperty ;
+  rdfs:label "blade count" ;
+  rdfs:comment "The number of blades of a bladed propulsor or propeller." ;
+  rdfs:domain :BladedPropulsor ;
+  rdfs:range xsd:integer .
+
+:storageFormat a owl:DatatypeProperty ;
+  rdfs:label "storage format" ;
+  rdfs:comment "The format in which a data representation, such as sonar data, is stored." ;
+  rdfs:domain :DataRepresentation ;
+  rdfs:range xsd:string .
+
+:textContent a owl:DatatypeProperty ;
+  rdfs:label "text content" ;
+  rdfs:comment "The textual content of a textual information resource." ;
+  rdfs:domain :TextualInformation ;
+  rdfs:range xsd:string .
+
+:resourceURL a owl:DatatypeProperty ;
+  rdfs:label "resource URL" ;
+  rdfs:comment "A URL or locator for an image, sonar, or other data resource." ;
+  rdfs:domain :DataRepresentation ;
+  rdfs:range xsd:anyURI .
+```
+
+2. Scenario-requirement-to-axiom mapping
+
+- Requirement: Represent ships in a formalized, machine-interpretable conceptual model.
+  - Axioms:
+    - `:Ship a owl:Class`
+    - `:Ontology a owl:Ontology ...`
+
+- Requirement: Represent ships and their properties.
+  - Axioms:
+    - `:Ship`
+    - `:identifier`
+    - `:hasDimension`
+    - `:hasTypicalLocation`
+    - `:hasOwner`
+    - `:registeredUnderFlag`
+    - `:averageSpeedOverGround`
+    - `:hasPropulsionSystem`
+    - `:hasDataRepresentation`
+
+- Requirement: Support heterogeneous maritime data integration across AIS tracks, technical ship specifications, registry databases, classification society databases, and onboard monitoring platforms.
+  - Axioms:
+    - `:Trajectory`, `:TrajectoryPart`, `:Route`
+    - `:Dimension`, `:Unit`
+    - `:registeredUnderFlag`, `:hasOwner`
+    - `:DataRepresentation`, `:SonarData`, `:ImageResource`, `:TextualInformation`
+    - `:storageFormat`, `:resourceURL`, `:textContent`
+
+- Requirement: Support fleet management and operational planning through standardized vessel characteristics.
+  - Axioms:
+    - `:ShipType`
+    - `:hasShipType`
+    - `:Dimension`, `:hasDimension`, `:dimensionType`, `:dimensionValue`, `:usesUnit`
+    - `:averageSpeedOverGround`
+
+- Requirement: Support SAR operations through semantic querying of vessel trajectory data.
+  - Axioms:
+    - `:Trajectory`, `:TrajectoryPart`, `:TrajectoryType`
+    - `:hasTrajectory`, `:hasTrajectoryPart`, `:hasTrajectoryType`
+    - `:date`
+    - `:averageSpeedOverGround`
+
+- Requirement: Provide a common semantic layer across disparate data systems.
+  - Axioms:
+    - Broad schema centered on `:Ship`
+    - Linking properties:
+      - `:hasRoute`
+      - `:hasTrajectory`
+      - `:hasOwner`
+      - `:registeredUnderFlag`
+      - `:hasPropulsionSystem`
+      - `:hasDataRepresentation`
+
+- Requirement: Support digital twins and life cycle simulations by modeling propulsion system types and their interconnections.
+  - Axioms:
+    - `:PropulsionSystem`
+    - `:PropulsionTechnology`
+    - `:hasPropulsionSystem`
+    - `:hasPropulsionTechnology`
+    - `:Engine`, `:EngineType`, `:Fuel`, `:DrivenComponent`
+    - `:hasEngine`, `:hasEngineType`, `:poweredByFuel`, `:drives`
+    - `:assists`
+    - propulsion taxonomy:
+      - `:MotorizedPropulsionTechnology`
+      - `:NonEnginePropulsionTechnology`
+      - `:WindPropulsionTechnology`
+      - `:JetPropulsor`
+      - `:BladedPropulsor`
+      - `:SpecialDesignBladedPropulsor`
+      - `:ScrewPropeller`
+      - `:FixedPitchPropeller`
+      - `:SupercavitatingPropeller`
+      - `:Sail`
+      - `:CavitationPreventionTechnology`
+      - `:hasCavitationPreventionTechnology`
+
+3. CQ-to-axiom mapping
+
+- CQ: How are ships clearly identified?
+  - Classes/properties:
+    - `:Ship`
+    - `:identifier`
+
+- CQ: How are a ship's dimensions described?
+  - Classes/properties:
+    - `:Ship`
+    - `:Dimension`
+    - `:hasDimension`
+    - `:dimensionType`
+    - `:dimensionValue`
+    - `:usesUnit`
+    - `:Unit`
+
+- CQ: What information can be provided about the typical location of a ship?
+  - Classes/properties:
+    - `:Ship`
+    - `:Location`
+    - `:hasTypicalLocation`
+
+- CQ: Who can be the owner of a ship?
+  - Classes/properties:
+    - `:Ship`
+    - `:Person`
+    - `:Organization`
+    - `:hasOwner`
+
+- CQ: How is a ship's average speed over ground specified?
+  - Classes/properties:
+    - `:averageSpeedOverGround`
+    - applicable to `:Ship`, `:Route`, `:Trajectory`, `:TrajectoryPart`
+
+- CQ: How many container ships are registered under the German flag?
+  - Classes/properties:
+    - `:Ship`
+    - `:ShipType`
+    - `:Country`
+    - `:hasShipType`
+    - `:registeredUnderFlag`
+
+- CQ: How is the GPS antenna placed relatively to the ship's structure (bow, stern, port, starboard)?
+  - Classes/properties:
+    - `:Ship`
+    - `:bowOffset`
+    - `:sternOffset`
+    - `:portOffset`
+    - `:starboardOffset`
+
+- CQ: Which organization owns the most ships?
+  - Classes/properties:
+    - `:Ship`
+    - `:Organization`
+    - `:hasOwner`
+
+- CQ: What information can be provided about a ship route?
+  - Classes/properties:
+    - `:Ship`
+    - `:Route`
+    - `:hasRoute`
+    - `:routeDescription`
+    - `:date`
+    - `:averageSpeedOverGround`
+    - `:hasTrajectory`
+
+- CQ: What information is known about a single trajectory part?
+  - Classes/properties:
+    - `:TrajectoryPart`
+    - `:trajectoryPartDescription`
+    - `:date`
+    - `:averageSpeedOverGround`
+
+- CQ: What types of trajectories are distinguished?
+  - Classes/properties:
+    - `:Trajectory`
+    - `:TrajectoryType`
+    - `:hasTrajectoryType`
+
+- CQ: What unit does the draught of a ship have?
+  - Classes/properties:
+    - `:Ship`
+    - `:Dimension`
+    - `:hasDimension`
+    - `:dimensionType`
+    - `:usesUnit`
+    - `:Unit`
+    - `:hasUnitLabel`
+
+- CQ: What was the average speed over ground of the ship on route on day X?
+  - Classes/properties:
+    - `:Ship`
+    - `:Route`
+    - `:hasRoute`
+    - `:date`
+    - `:averageSpeedOverGround`
+
+- CQ: What route is predicted for ship X?
+  - Classes/properties:
+    - `:Ship`
+    - `:Route`
+    - `:hasPredictedRoute`
+
+- CQ: What types of engines are used in ships?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:Engine`
+    - `:EngineType`
+    - `:hasPropulsionSystem`
+    - `:hasEngine`
+    - `:hasEngineType`
+
+- CQ: What combinations of engines can exist?
+  - Classes/properties:
+    - `:PropulsionSystem`
+    - `:Engine`
+    - `:hasEngine`
+
+- CQ: What powers these ship engines?
+  - Classes/properties:
+    - `:Engine`
+    - `:Fuel`
+    - `:poweredByFuel`
+
+- CQ: What is driven by ship engines?
+  - Classes/properties:
+    - `:Engine`
+    - `:DrivenComponent`
+    - `:drives`
+
+- CQ: What types of propulsion systems can ships have?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:hasPropulsionSystem`
+
+- CQ: What propulsion systems don't rely on an engine?
+  - Classes/properties:
+    - `:PropulsionSystem`
+    - `:PropulsionTechnology`
+    - `:NonEnginePropulsionTechnology`
+    - `:hasPropulsionTechnology`
+
+- CQ: Which propulsion technologies are used by each individual propulsion system?
+  - Classes/properties:
+    - `:PropulsionSystem`
+    - `:PropulsionTechnology`
+    - `:hasPropulsionTechnology`
+
+- CQ: What falls under the category of propulsion technologies powered by engines?
+  - Classes/properties:
+    - `:MotorizedPropulsionTechnology`
+    - subclasses such as `:JetPropulsor`, `:BladedPropulsor`, `:ScrewPropeller`
+
+- CQ: What types of jet propulsors exist?
+  - Classes/properties:
+    - `:JetPropulsor`
+
+- CQ: What types of bladed propulsors exist?
+  - Classes/properties:
+    - `:BladedPropulsor`
+    - subclasses `:SpecialDesignBladedPropulsor`, `:ScrewPropeller`
+
+- CQ: What types of blade propulsors follow a special design?
+  - Classes/properties:
+    - `:SpecialDesignBladedPropulsor`
+
+- CQ: What properties describe a bladed propulsor?
+  - Classes/properties:
+    - `:BladedPropulsor`
+    - `:diameter`
+    - `:bladeCount`
+
+- CQ: What types of screw propellers can be used?
+  - Classes/properties:
+    - `:ScrewPropeller`
+    - subclasses `:FixedPitchPropeller`
+
+- CQ: What is used to prevent cavitation on technologies for motorized propulsion?
+  - Classes/properties:
+    - `:MotorizedPropulsionTechnology`
+    - `:CavitationPreventionTechnology`
+    - `:hasCavitationPreventionTechnology`
+
+- CQ: What type of sails exist?
+  - Classes/properties:
+    - `:Sail`
+
+- CQ: Which type of propulsion technologies can assist a motorized ship?
+  - Classes/properties:
+    - `:PropulsionTechnology`
+    - `:assists`
+    - `:WindPropulsionTechnology`
+
+- CQ: What fuel does ship X use to drive?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:Engine`
+    - `:Fuel`
+    - `:hasPropulsionSystem`
+    - `:hasEngine`
+    - `:poweredByFuel`
+
+- CQ: How many engines power ship X?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:Engine`
+    - `:hasPropulsionSystem`
+    - `:hasEngine`
+
+- CQ: What types of propellers are installed on ship X?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:PropulsionTechnology`
+    - `:ScrewPropeller`
+    - `:FixedPitchPropeller`
+    - `:SupercavitatingPropeller`
+    - `:hasPropulsionSystem`
+    - `:hasPropulsionTechnology`
+
+- CQ: What is the most common type of propeller?
+  - Classes/properties:
+    - `:PropulsionSystem`
+    - `:ScrewPropeller` and subclasses
+    - `:hasPropulsionTechnology`
+
+- CQ: How many ships have sails?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:Sail`
+    - `:hasPropulsionSystem`
+    - `:hasPropulsionTechnology`
+
+- CQ: Which ships use electric engines exclusively?
+  - Classes/properties:
+    - `:Ship`
+    - `:Engine`
+    - `:EngineType`
+    - `:hasPropulsionSystem`
+    - `:hasEngine`
+    - `:hasEngineType`
+  - Note:
+    - This is structurally supported by engine typing, though “electric engine” would be represented as a subclass or instance of `:EngineType` in data.
+
+- CQ: What motorized propulsion does a ship use that is assisted by wind propulsion?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:MotorizedPropulsionTechnology`
+    - `:WindPropulsionTechnology`
+    - `:hasPropulsionSystem`
+    - `:hasPropulsionTechnology`
+    - `:assists`
+
+- CQ: How many supercavitating propellers does ship X use?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:SupercavitatingPropeller`
+    - `:hasPropulsionSystem`
+    - `:hasPropulsionTechnology`
+
+- CQ: What diameter and how many blades does the fixed pitch propeller Y of ship X have?
+  - Classes/properties:
+    - `:Ship`
+    - `:PropulsionSystem`
+    - `:FixedPitchPropeller`
+    - `:hasPropulsionSystem`
+    - `:hasPropulsionTechnology`
+    - `:diameter`
+    - `:bladeCount`
+
+- CQ: What is the least utilized wind assisted propulsion system?
+  - Classes/properties:
+    - `:PropulsionSystem`
+    - `:WindPropulsionTechnology`
+    - `:hasPropulsionTechnology`
+
+- CQ: What different kinds of data can be used to represent a ship?
+  - Classes/properties:
+    - `:Ship`
+    - `:DataRepresentation`
+    - `:SonarData`
+    - `:ImageResource`
+    - `:TextualInformation`
+    - `:hasDataRepresentation`
+
+- CQ: How is sonar data of ships stored?
+  - Classes/properties:
+    - `:Ship`
+    - `:SonarData`
+    - `:hasSonarData`
+    - `:storageFormat`
+
+- CQ: What image resources are available for a ship?
+  - Classes/properties:
+    - `:Ship`
+    - `:ImageResource`
+    - `:hasImageResource`
+    - `:resourceURL`
+
+- CQ: What textual information about a ship is available?
+  - Classes/properties:
+    - `:Ship`
+    - `:TextualInformation`
+    - `:hasTextualInformation`
+    - `:textContent`
+
+- CQ: What does ship X look like?
+  - Classes/properties:
+    - `:Ship`
+    - `:ImageResource`
+    - `:hasImageResource`
+    - `:resourceURL`
+
+- CQ: How does ship X sound like on a sonar?
+  - Classes/properties:
+    - `:Ship`
+    - `:SonarData`
+    - `:hasSonarData`
+    - `:resourceURL`
+    - `:storageFormat`
+
+- CQ: What is the textual description of ship X?
+  - Classes/properties:
+    - `:Ship`
+    - `:TextualInformation`
+    - `:hasTextualInformation`
+    - `:textContent`
+
+- CQ: Are there ships without sonar signatures?
+  - Classes/properties:
+    - `:Ship`
+    - `:SonarData`
+    - `:hasSonarData`
+
+4. Intentionally excluded concepts
+
+- AIS as a separate class
+  - Excluded because the scenario mentions AIS tracks as a source, but the CQs only require trajectory/route support, not explicit source-system modeling.
+
+- Registry database, classification society database, onboard monitoring platform as separate classes
+  - Excluded because they are named as example data systems, but no CQ asks to model source systems themselves.
+
+- Logistics, fleet management, monitoring, research, SAR, digital twin, and life cycle simulation as process/use-case classes
+  - Excluded because they motivate the ontology but are not themselves queried in the CQs.
+
+- GPS antenna as a separate physical component class
+  - Excluded because the CQ only requires relative placement values; dedicated component modeling is not necessary.
+
+- Explicit “German flag” individual
+  - Excluded because individuals are forbidden and schema only is requested; `:Country` plus `:registeredUnderFlag` structurally supports such data.
+
+- Explicit engine categories such as electric engine, diesel engine, etc.
+  - Excluded as named classes because the scenario/CQs ask for engine types generally, but do not ground a fixed taxonomy. This is supported via `:EngineType`.
+
+- Explicit route prediction model or forecasting method
+  - Excluded because the CQ only asks for predicted route, not how prediction is produced.
+
+- Explicit acoustic signature class distinct from sonar data
+  - Excluded because `:SonarData` is sufficient for the sonar-related CQs.
+
+- Detailed geospatial coordinate model
+  - Excluded because the scenario/CQs ask for typical location and route/trajectory information, but do not require coordinate geometry constructs.
+
+- Detailed interconnection topology among propulsion components beyond basic relations
+  - Excluded because only the existence of propulsion systems, technologies, engines, fuels, driven components, and assistance relations is grounded by the scenario and CQs.

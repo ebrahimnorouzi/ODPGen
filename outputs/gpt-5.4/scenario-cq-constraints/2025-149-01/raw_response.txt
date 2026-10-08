@@ -1,5 +1,4 @@
-1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
-
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -8,18 +7,12 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "RDB SQL Access Control ODP" ;
-  rdfs:comment "A minimal ontology design pattern for relational database schema elements, SQL query AST references, and access-control policies over read and modify actions with view/process scopes and row-level conditions." .
-
-### Classes
-
-:Agent a owl:Class ;
-  rdfs:label "Agent" ;
-  rdfs:comment "An actor for whom a policy can be defined and who can execute a SQL query statement." .
+  rdfs:label "RDB SQL access control ontology design pattern" ;
+  rdfs:comment "A minimal ontology design pattern for representing relational database schema elements, access-control policies over tables, columns, and rows, and SQL query AST references linked to schema entities, actions, scopes, and enforcement-relevant tags." .
 
 :RelationalDatabase a owl:Class ;
   rdfs:label "Relational database" ;
-  rdfs:comment "A relational database represented as a first-class schema entity." .
+  rdfs:comment "A relational database treated as a first-class schema entity." .
 
 :Table a owl:Class ;
   rdfs:label "Table" ;
@@ -31,15 +24,19 @@
 
 :PrimaryKey a owl:Class ;
   rdfs:label "Primary key" ;
-  rdfs:comment "A primary-key relationship in the schema, identifying one or more columns as the primary key of a table." .
+  rdfs:comment "A primary-key relationship or constraint in the schema." .
 
 :ForeignKey a owl:Class ;
   rdfs:label "Foreign key" ;
-  rdfs:comment "A foreign-key relationship in the schema linking source columns to referenced columns." .
+  rdfs:comment "A foreign-key relationship or constraint in the schema." .
+
+:Agent a owl:Class ;
+  rdfs:label "Agent" ;
+  rdfs:comment "An agent for whom a policy can be defined and who can execute a query statement." .
 
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
-  rdfs:comment "An access-control policy defined for a specific agent over schema resources." .
+  rdfs:comment "An access-control policy defined for a specific agent." .
 
 :Action a owl:Class ;
   rdfs:label "Action" ;
@@ -57,48 +54,270 @@
 
 :ActionScope a owl:Class ;
   rdfs:label "Action scope" ;
-  rdfs:comment "An operational scope associated with an action, policy, or query clause." .
+  rdfs:comment "An operational scope associated with an action." .
 
 :ViewActionScope a owl:Class ;
   rdfs:label "View action scope" ;
-  rdfs:comment "An action scope for read operations intended for viewing." ;
+  rdfs:comment "An action scope for viewing read results." ;
   rdfs:subClassOf :ActionScope .
 
 :ProcessActionScope a owl:Class ;
   rdfs:label "Process action scope" ;
-  rdfs:comment "An action scope for read operations intended for processing." ;
+  rdfs:comment "An action scope for processing read results." ;
   rdfs:subClassOf :ActionScope .
 
 :Condition a owl:Class ;
   rdfs:label "Condition" ;
-  rdfs:comment "A condition used to define a row-level policy restriction for later enforcement." .
+  rdfs:comment "A condition used to define row-level policy restrictions for later enforcement." .
+
+:PolicyTarget a owl:Class ;
+  rdfs:label "Policy target" ;
+  rdfs:comment "A target resource to which a policy applies, such as a table or column." .
+
+:TablePolicyTarget a owl:Class ;
+  rdfs:label "Table policy target" ;
+  rdfs:comment "A policy target at table level." ;
+  rdfs:subClassOf :PolicyTarget .
+
+:ColumnPolicyTarget a owl:Class ;
+  rdfs:label "Column policy target" ;
+  rdfs:comment "A policy target at column level." ;
+  rdfs:subClassOf :PolicyTarget .
 
 :Effect a owl:Class ;
   rdfs:label "Effect" ;
-  rdfs:comment "The effect of a policy, such as permission or prohibition." .
-
-:Permission a owl:Class ;
-  rdfs:label "Permission" ;
-  rdfs:comment "A policy effect indicating that an action is permitted." ;
-  rdfs:subClassOf :Effect .
+  rdfs:comment "The effect of a policy, such as prohibition." .
 
 :Prohibition a owl:Class ;
   rdfs:label "Prohibition" ;
   rdfs:comment "A policy effect indicating that an action is prohibited." ;
   rdfs:subClassOf :Effect .
 
-:SQLQuery a owl:Class ;
-  rdfs:label "SQL query" ;
-  rdfs:comment "A SQL query represented as an AST-based semantic graph." .
+:SQLNode a owl:Class ;
+  rdfs:label "SQL node" ;
+  rdfs:comment "A node in an AST-based semantic graph for a SQL query." .
 
 :SQLStatement a owl:Class ;
   rdfs:label "SQL statement" ;
-  rdfs:comment "A SQL statement node in the AST-based semantic graph." ;
-  rdfs:subClassOf :SQLQuery .
+  rdfs:comment "A SQL statement represented as a node in the semantic graph." ;
+  rdfs:subClassOf :SQLNode .
 
 :SelectStatement a owl:Class ;
   rdfs:label "Select statement" ;
-  rdfs:comment "A SQL SELECT statement that can be mapped to a semantic action type." ;
+  rdfs:comment "A SQL SELECT statement." ;
   rdfs:subClassOf :SQLStatement .
 
-:UpdateStatement a owl:Class
+:UpdateStatement a owl:Class ;
+  rdfs:label "Update statement" ;
+  rdfs:comment "A SQL UPDATE statement." ;
+  rdfs:subClassOf :SQLStatement .
+
+:SQLClause a owl:Class ;
+  rdfs:label "SQL clause" ;
+  rdfs:comment "A clause within a SQL statement that can be assigned an operational scope." ;
+  rdfs:subClassOf :SQLNode .
+
+:ReferenceNode a owl:Class ;
+  rdfs:label "Reference node" ;
+  rdfs:comment "A reference node in the SQL semantic graph." ;
+  rdfs:subClassOf :SQLNode .
+
+:TableRef a owl:Class ;
+  rdfs:label "Table reference" ;
+  rdfs:comment "A reference to a table in a SQL query." ;
+  rdfs:subClassOf :ReferenceNode .
+
+:ColumnRef a owl:Class ;
+  rdfs:label "Column reference" ;
+  rdfs:comment "A reference to a column in a SQL query." ;
+  rdfs:subClassOf :ReferenceNode .
+
+:EnforcementTag a owl:Class ;
+  rdfs:label "Enforcement tag" ;
+  rdfs:comment "A tag assigned by reasoning for enforcement-relevant outcomes." .
+
+:Violated a owl:Class ;
+  rdfs:label "Violated" ;
+  rdfs:comment "An enforcement tag indicating that a referenced table or column violates a matching policy." ;
+  rdfs:subClassOf :EnforcementTag .
+
+:RowTag a owl:Class ;
+  rdfs:label "Row tag" ;
+  rdfs:comment "An enforcement tag indicating row-level restriction relevance for a referenced table or column." ;
+  rdfs:subClassOf :EnforcementTag .
+
+:hasTable a owl:ObjectProperty ;
+  rdfs:label "has table" ;
+  rdfs:comment "Links a relational database to a table that belongs to it." ;
+  rdfs:domain :RelationalDatabase ;
+  rdfs:range :Table .
+
+:hasColumn a owl:ObjectProperty ;
+  rdfs:label "has column" ;
+  rdfs:comment "Links a table to a column that belongs to it." ;
+  rdfs:domain :Table ;
+  rdfs:range :Column .
+
+:hasPrimaryKey a owl:ObjectProperty ;
+  rdfs:label "has primary key" ;
+  rdfs:comment "Links a table to its primary-key relationship." ;
+  rdfs:domain :Table ;
+  rdfs:range :PrimaryKey .
+
+:primaryKeyColumn a owl:ObjectProperty ;
+  rdfs:label "primary key column" ;
+  rdfs:comment "Links a primary-key relationship to a participating column." ;
+  rdfs:domain :PrimaryKey ;
+  rdfs:range :Column .
+
+:hasForeignKey a owl:ObjectProperty ;
+  rdfs:label "has foreign key" ;
+  rdfs:comment "Links a table to a foreign-key relationship." ;
+  rdfs:domain :Table ;
+  rdfs:range :ForeignKey .
+
+:foreignKeyColumn a owl:ObjectProperty ;
+  rdfs:label "foreign key column" ;
+  rdfs:comment "Links a foreign-key relationship to the referencing column." ;
+  rdfs:domain :ForeignKey ;
+  rdfs:range :Column .
+
+:referencesColumn a owl:ObjectProperty ;
+  rdfs:label "references column" ;
+  rdfs:comment "Links a foreign-key relationship to the referenced column." ;
+  rdfs:domain :ForeignKey ;
+  rdfs:range :Column .
+
+:forAgent a owl:ObjectProperty ;
+  rdfs:label "for agent" ;
+  rdfs:comment "Links a policy to the specific agent for whom it is defined." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Agent .
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has effect" ;
+  rdfs:comment "Links a policy to its effect." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Effect .
+
+:hasAction a owl:ObjectProperty ;
+  rdfs:label "has action" ;
+  rdfs:comment "Links a policy or SQL statement to a high-level semantic action type." ;
+  rdfs:range :Action .
+
+:hasScope a owl:ObjectProperty ;
+  rdfs:label "has scope" ;
+  rdfs:comment "Links a policy or SQL clause to an operational action scope." ;
+  rdfs:range :ActionScope .
+
+:hasTarget a owl:ObjectProperty ;
+  rdfs:label "has target" ;
+  rdfs:comment "Links a policy to its target resource abstraction." ;
+  rdfs:domain :Policy ;
+  rdfs:range :PolicyTarget .
+
+:targetsTable a owl:ObjectProperty ;
+  rdfs:label "targets table" ;
+  rdfs:comment "Links a table-level policy target to the table it addresses." ;
+  rdfs:domain :TablePolicyTarget ;
+  rdfs:range :Table .
+
+:targetsColumn a owl:ObjectProperty ;
+  rdfs:label "targets column" ;
+  rdfs:comment "Links a column-level policy target to the column it addresses." ;
+  rdfs:domain :ColumnPolicyTarget ;
+  rdfs:range :Column .
+
+:hasCondition a owl:ObjectProperty ;
+  rdfs:label "has condition" ;
+  rdfs:comment "Links a policy to a condition used for row-level restriction." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Condition .
+
+:hasClause a owl:ObjectProperty ;
+  rdfs:label "has clause" ;
+  rdfs:comment "Links a SQL statement to a clause in its AST-based semantic graph." ;
+  rdfs:domain :SQLStatement ;
+  rdfs:range :SQLClause .
+
+:hasReference a owl:ObjectProperty ;
+  rdfs:label "has reference" ;
+  rdfs:comment "Links a SQL node to a reference node in the semantic graph." ;
+  rdfs:domain :SQLNode ;
+  rdfs:range :ReferenceNode .
+
+:executedBy a owl:ObjectProperty ;
+  rdfs:label "executed by" ;
+  rdfs:comment "Links a query statement to the agent executing it." ;
+  rdfs:domain :SQLStatement ;
+  rdfs:range :Agent .
+
+:effectiveActionScope a owl:ObjectProperty ;
+  rdfs:label "effective action scope" ;
+  rdfs:comment "Links a reference node to the effective action scope propagated to it." ;
+  rdfs:domain :ReferenceNode ;
+  rdfs:range :ActionScope .
+
+:refersToTable a owl:ObjectProperty ;
+  rdfs:label "refers to table" ;
+  rdfs:comment "Links a table reference in a query to the corresponding schema table." ;
+  rdfs:domain :TableRef ;
+  rdfs:range :Table .
+
+:refersToColumn a owl:ObjectProperty ;
+  rdfs:label "refers to column" ;
+  rdfs:comment "Links a column reference in a query to the corresponding schema column." ;
+  rdfs:domain :ColumnRef ;
+  rdfs:range :Column .
+
+:hasEnforcementTag a owl:ObjectProperty ;
+  rdfs:label "has enforcement tag" ;
+  rdfs:comment "Links a reference node to an enforcement-relevant tag inferred from matching policy, action, and scope." ;
+  rdfs:domain :ReferenceNode ;
+  rdfs:range :EnforcementTag .
+
+:sqlName a owl:DatatypeProperty ;
+  rdfs:label "SQL name" ;
+  rdfs:comment "A SQL-level name for a schema or query element." ;
+  rdfs:range xsd:string .
+
+:conditionExpression a owl:DatatypeProperty ;
+  rdfs:label "condition expression" ;
+  rdfs:comment "A textual expression representing a row-level condition for later enforcement." ;
+  rdfs:domain :Condition ;
+  rdfs:range xsd:string .
+```
+
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
+1. PASS — Turtle syntax is well-formed with declared triples terminated and no unmatched brackets.
+2. PASS — All used prefixes are declared at the top: owl, rdf, rdfs, xsd, and :.
+3. PASS — Every declared domain and range refers only to classes defined in this ontology or xsd datatypes.
+4. PASS — No contradictory subclass, disjointness, or incompatible domain/range axioms are introduced.
+5. PASS — Each competency question maps to at least one class or property, including schema, policy, action, scope, SQL AST, references, and enforcement tags.
+6. PASS — All concepts are grounded in the scenario or competency questions; no extra unrelated concepts or individuals were added.
+
+3. Scope report: (a) requirements from the scenario that are covered, (b) any scenario concepts explicitly excluded and why.
+(a) Covered requirements:
+- Relational database represented as a first-class entity via :RelationalDatabase.
+- Tables and columns represented and linked via :hasTable and :hasColumn.
+- Primary-key and foreign-key relationships represented via :PrimaryKey, :ForeignKey, :primaryKeyColumn, :foreignKeyColumn, and :referencesColumn.
+- Same-named columns across different tables can remain distinct because columns are modeled as table-owned entities and query references resolve to specific schema columns.
+- Policies for specific agents represented via :Policy and :forAgent.
+- High-level read and modify actions represented via :ReadAction and :ModifyAction.
+- Read scopes for view and process represented via :ViewActionScope and :ProcessActionScope.
+- Policy targeting at table and column level represented via :TablePolicyTarget, :ColumnPolicyTarget, :targetsTable, and :targetsColumn.
+- Row-level conditional restriction represented via :Condition, :hasCondition, and :conditionExpression.
+- Prohibitions represented via :Prohibition and :hasEffect.
+- SQL query as AST-based semantic graph represented via :SQLNode, :SQLStatement, :SQLClause, :ReferenceNode, and linking properties.
+- SelectStatement and UpdateStatement mapped to semantic action type via :hasAction.
+- Query linked to executing agent via :executedBy.
+- SQL clauses assigned scopes via :hasScope.
+- Scope propagation target represented via :effectiveActionScope on reference nodes.
+- TableRef and ColumnRef linked to schema entities via :refersToTable and :refersToColumn.
+- Reasoning targets for violation and row-level tagging represented via :Violated, :RowTag, and :hasEnforcementTag.
+
+(b) Explicitly excluded concepts and why:
+- No concrete inference rules were added for deriving :Violated or :RowTag, because the request asks for an OWL ODP and the scenario mentions reasoner inference without specifying exact rule logic.
+- No detailed SQL grammar elements beyond statements, clauses, and references were added, to keep the pattern minimal and grounded only in the CQs.
+- No permission/allow effect was added, because the CQs explicitly require prohibitions and restrictions but do not require a separate allow concept.
+- No row entity class was added, because row-level control is expressed in the CQs through conditions rather than through first-class row instances, and the instructions prohibit instance data.

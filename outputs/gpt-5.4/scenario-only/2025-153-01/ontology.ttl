@@ -1,1 +1,105 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Temporal Indirection via Persistent Identifier ODP" ;
+  rdfs:comment "An ontology design pattern for modeling stable identifiers that resolve over time to changing underlying entities, while exposing time-varying attributes through the persistent identifier." .
+
+:PersistentIdentifier a owl:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A stable identifier that remains invariant while resolving over time to different underlying referents." .
+
+:ResolvableEntity a owl:Class ;
+  rdfs:label "Resolvable Entity" ;
+  rdfs:comment "An entity that can be the current referent of a persistent identifier at some time." .
+
+:ResolutionAssignment a owl:Class ;
+  rdfs:label "Resolution Assignment" ;
+  rdfs:comment "A temporal assignment that records which resolvable entity a persistent identifier refers to during a given time interval." .
+
+:MarketAttribute a owl:Class ;
+  rdfs:label "Market Attribute" ;
+  rdfs:comment "A real-time or reported attribute value exposed through a persistent identifier and bound to the currently resolved entity." .
+
+:LastTradePrice a owl:Class ;
+  rdfs:label "Last Trade Price" ;
+  rdfs:comment "A market attribute representing the latest traded price." ;
+  rdfs:subClassOf :MarketAttribute .
+
+:TradingVolume a owl:Class ;
+  rdfs:label "Trading Volume" ;
+  rdfs:comment "A market attribute representing traded volume." ;
+  rdfs:subClassOf :MarketAttribute .
+
+:SettlementValue a owl:Class ;
+  rdfs:label "Settlement Value" ;
+  rdfs:comment "A market attribute representing a settlement value." ;
+  rdfs:subClassOf :MarketAttribute .
+
+:PersistentIdentifier owl:disjointWith :ResolvableEntity, :ResolutionAssignment, :MarketAttribute .
+:ResolvableEntity owl:disjointWith :ResolutionAssignment, :MarketAttribute .
+:ResolutionAssignment owl:disjointWith :MarketAttribute .
+
+:hasResolutionAssignment a owl:ObjectProperty ;
+  rdfs:label "has resolution assignment" ;
+  rdfs:comment "Relates a persistent identifier to a temporal assignment specifying one of its referents." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :ResolutionAssignment .
+
+:forIdentifier a owl:ObjectProperty ;
+  rdfs:label "for identifier" ;
+  rdfs:comment "Relates a resolution assignment to the persistent identifier whose referent it specifies." ;
+  rdfs:domain :ResolutionAssignment ;
+  rdfs:range :PersistentIdentifier ;
+  owl:inverseOf :hasResolutionAssignment .
+
+:resolvesTo a owl:ObjectProperty ;
+  rdfs:label "resolves to" ;
+  rdfs:comment "Relates a resolution assignment to the resolvable entity that is the referent during the assignment interval." ;
+  rdfs:domain :ResolutionAssignment ;
+  rdfs:range :ResolvableEntity .
+
+:hasCurrentReferent a owl:ObjectProperty ;
+  rdfs:label "has current referent" ;
+  rdfs:comment "Relates a persistent identifier to the entity that it currently resolves to; this is a shortcut relation derivable from a current resolution assignment." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :ResolvableEntity .
+
+:hasExposedAttribute a owl:ObjectProperty ;
+  rdfs:label "has exposed attribute" ;
+  rdfs:comment "Relates a persistent identifier to an attribute value exposed through the invariant identifier." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :MarketAttribute .
+
+:boundToReferent a owl:ObjectProperty ;
+  rdfs:label "bound to referent" ;
+  rdfs:comment "Relates a market attribute to the resolvable entity whose current state or reported value the attribute reflects." ;
+  rdfs:domain :MarketAttribute ;
+  rdfs:range :ResolvableEntity .
+
+:validFrom a owl:DatatypeProperty ;
+  rdfs:label "valid from" ;
+  rdfs:comment "The start time from which a resolution assignment is valid." ;
+  rdfs:domain :ResolutionAssignment ;
+  rdfs:range xsd:dateTime .
+
+:validUntil a owl:DatatypeProperty ;
+  rdfs:label "valid until" ;
+  rdfs:comment "The end time until which a resolution assignment is valid." ;
+  rdfs:domain :ResolutionAssignment ;
+  rdfs:range xsd:dateTime .
+
+:attributeValue a owl:DatatypeProperty ;
+  rdfs:label "attribute value" ;
+  rdfs:comment "The literal value of a market attribute." ;
+  rdfs:domain :MarketAttribute ;
+  rdfs:range rdfs:Literal .
+
+:observedAt a owl:DatatypeProperty ;
+  rdfs:label "observed at" ;
+  rdfs:comment "The time at which a market attribute value was observed or reported." ;
+  rdfs:domain :MarketAttribute ;
+  rdfs:range xsd:dateTime .

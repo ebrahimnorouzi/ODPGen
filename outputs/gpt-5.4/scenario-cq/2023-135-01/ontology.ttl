@@ -1,1 +1,107 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Author naming and publication role ODP" ;
+  rdfs:comment "An ontology design pattern for representing an author who adopts different names, including pseudonyms and name changes, in order to publish books. It supports linking authors, names they use, publications, and the authorship role assumed under a particular name." .
+
+:Author a owl:Class ;
+  rdfs:label "Author" ;
+  rdfs:comment "A person who authors books or other written works." .
+
+:Name a owl:Class ;
+  rdfs:label "Name" ;
+  rdfs:comment "A name used by an author, including legal names, changed names, or pseudonyms." .
+
+:Pseudonym a owl:Class ;
+  rdfs:label "Pseudonym" ;
+  rdfs:comment "A name adopted by an author for publishing that is not the author's primary personal name." ;
+  rdfs:subClassOf :Name .
+
+:ChangedName a owl:Class ;
+  rdfs:label "Changed name" ;
+  rdfs:comment "A name borne by an author after a name change, for example after marriage." ;
+  rdfs:subClassOf :Name .
+
+:WrittenWork a owl:Class ;
+  rdfs:label "Written work" ;
+  rdfs:comment "A written publication such as a book or a collection of poems." .
+
+:Book a owl:Class ;
+  rdfs:label "Book" ;
+  rdfs:comment "A book authored and published under some name." ;
+  rdfs:subClassOf :WrittenWork .
+
+:CollectionOfPoems a owl:Class ;
+  rdfs:label "Collection of poems" ;
+  rdfs:comment "A written work consisting of a collection of poems." ;
+  rdfs:subClassOf :WrittenWork .
+
+:AuthorshipRole a owl:Class ;
+  rdfs:label "Authorship role" ;
+  rdfs:comment "The role of being the writer of a written work, possibly assumed under a particular name." .
+
+:usesName a owl:ObjectProperty ;
+  rdfs:label "uses name" ;
+  rdfs:comment "Relates an author to a name that the author uses or has used." ;
+  rdfs:domain :Author ;
+  rdfs:range :Name .
+
+:hasPseudonym a owl:ObjectProperty ;
+  rdfs:label "has pseudonym" ;
+  rdfs:comment "Relates an author to a pseudonym adopted for publishing." ;
+  rdfs:domain :Author ;
+  rdfs:range :Pseudonym ;
+  rdfs:subPropertyOf :usesName .
+
+:hasChangedName a owl:ObjectProperty ;
+  rdfs:label "has changed name" ;
+  rdfs:comment "Relates an author to a name used after a name change, for example after marriage." ;
+  rdfs:domain :Author ;
+  rdfs:range :ChangedName ;
+  rdfs:subPropertyOf :usesName .
+
+:publishedWork a owl:ObjectProperty ;
+  rdfs:label "published work" ;
+  rdfs:comment "Relates an author to a written work that the author published." ;
+  rdfs:domain :Author ;
+  rdfs:range :WrittenWork .
+
+:publishedUnderName a owl:ObjectProperty ;
+  rdfs:label "published under name" ;
+  rdfs:comment "Relates a written work to the name under which it was published." ;
+  rdfs:domain :WrittenWork ;
+  rdfs:range :Name .
+
+:assumesAuthorshipRole a owl:ObjectProperty ;
+  rdfs:label "assumes authorship role" ;
+  rdfs:comment "Relates an author to the role of being a writer." ;
+  rdfs:domain :Author ;
+  rdfs:range :AuthorshipRole .
+
+:roleForWork a owl:ObjectProperty ;
+  rdfs:label "role for work" ;
+  rdfs:comment "Relates an authorship role to the written work for which the role is assumed." ;
+  rdfs:domain :AuthorshipRole ;
+  rdfs:range :WrittenWork .
+
+:roleUnderName a owl:ObjectProperty ;
+  rdfs:label "role under name" ;
+  rdfs:comment "Relates an authorship role to the name under which the role is assumed." ;
+  rdfs:domain :AuthorshipRole ;
+  rdfs:range :Name .
+
+:hasTitle a owl:DatatypeProperty ;
+  rdfs:label "has title" ;
+  rdfs:comment "Gives the title of a written work." ;
+  rdfs:domain :WrittenWork ;
+  rdfs:range xsd:string .
+
+:hasNameString a owl:DatatypeProperty ;
+  rdfs:label "has name string" ;
+  rdfs:comment "Gives the literal form of a name used by an author." ;
+  rdfs:domain :Name ;
+  rdfs:range xsd:string .

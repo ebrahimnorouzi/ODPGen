@@ -1,1 +1,117 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Temporal Indirection for Persistent Identifiers ODP" ;
+  rdfs:comment "A minimal ontology design pattern for modeling persistent identifiers that stably denote changing referents over time, including temporal bindings, transitions, observations, and triggering rules." .
+
+:PersistentIdentifier a owl:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A stable identifier that persists while its referenced entity may change over time." .
+
+:Referent a owl:Class ;
+  rdfs:label "Referent" ;
+  rdfs:comment "An entity that may be referenced by a persistent identifier during some time interval." .
+
+:TemporalBinding a owl:Class ;
+  rdfs:label "Temporal Binding" ;
+  rdfs:comment "A time-bounded association between a persistent identifier and a referent." .
+
+:Transition a owl:Class ;
+  rdfs:label "Transition" ;
+  rdfs:comment "A change event in which a persistent identifier stops referencing one referent and starts referencing another." .
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "A recorded attribute or value associated with a specific referent and usable for reconstructing context at a time point." .
+
+:TransitionRule a owl:Class ;
+  rdfs:label "Transition Rule" ;
+  rdfs:comment "A rule or condition that triggers or explains a transition between referents." .
+
+:identifiesThroughBinding a owl:ObjectProperty ;
+  rdfs:label "identifies through binding" ;
+  rdfs:comment "Relates a persistent identifier to one of its temporal bindings." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TemporalBinding .
+
+:bindsReferent a owl:ObjectProperty ;
+  rdfs:label "binds referent" ;
+  rdfs:comment "Relates a temporal binding to the referent that is referenced during the binding interval." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :Referent .
+
+:hasTransition a owl:ObjectProperty ;
+  rdfs:label "has transition" ;
+  rdfs:comment "Relates a persistent identifier to a transition in its sequence of referents." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :Transition .
+
+:fromBinding a owl:ObjectProperty ;
+  rdfs:label "from binding" ;
+  rdfs:comment "Relates a transition to the temporal binding that ends." ;
+  rdfs:domain :Transition ;
+  rdfs:range :TemporalBinding .
+
+:toBinding a owl:ObjectProperty ;
+  rdfs:label "to binding" ;
+  rdfs:comment "Relates a transition to the temporal binding that begins." ;
+  rdfs:domain :Transition ;
+  rdfs:range :TemporalBinding .
+
+:triggeredByRule a owl:ObjectProperty ;
+  rdfs:label "triggered by rule" ;
+  rdfs:comment "Relates a transition to the rule that triggered or justified it." ;
+  rdfs:domain :Transition ;
+  rdfs:range :TransitionRule .
+
+:hasObservation a owl:ObjectProperty ;
+  rdfs:label "has observation" ;
+  rdfs:comment "Relates a referent to an observation associated with it." ;
+  rdfs:domain :Referent ;
+  rdfs:range :Observation .
+
+:nextBinding a owl:ObjectProperty ;
+  rdfs:label "next binding" ;
+  rdfs:comment "Relates a temporal binding to the subsequent temporal binding in the sequence for the same persistent identifier." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :TemporalBinding .
+
+:bindingStart a owl:DatatypeProperty ;
+  rdfs:label "binding start" ;
+  rdfs:comment "The timestamp at which a temporal binding starts." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range xsd:dateTime .
+
+:bindingEnd a owl:DatatypeProperty ;
+  rdfs:label "binding end" ;
+  rdfs:comment "The timestamp at which a temporal binding ends." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range xsd:dateTime .
+
+:transitionTime a owl:DatatypeProperty ;
+  rdfs:label "transition time" ;
+  rdfs:comment "The timestamp at which a referent transition occurs." ;
+  rdfs:domain :Transition ;
+  rdfs:range xsd:dateTime .
+
+:observationTime a owl:DatatypeProperty ;
+  rdfs:label "observation time" ;
+  rdfs:comment "The timestamp at which an observation is recorded or valid." ;
+  rdfs:domain :Observation ;
+  rdfs:range xsd:dateTime .
+
+:observationValue a owl:DatatypeProperty ;
+  rdfs:label "observation value" ;
+  rdfs:comment "The literal value recorded by an observation." ;
+  rdfs:domain :Observation ;
+  rdfs:range rdfs:Literal .
+
+:ruleDescription a owl:DatatypeProperty ;
+  rdfs:label "rule description" ;
+  rdfs:comment "A textual description of the rule or condition that triggers a transition." ;
+  rdfs:domain :TransitionRule ;
+  rdfs:range xsd:string .

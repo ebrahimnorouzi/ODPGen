@@ -23,14 +23,22 @@ ODPGen/
 │   ├── scenario_cq.txt
 │   ├── scenario_cq_constraints.txt
 │   └── scenario_cq_reasoning.txt
+├── batch_evaluate.py                 # scorer; `--local-root` evaluates outputs/
+├── run_all_experiments.sh            # generation + local evaluation driver
 ├── scripts/
 │   ├── run_generation.py             # main generation entry point
+│   ├── eval_local.py                 # offline evaluation of the local tree
 │   ├── evaluate_outputs.py           # structural + functional evaluation
 │   ├── download_ground_truth.py      # one-shot reference-ontology fetcher
 │   ├── render_prompt.py              # standalone prompt-rendering helper
 │   ├── curate_odp_window.py          # dataset curation utility
 │   └── eval/                         # parsing, OOPS!, similarity, rdf utils
 ├── outputs/{model}/{config}/{scenario_id}/   # generated ODPs
+├── odp_eval/                                 # batch_evaluate.py --local-root output
+│   ├── summary.csv                           # one row per artefact
+│   └── aggregate.csv                         # one row per model/config
+├── eval_local/                               # scripts/eval_local.py output
+│   └── summary.csv
 ├── results/{model}/{config}/                 # per-instance evaluation JSON
 │   └── summary.csv                           # aggregate ranking
 ├── eval_judge/                       # LLM-as-a-Judge pipeline
@@ -103,11 +111,87 @@ A `--dry-run` flag renders the prompts without calling any model, useful for ins
 
 ### 3. Automatic structural and functional evaluation
 
+**From `outputs/` to a scored CSV, offline, in one command:**
+
+```bash
+python3 batch_evaluate.py --local-root outputs --out odp_eval
+```
+
+This walks `outputs/**/ontology.ttl` **on disk**, runs OWL-RL consistency checks via `owlrl` and offline CQ verification (SEV), and writes:
+
+| File | Contents |
+| --- | --- |
+| `odp_eval/{model}/{config}/{id}.json` | the full per-artefact record |
+| `odp_eval/summary.csv` | one row per artefact |
+| `odp_eval/aggregate.csv` | one row per (model, config) |
+| `odp_eval/run_manifest.json` | corpus size, status counts, truncation split, refused network calls |
+
+`--local-root` is the path to use. Without it, `batch_evaluate.py` enumerates the corpus over the GitHub API (`https://api.github.com/repos/.../git/trees/<branch>`) and fetches every file from `raw.githubusercontent.com`. That remote path still works, but it can only ever see what is committed on the remote branch, so **an output you have just generated, recovered, or regenerated in your working tree cannot be scored through it.** The local path also makes the run offline: a socket guard is armed for its duration and the number of refused connections is printed (it should be `0`).
+
+A second, independent offline driver cross-checks the same tree:
+
+```bash
+python3 scripts/eval_local.py --outputs outputs --out eval_local
+```
+
+`scripts/eval_local.py` scores through the same `batch_evaluate` functions but keeps stricter bookkeeping around unavailable measurements: the OOPS! pitfall count needs a web service, so offline it is recorded as `null` and **excluded** from the structural score rather than read as "zero pitfalls found". Its results land in `eval_local/summary.csv` and `eval_local/aggregate.csv`, each aggregate stating the denominator its mean was taken over.
+
+Both drivers are wired into `run_all_experiments.sh`:
+
+```bash
+# score the existing outputs/ tree without regenerating anything
+RUN_LOCAL_EVAL=1 GENERATE=0 ./run_all_experiments.sh
+```
+
+#### Truncated generations are flagged, not hidden
+
+`scripts/run_generation.py` detects a generation that ran out of output budget and records it three ways: `"truncated"` / `"truncation_signals"` in `metadata.json`, a `# ODPGEN-TRUNCATED` banner prepended to `ontology.ttl`, and — for runs recorded before the flag existed — the unterminated code fence still present in `raw_response.txt`. 160 of the 420 committed responses carry such a signal, all of them from the 1024-token cap that the generation driver used to pin.
+
+The evaluation reads all three. Every per-artefact record carries `truncated` (`true` / `false` / `null` when no evidence survives) and a `truncation` block naming the evidence it used, and every aggregate reports:
+
+- `n_truncated`, `n_complete`, `n_truncation_unknown` — which always sum to `n_files`;
+- `mean_structural_score` / `mean_sev_score` over the **whole** group, with `structural_denominator` / `sev_denominator`;
+- `mean_structural_score_complete` / `mean_sev_score_complete` over the artefacts known to be complete, with their own denominators.
+
+Truncated artefacts are never removed from a denominator. To report on complete generations only, use the `_complete` columns, which state exactly how much of the corpus they cover. `truncated = null` means *unknown*, and is counted separately from *complete* on purpose.
+
+#### Repairing an artefact and re-scoring only it
+
+The reason `--local-root` exists is that a repaired output lives in the working
+tree. The loop is:
+
+```bash
+python3 batch_evaluate.py --local-root outputs --out odp_eval              # score everything
+python3 scripts/recover_outputs.py --apply                                 # repair what can be repaired
+python3 batch_evaluate.py --local-root outputs --out odp_eval --rerun-failed
+```
+
+The third command re-scores only the artefacts whose existing record shows a
+parse error. `summary.csv`, `aggregate.csv` and `run_manifest.json` still
+describe the **whole** corpus: every record the pass did not touch is read back
+from `odp_eval/` and carried, and each row says which it was in a
+`record_origin` column (`this_run` / `carried_over`). `run_manifest.json` adds
+`n_evaluated_this_run`, `n_carried_over` and `n_unreadable_records` beside
+`n_files`, so a partial pass can never be mistaken for a full one — and can
+never silently shrink the scored corpus. `--patch-oops` rebuilds the two CSVs
+the same way, so they always agree with the JSON records beside them.
+
+#### `--oops-url` with `--local-root`
+
+The socket guard armed by `--local-root` refuses connections **the run was not
+given**. An OOPS! endpoint passed explicitly with `--oops-url` is resolved
+before the guard is armed and allowed through; `run_manifest.json` reports
+`network_calls` (refused) and `network_allowed_calls` (permitted) separately,
+alongside the `network_allowlist` it honoured. Without `--oops-url` the
+allowlist is empty and `network_calls` should read `0`.
+
+#### Legacy driver
+
 ```bash
 python3 scripts/evaluate_outputs.py
 ```
 
-This runs OWL-RL consistency checks via `owlrl`, OOPS! pitfall detection, and CQ verification, and writes per-model/per-config JSON results into `results/`, plus the aggregate ranking in `results/summary.csv`.
+The original driver, kept for the artefacts already in `results/`. It writes per-model/per-config JSON into `results/` plus the aggregate ranking in `results/summary.csv`, and does not carry the truncation verdict.
 
 ### 4. LLM-as-a-Judge evaluation (optional)
 

@@ -1,6 +1,4 @@
-1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
-
-```turtle
+1. ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -8,87 +6,184 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-    rdfs:label "kHealth-Asthma causal monitoring ODP" ;
-    rdfs:comment "An ontology design pattern for representing pediatric asthma self-monitoring data about symptoms, medication intake, outdoor environmental allergens, and weighted causal relations among them." .
+  rdfs:label "kHealth Asthma causal monitoring ODP" ;
+  rdfs:comment "An ontology design pattern for representing asthma self-monitoring data about symptoms, medication intake, outdoor environmental allergens, and weighted causal relations among them." .
 
-:Patient a owl:Class ;
-    rdfs:label "Patient" ;
-    rdfs:comment "A pediatric asthma patient participating in the self-monitoring use case." .
-
-:AsthmaConditionFactor a owl:Class ;
-    rdfs:label "Asthma condition factor" ;
-    rdfs:comment "A factor relevant to the patient's asthma condition, including symptoms, medication intake, and outdoor environmental features." .
+:CausalFactor a owl:Class ;
+  rdfs:label "Causal factor" ;
+  rdfs:comment "A factor that can participate in weighted causal relations affecting another factor in the asthma monitoring setting." .
 
 :Symptom a owl:Class ;
-    rdfs:label "Symptom" ;
-    rdfs:comment "An asthma symptom experienced by a patient, such as cough, chest tightness, wheezing, or breathing pattern." ;
-    rdfs:subClassOf :AsthmaConditionFactor .
+  rdfs:label "Symptom" ;
+  rdfs:comment "An asthma symptom observed or experienced by the patient, such as cough, chest tightness, wheezing, or breathing pattern." ;
+  rdfs:subClassOf :CausalFactor .
 
 :MedicationIntake a owl:Class ;
-    rdfs:label "Medication intake" ;
-    rdfs:comment "An intake of asthma medication by a patient." ;
-    rdfs:subClassOf :AsthmaConditionFactor .
-
-:OutdoorEnvironmentalFeature a owl:Class ;
-    rdfs:label "Outdoor environmental feature" ;
-    rdfs:comment "A feature of the outdoor environment relevant to asthma, such as pollen or air quality index." ;
-    rdfs:subClassOf :AsthmaConditionFactor .
+  rdfs:label "Medication intake" ;
+  rdfs:comment "An intake of medication by the patient, represented as a factor that can be causally affected by symptoms or environmental allergens." ;
+  rdfs:subClassOf :CausalFactor .
 
 :OutdoorEnvironmentalAllergen a owl:Class ;
-    rdfs:label "Outdoor environmental allergen" ;
-    rdfs:comment "An outdoor environmental feature that acts as an allergen or environmental trigger affecting the patient, such as pollen or AQI in this use case." ;
-    rdfs:subClassOf :OutdoorEnvironmentalFeature .
+  rdfs:label "Outdoor environmental allergen" ;
+  rdfs:comment "An outdoor environmental feature relevant to asthma, such as pollen or air quality index, that can causally affect symptoms or medication intake." ;
+  rdfs:subClassOf :CausalFactor .
 
 :CausalRelation a owl:Class ;
-    rdfs:label "Causal relation" ;
-    rdfs:comment "A weighted causal relation in which one asthma condition factor causes another." .
+  rdfs:label "Causal relation" ;
+  rdfs:comment "A weighted causal relation linking a cause factor to an effect factor." .
 
-:Cough a owl:Class ;
-    rdfs:label "Cough" ;
-    rdfs:comment "A cough symptom." ;
-    rdfs:subClassOf :Symptom .
+:hasCause a owl:ObjectProperty ;
+  rdfs:label "has cause" ;
+  rdfs:comment "Relates a causal relation to the factor that acts as its cause." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :CausalFactor .
 
-:ChestTightness a owl:Class ;
-    rdfs:label "Chest tightness" ;
-    rdfs:comment "A chest tightness symptom." ;
-    rdfs:subClassOf :Symptom .
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has effect" ;
+  rdfs:comment "Relates a causal relation to the factor that acts as its effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :CausalFactor .
 
-:Wheezing a owl:Class ;
-    rdfs:label "Wheezing" ;
-    rdfs:comment "A wheezing symptom." ;
-    rdfs:subClassOf :Symptom .
+:causes a owl:ObjectProperty ;
+  rdfs:label "causes" ;
+  rdfs:comment "Directly relates a causal factor to another causal factor that it causally affects." ;
+  rdfs:domain :CausalFactor ;
+  rdfs:range :CausalFactor .
 
-:BreathingPattern a owl:Class ;
-    rdfs:label "Breathing pattern" ;
-    rdfs:comment "A breathing pattern symptom or observation relevant to asthma." ;
-    rdfs:subClassOf :Symptom .
+:hasEffectWeight a owl:DatatypeProperty ;
+  rdfs:label "has effect weight" ;
+  rdfs:comment "Associates a causal relation with a numeric weight expressing the strength of the causal effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal .
 
-:Pollen a owl:Class ;
-    rdfs:label "Pollen" ;
-    rdfs:comment "Pollen as an outdoor environmental allergen." ;
-    rdfs:subClassOf :OutdoorEnvironmentalAllergen .
+:factorName a owl:DatatypeProperty ;
+  rdfs:label "factor name" ;
+  rdfs:comment "Provides a name or designation for a causal factor, such as cough, pollen, or AQI." ;
+  rdfs:domain :CausalFactor ;
+  rdfs:range xsd:string .
 
-:AQI a owl:Class ;
-    rdfs:label "Air Quality Index" ;
-    rdfs:comment "Air Quality Index as an outdoor environmental allergen or trigger in the use case." ;
-    rdfs:subClassOf :OutdoorEnvironmentalAllergen .
+:hasCause owl:propertyChainAxiom ( :hasCause ) .
 
-:hasFactor a owl:ObjectProperty ;
-    rdfs:label "has factor" ;
-    rdfs:comment "Relates a patient to an asthma condition factor relevant to that patient." ;
-    rdfs:domain :Patient ;
-    rdfs:range :AsthmaConditionFactor .
+:hasEffect owl:propertyChainAxiom ( :hasEffect ) .
 
-:experiencesSymptom a owl:ObjectProperty ;
-    rdfs:label "experiences symptom" ;
-    rdfs:comment "Relates a patient to a symptom the patient experiences." ;
-    rdfs:domain :Patient ;
-    rdfs:range :Symptom ;
-    rdfs:subPropertyOf :hasFactor .
+:causes owl:propertyChainAxiom ( :hasCause :hasEffect ) .
+```
 
-:hasMedicationIntake a owl:ObjectProperty ;
-    rdfs:label "has medication intake" ;
-    rdfs:comment "Relates a patient to a medication intake event or state." ;
-    rdfs:domain :Patient ;
-    rdfs:range :MedicationIntake ;
-    rdfs:subPropertyOf :
+2. Scenario-requirement-to-axiom mapping:
+- Requirement: Asthma monitoring involves multiple factors affecting a patient's condition.
+  - Axioms:
+    - `:CausalFactor a owl:Class`
+    - `:Symptom rdfs:subClassOf :CausalFactor`
+    - `:MedicationIntake rdfs:subClassOf :CausalFactor`
+    - `:OutdoorEnvironmentalAllergen rdfs:subClassOf :CausalFactor`
+- Requirement: Data collected include symptoms.
+  - Axioms:
+    - `:Symptom a owl:Class`
+    - `:factorName a owl:DatatypeProperty ; rdfs:domain :CausalFactor`
+- Requirement: Example symptoms include cough, chest tightness, wheezing, and breathing patterns.
+  - Axioms:
+    - `:Symptom rdfs:comment "... such as cough, chest tightness, wheezing, or breathing pattern."`
+    - `:factorName` supports naming such symptom factors without creating individuals.
+- Requirement: Data collected include intake of medications.
+  - Axioms:
+    - `:MedicationIntake a owl:Class`
+- Requirement: Data collected include outdoor environment features such as pollen and AQI.
+  - Axioms:
+    - `:OutdoorEnvironmentalAllergen a owl:Class`
+    - `:factorName a owl:DatatypeProperty`
+- Requirement: Edges represent causal relations.
+  - Axioms:
+    - `:CausalRelation a owl:Class`
+    - `:hasCause a owl:ObjectProperty`
+    - `:hasEffect a owl:ObjectProperty`
+    - `:causes a owl:ObjectProperty`
+- Requirement: Causal relations have effect weights.
+  - Axioms:
+    - `:hasEffectWeight a owl:DatatypeProperty ; rdfs:domain :CausalRelation ; rdfs:range xsd:decimal`
+- Requirement: Example: pollen/AQI causes cough with weights 0.8 and 0.4.
+  - Axioms:
+    - `:OutdoorEnvironmentalAllergen rdfs:subClassOf :CausalFactor`
+    - `:Symptom rdfs:subClassOf :CausalFactor`
+    - `:CausalRelation`
+    - `:hasCause`
+    - `:hasEffect`
+    - `:hasEffectWeight`
+    - `:causes owl:propertyChainAxiom ( :hasCause :hasEffect )`
+
+3. CQ-to-axiom mapping:
+- CQ: Is the medication intake by the patient caused by the presence of outdoor environmental allergen such as pollen or AQI?
+  - Supporting classes/properties:
+    - `:MedicationIntake`
+    - `:OutdoorEnvironmentalAllergen`
+    - `:CausalRelation`
+    - `:hasCause`
+    - `:hasEffect`
+    - `:causes`
+    - `:factorName`
+- CQ: How much does the presence of an asthma symptom effect the intake of medication?
+  - Supporting classes/properties:
+    - `:Symptom`
+    - `:MedicationIntake`
+    - `:CausalRelation`
+    - `:hasCause`
+    - `:hasEffect`
+    - `:hasEffectWeight`
+    - `:factorName`
+- CQ: How does an outdoor environmental allergen affect the patient?
+  - Supporting classes/properties:
+    - `:OutdoorEnvironmentalAllergen`
+    - `:Symptom`
+    - `:MedicationIntake`
+    - `:CausalRelation`
+    - `:hasCause`
+    - `:hasEffect`
+    - `:hasEffectWeight`
+    - `:causes`
+    - `:factorName`
+- CQ: What is the probable cause of the cough experienced by the patient?
+  - Supporting classes/properties:
+    - `:Symptom`
+    - `:OutdoorEnvironmentalAllergen`
+    - `:CausalRelation`
+    - `:hasCause`
+    - `:hasEffect`
+    - `:hasEffectWeight`
+    - `:causes`
+    - `:factorName`
+- CQ: What if pollen (or AQI) allergen was not present in the outdoor environment, how would it effect the intake of medication?
+  - Supporting classes/properties:
+    - `:OutdoorEnvironmentalAllergen`
+    - `:MedicationIntake`
+    - `:Symptom`
+    - `:CausalRelation`
+    - `:hasCause`
+    - `:hasEffect`
+    - `:hasEffectWeight`
+    - `:causes`
+    - `:factorName`
+  - Note: The ontology structurally supports tracing direct and indirect causal paths and their weights; the counterfactual computation itself is outside OWL schema semantics.
+- CQ: What if the patient did not experience a cough, how would it effect the intake of medication?
+  - Supporting classes/properties:
+    - `:Symptom`
+    - `:MedicationIntake`
+    - `:CausalRelation`
+    - `:hasCause`
+    - `:hasEffect`
+    - `:hasEffectWeight`
+    - `:causes`
+    - `:factorName`
+  - Note: As above, the ontology supports the relevant causal structure, while the counterfactual reasoning procedure is external.
+
+4. Intentionally excluded concepts:
+- `Patient` / `Pediatric asthma patient`
+  - Excluded because the scenario and CQs focus on causal relations among symptoms, medication intake, and outdoor allergens, not on modeling patient identity or demographics. Adding a patient class would go beyond what is needed to answer the CQs structurally.
+- `Asthma` as a disease class
+  - Excluded because the scenario provides domain context, but the CQs require modeling causal factors and their relations rather than a disease taxonomy.
+- `Continuous self-monitoring project` / `kHealth-Asthma project` as organizational entities
+  - Excluded because they are contextual background and not needed for the causal-question structure.
+- `Presence` and `absence` as separate classes
+  - Excluded because the scenario mentions presence of allergens and symptoms, but the CQs can be structurally supported through causal factors and weighted relations. Explicit counterfactual absence modeling would introduce additional constructs not explicitly grounded in the scenario.
+- `Outdoor environment` as a separate class
+  - Excluded because the scenario only requires representing outdoor environmental allergens/features as causal factors, not the environment as an independent entity.
+- Separate classes for `Pollen` and `AQI`, or for `Cough`, `ChestTightness`, `Wheezing`, `BreathingPattern`
+  - Excluded to avoid introducing domain subclasses or individuals not strictly required. The scenario and CQs only require that such factors be representable, which is supported via `:factorName` on the relevant factor classes.

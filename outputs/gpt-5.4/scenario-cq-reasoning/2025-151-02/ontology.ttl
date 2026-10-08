@@ -1,1 +1,314 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "ODRL policy evaluation context ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing contextual information used to evaluate ODRL-like policies, including parties, assets, collections, rules, actions, events, temporal information, recipients, and payments." .
+
+### Classes
+
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "A policy being evaluated." .
+
+:Rule a owl:Class ;
+  rdfs:label "Rule" ;
+  rdfs:comment "A rule that is part of a policy and may be exercised." .
+
+:Party a owl:Class ;
+  rdfs:label "Party" ;
+  rdfs:comment "An agent or actor relevant to policy evaluation." .
+
+:PartyCollection a owl:Class ;
+  rdfs:label "Party collection" ;
+  rdfs:comment "A collection of parties relevant to a policy." .
+
+:Asset a owl:Class ;
+  rdfs:label "Asset" ;
+  rdfs:comment "An asset governed by a policy or rule." .
+
+:AssetCollection a owl:Class ;
+  rdfs:label "Asset collection" ;
+  rdfs:comment "A collection of assets relevant to a policy." .
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "An action that may be performed or attempted in relation to a rule or policy." .
+
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An event that has occurred and may provide information relevant to policy evaluation." .
+
+:Recipient a owl:Class ;
+  rdfs:label "Recipient" ;
+  rdfs:comment "A recipient that can receive the result of an exercised rule." .
+
+:RecipientCategory a owl:Class ;
+  rdfs:label "Recipient category" ;
+  rdfs:comment "A category of recipients that can receive the result of an exercised rule." .
+
+:Payment a owl:Class ;
+  rdfs:label "Payment" ;
+  rdfs:comment "A financial payment relevant to policy evaluation." .
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "A location associated with a party." .
+
+:TemporalContext a owl:Class ;
+  rdfs:label "Temporal context" ;
+  rdfs:comment "A temporal context providing current time information." .
+
+:TimeInterval a owl:Class ;
+  rdfs:label "Time interval" ;
+  rdfs:comment "A bounded interval with a start and end time." .
+
+:VideoStream a owl:Class ;
+  rdfs:label "Video stream" ;
+  rdfs:comment "A video stream asset." ;
+  rdfs:subClassOf :Asset .
+
+:SegmentedAssetUse a owl:Class ;
+  rdfs:label "Segmented asset use" ;
+  rdfs:comment "A use of an asset constrained to a specific segment or interval." ;
+  rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty :targetsAsset ;
+    owl:someValuesFrom :Asset
+  ] ,
+  [
+    a owl:Restriction ;
+    owl:onProperty :hasSegment ;
+    owl:someValuesFrom :TimeInterval
+  ] .
+
+:AcademicResearchProject a owl:Class ;
+  rdfs:label "Academic research project" ;
+  rdfs:comment "A project representing an academic research purpose." .
+
+:Purpose a owl:Class ;
+  rdfs:label "Purpose" ;
+  rdfs:comment "A purpose associated with policy evaluation or asset use." .
+
+:AcademicResearchProject rdfs:subClassOf :Purpose .
+
+### Object Properties
+
+:hasRule a owl:ObjectProperty ;
+  rdfs:label "has rule" ;
+  rdfs:comment "Relates a policy to a rule that is part of it." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Rule .
+
+:hasAssetCollection a owl:ObjectProperty ;
+  rdfs:label "has asset collection" ;
+  rdfs:comment "Relates a policy to an asset collection relevant to its evaluation." ;
+  rdfs:domain :Policy ;
+  rdfs:range :AssetCollection .
+
+:hasPartyCollection a owl:ObjectProperty ;
+  rdfs:label "has party collection" ;
+  rdfs:comment "Relates a policy to a party collection relevant to its evaluation." ;
+  rdfs:domain :Policy ;
+  rdfs:range :PartyCollection .
+
+:hasMemberAsset a owl:ObjectProperty ;
+  rdfs:label "has member asset" ;
+  rdfs:comment "Relates an asset collection to an asset that is part of it." ;
+  rdfs:domain :AssetCollection ;
+  rdfs:range :Asset .
+
+:hasMemberParty a owl:ObjectProperty ;
+  rdfs:label "has member party" ;
+  rdfs:comment "Relates a party collection to a party that is part of it." ;
+  rdfs:domain :PartyCollection ;
+  rdfs:range :Party .
+
+:hasLocation a owl:ObjectProperty ;
+  rdfs:label "has location" ;
+  rdfs:comment "Relates a party to its location." ;
+  rdfs:domain :Party ;
+  rdfs:range :Location .
+
+:performedAction a owl:ObjectProperty ;
+  rdfs:label "performed action" ;
+  rdfs:comment "Relates a rule to an action that was performed under it." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Action .
+
+:attemptedAction a owl:ObjectProperty ;
+  rdfs:label "attempted action" ;
+  rdfs:comment "Relates a rule to an action that was attempted under it." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Action .
+
+:hasEvent a owl:ObjectProperty ;
+  rdfs:label "has event" ;
+  rdfs:comment "Relates a rule to an event relevant to its evaluation." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Event .
+
+:hasRecipient a owl:ObjectProperty ;
+  rdfs:label "has recipient" ;
+  rdfs:comment "Relates a rule to a recipient that can receive its result." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Recipient .
+
+:hasRecipientCategory a owl:ObjectProperty ;
+  rdfs:label "has recipient category" ;
+  rdfs:comment "Relates a rule to a category of recipients that can receive its result." ;
+  rdfs:domain :Rule ;
+  rdfs:range :RecipientCategory .
+
+:hasPayment a owl:ObjectProperty ;
+  rdfs:label "has payment" ;
+  rdfs:comment "Relates a rule to a payment relevant to its exercise." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Payment .
+
+:targetsAsset a owl:ObjectProperty ;
+  rdfs:label "targets asset" ;
+  rdfs:comment "Relates a segmented asset use to the asset being used." ;
+  rdfs:domain :SegmentedAssetUse ;
+  rdfs:range :Asset .
+
+:hasSegment a owl:ObjectProperty ;
+  rdfs:label "has segment" ;
+  rdfs:comment "Relates a segmented asset use to the time interval representing the segment used." ;
+  rdfs:domain :SegmentedAssetUse ;
+  rdfs:range :TimeInterval .
+
+:hasPurpose a owl:ObjectProperty ;
+  rdfs:label "has purpose" ;
+  rdfs:comment "Relates a rule or asset use context to a purpose." ;
+  rdfs:range :Purpose .
+
+:hasCurrentTemporalContext a owl:ObjectProperty ;
+  rdfs:label "has current temporal context" ;
+  rdfs:comment "Relates a policy evaluation context to the temporal context providing the current time." ;
+  rdfs:domain :Policy ;
+  rdfs:range :TemporalContext .
+
+### Datatype Properties
+
+:currentTime a owl:DatatypeProperty ;
+  rdfs:label "current time" ;
+  rdfs:comment "The current time relevant to policy evaluation." ;
+  rdfs:domain :TemporalContext ;
+  rdfs:range xsd:dateTime .
+
+:exerciseCount a owl:DatatypeProperty ;
+  rdfs:label "exercise count" ;
+  rdfs:comment "The number of times a rule has been exercised." ;
+  rdfs:domain :Rule ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:exerciseDuration a owl:DatatypeProperty ;
+  rdfs:label "exercise duration" ;
+  rdfs:comment "The duration for which a rule has been exercised." ;
+  rdfs:domain :Rule ;
+  rdfs:range xsd:duration .
+
+:eventDescription a owl:DatatypeProperty ;
+  rdfs:label "event description" ;
+  rdfs:comment "A textual description of an event." ;
+  rdfs:domain :Event ;
+  rdfs:range xsd:string .
+
+:eventTime a owl:DatatypeProperty ;
+  rdfs:label "event time" ;
+  rdfs:comment "The time at which an event occurred." ;
+  rdfs:domain :Event ;
+  rdfs:range xsd:dateTime .
+
+:paymentMade a owl:DatatypeProperty ;
+  rdfs:label "payment made" ;
+  rdfs:comment "Indicates whether a financial payment has been made." ;
+  rdfs:domain :Payment ;
+  rdfs:range xsd:boolean .
+
+:paidAmount a owl:DatatypeProperty ;
+  rdfs:label "paid amount" ;
+  rdfs:comment "The amount paid in a financial payment." ;
+  rdfs:domain :Payment ;
+  rdfs:range xsd:decimal .
+
+:intervalStart a owl:DatatypeProperty ;
+  rdfs:label "interval start" ;
+  rdfs:comment "The start of a time interval." ;
+  rdfs:domain :TimeInterval ;
+  rdfs:range xsd:decimal .
+
+:intervalEnd a owl:DatatypeProperty ;
+  rdfs:label "interval end" ;
+  rdfs:comment "The end of a time interval." ;
+  rdfs:domain :TimeInterval ;
+  rdfs:range xsd:decimal .
+
+### Annotation Properties
+
+:usageNote a owl:AnnotationProperty ;
+  rdfs:label "usage note" ;
+  rdfs:comment "An annotation property for lightweight modeling guidance." .
+
+### Additional axioms
+
+:AssetCollection owl:disjointWith :PartyCollection .
+:Asset owl:disjointWith :Party .
+:Recipient owl:disjointWith :RecipientCategory .
+:Payment owl:disjointWith :Event .
+:Location owl:disjointWith :Party .
+
+:Policy rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasAssetCollection ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasPartyCollection ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:TimeInterval rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :intervalStart ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :intervalEnd ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:TemporalContext rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :currentTime ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:Payment rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :paymentMade ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :paidAmount ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:Rule rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :exerciseCount ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :exerciseDuration ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:hasPurpose rdfs:domain [
+  a owl:Class ;
+  owl:unionOf ( :Rule :SegmentedAssetUse )
+] .

@@ -9,7 +9,7 @@
 
 :Ontology a owl:Ontology ;
   rdfs:label "ODRL policy evaluation context ODP" ;
-  rdfs:comment "A minimal ontology design pattern for representing contextual information used to evaluate ODRL-like policies, including policies, rules, parties, assets, actions, events, time, location, exercise information, recipients, and payment status." .
+  rdfs:comment "A minimal ontology design pattern for representing contextual information used to evaluate ODRL-like policies, including policies, rules, parties, assets, actions, events, time, location, recipients, and payment information." .
 
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
@@ -21,11 +21,11 @@
 
 :Party a owl:Class ;
   rdfs:label "Party" ;
-  rdfs:comment "An entity that participates in a policy context." .
+  rdfs:comment "An entity participating in the policy context." .
 
 :Asset a owl:Class ;
   rdfs:label "Asset" ;
-  rdfs:comment "An asset that is part of a policy context." .
+  rdfs:comment "An asset referenced by a policy." .
 
 :Action a owl:Class ;
   rdfs:label "Action" ;
@@ -37,7 +37,7 @@
 
 :Location a owl:Class ;
   rdfs:label "Location" ;
-  rdfs:comment "A location associated with a party." .
+  rdfs:comment "A location associated with a party or event." .
 
 :Recipient a owl:Class ;
   rdfs:label "Recipient" ;
@@ -50,6 +50,14 @@
 :Payment a owl:Class ;
   rdfs:label "Payment" ;
   rdfs:comment "A financial payment relevant to policy evaluation." .
+
+:TimeInstant a owl:Class ;
+  rdfs:label "Time instant" ;
+  rdfs:comment "A point in time, such as the current time or the time of an event." .
+
+:Duration a owl:Class ;
+  rdfs:label "Duration" ;
+  rdfs:comment "A duration for which a rule has been exercised." .
 
 :hasRule a owl:ObjectProperty ;
   rdfs:label "has rule" ;
@@ -69,29 +77,23 @@
   rdfs:domain :Policy ;
   rdfs:range :Party .
 
-:hasLocation a owl:ObjectProperty ;
-  rdfs:label "has location" ;
-  rdfs:comment "Relates a party to its location." ;
-  rdfs:domain :Party ;
-  rdfs:range :Location .
-
-:performedAction a owl:ObjectProperty ;
-  rdfs:label "performed action" ;
-  rdfs:comment "Relates a rule to an action that was already performed." ;
+:performedOrAttemptedAction a owl:ObjectProperty ;
+  rdfs:label "performed or attempted action" ;
+  rdfs:comment "Relates a rule to an action that was already performed or attempted." ;
   rdfs:domain :Rule ;
   rdfs:range :Action .
 
-:attemptedAction a owl:ObjectProperty ;
-  rdfs:label "attempted action" ;
-  rdfs:comment "Relates a rule to an action that was already attempted." ;
+:hasExerciseCount a owl:DatatypeProperty ;
+  rdfs:label "has exercise count" ;
+  rdfs:comment "States how many times a rule has been exercised." ;
   rdfs:domain :Rule ;
-  rdfs:range :Action .
+  rdfs:range xsd:nonNegativeInteger .
 
-:hasEvent a owl:ObjectProperty ;
-  rdfs:label "has event" ;
-  rdfs:comment "Relates a rule to an event that has occurred and is relevant to evaluation." ;
+:hasExerciseDuration a owl:ObjectProperty ;
+  rdfs:label "has exercise duration" ;
+  rdfs:comment "Relates a rule to the duration for which it has been exercised." ;
   rdfs:domain :Rule ;
-  rdfs:range :Event .
+  rdfs:range :Duration .
 
 :hasRecipient a owl:ObjectProperty ;
   rdfs:label "has recipient" ;
@@ -101,4 +103,95 @@
 
 :hasRecipientCategory a owl:ObjectProperty ;
   rdfs:label "has recipient category" ;
-  rdfs:comment "Relates a rule to a category of recipients that can receive the result
+  rdfs:comment "Relates a rule to a category of recipients that can receive the result of the exercised rule." ;
+  rdfs:domain :Rule ;
+  rdfs:range :RecipientCategory .
+
+:hasPayment a owl:ObjectProperty ;
+  rdfs:label "has payment" ;
+  rdfs:comment "Relates a rule to a financial payment relevant to its evaluation." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Payment .
+
+:paymentMade a owl:DatatypeProperty ;
+  rdfs:label "payment made" ;
+  rdfs:comment "States whether a financial payment has been made." ;
+  rdfs:domain :Payment ;
+  rdfs:range xsd:boolean .
+
+:paidAmount a owl:DatatypeProperty ;
+  rdfs:label "paid amount" ;
+  rdfs:comment "States the amount that was paid in a financial payment." ;
+  rdfs:domain :Payment ;
+  rdfs:range xsd:decimal .
+
+:hasEvent a owl:ObjectProperty ;
+  rdfs:label "has event" ;
+  rdfs:comment "Relates a rule to an event that has occurred and is relevant to evaluation." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Event .
+
+:eventTime a owl:ObjectProperty ;
+  rdfs:label "event time" ;
+  rdfs:comment "Relates an event to the time at which it occurred." ;
+  rdfs:domain :Event ;
+  rdfs:range :TimeInstant .
+
+:eventLocation a owl:ObjectProperty ;
+  rdfs:label "event location" ;
+  rdfs:comment "Relates an event to its location." ;
+  rdfs:domain :Event ;
+  rdfs:range :Location .
+
+:partyLocation a owl:ObjectProperty ;
+  rdfs:label "party location" ;
+  rdfs:comment "Relates a party to its location." ;
+  rdfs:domain :Party ;
+  rdfs:range :Location .
+
+:currentTime a owl:ObjectProperty ;
+  rdfs:label "current time" ;
+  rdfs:comment "Relates the evaluation context to the current time." ;
+  rdfs:domain :Policy ;
+  rdfs:range :TimeInstant .
+
+:timeValue a owl:DatatypeProperty ;
+  rdfs:label "time value" ;
+  rdfs:comment "Provides a literal value for a time instant." ;
+  rdfs:domain :TimeInstant ;
+  rdfs:range xsd:dateTime .
+
+:durationValue a owl:DatatypeProperty ;
+  rdfs:label "duration value" ;
+  rdfs:comment "Provides a literal value for a duration." ;
+  rdfs:domain :Duration ;
+  rdfs:range xsd:duration .
+```
+
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
+
+1. PASS — Turtle syntax is well-formed with declared prefixes, terminated triples, and valid property lists.
+2. PASS — All prefixes used in the ontology body are declared at the top.
+3. PASS — Every domain and range refers only to classes defined in this ontology or XML Schema datatypes.
+4. PASS — No contradictory subclass, disjointness, or incompatible domain/range restrictions are present.
+5. PASS — Each competency question maps to at least one class/property, e.g., currentTime, partyLocation, hasAsset, hasParty, performedOrAttemptedAction, hasExerciseCount, hasEvent, hasExerciseDuration, hasRecipient/hasRecipientCategory, hasPayment/paymentMade/paidAmount.
+6. PASS — All modeled concepts are grounded in the scenario or directly required by the competency questions for policy evaluation context.
+
+3. Scope report: (a) requirements from the scenario that are covered, (b) any scenario concepts explicitly excluded and why.
+
+(a) Covered:
+- Representation of a policy under evaluation.
+- Representation of rules within a policy.
+- Representation of parties and assets associated with the policy.
+- Representation of current time and party location.
+- Representation of actions already performed or attempted.
+- Representation of rule exercise count and exercise duration.
+- Representation of occurred events and basic event information via time and location.
+- Representation of recipients and recipient categories for rule results.
+- Representation of financial payment status and paid amount.
+
+(b) Explicitly excluded:
+- Bob as an individual person: excluded because the instructions forbid creating individuals.
+- The specific video stream and the specific segment “minutes 4 to 9”: excluded because these are scenario-specific instance/data details rather than reusable schema elements, and no competency question requires segment modeling.
+- The academic research purpose/project: excluded because no competency question asks about purpose, and adding it would go beyond the minimal grounded scope.
+- Full ODRL vocabulary alignment: excluded to keep the pattern minimal and reusable without introducing external concepts not required by the scenario or competency questions.

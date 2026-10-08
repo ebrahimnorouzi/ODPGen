@@ -1,1 +1,143 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Asthma causal influence ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing asthma-related factors, symptoms, medication intake, outdoor environmental allergens, and weighted causal relations among them." .
+
+:HealthFactor a owl:Class ;
+  rdfs:label "Health factor" ;
+  rdfs:comment "Anything that can participate in the asthma monitoring causal model as a cause or effect." .
+
+:PatientConditionFactor a owl:Class ;
+  rdfs:label "Patient condition factor" ;
+  rdfs:comment "A health factor describing the patient's condition, including symptoms and medication intake." ;
+  rdfs:subClassOf :HealthFactor .
+
+:Symptom a owl:Class ;
+  rdfs:label "Symptom" ;
+  rdfs:comment "A patient-observed asthma symptom or manifestation." ;
+  rdfs:subClassOf :PatientConditionFactor .
+
+:MedicationIntake a owl:Class ;
+  rdfs:label "Medication intake" ;
+  rdfs:comment "A health factor representing the intake of medication by the patient." ;
+  rdfs:subClassOf :PatientConditionFactor .
+
+:OutdoorEnvironmentalFactor a owl:Class ;
+  rdfs:label "Outdoor environmental factor" ;
+  rdfs:comment "A health factor describing an outdoor environmental feature relevant to asthma." ;
+  rdfs:subClassOf :HealthFactor .
+
+:OutdoorAllergen a owl:Class ;
+  rdfs:label "Outdoor allergen" ;
+  rdfs:comment "An outdoor environmental factor that may trigger or influence asthma-related effects." ;
+  rdfs:subClassOf :OutdoorEnvironmentalFactor .
+
+:Pollen a owl:Class ;
+  rdfs:label "Pollen" ;
+  rdfs:comment "An outdoor allergen corresponding to pollen presence." ;
+  rdfs:subClassOf :OutdoorAllergen .
+
+:AQI a owl:Class ;
+  rdfs:label "AQI" ;
+  rdfs:comment "An outdoor environmental factor representing air quality index." ;
+  rdfs:subClassOf :OutdoorEnvironmentalFactor .
+
+:Cough a owl:Class ;
+  rdfs:label "Cough" ;
+  rdfs:comment "A symptom corresponding to cough." ;
+  rdfs:subClassOf :Symptom .
+
+:ChestTightness a owl:Class ;
+  rdfs:label "Chest tightness" ;
+  rdfs:comment "A symptom corresponding to chest tightness." ;
+  rdfs:subClassOf :Symptom .
+
+:Wheezing a owl:Class ;
+  rdfs:label "Wheezing" ;
+  rdfs:comment "A symptom corresponding to wheezing." ;
+  rdfs:subClassOf :Symptom .
+
+:BreathingPatternSymptom a owl:Class ;
+  rdfs:label "Breathing pattern symptom" ;
+  rdfs:comment "A symptom corresponding to an observed breathing pattern relevant to asthma." ;
+  rdfs:subClassOf :Symptom .
+
+:CausalRelation a owl:Class ;
+  rdfs:label "Causal relation" ;
+  rdfs:comment "A weighted causal relation linking one health factor as cause to another health factor as effect." .
+
+:hasCause a owl:ObjectProperty ;
+  rdfs:label "has cause" ;
+  rdfs:comment "Links a causal relation to the health factor that acts as its cause." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :HealthFactor .
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has effect" ;
+  rdfs:comment "Links a causal relation to the health factor that acts as its effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :HealthFactor .
+
+:hasDirectCause a owl:ObjectProperty ;
+  rdfs:label "has direct cause" ;
+  rdfs:comment "Directly links a health factor to another health factor that causally influences it." ;
+  rdfs:domain :HealthFactor ;
+  rdfs:range :HealthFactor ;
+  owl:inverseOf :hasDirectEffect .
+
+:hasDirectEffect a owl:ObjectProperty ;
+  rdfs:label "has direct effect" ;
+  rdfs:comment "Directly links a health factor to another health factor that it causally influences." ;
+  rdfs:domain :HealthFactor ;
+  rdfs:range :HealthFactor .
+
+:effectWeight a owl:DatatypeProperty ;
+  rdfs:label "effect weight" ;
+  rdfs:comment "A numeric weight expressing the strength of a causal relation." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal .
+
+:counterfactualNote a owl:AnnotationProperty ;
+  rdfs:label "counterfactual note" ;
+  rdfs:comment "An annotation used to document that the pattern can support counterfactual analysis externally, although counterfactual outcomes are not entailed in OWL alone." .
+
+:CausalRelation
+  rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasCause ;
+      owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onClass :HealthFactor
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasEffect ;
+      owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onClass :HealthFactor
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :effectWeight ;
+      owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onDataRange xsd:decimal
+    ] .
+
+:Symptom owl:disjointWith :MedicationIntake, :OutdoorEnvironmentalFactor .
+:MedicationIntake owl:disjointWith :OutdoorEnvironmentalFactor .
+:Pollen owl:disjointWith :AQI .
+
+:hasDirectEffect
+  rdfs:subPropertyOf [
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasDirectCause
+  ] .
+
+:hasDirectCause
+  rdfs:comment "Can be used to query probable causes of symptoms or medication intake when direct causal links are asserted." .
+
+:hasDirectEffect
+  rdfs:comment "Can be used to query how outdoor allergens affect the patient when direct causal links are asserted." .
+
+:counterfactualNote rdfs:comment "Competency questions about absence of pollen, AQI, or cough require external causal reasoning or rule-based extensions beyond standard OWL entailment." .

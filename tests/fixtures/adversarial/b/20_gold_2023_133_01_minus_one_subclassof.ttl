@@ -1,0 +1,104 @@
+@prefix : <http://purl.org/net/causal/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+: a owl:Ontology ;
+    rdfs:label "Causal Pattern" ;
+    rdfs:comment "The causal pattern is a proposed ontology design pattern for representing the structure and semantics of causal relations. This pattern is grounded in the concepts defined and used by the CausalAI community, with Causal Bayesian Networks and do-calculus. The pattern modeled three primary concepts: (1) causal relations, (2) causal event roles, and (3) causal effect weights." ;
+    owl:versionInfo "v01" .
+
+<http://purl.org/net/causal/#ConcreteEvent> a owl:Class ;
+    rdfs:label "Concrete Event" ;
+    rdfs:comment "A concrete event, Event(Concrete), is a specific event that has transpired in the world. A concrete event may belong to a type of abstract event." ;
+    rdfs:isDefinedBy <http://knowwheregraph.com#Event-Concrete> ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom <http://purl.org/net/causal/#AbstractEvent> ;
+            owl:onProperty :ofType ],
+        <http://purl.org/net/causal/#Event> .
+
+:hasEffectWeight a owl:ObjectProperty ;
+    rdfs:label "has effect weight" ;
+    rdfs:comment "A property which determines the strenght of a causal relation between events, with Causes as its domain and EffectWeight as its range." ;
+    rdfs:domain <http://purl.org/net/causal/#Causes> ;
+    rdfs:range <http://purl.org/net/causal/#EffectWeight> ;
+    rdfs:seeAlso <http://purl.org/net/causal/#hasEffectWeight> .
+
+:hasMediator a owl:ObjectProperty ;
+    rdfs:label "has mediator" ;
+    rdfs:comment "The causal relation is transitive. For example, given events {A, B, C}, if A causes B causes C, then this would imply that A causes C (i.e., A holds some responsibility for the occurrence of C). In this case, the causal relation between A and C is said to be mediated by B. A causal relation may have one-or-more mediator events. The mediator role is represented as an object property, hasMediator, with the domain Causes and range Event." ;
+    rdfs:domain <http://purl.org/net/causal/#Causes> ;
+    rdfs:range <http://purl.org/net/causal/#Event> .
+
+:hasOutcome a owl:ObjectProperty ;
+    rdfs:label "has outcome" ;
+    rdfs:comment "The outcome role is defined as the event which occurs as a result of the treatment event. It is represented as an object property, hasOutcome, with the domain Causes and range Event." ;
+    rdfs:domain <http://purl.org/net/causal/#Causes> ;
+    rdfs:range <http://purl.org/net/causal/#Event> .
+
+:hasTreatment a owl:ObjectProperty ;
+    rdfs:label "has treatment" ;
+    rdfs:comment "The treatment role is defined as the initial event that is responsible for the occurrence of some subsequent event. It is represented as an object property, hasTreatment, with the domain Causes and range Event." ;
+    rdfs:domain <http://purl.org/net/causal/#Causes> ;
+    rdfs:range <http://purl.org/net/causal/#Event> .
+
+:ofType a owl:ObjectProperty ;
+    rdfs:label "of type" ;
+    rdfs:comment "A concrete event may belong to a type of abstract event." ;
+    rdfs:domain <http://purl.org/net/causal/#ConcreteEvent> ;
+    rdfs:isDefinedBy <http://knowwheregraph.com#ofType> ;
+    rdfs:range <http://purl.org/net/causal/#AbstractEvent> .
+
+<http://purl.org/net/causal/#AbstractEvent> a owl:Class ;
+    rdfs:label "Abstract Event" ;
+    rdfs:comment "An abstract event, Event(Abstract), is a general type of event" ;
+    rdfs:isDefinedBy <http://knowwheregraph.com#Event-Abstract> .
+
+<http://purl.org/net/causal/#EffectWeight> a owl:Class ;
+    rdfs:label "Effect Weight" ;
+    rdfs:comment "Effect weight represents the strength of a causal relation; i.e., a higher effect weight implies a higher level of responsibility assigned to the treatment for the occurrence of the outcome.  In practice, the specific representation, generation, and use of effect weight is highly application dependent. For example, an effect weight may be a qualitative value, enumerated as {Strong, Middling, Weak}, and represented as an instance of the EffectWeight class. Alternatively, an effect weight may be a quantitative value represented as a numeric literal, perhaps ranging from 0 to 1. For this reason, effect weight is only loosely defined and should be adapted based on the use case. In this case effect weight is represented as a literal." .
+
+<http://purl.org/net/causal/#Causes> a owl:Class ;
+    rdfs:label "Causes" ;
+    rdfs:comment "Causes is a reification of causal relation. Events are linked through Causes using the causal role properties: hasTreatment, hasMediator and hasOutcome." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom <http://purl.org/net/causal/#EffectWeight> ;
+            owl:onProperty :hasEffectWeight ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom <http://purl.org/net/causal/#Event> ;
+            owl:onProperty :hasMediator ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom <http://purl.org/net/causal/#Event> ;
+            owl:onProperty :hasOutcome ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom <http://purl.org/net/causal/#Event> ;
+            owl:onProperty :hasTreatment ] .
+
+<http://purl.org/net/causal/#Event> a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:comment "An event is an occurrence in space-time and may either be abstract or concrete as described in DOLCE ontology." .
+
+[] a owl:Restriction ;
+    rdfs:subClassOf <http://purl.org/net/causal/#ConcreteEvent> ;
+    owl:onProperty :ofType ;
+    owl:someValuesFrom <http://purl.org/net/causal/#AbstractEvent> .
+
+[] a owl:Restriction ;
+    rdfs:subClassOf <http://purl.org/net/causal/#Causes> ;
+    owl:onProperty :hasEffectWeight ;
+    owl:someValuesFrom <http://purl.org/net/causal/#EffectWeight> .
+
+[] a owl:Restriction ;
+    rdfs:subClassOf <http://purl.org/net/causal/#Causes> ;
+    owl:onProperty :hasMediator ;
+    owl:someValuesFrom <http://purl.org/net/causal/#Event> .
+
+[] a owl:Restriction ;
+    rdfs:subClassOf <http://purl.org/net/causal/#Causes> ;
+    owl:onProperty :hasOutcome ;
+    owl:someValuesFrom <http://purl.org/net/causal/#Event> .
+
+[] a owl:Restriction ;
+    rdfs:subClassOf <http://purl.org/net/causal/#Causes> ;
+    owl:onProperty :hasTreatment ;
+    owl:someValuesFrom <http://purl.org/net/causal/#Event> .
+

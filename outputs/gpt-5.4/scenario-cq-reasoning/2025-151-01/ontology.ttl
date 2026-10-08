@@ -1,1 +1,115 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Evaluation Request Context ODP" ;
+  rdfs:comment "An ontology design pattern for describing an evaluation request as a formal description of a requested action by an assignee on a target asset, optionally enriched with contextual information such as temporal, spatial, role, and capability-related constraints." .
+
+:EvaluationRequest a owl:Class ;
+  rdfs:label "Evaluation Request" ;
+  rdfs:comment "A formal description of a requested action by an assignee on a target asset, possibly enriched with contextual information for evaluation." ;
+  rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :hasRequestedAction ;
+      owl:someValuesFrom :Action
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasTargetAsset ;
+      owl:someValuesFrom :Asset
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :issuedBy ;
+      owl:someValuesFrom :Party
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :issuedAt ;
+      owl:someValuesFrom xsd:dateTime
+    ] .
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "An action that is requested to be performed on a target asset." .
+
+:Asset a owl:Class ;
+  rdfs:label "Asset" ;
+  rdfs:comment "A target resource or asset on which a requested action is to be performed." .
+
+:Party a owl:Class ;
+  rdfs:label "Party" ;
+  rdfs:comment "An agent or actor associated with an evaluation request, such as the issuer or assignee." .
+
+:Assignee a owl:Class ;
+  rdfs:label "Assignee" ;
+  rdfs:comment "A party designated to perform the requested action in an evaluation request." ;
+  rdfs:subClassOf :Party .
+
+:ContextInformation a owl:Class ;
+  rdfs:label "Context Information" ;
+  rdfs:comment "Additional contextual information that can be included in an evaluation request to further constrain its evaluation." .
+
+:TemporalContext a owl:Class ;
+  rdfs:label "Temporal Context" ;
+  rdfs:comment "Context information expressing temporal constraints relevant to evaluation." ;
+  rdfs:subClassOf :ContextInformation .
+
+:SpatialContext a owl:Class ;
+  rdfs:label "Spatial Context" ;
+  rdfs:comment "Context information expressing spatial or geographic constraints relevant to evaluation." ;
+  rdfs:subClassOf :ContextInformation .
+
+:RoleContext a owl:Class ;
+  rdfs:label "Role Context" ;
+  rdfs:comment "Context information expressing role-related constraints relevant to evaluation." ;
+  rdfs:subClassOf :ContextInformation .
+
+:CapabilityContext a owl:Class ;
+  rdfs:label "Capability Context" ;
+  rdfs:comment "Context information expressing request-capability-related constraints relevant to evaluation." ;
+  rdfs:subClassOf :ContextInformation .
+
+:hasRequestedAction a owl:ObjectProperty ;
+  rdfs:label "has requested action" ;
+  rdfs:comment "Relates an evaluation request to the action being requested." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Action .
+
+:hasTargetAsset a owl:ObjectProperty ;
+  rdfs:label "has target asset" ;
+  rdfs:comment "Relates an evaluation request to the asset that is the target of the requested action." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Asset .
+
+:issuedBy a owl:ObjectProperty ;
+  rdfs:label "issued by" ;
+  rdfs:comment "Relates an evaluation request to the party issuing the request." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Party .
+
+:hasAssignee a owl:ObjectProperty ;
+  rdfs:label "has assignee" ;
+  rdfs:comment "Relates an evaluation request to the assignee expected to perform the requested action." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :Assignee .
+
+:hasContextInformation a owl:ObjectProperty ;
+  rdfs:label "has context information" ;
+  rdfs:comment "Relates an evaluation request to additional contextual information used to further constrain evaluation." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range :ContextInformation .
+
+:issuedAt a owl:DatatypeProperty ;
+  rdfs:label "issued at" ;
+  rdfs:comment "Relates an evaluation request to the date and time at which it was issued." ;
+  rdfs:domain :EvaluationRequest ;
+  rdfs:range xsd:dateTime .
+
+:Action owl:disjointWith :Asset, :Party, :ContextInformation .
+:Asset owl:disjointWith :Party, :ContextInformation .
+:Party owl:disjointWith :ContextInformation .
+
+:TemporalContext owl:disjointWith :SpatialContext, :RoleContext, :CapabilityContext .
+:SpatialContext owl:disjointWith :RoleContext, :CapabilityContext .
+:RoleContext owl:disjointWith :CapabilityContext .

@@ -1,1 +1,226 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Cultural Heritage Survey ODP" ;
+  rdfs:comment "An ontology design pattern for modeling scientific survey and investigation activities on cultural heritage entities, including observations, methods, participants and roles, equipment and configurations, interpretations, outputs, and acquisition parameters." .
+
+:SurveyActivity a owl:Class ;
+  rdfs:label "Survey activity" ;
+  rdfs:comment "A scientific survey or investigation activity carried out on a cultural heritage entity or one of its features." .
+
+:CulturalProperty a owl:Class ;
+  rdfs:label "Cultural property" ;
+  rdfs:comment "A cultural heritage entity that can be the subject of a survey or investigation activity." .
+
+:FeatureOfInterest a owl:Class ;
+  rdfs:label "Feature of interest" ;
+  rdfs:comment "A specific feature, part, or aspect of a cultural property that can be targeted by a survey or investigation activity." .
+
+:Method a owl:Class ;
+  rdfs:label "Method" ;
+  rdfs:comment "A method or investigation technique adopted in a survey or investigation activity." .
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "An observation produced during a survey or investigation activity." .
+
+:Expert a owl:Class ;
+  rdfs:label "Expert" ;
+  rdfs:comment "A person or agent participating in a survey or investigation activity." .
+
+:Role a owl:Class ;
+  rdfs:label "Role" ;
+  rdfs:comment "A role played by an expert in the context of a survey or investigation activity." .
+
+:Participation a owl:Class ;
+  rdfs:label "Participation" ;
+  rdfs:comment "A contextual participation of an expert in a survey activity, qualified with a role." .
+
+:Equipment a owl:Class ;
+  rdfs:label "Equipment" ;
+  rdfs:comment "A hardware or software resource used in a survey or investigation activity." .
+
+:Hardware a owl:Class ;
+  rdfs:label "Hardware" ;
+  rdfs:comment "A physical device used in a survey or investigation activity." ;
+  rdfs:subClassOf :Equipment .
+
+:Software a owl:Class ;
+  rdfs:label "Software" ;
+  rdfs:comment "A software resource used in a survey or investigation activity." ;
+  rdfs:subClassOf :Equipment .
+
+:TechnicalConfiguration a owl:Class ;
+  rdfs:label "Technical configuration" ;
+  rdfs:comment "A technical configuration used to conduct a survey or investigation activity." .
+
+:Interpretation a owl:Class ;
+  rdfs:label "Interpretation" ;
+  rdfs:comment "An interpretation or claim supported by observations produced during a survey." .
+
+:Output a owl:Class ;
+  rdfs:label "Output" ;
+  rdfs:comment "A post-processed output related to an acquisition or observation activity." .
+
+:AcquisitionCycle a owl:Class ;
+  rdfs:label "Acquisition cycle" ;
+  rdfs:comment "A specific acquisition cycle occurring within a survey activity, such as a photographic acquisition cycle." ;
+  rdfs:subClassOf :SurveyActivity .
+
+:AcquisitionParameterSet a owl:Class ;
+  rdfs:label "Acquisition parameter set" ;
+  rdfs:comment "A set of acquisition parameters characterising a specific acquisition cycle." .
+
+:Hardware owl:disjointWith :Software .
+
+:targetsProperty a owl:ObjectProperty ;
+  rdfs:label "targets property" ;
+  rdfs:comment "Relates a survey activity to the cultural property it was performed on." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :CulturalProperty .
+
+:targetsFeature a owl:ObjectProperty ;
+  rdfs:label "targets feature" ;
+  rdfs:comment "Relates a survey activity to the specific feature of interest it was performed on." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :FeatureOfInterest .
+
+:usesMethod a owl:ObjectProperty ;
+  rdfs:label "uses method" ;
+  rdfs:comment "Relates a survey activity to a method or investigation technique adopted in it." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :Method .
+
+:producedObservation a owl:ObjectProperty ;
+  rdfs:label "produced observation" ;
+  rdfs:comment "Relates a survey activity to an observation produced during it." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :Observation .
+
+:hasParticipation a owl:ObjectProperty ;
+  rdfs:label "has participation" ;
+  rdfs:comment "Relates a survey activity to a participation occurring in it." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :Participation .
+
+:involvesExpert a owl:ObjectProperty ;
+  rdfs:label "involves expert" ;
+  rdfs:comment "Relates a participation to the expert participating in the survey activity." ;
+  rdfs:domain :Participation ;
+  rdfs:range :Expert .
+
+:withRole a owl:ObjectProperty ;
+  rdfs:label "with role" ;
+  rdfs:comment "Relates a participation to the role held by the expert in the survey activity." ;
+  rdfs:domain :Participation ;
+  rdfs:range :Role .
+
+:usedEquipment a owl:ObjectProperty ;
+  rdfs:label "used equipment" ;
+  rdfs:comment "Relates a survey activity to equipment used to conduct it." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :Equipment .
+
+:usedConfiguration a owl:ObjectProperty ;
+  rdfs:label "used configuration" ;
+  rdfs:comment "Relates a survey activity to a technical configuration used to conduct it." ;
+  rdfs:domain :SurveyActivity ;
+  rdfs:range :TechnicalConfiguration .
+
+:supportsInterpretation a owl:ObjectProperty ;
+  rdfs:label "supports interpretation" ;
+  rdfs:comment "Relates an observation to an interpretation or claim that it supports." ;
+  rdfs:domain :Observation ;
+  rdfs:range :Interpretation .
+
+:derivedFromActivity a owl:ObjectProperty ;
+  rdfs:label "derived from activity" ;
+  rdfs:comment "Relates a post-processed output to the acquisition or observation activity from which it derives." ;
+  rdfs:domain :Output ;
+  rdfs:range :SurveyActivity .
+
+:derivedFromObservation a owl:ObjectProperty ;
+  rdfs:label "derived from observation" ;
+  rdfs:comment "Relates a post-processed output to the observation from which it derives." ;
+  rdfs:domain :Output ;
+  rdfs:range :Observation .
+
+:hasAcquisitionParameterSet a owl:ObjectProperty ;
+  rdfs:label "has acquisition parameter set" ;
+  rdfs:comment "Relates an acquisition cycle to the set of acquisition parameters that characterise it." ;
+  rdfs:domain :AcquisitionCycle ;
+  rdfs:range :AcquisitionParameterSet .
+
+:partOfSurvey a owl:ObjectProperty ;
+  rdfs:label "part of survey" ;
+  rdfs:comment "Relates an acquisition cycle to the broader survey activity of which it is a part." ;
+  rdfs:domain :AcquisitionCycle ;
+  rdfs:range :SurveyActivity .
+
+:exposureTime a owl:DatatypeProperty ;
+  rdfs:label "exposure time" ;
+  rdfs:comment "The exposure time value characterising an acquisition parameter set." ;
+  rdfs:domain :AcquisitionParameterSet ;
+  rdfs:range xsd:string .
+
+:isoValue a owl:DatatypeProperty ;
+  rdfs:label "ISO value" ;
+  rdfs:comment "The ISO value characterising an acquisition parameter set." ;
+  rdfs:domain :AcquisitionParameterSet ;
+  rdfs:range xsd:string .
+
+:apertureValue a owl:DatatypeProperty ;
+  rdfs:label "aperture value" ;
+  rdfs:comment "The aperture value characterising an acquisition parameter set." ;
+  rdfs:domain :AcquisitionParameterSet ;
+  rdfs:range xsd:string .
+
+:SurveyActivity rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :producedObservation ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :usesMethod ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasParticipation ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :usedEquipment ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :usedConfiguration ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger
+  ] .
+
+:Participation rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :involvesExpert ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Expert
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :withRole ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Role
+  ] .
+
+:AcquisitionCycle rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasAcquisitionParameterSet ;
+    owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :AcquisitionParameterSet
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :partOfSurvey ;
+    owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :SurveyActivity
+  ] .

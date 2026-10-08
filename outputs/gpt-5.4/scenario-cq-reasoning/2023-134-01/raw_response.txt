@@ -1,4 +1,4 @@
-1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
 
 ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
@@ -8,93 +8,229 @@
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Policy Governance Pattern for Solid Apps" ;
-  rdfs:comment "A minimal OWL ontology design pattern for representing governance-relevant policy metadata in Solid apps, including policy identity, creator, assignee, issuance time, requested access mode, accessed personal data, purpose, and the application or service used to access data." .
+  rdfs:label "Solid governance policy request ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing governance-relevant policy requests in Solid apps, including policy identifier, creator, issuance time, assignee, accessing application or service, requested access mode, personal data category, and access purpose." .
 
 :Policy a owl:Class ;
   rdfs:label "Policy" ;
-  rdfs:comment "A governance or privacy-related policy that specifies conditions for accessing personal data." .
+  rdfs:comment "A governance or privacy policy statement that describes conditions for accessing personal data." .
 
 :Agent a owl:Class ;
   rdfs:label "Agent" ;
-  rdfs:comment "An entity that can create, receive, or use a policy, such as a person, organization, or software-controlled actor." .
+  rdfs:comment "An entity that can create, receive, or use a policy, such as a person, organization, application, or service." .
 
 :Application a owl:Class ;
   rdfs:label "Application" ;
-  rdfs:comment "An application or service used to access data under a policy." .
+  rdfs:comment "A software application used to access data." ;
+  rdfs:subClassOf :Agent .
+
+:Service a owl:Class ;
+  rdfs:label "Service" ;
+  rdfs:comment "A digital service used to access data." ;
+  rdfs:subClassOf :Agent .
+
+:AccessRequest a owl:Class ;
+  rdfs:label "Access request" ;
+  rdfs:comment "A request or policy-governed act of accessing personal data." .
 
 :AccessMode a owl:Class ;
   rdfs:label "Access mode" ;
-  rdfs:comment "A mode of access being requested or governed by a policy, such as read, write, or append." .
+  rdfs:comment "A mode of access being requested, such as reading, writing, or appending data." .
 
 :PersonalData a owl:Class ;
   rdfs:label "Personal data" ;
-  rdfs:comment "A category or item of personal data that is accessed under a policy." .
+  rdfs:comment "Personal data or a category of personal data that may be accessed." .
 
 :Purpose a owl:Class ;
   rdfs:label "Purpose" ;
-  rdfs:comment "The intended purpose for accessing personal data under a policy." .
+  rdfs:comment "The purpose for which personal data is accessed." .
 
 :hasCreator a owl:ObjectProperty ;
   rdfs:label "has creator" ;
-  rdfs:comment "Relates a policy to the agent that created or issued it." ;
+  rdfs:comment "Relates a policy to the agent that created it." ;
   rdfs:domain :Policy ;
   rdfs:range :Agent .
 
 :hasAssignee a owl:ObjectProperty ;
   rdfs:label "has assignee" ;
-  rdfs:comment "Relates a policy to the agent to whom the policy is assigned or addressed." ;
+  rdfs:comment "Relates a policy to the agent to whom it is assigned." ;
   rdfs:domain :Policy ;
   rdfs:range :Agent .
 
+:governsRequest a owl:ObjectProperty ;
+  rdfs:label "governs request" ;
+  rdfs:comment "Relates a policy to an access request that it governs." ;
+  rdfs:domain :Policy ;
+  rdfs:range :AccessRequest .
+
 :usesApplication a owl:ObjectProperty ;
   rdfs:label "uses application" ;
-  rdfs:comment "Relates a policy to the application or service used to access data." ;
-  rdfs:domain :Policy ;
+  rdfs:comment "Relates an access request to the application used to access the data." ;
+  rdfs:domain :AccessRequest ;
   rdfs:range :Application .
+
+:usesService a owl:ObjectProperty ;
+  rdfs:label "uses service" ;
+  rdfs:comment "Relates an access request to the service used to access the data." ;
+  rdfs:domain :AccessRequest ;
+  rdfs:range :Service .
 
 :hasAccessMode a owl:ObjectProperty ;
   rdfs:label "has access mode" ;
-  rdfs:comment "Relates a policy to the access mode being requested or governed." ;
-  rdfs:domain :Policy ;
+  rdfs:comment "Relates an access request to the access mode being requested." ;
+  rdfs:domain :AccessRequest ;
   rdfs:range :AccessMode .
 
-:hasPersonalData a owl:ObjectProperty ;
-  rdfs:label "has personal data" ;
-  rdfs:comment "Relates a policy to the personal data that is being accessed." ;
-  rdfs:domain :Policy ;
+:accessesPersonalData a owl:ObjectProperty ;
+  rdfs:label "accesses personal data" ;
+  rdfs:comment "Relates an access request to the personal data being accessed." ;
+  rdfs:domain :AccessRequest ;
   rdfs:range :PersonalData .
 
 :hasPurpose a owl:ObjectProperty ;
   rdfs:label "has purpose" ;
-  rdfs:comment "Relates a policy to the purpose for accessing personal data." ;
-  rdfs:domain :Policy ;
+  rdfs:comment "Relates an access request to the purpose for accessing personal data." ;
+  rdfs:domain :AccessRequest ;
   rdfs:range :Purpose .
-
-:issuedAt a owl:DatatypeProperty ;
-  rdfs:label "issued at" ;
-  rdfs:comment "Relates a policy to the date and time at which it was issued." ;
-  rdfs:domain :Policy ;
-  rdfs:range xsd:dateTime .
 
 :policyIdentifier a owl:DatatypeProperty ;
   rdfs:label "policy identifier" ;
-  rdfs:comment "Relates a policy to its unique identifier." ;
+  rdfs:comment "A unique identifier for a policy." ;
   rdfs:domain :Policy ;
   rdfs:range xsd:string .
 
-:creatorName a owl:AnnotationProperty ;
-  rdfs:label "creator name" ;
-  rdfs:comment "An annotation property for documenting a human-readable creator name when needed in ontology documentation." .
+:issuedAt a owl:DatatypeProperty ;
+  rdfs:label "issued at" ;
+  rdfs:comment "The date and time when a policy was issued." ;
+  rdfs:domain :Policy ;
+  rdfs:range xsd:dateTime .
 
 :Policy rdfs:subClassOf
-  [ a owl:Restriction ;
+  [
+    a owl:Restriction ;
+    owl:onProperty :policyIdentifier ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [
+    a owl:Restriction ;
     owl:onProperty :hasCreator ;
-    owl:someValuesFrom :Agent
+    owl:minCardinality "1"^^xsd:nonNegativeInteger
   ] ,
-  [ a owl:Restriction ;
+  [
+    a owl:Restriction ;
+    owl:onProperty :issuedAt ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [
+    a owl:Restriction ;
     owl:onProperty :hasAssignee ;
-    owl:someValuesFrom :Agent
+    owl:minCardinality "1"^^xsd:nonNegativeInteger
   ] ,
-  [ a owl:Restriction ;
-    owl:onProperty :usesApplication ;
+  [
+    a owl:Restriction ;
+    owl:onProperty :governsRequest ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:AccessRequest rdfs:subClassOf
+  [
+    a owl:Restriction ;
+    owl:onProperty :hasAccessMode ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [
+    a owl:Restriction ;
+    owl:onProperty :accessesPersonalData ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [
+    a owl:Restriction ;
+    owl:onProperty :hasPurpose ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [
+    a owl:Class ;
+    owl:unionOf ( :Application :Service )
+  ] .
+
+:Application owl:disjointWith :Service .
+```
+
+2. Reasoning summary:
+- Step 1: Extracted requirements around policy metadata, actors, access requests, applications/services, access modes, personal data, purposes, and accountability support.
+- Step 2: Proposed minimal classes Policy, Agent, AccessRequest, Application, Service, AccessMode, PersonalData, and Purpose with linking properties matching each CQ.
+- Step 3: Drafted domain/range axioms plus cardinalities for mandatory policy metadata and request descriptors; added Application/Service disjointness.
+- Step 4: Verified each CQ is answerable via direct properties from Policy or via Policy→AccessRequest links; noted need to represent app/service explicitly.
+- Step 5: Refined by adding governsRequest and separate usesApplication/usesService properties to cover the “application/service used” CQ without overcommitting.
+- Step 6: Removed broader scenario concepts not needed by the stated CQs, keeping the pattern minimal and reusable.
+
+3. Traceability table: for each requirement/CQ, list the axiom(s) that cover it.
+
+- R1. A policy must have a unique identifier.
+  - `:policyIdentifier a owl:DatatypeProperty ; rdfs:domain :Policy ; rdfs:range xsd:string .`
+  - `:Policy rdfs:subClassOf [ owl:onProperty :policyIdentifier ; owl:cardinality "1"^^xsd:nonNegativeInteger ] .`
+
+- R2. A policy must have a creator.
+  - `:hasCreator a owl:ObjectProperty ; rdfs:domain :Policy ; rdfs:range :Agent .`
+  - `:Policy rdfs:subClassOf [ owl:onProperty :hasCreator ; owl:minCardinality "1"^^xsd:nonNegativeInteger ] .`
+
+- R3. A policy must record when it was issued.
+  - `:issuedAt a owl:DatatypeProperty ; rdfs:domain :Policy ; rdfs:range xsd:dateTime .`
+  - `:Policy rdfs:subClassOf [ owl:onProperty :issuedAt ; owl:cardinality "1"^^xsd:nonNegativeInteger ] .`
+
+- R4. A policy must have an assignee.
+  - `:hasAssignee a owl:ObjectProperty ; rdfs:domain :Policy ; rdfs:range :Agent .`
+  - `:Policy rdfs:subClassOf [ owl:onProperty :hasAssignee ; owl:minCardinality "1"^^xsd:nonNegativeInteger ] .`
+
+- R5. A policy must govern at least one access request.
+  - `:governsRequest a owl:ObjectProperty ; rdfs:domain :Policy ; rdfs:range :AccessRequest .`
+  - `:Policy rdfs:subClassOf [ owl:onProperty :governsRequest ; owl:minCardinality "1"^^xsd:nonNegativeInteger ] .`
+
+- R6. An access request may use an application or a service.
+  - `:usesApplication a owl:ObjectProperty ; rdfs:domain :AccessRequest ; rdfs:range :Application .`
+  - `:usesService a owl:ObjectProperty ; rdfs:domain :AccessRequest ; rdfs:range :Service .`
+  - `:Application rdfs:subClassOf :Agent .`
+  - `:Service rdfs:subClassOf :Agent .`
+  - `:Application owl:disjointWith :Service .`
+
+- R7. An access request must specify an access mode.
+  - `:hasAccessMode a owl:ObjectProperty ; rdfs:domain :AccessRequest ; rdfs:range :AccessMode .`
+  - `:AccessRequest rdfs:subClassOf [ owl:onProperty :hasAccessMode ; owl:minCardinality "1"^^xsd:nonNegativeInteger ] .`
+
+- R8. An access request must specify the personal data being accessed.
+  - `:accessesPersonalData a owl:ObjectProperty ; rdfs:domain :AccessRequest ; rdfs:range :PersonalData .`
+  - `:AccessRequest rdfs:subClassOf [ owl:onProperty :accessesPersonalData ; owl:minCardinality "1"^^xsd:nonNegativeInteger ] .`
+
+- R9. An access request must specify the purpose for access.
+  - `:hasPurpose a owl:ObjectProperty ; rdfs:domain :AccessRequest ; rdfs:range :Purpose .`
+  - `:AccessRequest rdfs:subClassOf [ owl:onProperty :hasPurpose ; owl:minCardinality "1"^^xsd:nonNegativeInteger ] .`
+
+- CQ1. What is the unique identifier of the policy?
+  - `:policyIdentifier`
+  - Policy cardinality restriction on `:policyIdentifier`
+
+- CQ2. Who is the creator of the policy?
+  - `:hasCreator`
+
+- CQ3. When was the policy issued?
+  - `:issuedAt`
+
+- CQ4. Who is the assignee of the policy?
+  - `:hasAssignee`
+
+- CQ5. What application/service is being used to access the data?
+  - `:governsRequest`
+  - `:usesApplication`
+  - `:usesService`
+
+- CQ6. What access mode is being requested?
+  - `:governsRequest`
+  - `:hasAccessMode`
+
+- CQ7. What personal data is being accessed?
+  - `:governsRequest`
+  - `:accessesPersonalData`
+
+- CQ8. What is the purpose for accessing the data?
+  - `:governsRequest`
+  - `:hasPurpose`

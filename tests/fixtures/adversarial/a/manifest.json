@@ -1,0 +1,312 @@
+{
+  "corpus": "adversarial/a",
+  "angle": "Degenerate content and scale attacks",
+  "role": "prosecution",
+  "generated": "2026-08-29",
+  "written_blind": "The measure under attack did not exist when these fixtures were written. Every expectation below is stated against the invariant contract, not against any implementation.",
+
+  "verdict_vocabulary": {
+    "LOW_ZERO": "score MUST be exactly 0.0. Not 0.01, not 'small'. These are vacuous by D5: zero connective axioms after parsing.",
+    "LOW": "score MUST be strictly less than min over the parseable gold set PG. Non-zero is permitted; ties with any gold are a failure.",
+    "HIGH": "score MUST be >= the median over PG. These are genuine patterns that a clumsy over-corrected measure will wrongly punish (E3).",
+    "RELATIVE": "the binding constraint is an inequality or equality against a named partner fixture; the absolute band is secondary."
+  },
+
+  "notes_on_grounding": {
+    "base_pattern": "22_base_tiny_genuine_pattern.ttl is the shared base for fixtures 15-20. It is a genuine 24-triple pattern: 3 classes, 2 object properties, 1 datatype property, 3 rdfs:domain and 3 rdfs:range axioms, all resolving inside the artifact.",
+    "corpus_shapes_reproduced": [
+      "06 reproduces the measured Llama-2-70b pathology: many object properties, zero domains, zero ranges, zero connections.",
+      "10 reproduces meta-llama_Llama-2-70b-chat-hf/scenario-only/2023-133-02/ontology.ttl, the one real refusal in outputs/.",
+      "24 reproduces the 2023-134-0x ABox exemplification shape: zero owl:Class, zero owl:ObjectProperty, typed individuals wired together.",
+      "25 reproduces 2025-151-01: one class, five domain-only properties, zero rdfs:range, zero rdfs:subClassOf.",
+      "26 reproduces 2025-151-02: properties typed rdfs:Property (a term that does not exist in RDFS) plus skos:definition."
+    ],
+    "unparseable_fixtures": ["10_refusal_prose_raw.ttl", "11_binary_garbage.ttl"]
+  },
+
+  "fixtures": [
+    {
+      "file": "01_empty.ttl",
+      "attack": "Zero bytes. The null artifact.",
+      "targets": "I2, I1, E1",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "Zero connective axioms. Any floor above 0.0 here is a floor that can be climbed by padding, and every previous round's exploit began by climbing a floor. Also the I1 robustness case: parsing an empty byte string must not raise.",
+      "parses": true,
+      "triples": 0
+    },
+    {
+      "file": "02_whitespace_only.ttl",
+      "attack": "Blank lines, tabs, a stray CRLF. Non-empty bytes, zero content.",
+      "targets": "I2, I1, E1",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "Distinguishes a measure that special-cases len(bytes)==0 from one that actually counts connective axioms. A byte-length heuristic scores this above 01 and is falsified.",
+      "parses": true,
+      "triples": 0
+    },
+    {
+      "file": "03_prefix_block_only.ttl",
+      "attack": "Twenty @prefix declarations plus six SPARQL-style PREFIX lines, including every prefix the golds actually use (odrl, dul, dpv, sosa, geo). Zero triples.",
+      "targets": "I2, E1",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "Presents as a well-formed, vocabulary-aware ontology header and looks like reuse of standard vocabularies. A measure that credits namespace reuse, prefix count, or 'imports well-known vocabularies' scores this above zero. It contains no assertion of any kind.",
+      "parses": true,
+      "triples": 0
+    },
+    {
+      "file": "04_comment_block_only.ttl",
+      "attack": "Eighty-eight lines of hash comments that describe a complete pattern in prose: competency questions, intended classes, intended properties, intended axioms, licence, version. Zero triples.",
+      "targets": "I2, I8, E1, E2",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "This is the strongest text-similarity decoy in the corpus: it literally names 'rdfs:domain Observation', 'owl:Restriction' and 'disjoint from' in prose. Any measure that greps the bytes rather than the parsed graph scores it high. Comments are discarded by the parser; the graph is empty.",
+      "parses": true,
+      "triples": 0
+    },
+    {
+      "file": "05_ontology_header_refusal_comment.ttl",
+      "attack": "The E2 case in its purest form: an owl:Ontology header carrying a 100-word LLM refusal replicated across rdfs:comment, dcterms:description and skos:note, plus rdfs:label, dcterms:title and owl:versionInfo.",
+      "targets": "I2, I8, I14(d), E2",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "Seven triples, all annotation. It is a non-answer that parses, carries metadata a documentation-credit component will reward, and declares an owl:Ontology so an 'is it an ontology?' check passes. E2 was exactly this: a refusal wrapped in rdfs:comment tying a 90-triple gold. The invariant contract's own cheap corollary under I8 names this construction and requires 0.0.",
+      "parses": true,
+      "triples": 7
+    },
+    {
+      "file": "06_bare_declarations_176_objectproperties.ttl",
+      "attack": "176 owl:ObjectProperty declarations, each with rdfs:label, rdfs:comment and skos:definition, under an owl:Ontology header. 706 triples. Zero domains, zero ranges, zero connections.",
+      "targets": "I2, I6, I16, E1",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "This is the measured Llama-2-70b pathology reproduced at its exact observed magnitude (176 object properties, 0 domains). It is the single largest file in the LOW set at 706 triples and it beats the median gold on triple count, property count and annotation coverage simultaneously. Every extensive statistic ranks it highly; it connects nothing to anything. If this does not score 0.0 the measure rewards emitting terms.",
+      "parses": true,
+      "triples": 706
+    },
+    {
+      "file": "07_classes_only_no_axioms.ttl",
+      "attack": "Forty owl:Class declarations in a plausible clinical domain, each with label, comment, skos:definition and dcterms:description. No subClassOf, no properties, no restrictions.",
+      "targets": "I2, I6, I8, E1",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "The TBox twin of 06. It out-scores nine of eleven parseable golds on class count and beats all of them on annotation coverage per entity. A 'well documented taxonomy' heuristic ranks it near the top. It asserts no relationship between any two of its forty concepts.",
+      "parses": true,
+      "triples": 203
+    },
+    {
+      "file": "08_properties_no_domain_range.ttl",
+      "attack": "Twelve classes and twenty object properties, the shape of a real access-control pattern, fully annotated, with every domain, range and subClassOf axiom removed.",
+      "targets": "I2, I6, E1",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "The most seductive vacuous artifact here: the roster alone reads as a competent model of ODRL-style access control, and a human skimming the entity names would call it good. It contains a balanced class/property ratio, which a 'has both classes and properties' check rewards. Nothing is connected to anything.",
+      "parses": true,
+      "triples": 100
+    },
+    {
+      "file": "09_annotation_properties_only.ttl",
+      "attack": "Ten owl:AnnotationProperty declarations plus an ontology header that uses all ten to state the pattern's name, intent, scope, three competency questions, reuse notes and modelling notes.",
+      "targets": "I2, I8, I14(d), E1, E2",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "Attacks the boundary of D4/D5: the triples using :competencyQuestion and :patternIntent are not rdfs:label or rdfs:comment, so a measure with a hardcoded annotation predicate whitelist classifies them as connective axioms and scores this artifact as richly axiomatised. It is documentation about an ontology that was never written. The annotation set must be closed under 'declared owl:AnnotationProperty', not a fixed list.",
+      "parses": true,
+      "triples": 44
+    },
+    {
+      "file": "10_refusal_prose_raw.ttl",
+      "attack": "A verbatim LLM refusal, unwrapped. Plain English, no prefixes, no triples. UNPARSEABLE by rdflib as turtle, xml, n3 or nt.",
+      "targets": "I1, I13, E1",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "The model failed to emit RDF, which is a real quality signal about the candidate, so I13 requires 0.0 here and MISSING only for a reference. This fixture is also the I1 case: M must return a well-formed report rather than raising, and the 0.0 must not be produced by an except-branch that also swallows a genuine internal error. Modelled on the one real refusal in outputs/ (meta-llama_Llama-2-70b-chat-hf/scenario-only/2023-133-02).",
+      "parses": false,
+      "triples": null
+    },
+    {
+      "file": "11_binary_garbage.ttl",
+      "attack": "A PNG magic header, 4 KB of random bytes and a tail of deliberately invalid UTF-8 sequences. Decoding raises UnicodeDecodeError before any parser is reached.",
+      "targets": "I1, I13",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW_ZERO",
+      "whyItShouldScoreLow": "Pure robustness. M must return without raising, score must be a finite float in [0,1] or MISSING, and the report must survive a json round trip. A UnicodeDecodeError escaping to the caller becomes a dropped row upstream, and a dropped row is silently favourable. As a candidate artifact this is 0.0, not MISSING.",
+      "parses": false,
+      "triples": null
+    },
+    {
+      "file": "12_e2_polished_hollow.ttl",
+      "attack": "Eleven triples engineered to present as a complete tiny ODP: ontology header with title and description, one documented class, one documented object property carrying both an rdfs:domain and an rdfs:range. Both point at owl:Thing.",
+      "targets": "I3, I7, I8, E2",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW",
+      "whyItShouldScoreLow": "This is the specific E2 shape the brief asked for, and the sharpest fixture in the set. It has non-zero domain and range counts, so I2 does not reach it: it is not vacuous, and a measure may legitimately give it a small positive score. But its two connective axioms are exactly the roster function f8 of I7 (give every property rdfs:domain owl:Thing, rdfs:range owl:Thing) and are computable from the entity names alone, with zero knowledge of the modelling problem. Its declared class :AccessRequest is never used by anything. Compare it against 23_tiny_restriction_odp.ttl, which is the same size and genuinely models something: if those two score within reach of each other, the measure counts axioms instead of reading them. Must be strictly below every gold and strictly below 22, 23, 24 and 25.",
+      "parses": true,
+      "triples": 11
+    },
+    {
+      "file": "13_single_junk_triple.ttl",
+      "attack": "One untyped triple, :a :b :c, with no declarations, no annotations and no vocabulary.",
+      "targets": "I2, I3, I5",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW",
+      "whyItShouldScoreLow": "The minimal non-vacuous artifact and the calibration point for the bottom of the scale. Under D5 this is one connective axiom, so it is deliberately NOT a LOW_ZERO case and a measure that forces it to 0.0 has probably done so by requiring owl:Class or rdfs:subClassOf, which would also zero the three ABox golds (see fixture 24). The requirement is only that it sits at the very bottom of the band, strictly below every gold and below 22.",
+      "parses": true,
+      "triples": 1
+    },
+    {
+      "file": "14_universal_domain_range.ttl",
+      "attack": "The roster of 22 with every rdfs:domain and rdfs:range replaced by owl:Thing / rdfs:Literal. Identical entity set, identical predicate multiset, identical triple count band.",
+      "targets": "I7(8), I10, E5",
+      "expectedVerdict": "LOW",
+      "expectedScore": "LOW, and strictly below 22_base_tiny_genuine_pattern.ttl",
+      "whyItShouldScoreLow": "The standalone form of I7's universal_dr construction. It has three domains and three ranges, matching the base pattern axiom for axiom on every count-based statistic, and it requires no knowledge of the domain to produce. If M(14) >= M(22) the measure is counting rdfs:domain triples rather than checking whether a declared domain resolves to a class the artifact introduces.",
+      "parses": true,
+      "triples": 20
+    },
+    {
+      "file": "15_bottom_hub_over_base.ttl",
+      "attack": "The base pattern plus a fresh :Bottom class declared rdfs:subClassOf every class in the roster and owl:Thing. Four subclass axioms appear from nowhere.",
+      "targets": "I6, I7(1), E5, E6",
+      "expectedVerdict": "LOW",
+      "expectedScore": "RELATIVE: M(15) <= M(22_base_tiny_genuine_pattern.ttl)",
+      "whyItShouldScoreLow": "The E5 witness verbatim. :Bottom is a roster function; it is computable from class names alone and defeats any hub detector that counts only descendants. The base pattern has zero rdfs:subClassOf axioms, so a measure that rewards taxonomic depth or subclass presence pays for this addition. Note the direction of the constraint: this must be scored no higher than 22, but the fix must not be a rule that penalises subClassOf in general, because 21_large_genuine_taxonomy.ttl has 58 genuine subclass axioms and must score HIGH.",
+      "parses": true,
+      "triples": 30
+    },
+    {
+      "file": "16_equivalence_clique.ttl",
+      "attack": "The base pattern plus owl:equivalentClass over every unordered pair of its three classes.",
+      "targets": "I7(5), I15(e), E5",
+      "expectedVerdict": "LOW",
+      "expectedScore": "RELATIVE: M(16) <= M(22) AND M(16) == M(17) exactly",
+      "whyItShouldScoreLow": "Roster function f5. It collapses the model to a single concept while adding three axioms, so any measure crediting equivalentClass as connectivity pays for information destruction. Paired with 17 as an exact-equality probe.",
+      "parses": true,
+      "triples": 27
+    },
+    {
+      "file": "17_equivalence_clique_reversed.ttl",
+      "attack": "Fixture 16 with the subject and object of every owl:equivalentClass triple swapped. Logically identical graph, different bytes.",
+      "targets": "I7 equality clause, I15(e), E5",
+      "expectedVerdict": "LOW",
+      "expectedScore": "RELATIVE: M(17) == M(16) with zero tolerance, and M(17) <= M(22)",
+      "whyItShouldScoreLow": "The equality is the point, not the level. The previous round's live bug was that ancestors() followed owl:equivalentClass while descendants() did not; that asymmetry survives every inequality test and dies on this pair. Any difference between M(16) and M(17), however small, is a directional traversal bug. pytest.approx here is itself a failure: the exploit lives in the epsilon.",
+      "parses": true,
+      "triples": 27
+    },
+    {
+      "file": "18_shuffled_base_pattern.ttl",
+      "attack": "The base pattern's six connective axioms with subjects and objects independently re-drawn from the same entity roster, preserving every predicate, the triple count, and every declared type.",
+      "targets": "I10.5, I16, E4",
+      "expectedVerdict": "LOW",
+      "expectedScore": "RELATIVE: M(18) < M(22_base_tiny_genuine_pattern.ttl) strictly",
+      "whyItShouldScoreLow": "Verified identical to the base on every extensive and intensive count-based statistic: 24 triples, 3 classes, 2 object properties, 1 datatype property, 3 rdfs:domain, 3 rdfs:range, 0 subClassOf, full label coverage. Only the model differs, and it is nonsense: :Sensor rdfs:domain :madeBySensor, :resultTime rdfs:domain :hasFeatureOfInterest, a class given a range. Any measure built from counts and ratios returns exactly M(22) here and is falsified by this one file. This is the single most constraining fixture in the corpus and the cheapest to run: score it and the base, and if the numbers match, stop.",
+      "parses": true,
+      "triples": 24
+    },
+    {
+      "file": "19_base_plus_padding_island.ttl",
+      "attack": "The base pattern plus sixty fresh classes forming a closed rdfs:subClassOf cycle among themselves, annotated, attached to nothing in the base.",
+      "targets": "I6 second family, I11, E1",
+      "expectedVerdict": "LOW",
+      "expectedScore": "RELATIVE: M(19) <= M(22_base_tiny_genuine_pattern.ttl)",
+      "whyItShouldScoreLow": "The self-referential padding trap named in I6. The padding is internally connected, so a groundedness ratio that counts padding-to-padding edges as grounding is defeated by exactly this: 60 of 63 classes participate in a connective axiom, so naive groundedness rises from a base of 3/3 to 63/63 while the artifact gets no better. It also carries 264 triples against the base's 24, so every extensive statistic rewards it eleven-fold. Contrast with 21, which is 323 triples of genuine taxonomy and must score HIGH: size is not the discriminator, attachment is.",
+      "parses": true,
+      "triples": 264
+    },
+    {
+      "file": "20_base_replicated_x10.ttl",
+      "attack": "Ten IRI-disjoint isomorphic copies of the base pattern in fresh namespaces, no edges between copies. Verified 240 triples = 24 x 10, 30 classes = 3 x 10, 30 domains, 30 ranges.",
+      "targets": "I11, E1, E3",
+      "expectedVerdict": "EQUAL",
+      "expectedScore": "RELATIVE: M(20) == M(22_base_tiny_genuine_pattern.ttl) EXACTLY, no tolerance",
+      "whyItShouldScoreLow": "Neither low nor high: this is the two-sided scale-fairness probe and it is the reason the measure must be intensive. Ten times the triples, ten times the classes, ten times the domains, exactly as much information. If M(20) > M(22) there is a padding exploit: emit the same pattern ten times. If M(20) < M(22) the measure penalises the 1933-triple gold 2025-149-01 and the 15.8 MB gold 2024-145-01 for being large, which is E3. A measure needing pytest.approx to pass this is extensive with rounding, not intensive.",
+      "parses": true,
+      "triples": 240
+    },
+    {
+      "file": "21_large_genuine_taxonomy.ttl",
+      "attack": "CONVERSE TRAP. A genuine 323-triple cultural heritage survey pattern: 65 classes in a real 58-edge subsumption tree, 12 object properties and 4 datatype properties all carrying domains and ranges that resolve to declared classes, 3 disjointness axioms.",
+      "targets": "E3, I12(a), I12(c), I5",
+      "expectedVerdict": "HIGH",
+      "expectedScore": "HIGH: >= median over PG",
+      "whyItShouldScoreLow": "It should NOT score low. This is the over-correction probe: the previous round capped a genuine 239-triple 60-class taxonomy at 0.50 with an OR-ladder over triple count. Any rule of the form 'artifacts above N triples or above N classes are suspicious', any per-entity ratio that decays with size, and any hub or fan-out penalty triggered by :Activity having six outgoing property domains will punish this file. Note the trap geometry: 21 is LARGER than the padded 19 (323 vs 264 triples) and has fewer subclass axioms per class, so a measure cannot separate them by size or by subclass density. It can only separate them by asking whether the axioms attach to the pattern.",
+      "parses": true,
+      "triples": 323
+    },
+    {
+      "file": "22_base_tiny_genuine_pattern.ttl",
+      "attack": "CONVERSE TRAP and shared base. A genuine 24-triple sensor observation pattern: 3 classes, 2 object properties, 1 datatype property, 3 domains and 3 ranges all resolving inside the artifact.",
+      "targets": "I5, I12(c), E3",
+      "expectedVerdict": "HIGH",
+      "expectedScore": "HIGH: >= median over PG, and strictly above 12, 13, 14, 15, 16, 17, 18 and 19",
+      "whyItShouldScoreLow": "It should NOT score low. This is the reference point for the six relative fixtures above it, so its position is load-bearing: if 22 is scored mediocre the whole comparison set collapses into noise and the inequalities pass vacuously. A small, correct, fully grounded pattern is what an ODP actually is; the golds 2023-134-02 (10 triples) and 2025-151-01 (23 triples) are this size.",
+      "parses": true,
+      "triples": 24
+    },
+    {
+      "file": "23_tiny_restriction_odp.ttl",
+      "attack": "CONVERSE TRAP. Eleven triples, one owl:Restriction with owl:someValuesFrom on a blank node, one subclass axiom, two object properties, one owl:inverseOf, domain and range resolving locally.",
+      "targets": "E3, I12(c), I15(c)",
+      "expectedVerdict": "HIGH",
+      "expectedScore": "HIGH: >= median over PG",
+      "whyItShouldScoreLow": "It should NOT score low. The exact E3 witness: a genuine 9-triple owl:Restriction ODP capped at 0.50 by a size ladder. It is the same size as 12_e2_polished_hollow.ttl (11 triples) and denser in axioms than 05, so any threshold that clears the degenerate set on size drags this down with it. Its structure lives partly on a blank node, so a measure that keys on named entities only, or that discards blank-node subjects when computing groundedness, undercounts it to near zero. owl:Restriction appears in 3 of 11 parseable golds.",
+      "parses": true,
+      "triples": 11
+    },
+    {
+      "file": "24_abox_exemplification_odp.ttl",
+      "attack": "CONVERSE TRAP. Fifteen triples wiring typed individuals through an ODRL permission blank node. Zero owl:Class, zero owl:ObjectProperty, zero rdfs:subClassOf, zero rdfs:domain, zero rdfs:range.",
+      "targets": "E3, I12(c), D5 at the individual level",
+      "expectedVerdict": "HIGH",
+      "expectedScore": "HIGH: >= median over PG",
+      "whyItShouldScoreLow": "It should NOT score low. This reproduces the shape of 2023-134-01, -02 and -03, which are three of the fourteen published ODPs in this benchmark. Every metric the previous round used scores this at or near zero, and any measure that requires owl:Class, rdfs:subClassOf or rdfs:domain scores 3 of 14 published patterns at zero while giving 06 and 07 credit for having the right kinds of declaration. It is the most dangerous fixture for a measure written from a TBox mental model, and it is why connectivity must be defined over typed individuals too. Note also: its individuals are typed against external vocabularies (odrl:, plasma:, oac:) that the artifact never declares, so any 'all referenced IRIs must resolve locally' rule zeroes it and zeroes 2023-134-01 with it.",
+      "parses": true,
+      "triples": 15
+    },
+    {
+      "file": "25_domain_only_odp.ttl",
+      "attack": "CONVERSE TRAP. Eighteen triples: one class, five properties each carrying rdfs:domain and nothing else. Zero rdfs:range, zero rdfs:subClassOf, zero restrictions.",
+      "targets": "E3, I12(c) by name",
+      "expectedVerdict": "HIGH",
+      "expectedScore": "HIGH: >= median over PG",
+      "whyItShouldScoreLow": "It should NOT score low. This is 2025-151-01, named explicitly in I12(c) as a published pattern that must sit at or above the median. Any measure requiring range coverage, or scoring domain/range as a balanced pair, halves it. Its star topology (five properties all pointing at one class) is also exactly what a fan-out or hub discount fires on, and here the hub is the entire point of the pattern.",
+      "parses": true,
+      "triples": 18
+    },
+    {
+      "file": "26_nonstandard_rdfs_property_odp.ttl",
+      "attack": "CONVERSE TRAP. Properties typed rdfs:Property, a term that does not exist in RDFS, alongside skos:Concept, with genuine domains and ranges; definitions carried by skos:definition rather than rdfs:comment.",
+      "targets": "E3, I15(e), I16",
+      "expectedVerdict": "HIGH",
+      "expectedScore": "HIGH: >= median over PG",
+      "whyItShouldScoreLow": "It should NOT score low. Gold 2025-151-02 does this ten times, so it is published practice in this very benchmark and cannot be treated as an error. A measure that recognises only owl:ObjectProperty and owl:DatatypeProperty finds zero properties here and therefore zero grounded connections, collapsing a real pattern to the same score as 08. Also probes the annotation set: the definitions are skos:definition, so a measure that treats only rdfs:comment as annotation will misclassify them as connective axioms, inflating this file for the wrong reason. Right answer for the wrong reason still fails the corpus, so pair this with 09.",
+      "parses": true,
+      "triples": 35
+    }
+  ],
+
+  "relational_assertions": [
+    {"id": "R1", "assert": "M(20_base_replicated_x10.ttl) == M(22_base_tiny_genuine_pattern.ttl)", "tolerance": "exact, no approx", "targets": "I11"},
+    {"id": "R2", "assert": "M(17_equivalence_clique_reversed.ttl) == M(16_equivalence_clique.ttl)", "tolerance": "exact, no approx", "targets": "I7 equality clause, I15(e)"},
+    {"id": "R3", "assert": "M(18_shuffled_base_pattern.ttl) < M(22_base_tiny_genuine_pattern.ttl)", "tolerance": "strict", "targets": "I10.5", "note": "The two files agree on every count-based statistic. This is the primary falsifier."},
+    {"id": "R4", "assert": "M(14_universal_domain_range.ttl) < M(22_base_tiny_genuine_pattern.ttl)", "tolerance": "strict", "targets": "I7(8)"},
+    {"id": "R5", "assert": "M(15_bottom_hub_over_base.ttl) <= M(22_base_tiny_genuine_pattern.ttl)", "targets": "I7(1), E5"},
+    {"id": "R6", "assert": "M(16_equivalence_clique.ttl) <= M(22_base_tiny_genuine_pattern.ttl)", "targets": "I7(5), E5"},
+    {"id": "R7", "assert": "M(19_base_plus_padding_island.ttl) <= M(22_base_tiny_genuine_pattern.ttl)", "targets": "I6 second family"},
+    {"id": "R8", "assert": "max over {01..20} < min over {21,22,23,24,25,26}", "targets": "I3, I12(a)", "note": "The whole corpus stated as one separation. On failure, print the argmax."},
+    {"id": "R9", "assert": "M(21_large_genuine_taxonomy.ttl) > M(19_base_plus_padding_island.ttl)", "tolerance": "strict", "targets": "E3 vs E1", "note": "21 is the LARGER file (323 vs 264 triples) and the one that must win. Size cannot be the discriminator."},
+    {"id": "R10", "assert": "M(23_tiny_restriction_odp.ttl) > M(12_e2_polished_hollow.ttl)", "tolerance": "strict", "targets": "E2 vs E3", "note": "11 triples each. Nothing but the semantics separates them."},
+    {"id": "R11", "assert": "M(01) == M(02) == M(03) == M(04) == M(05) == M(06) == M(07) == M(08) == M(09) == M(10) == M(11) == 0.0", "tolerance": "exact", "targets": "I2, I14(d)", "note": "Also assert it for every numeric key in the report, not only the headline score."},
+    {"id": "R12", "assert": "for every optional argument combination of M, R11 still holds", "targets": "I2, I14(a), I14(b)", "note": "Including oops=None, oops=ZERO_PITFALLS, every scenario id, every model name, and with os.environ cleared."}
+  ],
+
+  "how_to_lose_cheaply": [
+    "Score 18 and 22. If they are equal, the measure is count-based and every other test is decoration.",
+    "Score 16 and 17. If they differ at all, there is a directional traversal bug.",
+    "Score 20 and 22. If they differ at all, the measure is extensive.",
+    "Score 24. If it is near zero, the measure zeroes 3 of the 14 published ODPs.",
+    "Score 06. If it is above zero, the measure pays for declarations."
+  ]
+}

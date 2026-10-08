@@ -1,1 +1,248 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Temporal Persistent Identifier ODP" ;
+  rdfs:comment "An ontology design pattern for modeling persistent identifiers that stably denote changing referents over time, including temporal bindings, transitions, observations, and transition-triggering rules." .
+
+:PersistentIdentifier a owl:Class ;
+  rdfs:label "Persistent Identifier" ;
+  rdfs:comment "A stable identifier that persists while its referent may change over time." .
+
+:Referent a owl:Class ;
+  rdfs:label "Referent" ;
+  rdfs:comment "An entity that may be referenced by a persistent identifier during some time interval." .
+
+:TemporalBinding a owl:Class ;
+  rdfs:label "Temporal Binding" ;
+  rdfs:comment "A time-bounded assignment linking a persistent identifier to a referent for a specific interval." .
+
+:TransitionEvent a owl:Class ;
+  rdfs:label "Transition Event" ;
+  rdfs:comment "An event marking a change from one temporal binding or referent to another." .
+
+:TransitionRule a owl:Class ;
+  rdfs:label "Transition Rule" ;
+  rdfs:comment "A rule, policy, or condition that can trigger a referent transition." .
+
+:Observation a owl:Class ;
+  rdfs:label "Observation" ;
+  rdfs:comment "A recorded attribute, measurement, or reported value associated with a referent at some time." .
+
+:ContextRecord a owl:Class ;
+  rdfs:label "Context Record" ;
+  rdfs:comment "A record that captures sufficient contextual information to reconstruct the state associated with a persistent identifier at a time point or interval." .
+
+:hasBinding a owl:ObjectProperty ;
+  rdfs:label "has binding" ;
+  rdfs:comment "Relates a persistent identifier to one of its temporal bindings." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TemporalBinding .
+
+:bindsIdentifier a owl:ObjectProperty ;
+  rdfs:label "binds identifier" ;
+  rdfs:comment "Relates a temporal binding to the persistent identifier whose reference it specifies." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :PersistentIdentifier ;
+  owl:inverseOf :hasBinding .
+
+:hasReferent a owl:ObjectProperty ;
+  rdfs:label "has referent" ;
+  rdfs:comment "Relates a temporal binding to the referent that is in force during the binding interval." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :Referent .
+
+:isReferentInBinding a owl:ObjectProperty ;
+  rdfs:label "is referent in binding" ;
+  rdfs:comment "Relates a referent to a temporal binding in which it is referenced." ;
+  rdfs:domain :Referent ;
+  rdfs:range :TemporalBinding ;
+  owl:inverseOf :hasReferent .
+
+:hasCurrentBinding a owl:ObjectProperty ;
+  rdfs:label "has current binding" ;
+  rdfs:comment "Relates a persistent identifier to the temporal binding that is currently in force." ;
+  rdfs:subPropertyOf :hasBinding ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :TemporalBinding .
+
+:hasCurrentReferent a owl:ObjectProperty ;
+  rdfs:label "has current referent" ;
+  rdfs:comment "Relates a persistent identifier directly to the referent that is currently in force." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :Referent .
+
+:previousBinding a owl:ObjectProperty ;
+  rdfs:label "previous binding" ;
+  rdfs:comment "Relates a temporal binding to the immediately preceding binding in the sequence for the same persistent identifier." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :TemporalBinding .
+
+:nextBinding a owl:ObjectProperty ;
+  rdfs:label "next binding" ;
+  rdfs:comment "Relates a temporal binding to the immediately following binding in the sequence for the same persistent identifier." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range :TemporalBinding ;
+  owl:inverseOf :previousBinding .
+
+:fromBinding a owl:ObjectProperty ;
+  rdfs:label "from binding" ;
+  rdfs:comment "Relates a transition event to the temporal binding that ceased to be in force." ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range :TemporalBinding .
+
+:toBinding a owl:ObjectProperty ;
+  rdfs:label "to binding" ;
+  rdfs:comment "Relates a transition event to the temporal binding that became in force." ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range :TemporalBinding .
+
+:triggeredByRule a owl:ObjectProperty ;
+  rdfs:label "triggered by rule" ;
+  rdfs:comment "Relates a transition event to a rule that triggered or justified the transition." ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range :TransitionRule .
+
+:hasObservation a owl:ObjectProperty ;
+  rdfs:label "has observation" ;
+  rdfs:comment "Relates a referent to an observation associated with it." ;
+  rdfs:domain :Referent ;
+  rdfs:range :Observation .
+
+:observesReferent a owl:ObjectProperty ;
+  rdfs:label "observes referent" ;
+  rdfs:comment "Relates an observation to the referent it is about." ;
+  rdfs:domain :Observation ;
+  rdfs:range :Referent ;
+  owl:inverseOf :hasObservation .
+
+:hasContextRecord a owl:ObjectProperty ;
+  rdfs:label "has context record" ;
+  rdfs:comment "Relates a persistent identifier to a context record that supports reconstruction of state at a time point or interval." ;
+  rdfs:domain :PersistentIdentifier ;
+  rdfs:range :ContextRecord .
+
+:contextForBinding a owl:ObjectProperty ;
+  rdfs:label "context for binding" ;
+  rdfs:comment "Relates a context record to a temporal binding included in the reconstructed context." ;
+  rdfs:domain :ContextRecord ;
+  rdfs:range :TemporalBinding .
+
+:contextIncludesObservation a owl:ObjectProperty ;
+  rdfs:label "context includes observation" ;
+  rdfs:comment "Relates a context record to an observation included in the reconstructed context." ;
+  rdfs:domain :ContextRecord ;
+  rdfs:range :Observation .
+
+:contextIncludesTransition a owl:ObjectProperty ;
+  rdfs:label "context includes transition" ;
+  rdfs:comment "Relates a context record to a transition event included in the reconstructed context." ;
+  rdfs:domain :ContextRecord ;
+  rdfs:range :TransitionEvent .
+
+:validFrom a owl:DatatypeProperty ;
+  rdfs:label "valid from" ;
+  rdfs:comment "The timestamp at which a temporal binding starts being in force." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range xsd:dateTime .
+
+:validUntil a owl:DatatypeProperty ;
+  rdfs:label "valid until" ;
+  rdfs:comment "The timestamp at which a temporal binding stops being in force." ;
+  rdfs:domain :TemporalBinding ;
+  rdfs:range xsd:dateTime .
+
+:transitionTime a owl:DatatypeProperty ;
+  rdfs:label "transition time" ;
+  rdfs:comment "The timestamp at which a referent transition occurs." ;
+  rdfs:domain :TransitionEvent ;
+  rdfs:range xsd:dateTime .
+
+:observedAt a owl:DatatypeProperty ;
+  rdfs:label "observed at" ;
+  rdfs:comment "The timestamp at which an observation was made or recorded." ;
+  rdfs:domain :Observation ;
+  rdfs:range xsd:dateTime .
+
+:observationValue a owl:DatatypeProperty ;
+  rdfs:label "observation value" ;
+  rdfs:comment "A literal value recorded by an observation." ;
+  rdfs:domain :Observation ;
+  rdfs:range rdfs:Literal .
+
+:observationKind a owl:DatatypeProperty ;
+  rdfs:label "observation kind" ;
+  rdfs:comment "A literal indicating the kind of observed attribute, such as price, volume, or settlement value." ;
+  rdfs:domain :Observation ;
+  rdfs:range xsd:string .
+
+:contextTime a owl:DatatypeProperty ;
+  rdfs:label "context time" ;
+  rdfs:comment "The time point for which a context record enables reconstruction." ;
+  rdfs:domain :ContextRecord ;
+  rdfs:range xsd:dateTime .
+
+:ruleDescription a owl:DatatypeProperty ;
+  rdfs:label "rule description" ;
+  rdfs:comment "A textual description of a transition rule." ;
+  rdfs:domain :TransitionRule ;
+  rdfs:range xsd:string .
+
+:TemporalBinding rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :bindsIdentifier ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :PersistentIdentifier
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasReferent ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Referent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :validFrom ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:TransitionEvent rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :fromBinding ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :TemporalBinding
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :toBinding ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :TemporalBinding
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :transitionTime ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:Observation rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :observesReferent ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Referent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :observedAt ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:ContextRecord rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :contextTime ;
+    owl:cardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:PersistentIdentifier owl:disjointWith :Referent , :TemporalBinding , :TransitionEvent , :TransitionRule , :Observation , :ContextRecord .
+:Referent owl:disjointWith :TemporalBinding , :TransitionEvent , :TransitionRule , :Observation , :ContextRecord .
+:TemporalBinding owl:disjointWith :TransitionEvent , :TransitionRule , :Observation , :ContextRecord .
+:TransitionEvent owl:disjointWith :TransitionRule , :Observation , :ContextRecord .
+:TransitionRule owl:disjointWith :Observation , :ContextRecord .
+:Observation owl:disjointWith :ContextRecord .

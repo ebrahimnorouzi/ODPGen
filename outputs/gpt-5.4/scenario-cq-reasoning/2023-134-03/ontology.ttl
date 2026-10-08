@@ -1,1 +1,80 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Solid governance registry ontology design pattern" ;
+  rdfs:comment "A minimal OWL ontology design pattern for representing a registry that describes data categories available in a Solid Pod, where they are stored, which policy is associated with them, and metadata about registry maintenance and timestamps." .
+
+:Registry a owl:Class ;
+  rdfs:label "Registry" ;
+  rdfs:comment "A maintained information resource that records metadata about available data categories, their storage locations, and associated policies." .
+
+:Agent a owl:Class ;
+  rdfs:label "Agent" ;
+  rdfs:comment "An entity that can maintain a registry." .
+
+:DataCategory a owl:Class ;
+  rdfs:label "Data category" ;
+  rdfs:comment "A type or category of data that may be available in a Pod or similar data space." .
+
+:StorageLocation a owl:Class ;
+  rdfs:label "Storage location" ;
+  rdfs:comment "A location where a specific category of data is stored." .
+
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "A policy associated with a data category, such as a privacy policy, access policy, or usage policy." .
+
+:RegistryEntry a owl:Class ;
+  rdfs:label "Registry entry" ;
+  rdfs:comment "A record in a registry that links a data category to its storage location and any associated policy." ;
+  rdfs:subClassOf
+    [ a owl:Restriction ;
+      owl:onProperty :describesDataCategory ;
+      owl:someValuesFrom :DataCategory
+    ] .
+
+:maintainedBy a owl:ObjectProperty ;
+  rdfs:label "maintained by" ;
+  rdfs:comment "Relates a registry to the agent that maintains it." ;
+  rdfs:domain :Registry ;
+  rdfs:range :Agent .
+
+:hasEntry a owl:ObjectProperty ;
+  rdfs:label "has entry" ;
+  rdfs:comment "Relates a registry to an entry it contains." ;
+  rdfs:domain :Registry ;
+  rdfs:range :RegistryEntry .
+
+:describesDataCategory a owl:ObjectProperty ;
+  rdfs:label "describes data category" ;
+  rdfs:comment "Relates a registry entry to the data category it describes." ;
+  rdfs:domain :RegistryEntry ;
+  rdfs:range :DataCategory .
+
+:storedAt a owl:ObjectProperty ;
+  rdfs:label "stored at" ;
+  rdfs:comment "Relates a registry entry to the storage location of the described data category." ;
+  rdfs:domain :RegistryEntry ;
+  rdfs:range :StorageLocation .
+
+:hasAssociatedPolicy a owl:ObjectProperty ;
+  rdfs:label "has associated policy" ;
+  rdfs:comment "Relates a registry entry to a policy associated with the described data category." ;
+  rdfs:domain :RegistryEntry ;
+  rdfs:range :Policy .
+
+:createdAt a owl:DatatypeProperty ;
+  rdfs:label "created at" ;
+  rdfs:comment "The date-time at which a registry was created." ;
+  rdfs:domain :Registry ;
+  rdfs:range xsd:dateTime .
+
+:updatedAt a owl:DatatypeProperty ;
+  rdfs:label "updated at" ;
+  rdfs:comment "The date-time at which a registry was last updated." ;
+  rdfs:domain :Registry ;
+  rdfs:range xsd:dateTime .

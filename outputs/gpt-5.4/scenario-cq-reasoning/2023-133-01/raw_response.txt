@@ -1,39 +1,30 @@
-1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
-
-```turtle
+1. ```turtle
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ndf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
 @prefix :     <http://example.org/odp#> .
 
 :Ontology a owl:Ontology ;
-  rdfs:label "Causal Bayesian Network Event Pattern" ;
-  rdfs:comment "A minimal ontology design pattern for representing events, causal relations, mediation, and effect weights in a causal Bayesian network such as the sprinkler use case." .
+  rdfs:label "Causal Bayesian Network sprinkler ontology design pattern" ;
+  rdfs:comment "A minimal OWL ontology design pattern for representing events and weighted causal relations in the sprinkler causal Bayesian network use case, including direct causation and mediation." .
 
 :Event a owl:Class ;
   rdfs:label "Event" ;
-  rdfs:comment "A node in a causal Bayesian network representing a condition or occurrence of interest." .
+  rdfs:comment "A state or occurrence represented as a node in a causal model." .
 
 :CausalRelation a owl:Class ;
   rdfs:label "Causal relation" ;
-  rdfs:comment "A directed causal dependency from a cause event to an effect event." .
-
-:DirectCausalRelation a owl:Class ;
-  rdfs:label "Direct causal relation" ;
-  rdfs:comment "A causal relation in which the cause directly influences the effect." ;
-  rdfs:subClassOf :CausalRelation .
+  rdfs:comment "A directed causal connection from a cause event to an effect event, optionally annotated with an effect weight." .
 
 :MediatedCausalRelation a owl:Class ;
   rdfs:label "Mediated causal relation" ;
-  rdfs:comment "A causal relation in which the influence from cause to effect is mediated through another event." ;
+  rdfs:comment "A causal relation whose effect on the target event is mediated through another event rather than being direct." ;
   rdfs:subClassOf :CausalRelation ,
     [ a owl:Restriction ;
-      owl:onProperty :mediatedBy ;
+      owl:onProperty :hasMediator ;
       owl:someValuesFrom :Event
     ] .
-
-:DirectCausalRelation owl:disjointWith :MediatedCausalRelation .
 
 :RainySeasonEvent a owl:Class ;
   rdfs:label "Rainy season event" ;
@@ -62,36 +53,231 @@
 
 :hasCause a owl:ObjectProperty ;
   rdfs:label "has cause" ;
-  rdfs:comment "Relates a causal relation to its cause event." ;
+  rdfs:comment "Relates a causal relation to its source event, the cause." ;
   rdfs:domain :CausalRelation ;
   rdfs:range :Event .
 
 :hasEffect a owl:ObjectProperty ;
   rdfs:label "has effect" ;
-  rdfs:comment "Relates a causal relation to its effect event." ;
+  rdfs:comment "Relates a causal relation to its target event, the effect." ;
   rdfs:domain :CausalRelation ;
   rdfs:range :Event .
 
-:mediatedBy a owl:ObjectProperty ;
-  rdfs:label "mediated by" ;
+:hasMediator a owl:ObjectProperty ;
+  rdfs:label "has mediator" ;
   rdfs:comment "Relates a mediated causal relation to the event through which the causal influence is mediated." ;
   rdfs:domain :MediatedCausalRelation ;
   rdfs:range :Event .
 
-:hasEffectWeight a owl:DatatypeProperty ;
-  rdfs:label "has effect weight" ;
-  rdfs:comment "Associates a causal relation with a numeric effect weight expressing causal strength." ;
+:effectWeight a owl:DatatypeProperty ;
+  rdfs:label "effect weight" ;
+  rdfs:comment "A numeric weight expressing the strength of a causal relation." ;
   rdfs:domain :CausalRelation ;
   rdfs:range xsd:decimal .
 
-:canLeadTo a owl:ObjectProperty ;
-  rdfs:label "can lead to" ;
-  rdfs:comment "Relates an event to another event that may occur as its direct causal effect." ;
-  owl:inverseOf :isOutcomeOf ;
+:canInfluence a owl:ObjectProperty ;
+  rdfs:label "can influence" ;
+  rdfs:comment "Relates an event type to another event type that it may causally influence, either directly or through a represented causal relation." ;
   rdfs:domain :Event ;
-  rdfs:range :Event ;
-  owl:propertyChainAxiom ( :isCauseOfRelation :hasEffect ) .
+  rdfs:range :Event .
 
-:isOutcomeOf a owl:ObjectProperty ;
-  rdfs:label "is outcome of" ;
-  rdfs:comment "Relates an event to another event that may causally lead
+:isInfluencedBy a owl:ObjectProperty ;
+  rdfs:label "is influenced by" ;
+  rdfs:comment "Relates an event type to another event type that may causally influence it." ;
+  owl:inverseOf :canInfluence ;
+  rdfs:domain :Event ;
+  rdfs:range :Event .
+
+:directlyCauses a owl:ObjectProperty ;
+  rdfs:label "directly causes" ;
+  rdfs:comment "Relates an event type to another event type that it directly causes." ;
+  rdfs:subPropertyOf :canInfluence ;
+  rdfs:domain :Event ;
+  rdfs:range :Event .
+
+:mediatesInfluenceOn a owl:ObjectProperty ;
+  rdfs:label "mediates influence on" ;
+  rdfs:comment "Relates a mediator event type to an event type whose causal influence depends on that mediator." ;
+  rdfs:domain :Event ;
+  rdfs:range :Event .
+
+:CausalRelation rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasCause ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Event
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasEffect ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Event
+  ] .
+
+:RainySeasonEvent rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :directlyCauses ;
+    owl:someValuesFrom :RainingEvent
+  ] .
+
+:SprinklerOnEvent rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :directlyCauses ;
+    owl:someValuesFrom :PavementWetEvent
+  ] .
+
+:RainingEvent rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :directlyCauses ;
+    owl:someValuesFrom :PavementWetEvent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :canInfluence ;
+    owl:someValuesFrom :PavementSlipperyEvent
+  ] .
+
+:PavementWetEvent rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :directlyCauses ;
+    owl:someValuesFrom :PavementSlipperyEvent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :mediatesInfluenceOn ;
+    owl:someValuesFrom :PavementSlipperyEvent
+  ] .
+
+:PavementSlipperyEvent rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :isInfluencedBy ;
+    owl:someValuesFrom :PavementWetEvent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :isInfluencedBy ;
+    owl:someValuesFrom :RainingEvent
+  ] .
+
+:RainySeasonCausesRainRelation a owl:Class ;
+  rdfs:label "Rainy season causes rain relation" ;
+  rdfs:comment "A causal relation in which rainy season causes rain." ;
+  rdfs:subClassOf :CausalRelation ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasCause ;
+      owl:allValuesFrom :RainySeasonEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasEffect ;
+      owl:allValuesFrom :RainingEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :effectWeight ;
+      owl:someValuesFrom xsd:decimal
+    ] .
+
+:SprinklerCausesWetPavementRelation a owl:Class ;
+  rdfs:label "Sprinkler causes wet pavement relation" ;
+  rdfs:comment "A causal relation in which the sprinkler being on causes the pavement to be wet." ;
+  rdfs:subClassOf :CausalRelation ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasCause ;
+      owl:allValuesFrom :SprinklerOnEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasEffect ;
+      owl:allValuesFrom :PavementWetEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :effectWeight ;
+      owl:someValuesFrom xsd:decimal
+    ] .
+
+:RainCausesWetPavementRelation a owl:Class ;
+  rdfs:label "Rain causes wet pavement relation" ;
+  rdfs:comment "A causal relation in which rain causes the pavement to be wet." ;
+  rdfs:subClassOf :CausalRelation ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasCause ;
+      owl:allValuesFrom :RainingEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasEffect ;
+      owl:allValuesFrom :PavementWetEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :effectWeight ;
+      owl:someValuesFrom xsd:decimal
+    ] .
+
+:WetPavementCausesSlipperyPavementRelation a owl:Class ;
+  rdfs:label "Wet pavement causes slippery pavement relation" ;
+  rdfs:comment "A causal relation in which wet pavement causes slippery pavement." ;
+  rdfs:subClassOf :CausalRelation ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasCause ;
+      owl:allValuesFrom :PavementWetEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasEffect ;
+      owl:allValuesFrom :PavementSlipperyEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :effectWeight ;
+      owl:someValuesFrom xsd:decimal
+    ] .
+
+:RainInfluencesSlipperyPavementViaWetPavementRelation a owl:Class ;
+  rdfs:label "Rain influences slippery pavement via wet pavement relation" ;
+  rdfs:comment "A mediated causal relation in which rain influences slippery pavement through wet pavement rather than directly." ;
+  rdfs:subClassOf :MediatedCausalRelation ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasCause ;
+      owl:allValuesFrom :RainingEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasEffect ;
+      owl:allValuesFrom :PavementSlipperyEvent
+    ] ,
+    [ a owl:Restriction ;
+      owl:onProperty :hasMediator ;
+      owl:allValuesFrom :PavementWetEvent
+    ] .
+```
+
+2. Reasoning summary:
+- 1. Extracted requirements about event nodes, weighted directed causal relations, and mediation of rain’s influence on slippery pavement via wet pavement.
+- 2. Proposed minimal classes for events and causal relations, plus properties for cause, effect, mediator, influence, and effect weight.
+- 3. Added subclass axioms for the five event types, cardinality restrictions for causal relations, and domain/range constraints for all properties.
+- 4. Checked CQs and found the need to support both direct responsibility/influence queries and mediation-aware queries.
+- 5. Refined with direct/indirect influence properties and a mediated causal relation class to cover slippery-pavement and counterfactual-style dependency questions.
+- 6. Removed unnecessary probabilistic or instance-level constructs, keeping only schema elements traceable to the scenario and CQs.
+
+3. Traceability table:
+- Requirement: The model has nodes for rainy season, sprinkler on, raining, pavement wet, and pavement slippery.
+  - Axioms: `:RainySeasonEvent rdfs:subClassOf :Event .`, `:SprinklerOnEvent rdfs:subClassOf :Event .`, `:RainingEvent rdfs:subClassOf :Event .`, `:PavementWetEvent rdfs:subClassOf :Event .`, `:PavementSlipperyEvent rdfs:subClassOf :Event .`
+
+- Requirement: Directed edges represent causal relations.
+  - Axioms: `:CausalRelation a owl:Class .`, `:hasCause a owl:ObjectProperty .`, `:hasEffect a owl:ObjectProperty .`, `:CausalRelation rdfs:subClassOf [owl:onProperty :hasCause; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger; owl:onClass :Event] , [owl:onProperty :hasEffect; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger; owl:onClass :Event] .`
+
+- Requirement: Causal relations have effect weights.
+  - Axioms: `:effectWeight a owl:DatatypeProperty ; rdfs:domain :CausalRelation ; rdfs:range xsd:decimal .`, plus `effectWeight some xsd:decimal` restrictions on the named relation classes.
+
+- Requirement: Rainy season causes rain with effect weight 0.6 as an example.
+  - Axioms: `:RainySeasonCausesRainRelation rdfs:subClassOf :CausalRelation ...`, restrictions `hasCause only :RainySeasonEvent`, `hasEffect only :RainingEvent`, `effectWeight some xsd:decimal`.
+  - Note: exact numeric value `0.6` is intentionally not asserted because individuals/facts are disallowed.
+
+- Requirement: Rain does not directly cause slippery pavement; its effect is mediated by pavement being wet.
+  - Axioms: `:MediatedCausalRelation a owl:Class .`, `:hasMediator a owl:ObjectProperty .`, `:RainInfluencesSlipperyPavementViaWetPavementRelation rdfs:subClassOf :MediatedCausalRelation ...`, `hasCause only :RainingEvent`, `hasEffect only :PavementSlipperyEvent`, `hasMediator only :PavementWetEvent`.
+  - Supporting axioms: `:PavementWetEvent rdfs:subClassOf [owl:onProperty :mediatesInfluenceOn; owl:someValuesFrom :PavementSlipperyEvent] .`
+
+- CQ: What events are responsible for the pavement being slippery?
+  - Axioms: `:PavementSlipperyEvent rdfs:subClassOf [owl:onProperty :isInfluencedBy; owl:someValuesFrom :PavementWetEvent] , [owl:onProperty :isInfluencedBy; owl:someValuesFrom :RainingEvent] .`
+  - Supporting axioms: `:directlyCauses rdfs:subPropertyOf :canInfluence .`, `:canInfluence owl:inverseOf :isInfluencedBy .`, `:PavementWetEvent rdfs:subClassOf [owl:onProperty :directlyCauses; owl:someValuesFrom :PavementSlipperyEvent] .`
+
+- CQ: What would be the outcome of turning the sprinkler system on(off)?
+  - Axioms: `:SprinklerOnEvent rdfs:subClassOf [owl:onProperty :directlyCauses; owl:someValuesFrom :PavementWetEvent] .`
+  - Supporting chain of intended interpretation: wet pavement then influences slippery pavement via `:PavementWetEvent ... directlyCauses some :PavementSlipperyEvent`.
+
+- CQ: How strong is the causal link between the sprinkler being on and the pavement being wet?
+  - Axioms: `:SprinklerCausesWetPavementRelation rdfs:subClassOf :CausalRelation ...`, with `hasCause only :SprinklerOnEvent`, `hasEffect only :PavementWetEvent`, `effectWeight some xsd:decimal`.
+
+- CQ: What if the pavement is not wet, how would it effect the pavement being slippery?
+  - Axioms: `:WetPavementCausesSlipperyPavementRelation rdfs:subClassOf :CausalRelation ...`, `:PavementWetEvent rdfs:subClassOf [owl:onProperty :directlyCauses; owl:someValuesFrom :PavementSlipperyEvent] .`
+  - Mediation support: `:RainInfluencesSlipperyPavementViaWetPavementRelation ... hasMediator only :PavementWetEvent`, showing slippery pavement depends on wet pavement as mediator for rain’s influence.

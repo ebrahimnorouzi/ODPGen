@@ -1,1 +1,66 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Asthma causal influence ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing causal influences with effect weights among outdoor environmental factors, asthma symptoms, and medication intake in the kHealth-Asthma use case." .
+
+:Patient a owl:Class ;
+  rdfs:label "Patient" ;
+  rdfs:comment "A patient in the asthma self-monitoring use case." .
+
+:ObservationFeature a owl:Class ;
+  rdfs:label "Observation feature" ;
+  rdfs:comment "A feature observed in the asthma use case, including symptoms, medication intake, and outdoor environmental factors." .
+
+:Symptom a owl:Class ;
+  rdfs:label "Symptom" ;
+  rdfs:comment "An asthma symptom observed for a patient, such as cough, chest tightness, wheezing, or breathing pattern." ;
+  rdfs:subClassOf :ObservationFeature .
+
+:MedicationIntake a owl:Class ;
+  rdfs:label "Medication intake" ;
+  rdfs:comment "The intake of medication by a patient." ;
+  rdfs:subClassOf :ObservationFeature .
+
+:OutdoorEnvironmentalFactor a owl:Class ;
+  rdfs:label "Outdoor environmental factor" ;
+  rdfs:comment "An outdoor environmental feature relevant to asthma, such as pollen or air quality index." ;
+  rdfs:subClassOf :ObservationFeature .
+
+:CausalRelation a owl:Class ;
+  rdfs:label "Causal relation" ;
+  rdfs:comment "A relation representing that one observed feature causally affects another, optionally with an effect weight." .
+
+:hasFeature a owl:ObjectProperty ;
+  rdfs:label "has feature" ;
+  rdfs:comment "Relates a patient to an observed feature associated with that patient." ;
+  rdfs:domain :Patient ;
+  rdfs:range :ObservationFeature .
+
+:hasCause a owl:ObjectProperty ;
+  rdfs:label "has cause" ;
+  rdfs:comment "Relates a causal relation to the feature that acts as the cause." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :ObservationFeature .
+
+:hasEffect a owl:ObjectProperty ;
+  rdfs:label "has effect" ;
+  rdfs:comment "Relates a causal relation to the feature that is affected." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range :ObservationFeature .
+
+:affectsPatient a owl:ObjectProperty ;
+  rdfs:label "affects patient" ;
+  rdfs:comment "Relates an observed feature to the patient affected in the use case." ;
+  rdfs:domain :ObservationFeature ;
+  rdfs:range :Patient .
+
+:effectWeight a owl:DatatypeProperty ;
+  rdfs:label "effect weight" ;
+  rdfs:comment "A numeric weight expressing the strength of a causal effect." ;
+  rdfs:domain :CausalRelation ;
+  rdfs:range xsd:decimal .

@@ -1,1 +1,165 @@
-...
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "ODRL policy evaluation context ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing contextual information used to evaluate ODRL-like policies, including policies, rules, parties, assets, actions, events, time, location, recipients, and payment information." .
+
+:Policy a owl:Class ;
+  rdfs:label "Policy" ;
+  rdfs:comment "A policy being evaluated." .
+
+:Rule a owl:Class ;
+  rdfs:label "Rule" ;
+  rdfs:comment "A rule that is part of a policy and may be exercised." .
+
+:Party a owl:Class ;
+  rdfs:label "Party" ;
+  rdfs:comment "An entity participating in the policy context." .
+
+:Asset a owl:Class ;
+  rdfs:label "Asset" ;
+  rdfs:comment "An asset referenced by a policy." .
+
+:Action a owl:Class ;
+  rdfs:label "Action" ;
+  rdfs:comment "An action that may be performed or attempted in relation to a rule or policy." .
+
+:Event a owl:Class ;
+  rdfs:label "Event" ;
+  rdfs:comment "An event that has occurred and about which information may be available for policy evaluation." .
+
+:Location a owl:Class ;
+  rdfs:label "Location" ;
+  rdfs:comment "A location associated with a party or event." .
+
+:Recipient a owl:Class ;
+  rdfs:label "Recipient" ;
+  rdfs:comment "A recipient that can receive the result of an exercised rule." .
+
+:RecipientCategory a owl:Class ;
+  rdfs:label "Recipient category" ;
+  rdfs:comment "A category of recipients that can receive the result of an exercised rule." .
+
+:Payment a owl:Class ;
+  rdfs:label "Payment" ;
+  rdfs:comment "A financial payment relevant to policy evaluation." .
+
+:TimeInstant a owl:Class ;
+  rdfs:label "Time instant" ;
+  rdfs:comment "A point in time, such as the current time or the time of an event." .
+
+:Duration a owl:Class ;
+  rdfs:label "Duration" ;
+  rdfs:comment "A duration for which a rule has been exercised." .
+
+:hasRule a owl:ObjectProperty ;
+  rdfs:label "has rule" ;
+  rdfs:comment "Relates a policy to a rule that is part of the policy." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Rule .
+
+:hasAsset a owl:ObjectProperty ;
+  rdfs:label "has asset" ;
+  rdfs:comment "Relates a policy to an asset that is part of its asset collection." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Asset .
+
+:hasParty a owl:ObjectProperty ;
+  rdfs:label "has party" ;
+  rdfs:comment "Relates a policy to a party that is part of its party collection." ;
+  rdfs:domain :Policy ;
+  rdfs:range :Party .
+
+:performedOrAttemptedAction a owl:ObjectProperty ;
+  rdfs:label "performed or attempted action" ;
+  rdfs:comment "Relates a rule to an action that was already performed or attempted." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Action .
+
+:hasExerciseCount a owl:DatatypeProperty ;
+  rdfs:label "has exercise count" ;
+  rdfs:comment "States how many times a rule has been exercised." ;
+  rdfs:domain :Rule ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:hasExerciseDuration a owl:ObjectProperty ;
+  rdfs:label "has exercise duration" ;
+  rdfs:comment "Relates a rule to the duration for which it has been exercised." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Duration .
+
+:hasRecipient a owl:ObjectProperty ;
+  rdfs:label "has recipient" ;
+  rdfs:comment "Relates a rule to a recipient that can receive the result of the exercised rule." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Recipient .
+
+:hasRecipientCategory a owl:ObjectProperty ;
+  rdfs:label "has recipient category" ;
+  rdfs:comment "Relates a rule to a category of recipients that can receive the result of the exercised rule." ;
+  rdfs:domain :Rule ;
+  rdfs:range :RecipientCategory .
+
+:hasPayment a owl:ObjectProperty ;
+  rdfs:label "has payment" ;
+  rdfs:comment "Relates a rule to a financial payment relevant to its evaluation." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Payment .
+
+:paymentMade a owl:DatatypeProperty ;
+  rdfs:label "payment made" ;
+  rdfs:comment "States whether a financial payment has been made." ;
+  rdfs:domain :Payment ;
+  rdfs:range xsd:boolean .
+
+:paidAmount a owl:DatatypeProperty ;
+  rdfs:label "paid amount" ;
+  rdfs:comment "States the amount that was paid in a financial payment." ;
+  rdfs:domain :Payment ;
+  rdfs:range xsd:decimal .
+
+:hasEvent a owl:ObjectProperty ;
+  rdfs:label "has event" ;
+  rdfs:comment "Relates a rule to an event that has occurred and is relevant to evaluation." ;
+  rdfs:domain :Rule ;
+  rdfs:range :Event .
+
+:eventTime a owl:ObjectProperty ;
+  rdfs:label "event time" ;
+  rdfs:comment "Relates an event to the time at which it occurred." ;
+  rdfs:domain :Event ;
+  rdfs:range :TimeInstant .
+
+:eventLocation a owl:ObjectProperty ;
+  rdfs:label "event location" ;
+  rdfs:comment "Relates an event to its location." ;
+  rdfs:domain :Event ;
+  rdfs:range :Location .
+
+:partyLocation a owl:ObjectProperty ;
+  rdfs:label "party location" ;
+  rdfs:comment "Relates a party to its location." ;
+  rdfs:domain :Party ;
+  rdfs:range :Location .
+
+:currentTime a owl:ObjectProperty ;
+  rdfs:label "current time" ;
+  rdfs:comment "Relates the evaluation context to the current time." ;
+  rdfs:domain :Policy ;
+  rdfs:range :TimeInstant .
+
+:timeValue a owl:DatatypeProperty ;
+  rdfs:label "time value" ;
+  rdfs:comment "Provides a literal value for a time instant." ;
+  rdfs:domain :TimeInstant ;
+  rdfs:range xsd:dateTime .
+
+:durationValue a owl:DatatypeProperty ;
+  rdfs:label "duration value" ;
+  rdfs:comment "Provides a literal value for a duration." ;
+  rdfs:domain :Duration ;
+  rdfs:range xsd:duration .
