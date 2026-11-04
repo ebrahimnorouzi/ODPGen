@@ -1,0 +1,85 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Climate Dataset Ontology" ;
+  rdfs:comment "Ontology for describing climate datasets.".
+
+:Dataset a owl:Class ;
+  rdfs:label "Climate Dataset" ;
+  rdfs:comment "A dataset of climate-related information.".
+
+:TimeSeries a owl:Class ;
+  rdfs:label "Time Series" ;
+  rdfs:comment "A series of data points measured at regular time intervals.".
+
+:IndependentVariable a owl:Class ;
+  rdfs:label "Independent Variable" ;
+  rdfs:comment "A variable that is not dependent on the other variables in the dataset.".
+
+:DependentVariable a owl:Class ;
+  rdfs:label "Dependent Variable" ;
+  rdfs:comment "A variable that is dependent on the other variables in the dataset.".
+
+:Time a owl:Class ;
+  rdfs:label "Time" ;
+  rdfs:comment "A point in time.".
+
+:Value a owl:Class ;
+  rdfs:label "Value" ;
+  rdfs:comment "A single data point in a time series.".
+
+:hasValue a owl:ObjectProperty ;
+  rdfs:label "has Value" ;
+  rdfs:comment "The value of a data point." ;
+  rdfs:domain :Value ;
+  rdfs:range :xsd:float.
+
+:hasIndependentVariable a owl:ObjectProperty ;
+  rdfs:label "has Independent Variable" ;
+  rdfs:comment "The independent variable of a time series." ;
+  rdfs:domain :TimeSeries ;
+  rdfs:range :IndependentVariable.
+
+:hasDependentVariable a owl:ObjectProperty ;
+  rdfs:label "has Dependent Variable" ;
+  rdfs:comment "The dependent variable of a time series." ;
+  rdfs:domain :TimeSeries ;
+  rdfs:range :DependentVariable.
+
+:hasTime a owl:ObjectProperty ;
+  rdfs:label "has Time" ;
+  rdfs:comment "The time point of a data point." ;
+  rdfs:domain :Value ;
+  rdfs:range :Time.
+
+:hasDataset a owl:ObjectProperty ;
+  rdfs:label "has Dataset" ;
+  rdfs:comment "The dataset that a time series belongs to." ;
+  rdfs:domain :TimeSeries ;
+  rdfs:range :Dataset.
+
+:Dataset # subclass of :TimeSeries.
+:TimeSeries # disjoint with :IndependentVariable.
+:TimeSeries # disjoint with :DependentVariable.
+```
+
+**Documentation**
+
+**Intent:** This ontology design pattern models the structure of climate datasets, specifically the relationships between time series, independent variables, dependent variables, and dataset metadata.
+
+**Covered requirements:**
+
+* Describe a dataset of average daily maximum near-surface air temperature over the whole of Italy for the year 2024
+* Identify the independent variable (time) and dependent variable (temperature) of the dataset
+* Define the relationships between time series, independent variables, dependent variables, and dataset metadata
+
+**Known assumptions and exclusions:**
+
+* This ontology assumes that the dataset is a time series with a single value per day for the whole region.
+* This ontology excludes concepts such as spatial grids, multiple independent variables, and complex dataset structures.
+* This ontology does not include individual instances, only schema axioms.

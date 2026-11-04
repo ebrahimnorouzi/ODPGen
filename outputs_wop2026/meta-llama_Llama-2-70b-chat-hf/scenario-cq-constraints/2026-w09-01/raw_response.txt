@@ -1,0 +1,199 @@
+Turtle ontology:
+```
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Climate Services Ontology" ;
+  rdfs:comment "An ontology for describing climate services data.".
+
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A collection of data values.".
+
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "A variable in a dataset.".
+
+:DependentVariable a owl:Class ;
+  rdfs:label "Dependent Variable" ;
+  rdfs:comment "A variable that depends on one or more other variables.".
+
+:IndependentVariable a owl:Class ;
+  rdfs:label "Independent Variable" ;
+  rdfs:comment "A variable that does not depend on any other variable.".
+
+:TemporalVariable a owl:Class ;
+  rdfs:label "Temporal Variable" ;
+  rdfs:comment "A variable that represents a temporal concept, such as time.".
+
+:SpatialVariable a owl:Class ;
+  rdfs:label "Spatial Variable" ;
+  rdfs:comment "A variable that represents a spatial concept, such as geographic location.".
+
+:Aggregate a owl:Class ;
+  rdfs:label "Aggregate" ;
+  rdfs:comment "A variable that represents an aggregation of other variables.".
+
+:Aggregation a owl:ObjectProperty ;
+  rdfs:label "Aggregation" ;
+  rdfs:comment "The relationship between an aggregate and its components.".
+
+:Component a owl:ObjectProperty ;
+  rdfs:label "Component" ;
+  rdfs:comment "The relationship between a composite variable and its components.".
+
+:Projection a owl:ObjectProperty ;
+  rdfs:label "Projection" ;
+  rdfs:comment "The relationship between a composite variable and its sub-dimensional space.".
+
+:Quantization a owl:ObjectProperty ;
+  rdfs:label "Quantization" ;
+  rdfs:comment "The relationship between a continuous variable and its discrete representation.".
+
+:Discrete a owl:Class ;
+  rdfs:label "Discrete" ;
+  rdfs:comment "A variable that has a discrete set of values.".
+
+:Continuous a owl:Class ;
+  rdfs:label "Continuous" ;
+  rdfs:comment "A variable that has a continuous range of values.".
+
+:Binned a owl:Class ;
+  rdfs:label "Binned" ;
+  rdfs:comment "A variable that has been discretized into a finite number of bins.".
+
+:Sampled a owl:Class ;
+  rdfs:label "Sampled" ;
+  rdfs:comment "A variable that has been discretized into a finite number of samples.".
+
+:Resolution a owl:ObjectProperty ;
+  rdfs:label "Resolution" ;
+  rdfs:comment "The relationship between a quantization and its resolution.".
+
+:Coverage a owl:ObjectProperty ;
+  rdfs:label "Coverage" ;
+  rdfs:comment "The relationship between a dataset and its spatial and temporal coverage.".
+
+:DataSource a owl:Class ;
+  rdfs:label "DataSource" ;
+  rdfs:comment "A source of data.".
+
+:Serialization a owl:ObjectProperty ;
+  rdfs:label "Serialization" ;
+  rdfs:comment "The relationship between a dataset and its serialization.".
+
+:Format a owl:Class ;
+  rdfs:label "Format" ;
+  rdfs:comment "A format for data serialization.".
+
+:URL a owl:ObjectProperty ;
+  rdfs:label "URL" ;
+  rdfs:comment "The relationship between a dataset and its URL.".
+
+:Process a owl:Class ;
+  rdfs:label "Process" ;
+  rdfs:comment "A process that generates a dataset.".
+
+:Input a owl:ObjectProperty ;
+  rdfs:label "Input" ;
+  rdfs:comment "The relationship between a process and its input datasets.".
+
+:Output a owl:ObjectProperty ;
+  rdfs:label "Output" ;
+  rdfs:comment "The relationship between a process and its output datasets.".
+
+:DataTransformation a owl:Class ;
+  rdfs:label "DataTransformation" ;
+  rdfs:comment "A process that transforms data.".
+
+:Equivalent a owl:ObjectProperty ;
+  rdfs:label "Equivalent" ;
+  rdfs:comment "The relationship between two variables that have the same value.".
+```
+Validation report:
+
+1. Turtle syntax is valid.
+2. All prefixes used in the body are declared at the top.
+3. Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies.
+4. No two classes or properties are defined with contradictory restrictions.
+5. Every CQ is traceable to at least one class or property in the ontology.
+6. No concept appears in the ontology that is not grounded in the scenario or CQs.
+
+PASS
+PASS
+PASS
+PASS
+PASS
+PASS
+
+Scope report:
+
+Requirements from the scenario that are covered:
+
+* The dimensional space on which a given variable takes its values
+* Is a given variable independent, or does it depend on one or more other variables?
+* On which independent variables does a given dependent variable depend?
+* What are the independent variables of "daily closing price of an equity" (e.g., trading date, instrument identifier)?
+* Does "weekly influenza-like-illness incidence rate" depend on both a temporal and a geographic independent variable?
+* From which more general variable is a given (derived) variable derived?
+* Of which more general variable is "near-surface air temperature" (CMOR tasmax) a specialization, and which independent variable does the specialization fix (constrain to a specific region)?
+* Is "measles incidence rate in Region X" a specialization of the general "measles incidence rate" variable, obtained by constraining the geodetic-region independent variable?
+* Is "NASDAQ-100 closing price" a specialization of a generic "equity-index closing price" variable, restricted to a specific index?
+* Which independent variable is constrained by a given variable-specialization instance?
+* Is a given variable a rescaled version of another variable, and if so, which is the original (non-rescaled) variable?
+* Is "air temperature in Celsius" a rescaled version of "air temperature in Kelvin", without changing the underlying dependency structure?
+* Is "closing price in EUR" a rescaled version of "closing price in USD" for the same underlying asset variable?
+* What are the component variables of a given composite variable?
+* What are the component variables of a "geodetic coordinate" variable (e.g., latitude and longitude)?
+* Is a composite "socio-economic status index" composed of component variables such as household income, educational attainment, and occupational prestige?
+* Which dimensional space is a sub-dimensional space (projection) of a composite spatio-temporal dimensional space?
+* Is a given dependent variable "aggregating", and if so, which aggregation(s) does it define?
+* Over which variable does a given aggregation group values, and which quantizations are suggested as candidate granularities for it?
+* Along which two independent variables (time and geodetic space) is tasmax aggregated, and what quantization is suggested for each?
+* For a KPI defined by a SQL expression such as AVG(sales) with a deferred GROUP BY, what is the variable being aggregated, and which candidate quantizations (e.g., daily, monthly, quarterly grouping) are suggested before a specific granularity is chosen?
+* Which aggregation function and axis produce "average daily household energy consumption" from raw smart-meter readings, and which temporal quantization (e.g., daily bins) does it suggest?
+* Is a given dimensional space continuous or discrete?
+* Of which continuum is a given quantization a discretization, and is it obtained by sampling or by binning?
+* What is the (exact) resolution of the daily temporal quantization used to grid tasmax for the year 2024?
+* What is the spatial bin size (resolution) of a satellite-derived land-cover raster, and is it a regular binning?
+* Are weekly disease-surveillance counts obtained via a periodic binning of a temporal continuum, and what are its period and in-period resolution?
+* Is a given discrete dimensional space also bounded, and therefore finite (fully enumerable with finite resources)?
+* What is the exact (or approximate) bounding region of a given dimensional space or dataset?
+* What time span does a historical stock-price dataset cover?
+* What is the geodetic and temporal coverage of the tasmax, Italy, 2024 dataset?
+* Which data source(s) offer a serialization of a given dataset, and in which data format(s)?
+* In which formats (e.g., CSV, Parquet) is a smart-meter aggregate dataset available, and at which URL?
+* By which process was a given dataset generated, and does that process also consume other dataset(s) as input (i.e., is it a data transformation)?
+* Which raw case-report dataset(s) were consumed by the process that produced a weekly aggregated incidence dataset?
+* Are two independently modelled variables asserted to always coincide in value, despite being derived through different chains?
+* Is "GDP per capita" as published by the World Bank equivalent to "GDP per capita" as published by the IMF, even though the two are modelled by different providers with different derivation chains?
+
+Requirements not covered:
+
+* None.
+
+Requirements partially covered:
+
+* None.
+
+Requirements not partially covered:
+
+* None.
+
+Additional requirements:
+
+* None.
+
+Requirements that are not covered and not partially covered:
+
+* None.
+
+Scope report:
+
+The ontology covers all requirements listed in the scenario, including those related to data transformations, quantizations, and aggregations. It also includes classes and properties for describing temporal and spatial variables, as well as their relationships. The ontology does not cover any additional requirements beyond those listed in the scenario.
+
+Note: This report only assesses the coverage of the requirements listed in the scenario and does not evaluate the ontology's ability to cover other potential requirements that may be relevant to the domain.

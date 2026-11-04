@@ -1,0 +1,154 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Software-Hardware Matching Ontology" ;
+  rdfs:comment "Ontology for describing software and hardware requirements and characteristics.".
+
+:Software a owl:Class ;
+  rdfs:label "Software" ;
+  rdfs:comment "A software entity.".
+
+:Hardware a owl:Class ;
+  rdfs:label "Hardware" ;
+  rdfs:comment "A hardware entity.".
+
+:Requirement a owl:Class ;
+  rdfs:label "Requirement" ;
+  rdfs:comment "A requirement of a software or hardware.".
+
+:SoftwareRequirement a owl:Class ;
+  rdfs:label "Software Requirement" ;
+  rdfs:comment "A requirement of a software.".
+
+:HardwareRequirement a owl:Class ;
+  rdfs:label "Hardware Requirement" ;
+  rdfs:comment "A requirement of a hardware.".
+
+:SoftwareCharacteristic a owl:Class ;
+  rdfs:label "Software Characteristic" ;
+  rdfs:comment "A characteristic of a software.".
+
+:HardwareCharacteristic a owl:Class ;
+  rdfs:label "Hardware Characteristic" ;
+  rdfs:comment "A characteristic of a hardware.".
+
+:Software a :Software ;
+  rdfs:label "Software" ;
+  rdfs:comment "A software entity.".
+
+:Hardware a :Hardware ;
+  rdfs:label "Hardware" ;
+  rdfs:comment "A hardware entity.".
+
+:hasRequirement a owl:ObjectProperty ;
+  rdfs:label "has Requirement" ;
+  rdfs:comment "A software or hardware has a requirement." ;
+  rdfs:domain :Software ;
+  rdfs:range :Requirement.
+
+:hasSoftwareRequirement a owl:ObjectProperty ;
+  rdfs:label "has Software Requirement" ;
+  rdfs:comment "A software has a software requirement." ;
+  rdfs:domain :Software ;
+  rdfs:range :SoftwareRequirement.
+
+:hasHardwareRequirement a owl:ObjectProperty ;
+  rdfs:label "has Hardware Requirement" ;
+  rdfs:comment "A hardware has a hardware requirement." ;
+  rdfs:domain :Hardware ;
+  rdfs:range :HardwareRequirement.
+
+:hasSoftwareCharacteristic a owl:ObjectProperty ;
+  rdfs:label "has Software Characteristic" ;
+  rdfs:comment "A software has a software characteristic." ;
+  rdfs:domain :Software ;
+  rdfs:range :SoftwareCharacteristic.
+
+:hasHardwareCharacteristic a owl:ObjectProperty ;
+  rdfs:label "has Hardware Characteristic" ;
+  rdfs:comment "A hardware has a hardware characteristic." ;
+  rdfs:domain :Hardware ;
+  rdfs:range :HardwareCharacteristic.
+
+:isRequiredBy a owl:ObjectProperty ;
+  rdfs:label "is Required By" ;
+  rdfs:comment "A software or hardware is required by another software or hardware." ;
+  rdfs:domain :Software ;
+  rdfs:range :Software.
+
+:isRequiredSoftware a owl:ObjectProperty ;
+  rdfs:label "is Required Software" ;
+  rdfs:comment "A software is required by another software." ;
+  rdfs:domain :Software ;
+  rdfs:range :Software.
+
+:isRequiredHardware a owl:ObjectProperty ;
+  rdfs:label "is Required Hardware" ;
+  rdfs:comment "A hardware is required by another hardware." ;
+  rdfs:domain :Hardware ;
+  rdfs:range :Hardware.
+
+:isRequiredType a owl:DatatypeProperty ;
+  rdfs:label "is Required Type" ;
+  rdfs:comment "The type of software or hardware required." ;
+  rdfs:domain :Software ;
+  rdfs:range xsd:string.
+
+:isRequiredValue a owl:DatatypeProperty ;
+  rdfs:label "is Required Value" ;
+  rdfs:comment "The required value of a property of a software or hardware." ;
+  rdfs:domain :Software ;
+  rdfs:range xsd:string.
+
+:isRequiredVersion a owl:DatatypeProperty ;
+  rdfs:label "is Required Version" ;
+  rdfs:comment "The required version of a software." ;
+  rdfs:domain :Software ;
+  rdfs:range xsd:string.
+
+:isRequiredMinValue a owl:DatatypeProperty ;
+  rdfs:label "is Required Min Value" ;
+  rdfs:comment "The minimum required value of a property of a software or hardware." ;
+  rdfs:domain :Software ;
+  rdfs:range xsd:string.
+
+:isRequiredMaxValue a owl:DatatypeProperty ;
+  rdfs:label "is Required Max Value" ;
+  rdfs:comment "The maximum required value of a property of a software or hardware." ;
+  rdfs:domain :Software ;
+  rdfs:range xsd:string.
+
+:isRequiredExactValue a owl:DatatypeProperty ;
+  rdfs:label "is Required Exact Value" ;
+  rdfs:comment "The exact required value of a property of a software or hardware." ;
+  rdfs:domain :Software ;
+  rdfs:range xsd:string.
+```
+
+**Scenario-requirement-to-axiom mapping:**
+
+1. "This example is motivated by a concrete use case from the SMARTY research project..." - No direct axiom mapping, as this is a general introduction.
+2. "...which addresses the dynamic allocation of hardware resources (DPU and GPU) based on the characteristics and requirements of incoming service requests..." - No direct axiom mapping, as this is a general description of the project's goal.
+3. "...by comparing the requirements expressed for a given software with the actual characteristics of software and hardware resources described in a catalogue." - No direct axiom mapping, as this is a general description of the matchmaker's functionality.
+4. "The goal of the matchmaker is to identify candidate resources that can be used to execute, support, or deploy the main software." - No direct axiom mapping, as this is a general description of the matchmaker's goal.
+
+**CQ-to-axiom mapping:**
+
+1. "Which is the (software/hardware) requirement of a software?" - This CQ can be answered by using the `:hasRequirement` property and the `:Software` class.
+2. "Which is the software/hardware required by a software?" - This CQ can be answered by using the `:isRequiredBy` property and the `:Software` class.
+3. "Which is the type of software/hardware required by a software?" - This CQ can be answered by using the `:isRequiredType` property and the `:Software` class.
+4. "Which is the required (minimum/maximum/exact) value of a property of a software/hardware required by a software?" - This CQ can be answered by using the `:isRequiredValue` property and the `:Software` class.
+5. "Which is the required (maximum/minimum/exact) version of a software required by a software?" - This CQ can be answered by using the `:isRequiredVersion` property and the `:Software` class.
+
+**Intentionally excluded concepts:**
+
+1. "Service requests" - This concept is not explicitly modeled in the ontology, as it is not directly related to the CQs.
+2. "DPU and GPU" - These concepts are not explicitly modeled in the ontology, as they are not directly related to the CQs.
+3. "Catalogue" - This concept is not explicitly modeled in the ontology, as it is not directly related to the CQs.
+4. "Candidate resources" - This concept is not explicitly modeled in the ontology, as it is not directly related to the CQs.
+5. "Execution, support, or deployment" - These concepts are not explicitly modeled in the ontology, as they are not directly related to the CQs.

@@ -1,0 +1,102 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Software Reverse Engineering Knowledge Graph Ontology" ;
+  rdfs:comment "Ontology for modeling software reverse engineering knowledge graphs.".
+
+:Symbol a owl:Class ;
+  rdfs:label "Symbol" ;
+  rdfs:comment "A symbol in a binary executable file.".
+
+:Function a owl:Class ;
+  rdfs:label "Function" ;
+  rdfs:comment "A function in a binary executable file." ;
+  rdfs:subClassOf :Symbol.
+
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "A variable in a binary executable file." ;
+  rdfs:subClassOf :Symbol.
+
+:Label a owl:Class ;
+  rdfs:label "Label" ;
+  rdfs:comment "A label associated with a symbol." ;
+  rdfs:subClassOf :Symbol.
+
+:SymbolTable a owl:Class ;
+  rdfs:label "Symbol Table" ;
+  rdfs:comment "A collection of symbols in a binary executable file." ;
+  rdfs:subClassOf :Symbol.
+
+:KnowledgeGraph a owl:Class ;
+  rdfs:label "Knowledge Graph" ;
+  rdfs:comment "A graph representing the relationships between symbols.".
+
+:hasSymbol a owl:ObjectProperty ;
+  rdfs:label "has Symbol" ;
+  rdfs:comment "A symbol in a knowledge graph." ;
+  rdfs:domain :KnowledgeGraph ;
+  rdfs:range :Symbol.
+
+:hasFunction a owl:ObjectProperty ;
+  rdfs:label "has Function" ;
+  rdfs:comment "A function in a knowledge graph." ;
+  rdfs:domain :KnowledgeGraph ;
+  rdfs:range :Function.
+
+:hasVariable a owl:ObjectProperty ;
+  rdfs:label "has Variable" ;
+  rdfs:comment "A variable in a knowledge graph." ;
+  rdfs:domain :KnowledgeGraph ;
+  rdfs:range :Variable.
+
+:hasLabel a owl:ObjectProperty ;
+  rdfs:label "has Label" ;
+  rdfs:comment "A label associated with a symbol in a knowledge graph." ;
+  rdfs:domain :KnowledgeGraph ;
+  rdfs:range :Label.
+
+:hasSymbolTable a owl:ObjectProperty ;
+  rdfs:label "has Symbol Table" ;
+  rdfs:comment "A symbol table in a knowledge graph." ;
+  rdfs:domain :KnowledgeGraph ;
+  rdfs:range :SymbolTable.
+
+:renamesLabel a owl:ObjectProperty ;
+  rdfs:label "renames Label" ;
+  rdfs:comment "A label is renamed in a knowledge graph." ;
+  rdfs:domain :KnowledgeGraph ;
+  rdfs:range :Label.
+
+:disjointSymbolTable a owl:DisjointClasses ;
+  rdf:separators ',';
+  rdf:members (:SymbolTable :Symbol).
+
+:disjointFunctionVariable a owl:DisjointClasses ;
+  rdf:separators ',';
+  rdf:members (:Function :Variable).
+```
+
+**Documentation**
+
+**Intent:** This ontology design pattern models the relationships between symbols in a binary executable file, enabling the creation of knowledge graphs to facilitate software reverse engineering.
+
+**Covered requirements:**
+
+* Stay strictly within the scenario scope
+* Use clear, self-explanatory class and property names
+* Include minimal but sufficient axioms (domain, range, subclass, disjointness)
+* Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`
+* Do NOT create individual instances
+* Add rdfs:label and rdfs:comment annotations to every class and property
+
+**Known assumptions and exclusions:**
+
+* The ontology assumes that the symbol table is a collection of symbols, and each symbol has a unique name.
+* The ontology excludes the representation of malware-specific behavior and dependency vulnerabilities in a software supply chain, which are mentioned in the scenario as potential future extensions.
+* The ontology does not include any axioms related to the expansion of the knowledge graph to apply to finding dependency vulnerabilities in a software supply chain.

@@ -1,0 +1,130 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Task and Foundation Model Ontology" ;
+  rdfs:comment "Ontology for tasks and foundation models".
+
+:Task a owl:Class ;
+  rdfs:label "Task" ;
+  rdfs:comment "A task is a goal or objective to be achieved".
+
+:DataModality a owl:Class ;
+  rdfs:label "Data Modality" ;
+  rdfs:comment "A data modality is a type of data, such as text or image".
+
+:Constraint a owl:Class ;
+  rdfs:label "Constraint" ;
+  rdfs:comment "A constraint is a limitation or restriction on a task".
+
+:FoundationModel a owl:Class ;
+  rdfs:label "Foundation Model" ;
+  rdfs:comment "A foundation model is a type of machine learning model".
+
+:Variant a owl:Class ;
+  rdfs:label "Variant" ;
+  rdfs:comment "A variant is a different version of a foundation model".
+
+:Evolution a owl:Class ;
+  rdfs:label "Evolution" ;
+  rdfs:comment "An evolution is a change or update to a foundation model".
+
+:PromptingTechnique a owl:Class ;
+  rdfs:label "Prompting Technique" ;
+  rdfs:comment "A prompting technique is a method for generating prompts".
+
+:Prompt a owl:Class ;
+  rdfs:label "Prompt" ;
+  rdfs:comment "A prompt is a input to a foundation model".
+
+:Response a owl:Class ;
+  rdfs:label "Response" ;
+  rdfs:comment "A response is the output of a foundation model".
+
+:Chat a owl:Class ;
+  rdfs:label "Chat" ;
+  rdfs:comment "A chat is a conversation between a user and a foundation model".
+
+:AveragePromptsPerChat a owl:DatatypeProperty ;
+  rdfs:label "Average Prompts per Chat" ;
+  rdfs:comment "The average number of prompts per chat" ;
+  rdfs:range xsd:integer.
+
+:AverageResponsesPerChat a owl:DatatypeProperty ;
+  rdfs:label "Average Responses per Chat" ;
+  rdfs:comment "The average number of responses per chat" ;
+  rdfs:range xsd:integer.
+
+:PromptingTechniqueSuitableForTask a owl:ObjectProperty ;
+  rdfs:label "Prompting Technique Suitable for Task" ;
+  rdfs:comment "A prompting technique suitable for a task" ;
+  rdfs:domain :PromptingTechnique ;
+  rdfs:range :Task.
+
+:TaskTargetingDataModality a owl:ObjectProperty ;
+  rdfs:label "Task Targeting Data Modality" ;
+  rdfs:comment "A task targeting a data modality" ;
+  rdfs:domain :Task ;
+  rdfs:range :DataModality.
+
+:TaskWithConstraint a owl:ObjectProperty ;
+  rdfs:label "Task with Constraint" ;
+  rdfs:comment "A task with a constraint" ;
+  rdfs:domain :Task ;
+  rdfs:range :Constraint.
+
+:FoundationModelCanProcessDataModality a owl:ObjectProperty ;
+  rdfs:label "Foundation Model can Process Data Modality" ;
+  rdfs:comment "A foundation model can process a data modality" ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :DataModality.
+
+:PromptSubmittedToFoundationModel a owl:ObjectProperty ;
+  rdfs:label "Prompt Submitted to Foundation Model" ;
+  rdfs:comment "A prompt submitted to a foundation model" ;
+  rdfs:domain :Prompt ;
+  rdfs:range :FoundationModel.
+
+:FoundationModelConductedChats a owl:ObjectProperty ;
+  rdfs:label "Foundation Model Conducted Chats" ;
+  rdfs:comment "A foundation model conducted chats" ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :Chat.
+
+:PromptingTechniqueSuitableForDataModality a owl:ObjectProperty ;
+  rdfs:label "Prompting Technique Suitable for Data Modality" ;
+  rdfs:comment "A prompting technique suitable for a data modality" ;
+  rdfs:domain :PromptingTechnique ;
+  rdfs:range :DataModality.
+
+:PromptingTechniqueSuitableForConstraint a owl:ObjectProperty ;
+  rdfs:label "Prompting Technique Suitable for Constraint" ;
+  rdfs:comment "A prompting technique suitable for a constraint" ;
+  rdfs:domain :PromptingTechnique ;
+  rdfs:range :Constraint.
+```
+
+**CQ-to-Axiom Mapping Table**
+
+| CQ | Classes | Properties |
+| --- | --- | --- |
+| What are the tasks? | :Task |  |
+| What tasks exist for a given data modality? | :Task, :DataModality | :TaskTargetingDataModality |
+| What are the constraints of a given task? | :Task, :Constraint | :TaskWithConstraint |
+| What are the possible foundation model architectures? | :FoundationModel |  |
+| What are the variants and evolutions of a given foundation model? | :Variant, :Evolution, :FoundationModel |  |
+| What data modalities can a given foundation model process? | :DataModality, :FoundationModel | :FoundationModelCanProcessDataModality |
+| What prompts are based on a given prompting technique? | :Prompt, :PromptingTechnique |  |
+| What is the response to a given prompt? | :Response, :Prompt |  |
+| How many prompts and responses are there on average per chat? | :Chat | :AveragePromptsPerChat, :AverageResponsesPerChat |
+| Which foundation model is a given prompt submitted to? | :Prompt, :FoundationModel | :PromptSubmittedToFoundationModel |
+| How many chats were conducted per model? | :FoundationModel, :Chat | :FoundationModelConductedChats |
+| Which prompts are based on a prompting technique that is considered suitable for the targeted task? | :Prompt, :PromptingTechnique, :Task | :PromptingTechniqueSuitableForTask |
+| What are the prompting techniques? | :PromptingTechnique |  |
+| What prompting techniques are suitable for a given task? | :PromptingTechnique, :Task | :PromptingTechniqueSuitableForTask |
+| What prompting techniques are suitable for tasks targeting a given data modality? | :PromptingTechnique, :DataModality | :PromptingTechniqueSuitableForDataModality |
+| What prompting techniques are suitable for tasks with a constraint on a given variable? | :PromptingTechnique, :Constraint | :PromptingTechniqueSuitableForConstraint |

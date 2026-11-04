@@ -1,0 +1,63 @@
+You are an ontology engineer. Generate an OWL ontology design pattern (ODP) in Turtle syntax from the scenario and competency questions below, then self-validate the output against the checklist.
+
+Use these standard prefixes (declare all that you use):
+  @prefix owl:  <http://www.w3.org/2002/07/owl#> .
+  @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+  @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+  @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+  @prefix :     <http://example.org/odp#> .
+
+Modeling constraints:
+- Do not add concepts or axioms not grounded in the scenario or CQs.
+- Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.
+- Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.
+- Every class and property must have rdfs:label and rdfs:comment annotations.
+- Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label "..." ; rdfs:comment "..." .`
+- Keep the ontology minimal and reusable.
+
+Self-validation checklist (evaluate each item as PASS or FAIL with a one-line reason):
+1. Turtle syntax is valid (no missing dots, brackets, or semicolons).
+2. All prefixes used in the body are declared at the top.
+3. Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies.
+4. No two classes or properties are defined with contradictory restrictions (e.g., disjoint yet subclass, or inconsistent domain declarations).
+5. Every CQ is traceable to at least one class or property in the ontology.
+6. No concept appears in the ontology that is not grounded in the scenario or CQs.
+
+Output format — strictly in this order, nothing before item 1:
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
+3. Scope report: (a) requirements from the scenario that are covered, (b) any scenario concepts explicitly excluded and why.
+
+Scenario:
+As a representative real-world environment, we take the LyonTech La Doua campus as a navigable environment. A subpart of this campus is illustrated in Figure 1, which contrasts two itineraries connecting points A and B. The shortest route (shown in blue) leaves the starting building directly, follows a tram line and arrives from the west. Another possible route (orange line), which may prove more convenient depending on the user’s preferences, passes through several indoor areas and arrives from the east. Although shorter in distance, the blue itinerary exposes the user to outdoor weather, tramway noise, and a potentially non-accessible entrance, which may pose difficulties to some users. The orange itinerary maximizes indoor traversal, avoids noise, and reaches point B through a more accessible side, which are environmental characteristics that may be looked after by some user. Identifying such an itinerary therefore requires accounting for contextual characteristics as well as user preferences and constraints, including sensory factors (e.g., noise level), physical accessibility (e.g., entrance type, vertical transitions), and dynamic conditions (e.g., weather, lighting). In this section, we describe how we made sure to build an inclusive-by-design ontology. To this end, we collaborated with a domain expert with a background in occupational therapy, who contributed to the elaboration of a reference vocabulary cataloging environmental characteristics considered as potentially relevant to users in pedestrian mobility. Building on this work, we derived several personas, two of which are presented below. The first persona, Anna, is a first-year undergraduate student in Computer Science diagnosed with autism spectrum disorder. She feels uncomfortable in crowded or noisy places and needs opportunities to rest in quiet spaces. Based on Anna’s profile, we derived the following requirements: R1 The routing system should characterize spatial areas through relevant contextual properties (e.g. noise level, crowdedness). R2 The system should identify and help to avoid high-traffic areas during peak hours. R3 The system should be able to locate rest areas along or near to potential routes. The second persona, Sacha, is a master’s student in Sports Science who prefers physically engaging routes (stairs over elevators, outdoor green spaces) and occasionally needs quick access to specific amenities. Her profile motivates the following requirements: R4 The system should distinguish between vertical transition types (stairs, elevators, escalators) to support preference and capability-aware routing. R5 The system should locate the nearest instance of a desired amenity type (vending machine, toilets, reception board) to the current proposed itinerary. R6 The system should characterize spaces based on their aesthetic or comfort-related qualities to enable experience-aware routing.
+
+Competency Questions:
+- What types of spatial entities constitute the navigable environment modelled by PIIRRITE?
+- What topological relations between spatial entities does the ontology represent?
+- Is every navigable path associated with at least one point of interest?
+- What are the points of interest located within a 100-meter radius of a given user position?
+- Which navigable polylines pass by a given point of interest on the campus?
+- What geometric types are associated with each spatial entity class?
+- What types of contextual properties can be attached to a spatial entity in PIIRRITE?
+- What are admissible values for a given categorical/qualitative contextual property?
+- Must every saref:PropertyValue be linked to a saref:Property?
+- Which areas of interest are wheelchair-accessible?
+- Where is the nearest vending machine to a bicycle parking with a capacity of at least 20?
+- Which contextual properties in PIIRRITE are subject to temporal validity constraints?
+- How is the temporal validity of a contextual property value represented in PIIRRITE?
+- Is every saref:PropertyValue associated with exactly one temporal validity interval?
+- Has it rained on the campus during the past two days?
+- Which navigable paths pass through the area with the highest pollen levels on 1 May 2026?
+- How can the set of contextual properties relevant to Anna's requirements be represented?
+- How can we distinguish, for a given requirement, between (i) its importance and (ii) its flexibility?
+- When comparing the value expected by a user with the value of an environmental property, do the position of these two operands matter?
+- Could a couple (piirrite:TargetProperty ; piirrite:ExpectedValue) be understood as an equivalent to a saref:PropertyValue?
+- How many piirrite:Requirement are needed to define a piirrite:UserProfile?
+- How many piirrite:Condition are needed to define a piirrite:Requirement?
+- What set of properties is used to describe Anna's requirements?
+- What is the average flexibility over all requirements of all user?
+- Is there a limit to the recursive nature of a piirrite:ComposedCondition?
+- Which distance types does piirrite:DistanceRequisite support?
+- Why aren't the operators (piirrite:EQUAL or piirrite:AND) rdfs:subClassOf piirrite:ComparisonOperator and piirrite:LogicalOperator, but are rdf:type?
+- What is the subset of Anna's requirements that use at least one distance factor?
+- What is the maximum degree of recursion achieved by any composed condition?

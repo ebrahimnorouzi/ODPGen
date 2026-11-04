@@ -1,0 +1,83 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "SMARTY Matchmaker Ontology" ;
+  rdfs:comment "Ontology for the SMARTY matchmaker, addressing the dynamic allocation of hardware resources.".
+
+:Requirement a owl:Class ;
+  rdfs:label "Requirement" ;
+  rdfs:comment "A requirement expressed by a software.".
+
+:Software a owl:Class ;
+  rdfs:label "Software" ;
+  rdfs:comment "A software described in the catalogue.".
+
+:Hardware a owl:Class ;
+  rdfs:label "Hardware" ;
+  rdfs:comment "A hardware described in the catalogue.".
+
+:SoftwareRequirement a owl:ObjectProperty ;
+  rdfs:label "Software Requirement" ;
+  rdfs:comment "The requirement of a software." ;
+  domain :Software ;
+  range :Requirement.
+
+:SoftwareRequiredBy a owl:ObjectProperty ;
+  rdfs:label "Software Required By" ;
+  rdfs:comment "The software that requires a software." ;
+  domain :Software ;
+  range :Software.
+
+:SoftwareType a owl:DatatypeProperty ;
+  rdfs:label "Software Type" ;
+  rdfs:comment "The type of software required by a software." ;
+  domain :Software ;
+  range xsd:string.
+
+:SoftwareProperty a owl:DatatypeProperty ;
+  rdfs:label "Software Property" ;
+  rdfs:comment "A property of a software required by a software." ;
+  domain :Software ;
+  range xsd:string.
+
+:SoftwarePropertyCardinality a owl:DatatypeProperty ;
+  rdfs:label "Software Property Cardinality" ;
+  rdfs:comment "The cardinality of a property of a software required by a software." ;
+  domain :Software ;
+  range xsd:string.
+
+:SoftwareVersion a owl:DatatypeProperty ;
+  rdfs:label "Software Version" ;
+  rdfs:comment "The version of a software required by a software." ;
+  domain :Software ;
+  range xsd:string.
+
+:SoftwareVersionRequirement a owl:DatatypeProperty ;
+  rdfs:label "Software Version Requirement" ;
+  rdfs:comment "The requirement for the version of a software required by a software." ;
+  domain :Software ;
+  range xsd:string.
+```
+
+Reasoning summary:
+* Extracted atomic requirements from the scenario.
+* Proposed candidate classes and properties per requirement.
+* Drafted axioms (subclass, domain, range, cardinality, disjointness).
+* Verified which axioms enable answering each CQ; noted gaps.
+* Added/refined axioms to cover uncovered CQs.
+* Removed classes/properties not traceable to any requirement or CQ.
+
+Traceability table:
+
+| Requirement/CQ | Axioms |
+| --- | --- |
+| Which is the (software/hardware) requirement of a software? | :Requirement a owl:Class ; :SoftwareRequirement a owl:ObjectProperty ; domain :Software ; range :Requirement. |
+| Which is the software/hardware required by a software? | :SoftwareRequiredBy a owl:ObjectProperty ; domain :Software ; range :Software. |
+| Which is the type of software/hardware required by a software? | :SoftwareType a owl:DatatypeProperty ; domain :Software ; range xsd:string. |
+| Which is the required (minimum/maximum/exact) value of a property of a software/hardware required by a software? | :SoftwareProperty a owl:DatatypeProperty ; domain :Software ; range xsd:string. |
+| Which is the required (maximum/minimum/exact) version of a software required by a software? | :SoftwareVersion a owl:DatatypeProperty ; domain :Software ; range xsd:string. |

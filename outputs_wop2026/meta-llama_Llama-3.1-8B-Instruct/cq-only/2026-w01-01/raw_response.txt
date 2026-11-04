@@ -1,0 +1,168 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Life Cycle Assessment Ontology" ;
+  rdfs:comment "Ontology for modeling life cycle assessment systems".
+
+:Activity a owl:Class ;
+  rdfs:label "Activity" ;
+  rdfs:comment "An activity in the life cycle assessment system".
+
+:Flow a owl:Class ;
+  rdfs:label "Flow" ;
+  rdfs:comment "A flow in the life cycle assessment system".
+
+:FlowDataset a owl:Class ;
+  rdfs:label "Flow Dataset" ;
+  rdfs:comment "A dataset associated with a flow".
+
+:Database a owl:Class ;
+  rdfs:label "Database" ;
+  rdfs:comment "A database used to store flow datasets".
+
+:FlowType a owl:Class ;
+  rdfs:label "Flow Type" ;
+  rdfs:comment "The type of flow (resource, emission, product, etc.)".
+
+:ImpactCategory a owl:Class ;
+  rdfs:label "Impact Category" ;
+  rdfs:comment "A category of environmental impact".
+
+:ImpactResult a owl:Class ;
+  rdfs:label "Impact Result" ;
+  rdfs:comment "The result of an impact across categories".
+
+:FlowContribution a owl:Class ;
+  rdfs:label "Flow Contribution" ;
+  rdfs:comment "The contribution of a flow to an impact category".
+
+:FunctionalUnit a owl:Class ;
+  rdfs:label "Functional Unit" ;
+  rdfs:comment "The unit of measurement for an activity".
+
+:SystemBoundary a owl:Class ;
+  rdfs:label "System Boundary" ;
+  rdfs:comment "The boundary of the system being modeled".
+
+:ResponsibleAgent a owl:Class ;
+  rdfs:label "Responsible Agent" ;
+  rdfs:comment "The agent responsible for the system".
+
+:FlowAmount a owl:DatatypeProperty ;
+  rdfs:label "Flow Amount" ;
+  rdfs:comment "The amount of a flow" ;
+  rdfs:domain :Flow ;
+  rdfs:range xsd:decimal.
+
+:FlowTypeProperty a owl:ObjectProperty ;
+  rdfs:label "Flow Type" ;
+  rdfs:comment "The type of flow" ;
+  rdfs:domain :Flow ;
+  rdfs:range :FlowType.
+
+:FlowDatasetProperty a owl:ObjectProperty ;
+  rdfs:label "Flow Dataset" ;
+  rdfs:comment "The dataset associated with a flow" ;
+  rdfs:domain :Flow ;
+  rdfs:range :FlowDataset.
+
+:DatabaseProperty a owl:ObjectProperty ;
+  rdfs:label "Database" ;
+  rdfs:comment "The database used to store flow datasets" ;
+  rdfs:domain :FlowDataset ;
+  rdfs:range :Database.
+
+:ImpactCategoryProperty a owl:ObjectProperty ;
+  rdfs:label "Impact Category" ;
+  rdfs:comment "The category of environmental impact" ;
+  rdfs:domain :ImpactResult ;
+  rdfs:range :ImpactCategory.
+
+:ImpactResultProperty a owl:ObjectProperty ;
+  rdfs:label "Impact Result" ;
+  rdfs:comment "The result of an impact across categories" ;
+  rdfs:domain :Activity ;
+  rdfs:range :ImpactResult.
+
+:FlowContributionProperty a owl:ObjectProperty ;
+  rdfs:label "Flow Contribution" ;
+  rdfs:comment "The contribution of a flow to an impact category" ;
+  rdfs:domain :Flow ;
+  rdfs:range :FlowContribution.
+
+:FunctionalUnitProperty a owl:ObjectProperty ;
+  rdfs:label "Functional Unit" ;
+  rdfs:comment "The unit of measurement for an activity" ;
+  rdfs:domain :Activity ;
+  rdfs:range :FunctionalUnit.
+
+:SystemBoundaryProperty a owl:ObjectProperty ;
+  rdfs:label "System Boundary" ;
+  rdfs:comment "The boundary of the system being modeled" ;
+  rdfs:domain :Activity ;
+  rdfs:range :SystemBoundary.
+
+:ResponsibleAgentProperty a owl:ObjectProperty ;
+  rdfs:label "Responsible Agent" ;
+  rdfs:comment "The agent responsible for the system" ;
+  rdfs:domain :Activity ;
+  rdfs:range :ResponsibleAgent.
+
+:InputFlowProperty a owl:ObjectProperty ;
+  rdfs:label "Input Flow" ;
+  rdfs:comment "The input flow of an activity" ;
+  rdfs:domain :Activity ;
+  rdfs:range :Flow.
+
+:OutputFlowProperty a owl:ObjectProperty ;
+  rdfs:label "Output Flow" ;
+  rdfs:comment "The output flow of an activity" ;
+  rdfs:domain :Activity ;
+  rdfs:range :Flow.
+
+:DependencyChainProperty a owl:ObjectProperty ;
+  rdfs:label "Dependency Chain" ;
+  rdfs:comment "The dependency chain of activities in a system model" ;
+  rdfs:domain :Activity ;
+  rdfs:range :Activity.
+
+:FlowAmountThreshold a owl:DatatypeProperty ;
+  rdfs:label "Flow Amount Threshold" ;
+  rdfs:comment "The threshold for significant flow contributions" ;
+  rdfs:domain :FlowContribution ;
+  rdfs:range xsd:decimal.
+
+:TopContributorProperty a owl:ObjectProperty ;
+  rdfs:label "Top Contributor" ;
+  rdfs:comment "The top contributor to an impact category for a given activity" ;
+  rdfs:domain :Activity ;
+  rdfs:range :Flow.
+
+:TotalFlowAmountProperty a owl:DatatypeProperty ;
+  rdfs:label "Total Flow Amount" ;
+  rdfs:comment "The total amount of a flow generated within the system boundary" ;
+  rdfs:domain :Flow ;
+  rdfs:range xsd:decimal.
+```
+
+**CQ-to-Axiom Mapping Table**
+
+| Competency Question | Enabling Classes and Properties |
+| --- | --- |
+| What are the input and output flows of all activities? | :Activity, :InputFlowProperty, :OutputFlowProperty |
+| What is the dependency chain of activities in a system model? | :Activity, :DependencyChainProperty |
+| Which flow datasets come from database X? | :FlowDataset, :FlowDatasetProperty, :DatabaseProperty |
+| What are the elementary and intermediate flows associated with a given activity? | :Flow, :FlowTypeProperty, :Activity |
+| Which flows are classified as resources, emissions, or products? | :Flow, :FlowTypeProperty, :FlowType |
+| What is the functional unit, scope, system boundary, and responsible agent of the LCA model? | :FunctionalUnit, :SystemBoundary, :ResponsibleAgent, :Activity |
+| What is the impact result of a given activity or flow across impact categories? | :ImpactResult, :ImpactCategoryProperty, :Activity |
+| Which flows contribute significantly (e.g., > 2%) to a given impact category? | :FlowContribution, :FlowContributionProperty, :ImpactCategory |
+| What are the top contributors to an impact category for a given activity? | :TopContributorProperty, :Activity, :ImpactCategory |
+| What is the total amount of flow X generated within the system boundary? | :TotalFlowAmountProperty, :Flow, :SystemBoundary |
+
+Note: The CQ-to-Axiom Mapping Table shows the classes and properties that enable answering each competency question. The properties listed are the ones that are directly related to the question, and the classes listed are the ones that are relevant to the question.
