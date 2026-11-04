@@ -285,17 +285,34 @@ Items that meet the criteria and have been extracted are in `data/scenarios/patt
 
 | Scenario | Paper | CQs | Reference ontology |
 | --- | --- | --- | --- |
+| `2026-w01-01` | LCAnet: A Modular Ontology Network for Life Cycle Assessment Knowledge Modeling | 10 | Core module `core/ontology.ttl`, which imports the five other modules |
+| `2026-w04-01` | MAGE-Ontology: A Domain Ontology for Ghidra Malware Analysis | 10 | `symbol-ontology.owl` (Turtle), pinned commit |
 | `2026-w05-01` | PEO: An Ontology to Scaffold Prompt Engineering for Foundation Models | 16 | `rbarile17/peo` `peo.owl` |
+| `2026-w06-01` | Modeling User Requirements for Inclusive Pedestrian Routing with the PIIRRITE Ontology | 29 | `modelet_5/TBox.ttl` (modelets 1–5) |
+| `2026-w07-01` | APLO: A Modular Adaptive Pedagogical Learning Orchestration Ontology for Neurosymbolic Educational Systems | 94 | `schema/full-schema.owl` (Turtle; all four modules) |
+| `2026-w09-01` | Formalizing Data Structures Without Overdoing It (HACID data ontology) | 37 | `data.owl`, pinned to the commit matching the paper |
 | `2026-w10-01` | An Ontology Design Pattern for Software Requirements | 5 | ODPA `SoftwareRequirements.ttl` |
 | `2026-w11-01` | WISDOM: A Wearable Integrated Stress Data Ontology Model | 41 | `WISDOM.owl` |
 
-Six further papers meet the criteria at first screening and still need extraction: LCAnet, ArCo4Archives, MAGE-Ontology, PIIRRITE, APLO, and the HACID data-structures ontology. They are marked as candidates in `data/odp.csv`.
+In total there are 8 items and 242 CQs.
+
+Notes on the extraction:
+
+- **CQs from linked CQ files.** Where the paper prints only a subset and links the full list (PIIRRITE, APLO, WISDOM, HACID), the CQs come from that file. HACID's CQ file is pinned to the commit with the 37 CQs the paper describes.
+- **MAGE-Ontology scenario (borderline).** The scenario comes from the repository's `documentation/use-case.md`, which is the paper's supplementary material. The paper itself gives only a one-sentence use case.
+- **ArCo4Archives excluded.** Its 8 CQs were "elicited from the scenario", but the paper never states that scenario.
+
+All 8 reference ontologies download and parse with `scripts/download_ground_truth.py`.
 
 These items keep the leakage control of the study: they were published after the training cutoffs of all four open models. They are **not** included in any table of the paper yet. To generate and score them:
 
 ```bash
-python3 scripts/run_generation.py --data data/scenarios/pattern_scenarios_wop2026.json ...
+mkdir -p logs
+GROUP=open nohup bash scripts/run_wop2026.sh > logs/wop2026_open.log 2>&1 &   # GPU: 4 open models
+GROUP=api  nohup bash scripts/run_wop2026.sh > logs/wop2026_api.log  2>&1 &   # GPT-5.4, Gemini
 ```
+
+`scripts/run_wop2026.sh` downloads the reference ontologies, checks for a CUDA-enabled PyTorch and `bitsandbytes` before it loads any open model, and writes to `outputs_wop2026/`. It uses the paper's settings by default (1024-token cap; both Llama models in 4-bit); set `TOK=4096` to raise the cap. APLO (94 CQs), WISDOM (41) and HACID (37) are larger than any item in the paper, so expect truncation at that cap.
 
 Scoring reads CQs only from `data/scenarios/pattern_scenarios.json`, so the items have to be merged into that file before they are evaluated (`batch_evaluate.py`, `download_ground_truth.py`).
 
