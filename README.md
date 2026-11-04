@@ -14,7 +14,7 @@ ODPGen/
 │   ├── odp.csv                           # surveyed WOP papers (2023–2026) and inclusion notes
 │   ├── scenarios/
 │   │   ├── pattern_scenarios.json        # the 14 scenarios + CQs used in the paper
-│   │   ├── pattern_scenarios_wop2026.json  # WOP 2026 extension, not yet run (see below)
+│   │   ├── pattern_scenarios_wop2026.json  # WOP 2026 held-out extension (see below)
 │   │   ├── cq_signatures.json            # CQ signatures used by offline CQ verification
 │   │   └── cq_audit_report.json          # audit of CQ authenticity (scripts/audit_cqs.py)
 │   ├── ground_truth/                     # reference ODPs + per-scenario fetch status
@@ -41,6 +41,8 @@ ODPGen/
 ├── results/{model}/{config}/             # legacy per-instance evaluation JSON
 ├── eval_judge/                           # LLM-as-a-Judge pipeline
 ├── eval_judge_results/                   # judge outputs (GPT-4o; single + pairwise)
+├── outputs_wop2026/, eval_results_wop2026/, eval_judge_results_wop2026/, eval_wop2026/
+│                                         # WOP 2026 extension: ODPs, structural records, judge, tables
 ├── odp-platform-results/                 # user evaluation: pseudonymised exports + analysis
 │   ├── expert-evaluation-responses.csv, us-responses.csv, students-responses.csv,
 │   │   author_<scenario>-responses.csv
@@ -70,7 +72,11 @@ ODPGen/
 | Pattern-author and student results | `odp-platform-results/author_*.csv`, `students-responses.csv`, `supplementary/student_odp_platform.pdf` | `bash odp-platform-results/run.sh` |
 | Recurring issues in comments (Recommendations) | `odp-platform-results/*.csv` | `python3 odp-platform-results/theme_analysis.py` |
 | Tables 7–8 (LLM judge) | `eval_judge_results/single_summary.csv` | `python -m eval_judge.aggregate_results` (writes `eval_judge_results/aggregated/by_model.csv`, `by_config.csv`) |
+| Table 9 (WOP 2026, structural) | `eval_results_wop2026/odp_eval/`, `eval_wop2026/structural_by_model.csv` | `python3 scripts/structural_table.py --in eval_results_wop2026/odp_eval` |
+| Table 10 (WOP 2026, LLM judge) | `eval_judge_results_wop2026/gpt-4o/` | `bash scripts/run_wop2026_judge.sh` |
 | Generated ODPs and prompts | `outputs/`, `prompts/` | `scripts/run_generation.py` |
+
+**Structural table.** `scripts/structural_table.py` prints Table 2 from the per-artefact records: consistency is the share of all outputs that parse and pass OWL-RL screening, and the OOPS! column is the mean, over the outputs OOPS! scanned, of `max(0, 1 − (important + 2 · critical) / 10)`. `python3 scripts/structural_table.py --in eval_results/odp_eval --count-empty-as-parsed` reproduces the Consistency, OOPS! and Overall columns of Table 2 exactly. The same records give parse rates equal to the consistency rates (every output that parses is consistent), not the 100 % the published Parse column shows for the Llama models and Mistral. `scripts/aggregate_eval.py` writes a different OOPS! component, `1 / (1 + important + 2 · critical)`, averaged over all outputs.
 
 **Functional score.** `scripts/functional_score.py` implements the formula of the paper (superfluous penalty `1.0 · numbnoscen + 0.3 · (numb − numbnoscen)`, manual score `1 / (1 + 0.5 · penalty)`, functional score `0.5 · manual + 0.5 · CQ rate`) and reproduces both committed CSVs exactly. The `cq_pass_rate` column of those CSVs is the SPARQL pass rate of the offline CQ verification; Table 3 of the paper combines the same manual scores with the Yes/No labels of the LLM-based CQ verification (`gpt-4o-mini`), e.g. `python3 scripts/functional_score.py --cq-rate llama70b=0.916 --cq-rate gemini=0.935 --cq-rate gpt=0.738 --cq-rate llama8b=0.750`.
 
@@ -277,7 +283,7 @@ The online platform that collected the user evaluations is released separately a
 
 ---
 
-## Dataset extension: WOP 2026 (not part of the published results)
+## Dataset extension: WOP 2026 (held out, automatic evaluation only)
 
 The 14 papers of the [WOP 2026 workshop](https://odpa.github.io/workshop-on-ontology-design-and-patterns/2026/) (ISWC 2026, Bari) were screened with the same inclusion criteria as the original dataset: the paper proposes or discusses an ODP; the pattern is publicly available; and the paper reports both user stories (or an equivalent use-case narrative) and CQs. All 14 are listed in `data/odp.csv`.
 
@@ -304,7 +310,7 @@ Notes on the extraction:
 
 All 8 reference ontologies download and parse with `scripts/download_ground_truth.py`.
 
-These items keep the leakage control of the study: they were published after the training cutoffs of all four open models. They are **not** included in any table of the paper yet. To generate and score them:
+These items keep the leakage control of the study: they were published after the training cutoffs of all four open models. The paper reports them as a held-out extension (Section 7, Tables 9–10): structural screening and the LLM judge only, since the superfluous-element annotation and the user evaluation were not repeated. To generate them:
 
 ```bash
 mkdir -p logs
@@ -312,9 +318,25 @@ GROUP=open nohup bash scripts/run_wop2026.sh > logs/wop2026_open.log 2>&1 &   # 
 GROUP=api  nohup bash scripts/run_wop2026.sh > logs/wop2026_api.log  2>&1 &   # GPT-5.4, Gemini
 ```
 
-`scripts/run_wop2026.sh` downloads the reference ontologies, checks for a CUDA-enabled PyTorch and `bitsandbytes` before it loads any open model, and writes to `outputs_wop2026/`. It uses the paper's settings by default (1024-token cap; both Llama models in 4-bit); set `TOK=4096` to raise the cap. APLO (94 CQs), WISDOM (41) and HACID (37) are larger than any item in the paper, so expect truncation at that cap.
+`scripts/run_wop2026.sh` downloads the reference ontologies, checks for a CUDA-enabled PyTorch and `bitsandbytes` before it loads any open model, and writes to `outputs_wop2026/`. It uses the paper's settings by default (1024-token cap; both Llama models in 4-bit); set `TOK=4096` to raise the cap. APLO (94 CQs), WISDOM (41) and HACID (37) are larger than any item in the paper, so expect truncation at that cap. The committed `outputs_wop2026/` was generated with `TOK=4096` (the generator raises Gemini to 8192); 70 of the 240 outputs are still flagged as truncated (39 with a cap hit reported by the model, the rest by an unclosed code block or an incomplete final statement).
 
-Scoring reads CQs only from `data/scenarios/pattern_scenarios.json`, so the items have to be merged into that file before they are evaluated (`batch_evaluate.py`, `download_ground_truth.py`).
+**Structural screening.** `batch_evaluate.py` reads CQs only from `data/scenarios/pattern_scenarios.json`, but the structural screening needs none, so run it with `--no-cq`:
+
+```bash
+python3 batch_evaluate.py --local-root outputs_wop2026 --no-cq --out eval_results_wop2026/odp_eval
+python3 scripts/structural_table.py --in eval_results_wop2026/odp_eval --csv eval_wop2026/structural_by_model.csv
+```
+
+An output that parses to an empty graph counts as unparseable here (all 40 BLOOMZ outputs are empty files).
+
+**OOPS! for the WOP 2026 outputs.** The committed records carry no OOPS! scan: the OOPS! web service did not respond on 4 November 2026. When an endpoint is available, add the scans and print the full table:
+
+```bash
+python3 batch_evaluate.py --local-root outputs_wop2026 --out eval_results_wop2026/odp_eval --patch-oops --oops-url https://oops.linkeddata.es/rest
+python3 scripts/structural_table.py --in eval_results_wop2026/odp_eval --csv eval_wop2026/structural_by_model.csv
+```
+
+Then fill in the OOPS! and Overall structural columns of Table 9.
 
 The LLM judge takes the scenario file as an argument, so it runs on the extension directly:
 
@@ -322,7 +344,7 @@ The LLM judge takes the scenario file as an argument, so it runs on the extensio
 nohup bash scripts/run_wop2026_judge.sh > logs/wop2026_judge.log 2>&1 &
 ```
 
-It uses the paper's judge settings: GPT-4o at temperature 0, single-candidate mode, GPT-5.4 skipped as same-family, BLOOMZ excluded. It needs `OPENAI_API_KEY` in `.env` and `pip install -r requirements_judge.txt`. Results go to `eval_judge_results_wop2026/gpt-4o/`, with the report in `aggregated/judge_report.md`. Each judged ODP is cached together with the SHA-256 of its `ontology.ttl`, so the script can be started while generation is still running. Re-running it judges only new outputs or outputs whose file changed.
+It uses the paper's judge settings: GPT-4o at temperature 0, single-candidate mode, GPT-5.4 skipped as same-family, BLOOMZ excluded. It needs `OPENAI_API_KEY` in `.env` and `pip install -r requirements_judge.txt`. Results go to `eval_judge_results_wop2026/gpt-4o/`, with the report in `aggregated/judge_report.md`. Each judged ODP is cached together with the SHA-256 of its `ontology.ttl`, so the script can be started while generation is still running. Re-running it judges only new outputs or outputs whose file changed. The judge reads `ontology.ttl` without the `# ODPGEN-TRUNCATED` banner that the generator prepends to truncated outputs: the banner tells the reader not to score the file, the judge followed it, and the paper's outputs carry no banner.
 
 ---
 

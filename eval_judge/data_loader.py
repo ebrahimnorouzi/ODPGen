@@ -21,6 +21,21 @@ DEFAULT_OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 
 _RDF_EXTENSIONS = [".ttl", ".owl", ".rdf", ".n3", ".nt"]
 
+# Comment lines that scripts/run_generation.py and scripts/recover_outputs.py
+# prepend to a truncated or recovered ontology.ttl. They are pipeline metadata,
+# not model output, and one of them tells the reader not to score the file, so
+# the judge must not see them (the paper's outputs carry no such banner).
+_GENERATOR_BANNER_LINES = ("# ODPGEN-", "# Do NOT score this file")
+
+
+def strip_generator_banner(text: str) -> str:
+    """Remove the leading generator banner, if any, from an ontology.ttl text."""
+    lines = text.splitlines(keepends=True)
+    i = 0
+    while i < len(lines) and lines[i].startswith(_GENERATOR_BANNER_LINES):
+        i += 1
+    return "".join(lines[i:])
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Data classes
@@ -100,7 +115,8 @@ def load_all_generated_odps(
             config=config,
             scenario_id=scenario_id,
             ontology_path=ontology_path,
-            ontology_text=ontology_path.read_text(encoding="utf-8", errors="replace"),
+            ontology_text=strip_generator_banner(
+                ontology_path.read_text(encoding="utf-8", errors="replace")),
             metadata=metadata,
         )
         results.append(odp)
