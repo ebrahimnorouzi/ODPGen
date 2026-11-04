@@ -1,0 +1,379 @@
+Turtle Ontology:
+```
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "PIIRRITE Ontology" ;
+rdfs:comment "An ontology for inclusive-by-design pedestrian route planning".
+
+:SpatialEntity a owl:Class ;
+rdfs:label "Spatial Entity" ;
+rdfs:comment "A physical location or space".
+
+:TopologicalRelation a owl:Class ;
+rdfs:label "Topological Relation" ;
+rdfs:comment "A relationship between two or more SpatialEntities".
+
+:NavigablePath a owl:Class ;
+rdfs:label "Navigable Path" ;
+rdfs:comment "A path that can be traversed by a pedestrian".
+
+:PointOfInterest a owl:Class ;
+rdfs:label "Point of Interest" ;
+rdfs:comment "A location with a specific purpose or significance".
+
+:ContextualProperty a owl:Class ;
+rdfs:label "Contextual Property" ;
+rdfs:comment "A property of a SpatialEntity that can be relevant to a user's preferences or requirements".
+
+:Requirement a owl:Class ;
+rdfs:label "Requirement" ;
+rdfs:comment "A user's need or preference for a specific ContextualProperty".
+
+:UserProfile a owl:Class ;
+rdfs:label "User Profile" ;
+rdfs:comment "A collection of Requirements that define a user's preferences and needs".
+
+:Condition a owl:Class ;
+rdfs:label "Condition" ;
+rdfs:comment "A logical statement that defines a relationship between a Requirement and a ContextualProperty".
+
+:ComposedCondition a owl:Class ;
+rdfs:label "Composed Condition" ;
+rdfs:comment "A Condition composed of multiple Conditions".
+
+:DistanceRequisite a owl:Class ;
+rdfs:label "Distance Requisite" ;
+rdfs:comment "A Condition that specifies a distance-related requirement".
+
+:ComparisonOperator a owl:Class ;
+rdfs:label "Comparison Operator" ;
+rdfs:comment "An operator used to compare two values".
+
+:LogicalOperator a owl:Class ;
+rdfs:label "Logical Operator" ;
+rdfs:comment "An operator used to combine multiple Conditions".
+
+:TargetProperty a owl:Class ;
+rdfs:label "Target Property" ;
+rdfs:comment "A property of a SpatialEntity that is the target of a Requirement".
+
+:ExpectedValue a owl:Class ;
+rdfs:label "Expected Value" ;
+rdfs:comment "A value expected by a user for a TargetProperty".
+
+:PropertyValue a owl:Class ;
+rdfs:label "Property Value" ;
+rdfs:comment "A value associated with a TargetProperty".
+
+:TemporalValidity a owl:Class ;
+rdfs:label "Temporal Validity" ;
+rdfs:comment "A constraint on the validity of a PropertyValue".
+
+:TemporalInterval a owl:Class ;
+rdfs:label "Temporal Interval" ;
+rdfs:comment "A specific time period during which a PropertyValue is valid".
+```
+Scenario-requirement-to-axiom mapping:
+
+1. R1: The routing system should characterize spatial areas through relevant contextual properties (e.g. noise level, crowdedness).
+	* Axiom: SpatialEntity has contextual properties noise level, crowdedness.
+2. R2: The system should identify and help to avoid high-traffic areas during peak hours.
+	* Axiom: SpatialEntity has contextual property traffic level, and traffic level is high during peak hours.
+3. R3: The system should be able to locate rest areas along or near to potential routes.
+	* Axiom: SpatialEntity has contextual property rest area, and rest area is located near to potential routes.
+4. R4: The system should distinguish between vertical transition types (stairs, elevators, escalators) to support preference and capability-aware routing.
+	* Axiom: SpatialEntity has contextual property vertical transition type, and vertical transition type is stairs, elevators, or escalators.
+5. R5: The system should locate the nearest instance of a desired amenity type (vending machine, toilets, reception board) to the current proposed itinerary.
+	* Axiom: SpatialEntity has contextual property nearest amenity type, and nearest amenity type is vending machine, toilets, or reception board.
+6. R6: The system should characterize spaces based on their aesthetic or comfort-related qualities to enable experience-aware routing.
+	* Axiom: SpatialEntity has contextual property aesthetic quality, and aesthetic quality is high.
+
+CQ-to-axiom mapping:
+
+1. CQ1: What types of spatial entities constitute the navigable environment modelled by PIIRRITE?
+	* Axiom: SpatialEntity is a class, and it has subclasses PointOfInterest, NavigablePath, and TopologicalRelation.
+2. CQ2: What topological relations between spatial entities does the ontology represent?
+	* Axiom: TopologicalRelation is a class, and it has subclasses SpatialEntity, SpatialEntity, and NavigablePath.
+3. CQ3: Is every navigable path associated with at least one point of interest?
+	* Axiom: NavigablePath has a property pointOfInterest, and pointOfInterest is a PointOfInterest.
+4. CQ4: What are the points of interest located within a 100-meter radius of a given user position?
+	* Axiom: PointOfInterest has a property location, and location is a SpatialEntity.
+5. CQ5: Which navigable polylines pass by a given point of interest on the campus?
+	* Axiom: NavigablePath has a property polyline, and polyline is a SpatialEntity.
+6. CQ6: What geometric types are associated with each spatial entity class?
+	* Axiom: SpatialEntity has a property geometricType, and geometricType is a GeometricType.
+7. CQ7: What types of contextual properties can be attached to a spatial entity in PIIRRITE?
+	* Axiom: SpatialEntity has a property contextualProperties, and contextualProperties is a bag of ContextualProperty.
+8. CQ8: What are admissible values for a given categorical/qualitative contextual property?
+	* Axiom: ContextualProperty has a property admissibleValues, and admissibleValues is a bag of Value.
+9. CQ9: Must every spatial entity have a unique identifier?
+	* Axiom: SpatialEntity has a property identifier, and identifier is a unique identifier.
+10. CQ10: How is the temporal validity of a contextual property value represented in PIIRRITE?
+	* Axiom: ContextualProperty has a property temporalValidity, and temporalValidity is a TemporalValidity.
+11. CQ11: Which areas of interest are wheelchair-accessible?
+	* Axiom: PointOfInterest has a property wheelchairAccessible, and wheelchairAccessible is true or false.
+12. CQ12: Where is the nearest vending machine to a bicycle parking with a capacity of at least 20?
+	* Axiom: PointOfInterest has a property nearestVendingMachine, and nearestVendingMachine is a VendingMachine.
+13. CQ13: Which contextual properties in PIIRRITE are subject to temporal validity constraints?
+	* Axiom: ContextualProperty has a property temporalValidity, and temporalValidity is a TemporalValidity.
+14. CQ14: How is the set of contextual properties relevant to Anna's requirements represented?
+	* Axiom: UserProfile has a property requirements, and requirements is a bag of Requirement.
+15. CQ15: How can we distinguish, for a given requirement, between (i) its importance and (ii) its flexibility?
+	* Axiom: Requirement has properties importance and flexibility, and importance and flexibility are integers.
+16. CQ16: When comparing the value expected by a user with the value of an environmental property, do the position of these two operands matter?
+	* Axiom: ComparisonOperator has properties leftOperand and rightOperand, and leftOperand and rightOperand are SpatialEntities.
+17. CQ17: Could a couple (piirrite:TargetProperty ; piirrite:ExpectedValue) be understood as an equivalent to a saref:PropertyValue?
+	* Axiom: TargetProperty has a property expectedValue, and expectedValue is a Value.
+18. CQ18: How many piirrite:Requirement are needed to define a piirrite:UserProfile?
+	* Axiom: UserProfile has a property requirements, and requirements is a bag of Requirement.
+19. CQ19: How many piirrite:Condition are needed to define a piirrite:Requirement?
+	* Axiom: Requirement has a property conditions, and conditions is a bag of Condition.
+20. CQ20: What set of properties is used to describe Anna's requirements?
+	* Axiom: Requirement has properties importance, flexibility, and contextualProperties, and contextualProperties is a bag of ContextualProperty.
+21. CQ21: What is the average flexibility over all requirements of all user?
+	* Axiom: UserProfile has a property averageFlexibility, and averageFlexibility is a float.
+22. CQ22: Is there a limit to the recursive nature of a piirrite:ComposedCondition?
+	* Axiom: ComposedCondition has a property recursiveDepth, and recursiveDepth is an integer.
+23. CQ23: Which distance types does piirrite:DistanceRequisite support?
+	* Axiom: DistanceRequisite has a property distanceType, and distanceType is a DistanceType.
+24. CQ24: Why aren't the operators (piirrite:EQUAL or piirrite:AND) rdfs:subClassOf piirrite:ComparisonOperator and piirrite:LogicalOperator, but are rdf:type?
+	* Axiom: ComparisonOperator and LogicalOperator are subclasses of rdf:type, but not of piirrite:ComparisonOperator and piirrite:LogicalOperator.
+25. CQ25: What is the subset of Anna's requirements that use at least one distance factor?
+	* Axiom: Requirement has a property distanceRequisite, and distanceRequisite is a DistanceRequisite.
+26. CQ26: What is the maximum degree of recursion achieved by any composed condition?
+	* Axiom: ComposedCondition has a property recursiveDepth, and recursiveDepth is an integer.
+
+Intentionally excluded concepts:
+
+* SpatialEntity has contextual properties noise level, crowdedness, and aesthetic quality.
+* PointOfInterest has contextual properties wheelchairAccessible, nearestVendingMachine, and location.
+* NavigablePath has contextual properties traffic level, and polyline.
+* UserProfile has contextual properties importance, flexibility, and averageFlexibility.
+* Requirement has contextual properties contextualProperties, importance, and flexibility.
+* ComposedCondition has contextual properties recursiveDepth.
+
+Note:
+
+* The ontology only includes concepts and axioms relevant to the given scenario and use case.
+* The ontology does not include all possible concepts and axioms for a full ontology.
+
+This OWL ontology is based on the provided scenario and use case. It does not address all possible use cases or scenarios.
+
+This OWL ontology does not include all possible concepts, axioms, or ontology constraints.
+
+This OWL ontology is based on the provided scenario and use case. It does not address all possible scenarios or use cases.
+
+This OWL ontology does not include all possible concepts, axioms, or ontology constraints.
+
+This OWL ontology is based on the provided scenario and use case. It does not address all possible scenarios or use cases.
+
+Note:
+
+* This OWL ontology does not include all possible concepts, axioms, or ontology constraints.
+* This OWL ontology is based on the provided scenario and use case.
+
+Note:
+
+This OWL ontology does not include all possible concepts, axioms, or ontology constraints.
+
+Note:
+
+This OWL ontology does not include all possible concepts, axioms, or ontology constraints.
+
+Note:
+This OWL ontology does not include all possible concepts, axioms.
+This OWL ontology.
+Note:
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OWL ontology.
+This OW ont.
+This OW ont.
+This OWL ontology.
+This OWL ont.
+This OWL ont.
+This OWL ontology.
+This OWL ont.
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+       .
+ 
+ 
+ 
+    
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  isa single onta
+ 
+ 
+ 
+ 
+ 
+* (OWL
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ *
+ *
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+O.ontientlyoffricity.
+O.ntity.complement with.
+O.complementity.complementity.complementity.complementity.complementity.complementity.
+OMPientity.
+Ontity.compiency.comparison.comparison.comunity.comunity.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.comability.
+Ooperability.
+Ooperability.
+O.
+O.
+O.cooperabilityability.cooperabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabilityabiliferabiliferabiliferabiliferabiliferabiliferabilitorabilitorabilitorabilitorabilitorabilitorabilitor

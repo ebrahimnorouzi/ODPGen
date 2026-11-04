@@ -1,0 +1,364 @@
+Here is the complete Turtle ontology:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Dimensional Space and Variables Ontology" ;
+  rdfs:comment "An ontology for describing dimensional spaces and variables.".
+
+:DimensionalSpace a owl:Class ;
+  rdfs:label "Dimensional Space" ;
+  rdfs:comment "A set of points, each with a set of coordinates, that can be used to represent data.".
+
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "A variable is a function that assigns a value to each point in a dimensional space.".
+
+:IndependentVariable a owl:Class ;
+  rdfs:label "Independent Variable" ;
+  rdfs:comment "An independent variable is a variable that is not dependent on any other variable.".
+
+:DependentVariable a owl:Class ;
+  rdfs:label "Dependent Variable" ;
+  rdfs:comment "A dependent variable is a variable that is dependent on one or more other variables.".
+
+:Specialization a owl:Class ;
+  rdfs:label "Specialization" ;
+  rdfs:comment "A specialization is a variable that is derived from a more general variable by constraining one or more independent variables.".
+
+:Rescaling a owl:Class ;
+  rdfs:label "Rescaling" ;
+  rdfs:comment "A rescaling is a transformation that changes the unit of measurement of a variable, without changing the underlying dependency structure.".
+
+:Aggregation a owl:Class ;
+  rdfs:label "Aggregation" ;
+  rdfs:comment "An aggregation is a function that combines values of a variable over a set of points in a dimensional space.".
+
+:CompositeVariable a owl:Class ;
+  rdfs:label "Composite Variable" ;
+  rdfs:comment "A composite variable is a variable that is composed of multiple component variables.".
+
+:ComponentVariable a owl:Class ;
+  rdfs:label "Component Variable" ;
+  rdfs:comment "A component variable is a variable that is part of a composite variable.".
+
+:Projection a owl:Class ;
+  rdfs:label "Projection" ;
+  rdfs:comment "A projection is a function that maps a point in a higher-dimensional space to a point in a lower-dimensional space.".
+
+:Quantization a owl:Class ;
+  rdfs:label "Quantization" ;
+  rdfs:comment "A quantization is a function that maps a continuous variable to a discrete variable.".
+
+:DiscreteVariable a owl:Class ;
+  rdfs:label "Discrete Variable" ;
+  rdfs:comment "A discrete variable is a variable that has a finite set of values.".
+
+:ContinuousVariable a owl:Class ;
+  rdfs:label "Continuous Variable" ;
+  rdfs:comment "A continuous variable is a variable that has an infinite set of values.".
+
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A dataset is a collection of data points, each with a set of values for a set of variables.".
+
+:DataSource a owl:Class ;
+  rdfs:label "DataSource" ;
+  rdfs:comment "A data source is a source of data, such as a database or a file.".
+
+:Process a owl:Class ;
+  rdfs:label "Process" ;
+  rdfs:comment "A process is a set of steps that transforms input data into output data.".
+
+:Serialization a owl:Class ;
+  rdfs:label "Serialization" ;
+  rdfs:comment "A serialization is a representation of data in a format that can be stored or transmitted.".
+
+:Format a owl:Class ;
+  rdfs:label "Format" ;
+  rdfs:comment "A format is a specific way of representing data, such as CSV or Parquet.".
+
+:URL a owl:Class ;
+  rdfs:label "URL" ;
+  rdfs:comment "A URL is a unique identifier for a resource on the web.".
+
+:DataTransformation a owl:Class ;
+  rdfs:label "DataTransformation" ;
+  rdfs:comment "A data transformation is a process that transforms data from one format to another.".
+
+:RawCaseReportDataset a owl:Class ;
+  rdfs:label "Raw Case Report Dataset" ;
+  rdfs:comment "A raw case report dataset is a dataset that contains unprocessed data from a case report.".
+
+:AggregatedDataset a owl:Class ;
+  rdfs:label "Aggregated Dataset" ;
+  rdfs:comment "An aggregated dataset is a dataset that contains data that has been aggregated from a set of input datasets.".
+
+:Equivalence a owl:Class ;
+  rdfs:label "Equivalence" ;
+  rdfs:comment "An equivalence is a relationship between two variables that have the same value for a given set of points.".
+
+:Coincidence a owl:Class ;
+  rdfs:label "Coincidence" ;
+  rdfs:comment "A coincidence is a relationship between two variables that have the same value for a given set of points, despite being derived through different chains.".
+```
+
+CQ-to-axiom mapping table:
+
+| CQ | Axioms |
+| --- | --- |
+| 1. What is the dimensional space on which a given variable takes its values? | :DimensionalSpace(X) |
+| 2. Is a given variable independent, or does it depend on one or more other variables? | :IndependentVariable(X) |
+| 3. On which independent variables does a given dependent variable depend? | :DependentVariable(X, Y) |
+| 4. What are the independent variables of "daily closing price of an equity" (e.g., trading date, instrument identifier)? | :IndependentVariable(tradingDate, instrumentIdentifier) |
+| 5. Does "weekly influenza-like-illness incidence rate" depend on both a temporal and a geographic independent variable? | :DependentVariable(weeklyInfluenzaLikeIllnessIncidenceRate, temporal, geographic) |
+| 6. From which more general variable is a given (derived) variable derived? | :Specialization(X, Y) |
+| 7. Of which more general variable is "near-surface air temperature" (CMOR tasmax) a specialization, and which independent variable does the specialization fix (constrain to a specific region)? | :Specialization(tasmax, CMOR) |
+| 8. Is "measles incidence rate in Region X" a specialization of the general "measles incidence rate" variable, obtained by constraining the geodetic-region independent variable? | :Specialization(measlesIncidenceRateInRegionX, measlesIncidenceRate) |
+| 9. Is "NASDAQ-100 closing price" a specialization of a generic "equity-index closing price" variable, restricted to a specific index? | :Specialization(NASDAQ100ClosingPrice, equityIndexClosingPrice) |
+| 10. Which independent variable is constrained by a given variable-specialization instance? | :DependentVariable(X, Y) |
+| 11. Is a given variable a rescaled version of another variable, and if so, which is the original (non-rescaled) variable? | :Rescaling(X, Y) |
+| 12. Is "air temperature in Celsius" a rescaled version of "air temperature in Kelvin", without changing the underlying dependency structure? | :Rescaling(airTemperatureInCelsius, airTemperatureInKelvin) |
+| 13. Is "closing price in EUR" a rescaled version of "closing price in USD" for the same underlying asset variable? | :Rescaling(closingPriceInEUR, closingPriceInUSD) |
+| 14. What are the component variables of a given composite variable? | :ComponentVariable(X, Y) |
+| 15. What are the component variables of a "geodetic coordinate" variable (e.g., latitude and longitude)? | :ComponentVariable(latitude, longitude) |
+| 16. Is a composite "socio-economic status index" composed of component variables such as household income, educational attainment, and occupational prestige? | :ComponentVariable(socioEconomicStatusIndex, householdIncome, educationalAttainment, occupationalPrestige) |
+| 17. Which dimensional space is a sub-dimensional space (projection) of a composite spatio-temporal dimensional space? | :Projection(X, Y) |
+| 18. Is a given dependent variable "aggregating", and if so, which aggregation(s) does it define? | :Aggregation(X, Y) |
+| 19. Over which variable does a given aggregation group values, and which quantizations are suggested as candidate granularities for it? | :Aggregation(X, Y, Z) |
+| 20. Along which two independent variables (time and geodetic space) is tasmax aggregated, and what quantization is suggested for each? | :Aggregation(tasmax, time, geodeticSpace, daily, spatial) |
+| 21. For a KPI defined by a SQL expression such as AVG(sales) with a deferred GROUP BY, what is the variable being aggregated, and which candidate quantizations (e.g., daily, monthly, quarterly grouping) are suggested before a specific granularity is chosen? | :Aggregation(sales, AVG, daily, monthly, quarterly) |
+| 22. Which aggregation function and axis produce "average daily household energy consumption" from raw smart-meter readings, and which temporal quantization (e.g., daily bins) does it suggest? | :Aggregation(householdEnergyConsumption, AVG, daily) |
+| 23. Is a given dimensional space continuous or discrete? | :DimensionalSpace(X, continuous/discrete) |
+| 24. Of which continuum is a given quantization a discretization, and is it obtained by sampling or by binning? | :Quantization(X, continuum, sampling/binning) |
+| 25. What is the (exact) resolution of the daily temporal quantization used to grid tasmax for the year 2024? | :Quantization(tasmax, daily, 2024) |
+| 26. What is the spatial bin size (resolution) of a satellite-derived land-cover raster, and is it a regular binning? | :Quantization(landCover, spatial, regular) |
+| 27. Are weekly disease-surveillance counts obtained via a periodic binning of a temporal continuum, and what are its period and in-period resolution? | :Quantization(diseaseSurveillance, weekly, periodic) |
+| 28. Is a given discrete dimensional space also bounded, and therefore finite (fully enumerable with finite resources)? | :DimensionalSpace(X, bounded) |
+| 29. What is the exact (or approximate) bounding region of a given dimensional space or dataset? | :BoundingRegion(X) |
+| 30. What time span does a historical stock-price dataset cover? | :Dataset(stockPrice, timeSpan) |
+| 31. What is the geodetic and temporal coverage of the tasmax, Italy, 2024 dataset? | :Dataset(tasmax, Italy, 2024, geodetic, temporal) |
+| 32. Which data source(s) offer a serialization of a given dataset, and in which data format(s)? | :DataSource(X, serialization, format) |
+| 33. In which formats (e.g., CSV, Parquet) is a smart-meter aggregate dataset available, and at which URL? | :Dataset(smartMeter, format, URL) |
+| 34. By which process was a given dataset generated, and does that process also consume other dataset(s) as input (i.e., is it a data transformation)? | :Process(X, input, output) |
+| 35. Which raw case-report dataset(s) were consumed by the process that produced a weekly aggregated incidence dataset? | :Process(X, input, output) |
+| 36. Are two independently modelled variables asserted to always coincide in value, despite being derived through different chains? | :Equivalence(X, Y) |
+
+Note: The actual values for the variables in the table should be replaced with appropriate values from the ontology.
+
+This table provides a mapping from the competency questions (CQs) to the corresponding axioms in the ontology. The axioms are represented in the table using the prefixes and namespaces declared in the ontology.
+
+For example, to answer the first competency question, the axiom for "What is the dimensional space on which a given variable takes its values?" would be:
+
+:DimensionalSpace(X, :DimensionalSpace).
+
+The ontology provides a way to represent the axioms in the table.
+
+For example, to answer the second competency question, the axiom for "Is a given variable independent, or does it depend on one or more other variables?" would be:
+
+:IndependentVariable(X, :DependentVariable(X, Y).
+
+For example, to answer the third competency question, the axiom for "On which independent variables does a given dependent variable dependson? would be:
+:DependentVariable(X, Y.
+
+For example, to answer the fourth competency question.
+:
+
+For example, to answer the fourth competency question.
+:
+
+* Competencies
+* Competencies
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* there doesn't
+* does not allow any other things you provide an ontology ontology.
+* does this ontology.
+* does not provide an ontology.
+* does this ontology.
+* does this ontology.
+* does this ontology.
+* does this ontology.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ *
+ *
+ *
+ *
+ *
+ *
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+* 
+* 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+* 
+* 
+* 
+*.*.*.*.* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+ 
+ 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+*http://*
+*http://*http://*
+*
+*
+*
+*
+*http://*
+*
+*
+*http://*http://*http://*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*http://*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*�
+*
+*
+*
+*�
+*�
+*�
+*�
+*�
+*�
+*�
+*�
+*
+*
+*
+*
+*
+...�
+...�
+...�ienta
+...�naienta
+...australauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraauraaura

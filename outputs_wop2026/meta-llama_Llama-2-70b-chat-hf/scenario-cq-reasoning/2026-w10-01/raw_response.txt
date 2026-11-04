@@ -1,0 +1,109 @@
+Turtle Ontology:
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+rdfs:label "SMARTY Matchmaker Ontology" ;
+rdfs:comment "Ontology for matching software and hardware resources".
+
+:Software a owl:Class ;
+rdfs:label "Software" ;
+rdfs:comment "A software component".
+
+:Hardware a owl:Class ;
+rdfs:label "Hardware" ;
+rdfs:comment "A hardware resource".
+
+:Requirement a owl:Class ;
+rdfs:label "Requirement" ;
+rdfs:comment "A requirement of a software".
+
+:hasRequirement a owl:ObjectProperty ;
+rdfs:label "hasRequirement" ;
+rdfs:comment "A software has a requirement".
+
+:hasResource a owl:ObjectProperty ;
+rdfs:label "hasResource" ;
+rdfs:comment "A software has a resource".
+
+:Resource a owl:Class ;
+rdfs:label "Resource" ;
+rdfs:comment "A resource required by a software".
+
+:minimumVersion a owl:DatatypeProperty ;
+rdfs:label "minimumVersion" ;
+rdfs:comment "The minimum version of a software required by a software".
+
+:maximumVersion a owl:DatatypeProperty ;
+rdfs:label "maximumVersion" ;
+rdfs:comment "The maximum version of a software required by a software".
+
+:exactVersion a owl:DatatypeProperty ;
+rdfs:label "exactVersion" ;
+rdfs:comment "The exact version of a software required by a software".
+
+:minimumValue a owl:DatatypeProperty ;
+rdfs:label "minimumValue" ;
+rdfs:comment "The minimum value of a property of a software/hardware required by a software".
+
+:maximumValue a owl:DatatypeProperty ;
+rdfs:label "maximumValue" ;
+rdfs:comment "The maximum value of a property of a software/hardware required by a software".
+
+:type a owl:ObjectProperty ;
+rdfs:label "type" ;
+rdfs:comment "The type of a software/hardware required by a software".
+
+:match a owl:ObjectProperty ;
+rdfs:label "match" ;
+rdfs:comment "A software matches a hardware resource".
+```
+Reasoning Summary:
+
+* Extracted atomic requirements:
+	+ Software has a requirement
+	+ Software has a resource
+	+ Requirement has a minimum version
+	+ Requirement has a maximum version
+	+ Requirement has an exact version
+	+ Requirement has a minimum value
+	+ Requirement has a maximum value
+	+ Requirement has a type
+* Proposed candidate classes and properties:
+	+ :Software, :Hardware, :Requirement, :hasRequirement, :hasResource, :Resource, :minimumVersion, :maximumVersion, :exactVersion, :minimumValue, :maximumValue, :type
+* Draft axioms:
+	+ :Software subClassOf :Requirement
+	+ :Hardware subClassOf :Resource
+	+ :Requirement subClassOf :hasRequirement
+	+ :hasRequirement domain :Software range :Requirement
+	+ :hasResource domain :Software range :Resource
+	+ :Resource subClassOf :minimumVersion, :maximumVersion, :exactVersion
+	+ :minimumVersion, :maximumVersion, :exactVersion subClassOf :DatatypeProperty
+	+ :type subClassOf :ObjectProperty
+	+ :match subClassOf :ObjectProperty
+* Verified axioms for Competency Questions:
+	+ CQ1: Which is the (software/hardware) requirement of a software?
+		- Answered by :hasRequirement
+	+ CQ2: Which is the software/hardware required by a software?
+		- Answered by :hasResource
+	+ CQ3: Which is the type of software/hardware required by a software?
+		- Answered by :type
+	+ CQ4: Which is the required (minimum/maximum/exact) value of a property of a software/hardware required by a software?
+		- Answered by :minimumValue, :maximumValue, :exactVersion
+	+ CQ5: Which is the required (maximum/minimum/exact) version of a software required by a software?
+		- Answered by :minimumVersion, :maximumVersion, :exactVersion
+* Traceability table:
+
+| Competency Question | Axiom |
+| --- | --- |
+| CQ1 | :hasRequirement |
+| CQ2 | :hasResource |
+| CQ3 | :type |
+| CQ4 | :minimumValue, :maximumValue, :exactVersion |
+| CQ5 | :minimumVersion, :maximumVersion, :exactVersion |
+
+Note: The ontology includes only the classes and properties necessary to answer the given Competency Questions. Additional classes and properties may be needed to cover other requirements or use cases.
