@@ -1,61 +1,89 @@
 # ODPGen — Generating Ontology Design Patterns with Large Language Models
 
-This repository accompanies a study on the automatic generation and evaluation of Ontology Design Patterns (ODPs) using Large Language Models. It contains the code and intermediate artefacts needed to reproduce the experiments: generation, automatic structural and functional evaluation, an LLM-as-a-Judge pipeline, and the analysis of the user-based evaluation collected through a companion online platform.
+This repository accompanies the article *Generating Ontology Design Patterns with LLMs: An Empirical Evaluation on Recently Published Patterns* by Anna Sofia Lippolis, Ebrahim Norouzi, Andrea Giovanni Nuzzolese, Harald Sack and Aldo Gangemi. It contains the code, data and intermediate artefacts needed to reproduce the experiments: generation, automatic structural and functional evaluation, an LLM-as-a-Judge pipeline, and the analysis of the user-based evaluation collected through a companion online platform.
 
-The companion **ODP evaluation platform** (used to host the questionnaires shown to experts and students) is released separately at `<ANON-PLATFORM-REPO>`. Anonymised CSV exports from that platform are consumed by the analysis scripts in `odp-platform-results/`.
-
-> The associated manuscript is currently under double-blind review. To preserve anonymity, all author-identifying URLs in this README have been replaced by `<ANON-...>` placeholders. The corresponding links will be filled in for the camera-ready version.
+The companion **ODP evaluation platform**, which hosted the questionnaires shown to experts, students and pattern authors, is released at <https://github.com/ebrahimnorouzi/odp-platform>. The deployments used in the study were <http://odp.ise.fiz-karlsruhe.de/evaluate?s=z9IJcI1hs2vzhg> (experts) and <http://odp.ise.fiz-karlsruhe.de/evaluate?s=zT_6wILobV_nug> (students). Pseudonymised CSV exports from the platform are analysed by the scripts in `odp-platform-results/`.
 
 ---
 
 ## Repository layout
 
-```
+```text
 ODPGen/
 ├── data/
-│   ├── odp.csv                       # source-paper metadata for the dataset
-│   ├── scenarios/pattern_scenarios.json  # 14 scenarios + competency questions
-│   ├── ground_truth/                 # reference ontologies (downloaded on demand)
-│   └── ontologies_retrived/          # additional retrieved ontologies
-├── prompts/                          # the five prompting configurations
-│   ├── cq_only.txt
-│   ├── scenario_only.txt
-│   ├── scenario_cq.txt
-│   ├── scenario_cq_constraints.txt
-│   └── scenario_cq_reasoning.txt
-├── batch_evaluate.py                 # scorer; `--local-root` evaluates outputs/
-├── run_all_experiments.sh            # generation + local evaluation driver
+│   ├── odp.csv                           # surveyed WOP papers (2023–2026) and inclusion notes
+│   ├── scenarios/
+│   │   ├── pattern_scenarios.json        # the 14 scenarios + CQs used in the paper
+│   │   ├── pattern_scenarios_wop2026.json  # WOP 2026 extension, not yet run (see below)
+│   │   ├── cq_signatures.json            # CQ signatures used by offline CQ verification
+│   │   └── cq_audit_report.json          # audit of CQ authenticity (scripts/audit_cqs.py)
+│   ├── ground_truth/                     # reference ODPs + per-scenario fetch status
+│   └── ontologies_retrived/              # reference ODPs recovered by hand
+├── prompts/                              # the five prompting configurations
 ├── scripts/
-│   ├── run_generation.py             # main generation entry point
-│   ├── eval_local.py                 # offline evaluation of the local tree
-│   ├── evaluate_outputs.py           # structural + functional evaluation
-│   ├── download_ground_truth.py      # one-shot reference-ontology fetcher
-│   ├── render_prompt.py              # standalone prompt-rendering helper
-│   ├── curate_odp_window.py          # dataset curation utility
-│   └── eval/                         # parsing, OOPS!, similarity, rdf utils
-├── outputs/{model}/{config}/{scenario_id}/   # generated ODPs
-├── odp_eval/                                 # batch_evaluate.py --local-root output
-│   ├── summary.csv                           # one row per artefact
-│   └── aggregate.csv                         # one row per model/config
-├── eval_local/                               # scripts/eval_local.py output
-│   └── summary.csv
-├── results/{model}/{config}/                 # per-instance evaluation JSON
-│   └── summary.csv                           # aggregate ranking
-├── eval_judge/                       # LLM-as-a-Judge pipeline
-│   ├── prompt_templates.py
-│   ├── data_loader.py
-│   ├── judge.py
-│   ├── run_evaluation.py
-│   ├── aggregate_results.py
-│   └── run_all_experiments.sh
-├── eval_judge_results/               # judge outputs (single + pairwise)
-├── odp-platform-results/             # user-evaluation analysis pipeline
-│   ├── analyze_user_eval.py          # Likert / IAA / per-pattern statistics
-│   ├── theme_analysis.py             # thematic tagging of free-text comments
-│   └── run.sh                        # one-shot runner
-├── requirements.txt                  # generation + automatic evaluation
-└── requirements_judge.txt            # LLM-as-a-Judge dependencies
+│   ├── run_generation.py                 # main generation entry point
+│   ├── download_ground_truth.py          # one-shot reference-ontology fetcher
+│   ├── aggregate_eval.py                 # writes eval/*.csv (structural + functional tables)
+│   ├── eval_local.py                     # offline evaluation of the local tree
+│   ├── evaluate_outputs.py               # legacy structural + functional driver
+│   ├── odp_structural.py                 # structural metrics
+│   ├── recover_outputs.py                # repairs truncated/broken generations
+│   ├── audit_artifacts.py, audit_cqs.py  # corpus and CQ audits
+│   ├── render_prompt.py, curate_odp_window.py
+│   └── eval/                             # parsing, OOPS!, similarity, rdf utils
+├── batch_evaluate.py                     # scorer; `--local-root` evaluates outputs/
+├── run_all_experiments.sh                # generation + local evaluation driver
+├── outputs/{model}/{config}/{scenario_id}/   # generated ODPs (420 artefacts)
+├── eval/                                 # aggregate rankings behind the paper's tables
+├── eval_results/odp_eval/                # per-artefact records (+ manual evaluation)
+├── eval_local/, eval_local_post/         # scripts/eval_local.py output (before/after recovery)
+├── eval_connectivity/                    # class/property connectivity per output
+├── results/{model}/{config}/             # legacy per-instance evaluation JSON
+├── eval_judge/                           # LLM-as-a-Judge pipeline
+├── eval_judge_results/                   # judge outputs (GPT-4o; single + pairwise)
+├── odp-platform-results/                 # user evaluation: pseudonymised exports + analysis
+│   ├── expert-evaluation-responses.csv, us-responses.csv, students-responses.csv,
+│   │   author_<scenario>-responses.csv
+│   ├── analyze_user_eval.py              # Likert, Wilcoxon, Krippendorff's α, per-pattern
+│   ├── analyze_author_eval.py            # pattern-author assessment of their own ODP
+│   ├── analyze_students_eval.py          # student report (supplementary/)
+│   ├── theme_analysis.py                 # thematic tagging of free-text comments
+│   └── run.sh                            # one-shot runner
+├── supplementary/student_odp_platform.pdf  # detailed student results
+├── tests/                                # pytest suite for parsing and evaluation
+├── audit_report.json, recovery_report.json,
+│   truncated_cells.txt, remaining_cells.txt  # provenance of the truncation audit and recovery
+├── requirements.txt, requirements_judge.txt
+├── LICENSE, CITATION.cff
 ```
+
+---
+
+## From the paper to the files
+
+| Paper | Source in this repository | How to regenerate |
+| --- | --- | --- |
+| Table 1 (dataset) | `data/odp.csv`, `data/scenarios/pattern_scenarios.json` | — |
+| Table 2 (structural evaluation) | `eval/odp_eval_ranking.csv`, per artefact `eval/odp_eval_results.csv` | `python3 scripts/aggregate_eval.py --in eval_results --out eval` (add `--compare eval` to check) |
+| Table 3 (functional evaluation) | `eval/functional_eval_ranking.csv`, per ODP `eval/functional_eval_detail.csv`; manual superfluous-element annotations in `eval_results/odp_eval/bigscience_bloomz-7b1/manualeval.csv` | `python3 scripts/functional_score.py --compare` (see note below) |
+| Tables 4–6 (expert IAA, Likert, per pattern), adoption and time saved | `odp-platform-results/*.csv` | `bash odp-platform-results/run.sh` |
+| Pattern-author and student results | `odp-platform-results/author_*.csv`, `students-responses.csv`, `supplementary/student_odp_platform.pdf` | `bash odp-platform-results/run.sh` |
+| Recurring issues in comments (Recommendations) | `odp-platform-results/*.csv` | `python3 odp-platform-results/theme_analysis.py` |
+| Tables 7–8 (LLM judge) | `eval_judge_results/single_summary.csv` | `python -m eval_judge.aggregate_results` (writes `eval_judge_results/aggregated/by_model.csv`, `by_config.csv`) |
+| Generated ODPs and prompts | `outputs/`, `prompts/` | `scripts/run_generation.py` |
+
+**Functional score.** `scripts/functional_score.py` implements the formula of the paper (superfluous penalty `1.0 · numbnoscen + 0.3 · (numb − numbnoscen)`, manual score `1 / (1 + 0.5 · penalty)`, functional score `0.5 · manual + 0.5 · CQ rate`) and reproduces both committed CSVs exactly. The `cq_pass_rate` column of those CSVs is the SPARQL pass rate of the offline CQ verification; Table 3 of the paper combines the same manual scores with the Yes/No labels of the LLM-based CQ verification (`gpt-4o-mini`), e.g. `python3 scripts/functional_score.py --cq-rate llama70b=0.916 --cq-rate gemini=0.935 --cq-rate gpt=0.738 --cq-rate llama8b=0.750`.
+
+---
+
+## Models
+
+| Role | Model (as named in `outputs/`) |
+| --- | --- |
+| Open generators | `bigscience/bloomz-7b1`, `meta-llama/Llama-2-70b-chat-hf`, `meta-llama/Llama-3.1-8B-Instruct`, `mistralai/Mistral-7B-Instruct-v0.3` |
+| Proprietary reference generators | `gemini-3.1-pro-preview`, `gpt-5.4` |
+| CQ verification | `gpt-4o-mini` |
+| LLM judge | `gpt-4o` (evaluations of the GPT family are skipped) |
 
 ---
 
@@ -213,32 +241,83 @@ Outputs land in `eval_judge_results/`.
 
 ### 5. User-based evaluation analysis
 
-The questionnaires shown to expert and student evaluators were hosted on the companion ODP evaluation platform (`<ANON-PLATFORM-REPO>`). The platform exports one CSV file per evaluator pool. These CSVs are kept locally for analysis but are **not committed to this repository**, since they contain raw qualitative comments and evaluator tokens.
+The questionnaires shown to experts, students and pattern authors were hosted on the companion ODP evaluation platform (<https://github.com/ebrahimnorouzi/odp-platform>). The platform exports one CSV file per evaluator pool; these exports are committed in `odp-platform-results/`:
 
-To regenerate the descriptive statistics, the inter-annotator agreement, and the thematic analysis of free-text comments:
+| File | Pool |
+| --- | --- |
+| `expert-evaluation-responses.csv` | external experts |
+| `us-responses.csv` | the two paper authors who evaluated all patterns with the expert form |
+| `students-responses.csv` | students |
+| `author_<scenario>-responses.csv` | pattern authors (their own pattern plus one extra pattern) |
+
+Evaluators are identified only by a pseudonymous platform token (`evaluator_token`, `session_id`); the files contain no names or e-mail addresses. Free-text answers are kept verbatim.
+
+To regenerate every user-evaluation statistic reported in the paper:
 
 ```bash
 bash odp-platform-results/run.sh
 ```
 
-This runs `analyze_user_eval.py` (Likert summaries, Mann–Whitney U between tracks, Krippendorff's α, per-pattern means) and `theme_analysis.py` (regex-based tagging of recurring issues in free-text fields) and prints a console summary.
+This runs `analyze_user_eval.py` (Likert summaries, paired Wilcoxon signed-rank tests with rank-biserial effect sizes, Krippendorff's α, per-pattern means, adoption and time saved), `analyze_author_eval.py`, `analyze_students_eval.py` and `theme_analysis.py` (regex-based tagging of recurring issues in free-text fields). The LaTeX tables are written to `odp-platform-results/latex/` (set `ODPGEN_LATEX_DIR` to write into a paper checkout instead) and are identical to the ones in the paper.
 
 ---
 
 ## Companion repository: ODP evaluation platform
 
-The online platform that collected the user evaluations is released separately at `<ANON-PLATFORM-REPO>`. It is a containerised FastAPI application that hosts per-evaluator questionnaire forms, randomly assigns patterns, and exports the responses as CSV. The evaluator-form question schemas used in this study (expert and student) are also archived in that repository.
+The online platform that collected the user evaluations is released separately at <https://github.com/ebrahimnorouzi/odp-platform>. It is a containerised FastAPI application that hosts per-evaluator questionnaire forms, randomly assigns patterns, and exports the responses as CSV. The evaluator-form question schemas used in this study (expert and student) are also archived in that repository.
 
 ---
 
 ## Data note
 
-- `data/scenarios/pattern_scenarios.json` is the primary input: 14 scenarios derived from 10 peer-reviewed ODP papers, each with its competency questions and reference ontology URL.
-- Generated outputs (`outputs/`) and automatic-evaluation results (`results/`) are committed so reviewers can inspect the experimental artefacts without re-running every model.
-- Raw user-evaluation CSV exports (`odp-platform-results/*.csv`) are gitignored, since they contain free-text comments and evaluator tokens. They will be released alongside the camera-ready version of the manuscript.
+- `data/scenarios/pattern_scenarios.json` is the primary input: 14 scenarios derived from 10 peer-reviewed ODP papers (WOP 2023–2025 and the Cultural Heritage Survey ODP, SemDH 2026, CEUR-WS Vol-4212), each with its competency questions and reference ontology URL. It is the single source of truth for the CQs used in scoring.
+- Generated outputs (`outputs/`) and automatic-evaluation results (`eval/`, `eval_results/`, `eval_local*/`, `results/`) are committed so reviewers can inspect the experimental artefacts without re-running every model.
+- The pseudonymised user-evaluation exports are committed in `odp-platform-results/` (see above).
+- `audit_report.json`, `recovery_report.json`, `truncated_cells.txt` and `remaining_cells.txt` record the audit of truncated generations and the recovery pass (`scripts/audit_artifacts.py`, `scripts/recover_outputs.py`).
+
+---
+
+## Dataset extension: WOP 2026 (not part of the published results)
+
+The 14 papers of the [WOP 2026 workshop](https://odpa.github.io/workshop-on-ontology-design-and-patterns/2026/) (ISWC 2026, Bari) were screened with the same inclusion criteria as the original dataset: the paper proposes or discusses an ODP; the pattern is publicly available; and the paper reports both user stories (or an equivalent use-case narrative) and CQs. All 14 are listed in `data/odp.csv`.
+
+Items that meet the criteria and have been extracted are in `data/scenarios/pattern_scenarios_wop2026.json`, in the same format as `pattern_scenarios.json`. Scenario text and CQs are verbatim from the paper or the CQ file it links to. Each reference ontology was downloaded and parsed with rdflib.
+
+| Scenario | Paper | CQs | Reference ontology |
+| --- | --- | --- | --- |
+| `2026-w05-01` | PEO: An Ontology to Scaffold Prompt Engineering for Foundation Models | 16 | `rbarile17/peo` `peo.owl` |
+| `2026-w10-01` | An Ontology Design Pattern for Software Requirements | 5 | ODPA `SoftwareRequirements.ttl` |
+| `2026-w11-01` | WISDOM: A Wearable Integrated Stress Data Ontology Model | 41 | `WISDOM.owl` |
+
+Six further papers meet the criteria at first screening and still need extraction: LCAnet, ArCo4Archives, MAGE-Ontology, PIIRRITE, APLO, and the HACID data-structures ontology. They are marked as candidates in `data/odp.csv`.
+
+These items keep the leakage control of the study: they were published after the training cutoffs of all four open models. They are **not** included in any table of the paper yet. To generate and score them:
+
+```bash
+python3 scripts/run_generation.py --data data/scenarios/pattern_scenarios_wop2026.json ...
+```
+
+Scoring reads CQs only from `data/scenarios/pattern_scenarios.json`, so the items have to be merged into that file before they are evaluated (`batch_evaluate.py`, `download_ground_truth.py`).
+
+---
+
+## Tests
+
+```bash
+pip install pytest
+pytest tests/
+```
+
+---
+
+## Licence
+
+The source code is released under the MIT licence (`LICENSE`). The data produced in this study (generated ODPs, evaluation results, annotations and the pseudonymised questionnaire exports) are released under CC BY 4.0. Third-party material keeps its original licence: the reference ODPs in `data/ground_truth/` and `data/ontologies_retrived/`, and the scenarios and competency questions quoted from the source papers listed in `data/odp.csv`.
 
 ---
 
 ## Citation
 
-A citation entry will be added once the manuscript is accepted. In the meantime, please refer to this repository and the companion evaluation platform when reusing the code or the dataset.
+Citation metadata for this repository is in `CITATION.cff` (GitHub shows a "Cite this repository" button). Please also cite the accompanying article:
+
+> A. S. Lippolis, E. Norouzi, A. G. Nuzzolese, H. Sack, A. Gangemi. *Generating Ontology Design Patterns with LLMs: An Empirical Evaluation on Recently Published Patterns.* Manuscript, 2026.

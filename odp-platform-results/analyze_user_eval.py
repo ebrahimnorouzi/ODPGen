@@ -18,6 +18,7 @@ from __future__ import annotations
 import csv
 import json
 import math
+import os
 import statistics
 import unicodedata
 from collections import Counter, defaultdict
@@ -29,9 +30,13 @@ from scipy import stats
 
 THIS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = THIS_DIR.parent
-PAPER_DIR = REPO_ROOT / "ISWC2026_ODP_paper"
+# Generated LaTeX (tables + section text). Defaults to a folder inside the
+# repository; set ODPGEN_LATEX_DIR to write straight into a paper checkout.
+PAPER_DIR = Path(os.environ.get("ODPGEN_LATEX_DIR", THIS_DIR / "latex"))
 PAPER_SECTIONS = PAPER_DIR / "sections"
 PAPER_TABLES = PAPER_DIR / "tables"
+PAPER_SECTIONS.mkdir(parents=True, exist_ok=True)
+PAPER_TABLES.mkdir(parents=True, exist_ok=True)
 SCENARIOS_JSON = REPO_ROOT / "data" / "scenarios" / "pattern_scenarios.json"
 
 EXPERT_CSV = THIS_DIR / "expert-evaluation-responses.csv"
