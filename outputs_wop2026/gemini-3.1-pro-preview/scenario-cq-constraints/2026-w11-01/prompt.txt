@@ -1,0 +1,87 @@
+You are an ontology engineer. Generate an OWL ontology design pattern (ODP) in Turtle syntax from the scenario and competency questions below, then self-validate the output against the checklist.
+
+Use these standard prefixes (declare all that you use):
+  @prefix owl:  <http://www.w3.org/2002/07/owl#> .
+  @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+  @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+  @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+  @prefix :     <http://example.org/odp#> .
+
+Modeling constraints:
+- Do not add concepts or axioms not grounded in the scenario or CQs.
+- Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.
+- Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.
+- Every class and property must have rdfs:label and rdfs:comment annotations.
+- Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label "..." ; rdfs:comment "..." .`
+- Keep the ontology minimal and reusable.
+
+Self-validation checklist (evaluate each item as PASS or FAIL with a one-line reason):
+1. Turtle syntax is valid (no missing dots, brackets, or semicolons).
+2. All prefixes used in the body are declared at the top.
+3. Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies.
+4. No two classes or properties are defined with contradictory restrictions (e.g., disjoint yet subclass, or inconsistent domain declarations).
+5. Every CQ is traceable to at least one class or property in the ontology.
+6. No concept appears in the ontology that is not grounded in the scenario or CQs.
+
+Output format — strictly in this order, nothing before item 1:
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
+3. Scope report: (a) requirements from the scenario that are covered, (b) any scenario concepts explicitly excluded and why.
+
+Scenario:
+Developing stress detection models is inherently complex, including modeling aspects regarding stressors, stress states, physiological responses, sensor measurements, and contextual factors. A stressor (or stimulus) represents an event, condition, or stimulus that has the potential to induce stress in a subject, but whether it does is highly subjective and may depend on the context. Physiological changes, such as decreased heart rate variability, may reflect stress but can also arise from physical activity. Sensor measurements, therefore, provide only indirect cues to stress by capturing physiological or behavioral responses. WISDOM is a structured, machine-readable model for physiology-based stress detection by explicitly linking stressors, stress states, physiological responses, sensors, and contextual information.
+
+In the affective computing domain, specifically within the subdomain of stress detection, model development is mostly restricted to single datasets, while only a few works integrate heterogeneous data sources. Datasets often differ in terms of sensor, experimental protocol, demographics, and other factors. To this extent, previous research proposes standardization of experiments and data collection for affective computing, specifically stress datasets [23], aiming to structure stress research experiments. However, in general, stress detection research and data collection lack a unified semantic structure, as shown by the diverse experimental protocols in this domain (e.g., [2, 24, 25, 6]). The WISDOM ontology addresses this challenge by providing a formalized and extensible conceptual data model for representing stress conditions, as well as sensor- and wearable-device-related data structures.
+
+The WISDOM ontology offers a wide range of potential application scenarios across different areas of stress research. By providing a formal and semantically rich representation of stress conditions, related activities, and physiological signals, the ontology supports tasks that rely on structured, interoperable, and machine-readable stress detection:
+
+Semantic annotation of wearable stress datasets. WISDOM-Stress can annotate physiological records with information about subject, sensor, signal channel, observable property, activity phase, and stress condition. For example, an electrodermal activity (EDA) signal channel can be linked to electrodermal activity, an EDA sensor, a subject, and a cognitive stress phase. Thus, it can be systematically compared to an EDA signal from the same dataset or across other heterogeneous datasets. For instance, this assessment may be used to compare general signal quality or EDA response to semantically different stress stimuli.
+
+Dataset harmonization and comparison. Different datasets may use different labels, such as baseline, stress, cognitive task, social stress, relaxation, or recovery. The ontology can help map these labels into a shared semantic structure. In this way, WISDOM supports a unified terminology across different datasets, thus enhancing the comparability of physiological signals during the presence or absence of stress stimuli. Importantly, WISDOM does not require the original dataset taxonomies to be identical or to be replaced. Instead, dataset-specific labels can be aligned with the more general semantic concepts represented in WISDOM while preserving their original meaning and provenance. For example, two datasets may classify the same experimental task differently, such as ”stress” in one dataset and ”cognitive workload” in another. Rather than treating these labels as automatically equivalent, WISDOM allows the underlying activity, associated stressor, and stress condition to be represented separately. This enables semantically compatible aspects of heterogeneous taxonomies to be aligned while retaining distinctions where the original classifications differ. Where labels cannot be mapped unambiguously, the ontology does not resolve the conflict automatically; such mappings require dataset-specific interpretation and, where necessary, manual expert alignment.
+
+Contextual interpretation of physiological observations. The ontology can represent that an elevated heart rate occurred during a physical stress phase, not necessarily a cognitive or socio-evaluative stressor. This is crucial because sensor values alone are not sufficient for stress interpretation.
+
+Digital Twins and Condition Simulations. The ontology provides a structural backbone for building physiological digital twins by modeling different types of conditions and an individual’s physiological responses [26]. Publicly available datasets in the domain of stress recognition are sparse, typically characterized by few subjects (e.g., [2, 27]), as well as heterogeneous study protocols. Approaches that treat all stress conditions the same might fail to distinguish between different stress stimuli, such as the socio-evaluative stress and cognitive stress types elicited through the Trier Social Stress Test (TSST) [28]. In this regard, data integration through a semantically rich stress ontology that bridges psychological concepts of stress and wearable sensor-based stress experiments facilitates analysis and simulation of physiological responses to stress stimuli, recovery phases, or absence of stress.
+
+Competency Questions:
+- Which stress-related conditions can be distinguished?
+- What types of stressors can be described?
+- Which short-term stressors can occur in a stress-related setting?
+- Which stress responses are caused by a given stressor?
+- Which conditions describe baseline or recovery states?
+- Which activities or experimental phases can be described?
+- Which activity is linked to which stress condition?
+- Which stressor is associated with a specific activity phase?
+- What information can be used to describe an activity?
+- Which roles can a person take in the model?
+- What information can be stored about a subject?
+- Which sensor types can be used for stress-related measurements?
+- Which physiological sensors are included?
+- Which sensors can capture movement-related information?
+- Which device or platform can be used as a measurement platform?
+- Which properties can a PPG sensor measure?
+- What can be measured by an EDA sensor?
+- Which sensor can measure blood oxygen saturation?
+- What can be measured by a temperature sensor?
+- Which acceleration-related properties can be captured by an accelerometer?
+- Which categories of measurable properties are distinguished?
+- Which physiological properties can be measured?
+- Which behavioral indicators can be described?
+- Which environmental factors can be captured?
+- Which environmental properties can be assigned to an environment?
+- What metadata can be stored for a physiological record?
+- How can a physiological record be connected to its signal channels?
+- What information can be stored for a signal channel?
+- How can a signal channel indicate what it measures?
+- Which types of observations can be described?
+- What temporal information can be assigned to a time-series observation?
+- How can an observation be traced back to its source data?
+- How can an observation be assigned to the activity during which it was made?
+- How can measurements be linked back to the activity in which they occurred?
+- What information can be stored in an annotation?
+- How can an annotation be assigned to an activity or phase?
+- How can an observer be connected to an annotation?
+- How can a human observer be identified as the source of an observation?
+- How can biomarker assays be described?
+- How can an observation be linked to a biomarker assay?
+- When can the time of a biomarker assay be documented?

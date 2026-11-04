@@ -1,0 +1,141 @@
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Inclusive Pedestrian Mobility Ontology" ;
+  rdfs:comment "An ontology for modeling and reasoning about pedestrian mobility, considering contextual characteristics, user preferences, and constraints.".
+
+# Contextual Characteristics
+:Environment a owl:Class ;
+  rdfs:label "Environment" ;
+  rdfs:comment "A spatial area with relevant contextual properties.".
+
+:NoiseLevel a owl:DatatypeProperty ;
+  rdfs:label "Noise Level" ;
+  rdfs:comment "The noise level of an environment." ;
+  domain :Environment ;
+  range xsd:decimal.
+
+:Crowdedness a owl:DatatypeProperty ;
+  rdfs:label "Crowdedness" ;
+  rdfs:comment "The crowdedness of an environment." ;
+  domain :Environment ;
+  range xsd:decimal.
+
+:HighTraffic a owl:Class ;
+  rdfs:label "High Traffic Area" ;
+  rdfs:comment "An area with high traffic during peak hours." ;
+  equivalentClass (:Environment [:Crowdedness > 0.8]).
+
+# User Preferences and Constraints
+:User a owl:Class ;
+  rdfs:label "User" ;
+  rdfs:comment "A person with specific preferences and constraints in pedestrian mobility.".
+
+:Anna a :User ;
+  rdfs:label "Anna" ;
+  rdfs:comment "A first-year undergraduate student in Computer Science diagnosed with autism spectrum disorder.".
+
+:Sacha a :User ;
+  rdfs:label "Sacha" ;
+  rdfs:comment "A master’s student in Sports Science.".
+
+:RestArea a owl:Class ;
+  rdfs:label "Rest Area" ;
+  rdfs:comment "A quiet space for users to rest.".
+
+:VerticalTransition a owl:Class ;
+  rdfs:label "Vertical Transition" ;
+  rdfs:comment "A type of transition between different levels in a building.".
+
+:Stairs a :VerticalTransition ;
+  rdfs:label "Stairs" ;
+  rdfs:comment "A type of vertical transition involving steps.".
+
+:Elevator a :VerticalTransition ;
+  rdfs:label "Elevator" ;
+  rdfs:comment "A type of vertical transition involving a lift.".
+
+:Amenity a owl:Class ;
+  rdfs:label "Amenity" ;
+  rdfs:comment "A facility or service that caters to users' needs.".
+
+:VendingMachine a :Amenity ;
+  rdfs:label "Vending Machine" ;
+  rdfs:comment "A machine dispensing goods such as drinks or snacks.".
+
+:Toilet a :Amenity ;
+  rdfs:label "Toilet" ;
+  rdfs:comment "A facility for personal hygiene.".
+
+:ReceptionBoard a :Amenity ;
+  rdfs:label "Reception Board" ;
+  rdfs:comment "A board displaying information about the campus.".
+
+# Routing System
+:Itinerary a owl:Class ;
+  rdfs:label "Itinerary" ;
+  rdfs:comment "A sequence of locations connecting a starting point and a destination.".
+
+:Accessible a owl:ObjectProperty ;
+  rdfs:label "Accessible" ;
+  rdfs:comment "Indicates whether an itinerary is accessible to a user." ;
+  domain :Itinerary ;
+  range :User.
+
+:NoiseExposure a owl:ObjectProperty ;
+  rdfs:label "Noise Exposure" ;
+  rdfs:comment "Indicates the noise level experienced during an itinerary." ;
+  domain :Itinerary ;
+  range xsd:decimal.
+
+:Crowded a owl:ObjectProperty ;
+  rdfs:label "Crowded" ;
+  rdfs:comment "Indicates the crowdedness experienced during an itinerary." ;
+  domain :Itinerary ;
+  range xsd:decimal.
+
+:HasRestArea a owl:ObjectProperty ;
+  rdfs:label "Has Rest Area" ;
+  rdfs:comment "Indicates whether an itinerary has a rest area." ;
+  domain :Itinerary ;
+  range :RestArea.
+
+:HasVerticalTransition a owl:ObjectProperty ;
+  rdfs:label "Has Vertical Transition" ;
+  rdfs:comment "Indicates the type of vertical transition in an itinerary." ;
+  domain :Itinerary ;
+  range :VerticalTransition.
+
+:HasAmenity a owl:ObjectProperty ;
+  rdfs:label "Has Amenity" ;
+  rdfs:comment "Indicates the nearest instance of a desired amenity type to the current itinerary." ;
+  domain :Itinerary ;
+  range :Amenity.
+
+:CharacterizedBy a owl:ObjectProperty ;
+  rdfs:label "Characterized By" ;
+  rdfs:comment "Indicates the environmental characteristics of an environment." ;
+  domain :Environment ;
+  range rdfs:Resource.
+```
+
+**Intent:**
+This pattern models an ontology for inclusive pedestrian mobility, considering contextual characteristics, user preferences, and constraints.
+
+**Covered requirements:**
+- The routing system should characterize spatial areas through relevant contextual properties (e.g. noise level, crowdedness).
+- The system should identify and help to avoid high-traffic areas during peak hours.
+- The system should be able to locate rest areas along or near to potential routes.
+- The system should distinguish between vertical transition types (stairs, elevators, escalators) to support preference and capability-aware routing.
+- The system should locate the nearest instance of a desired amenity type (vending machine, toilets, reception board) to the current proposed itinerary.
+- The system should characterize spaces based on their aesthetic or comfort-related qualities to enable experience-aware routing.
+
+**Known assumptions and exclusions:**
+- This ontology does not cover dynamic conditions such as weather, lighting, or time-based constraints.
+- The ontology does not include individual instances of users, environments, itineraries, or amenities.
+- The ontology assumes the availability of a reference vocabulary cataloging environmental characteristics considered as potentially relevant to users in pedestrian mobility.

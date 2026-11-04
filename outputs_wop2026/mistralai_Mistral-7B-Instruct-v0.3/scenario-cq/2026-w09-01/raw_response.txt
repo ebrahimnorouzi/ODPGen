@@ -1,0 +1,189 @@
+Here is the OWL ontology design pattern (ODP) in Turtle syntax:
+
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Climate Services Domain Ontology" ;
+  rdfs:comment "An ontology for the climate services domain.".
+
+# Classes
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "An observable or computable quantity.".
+
+:DependentVariable a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Dependent Variable" ;
+  rdfs:comment "A variable that depends on one or more independent variables.".
+
+:IndependentVariable a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Independent Variable" ;
+  rdfs:comment "A variable that does not depend on any other variable.".
+
+:RescaledVariable a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Rescaled Variable" ;
+  rdfs:comment "A variable that is a rescaled version of another variable.".
+
+:CompositeVariable a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Composite Variable" ;
+  rdfs:comment "A variable that is composed of one or more component variables.".
+
+:Specialization a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Specialization" ;
+  rdfs:comment "A variable that is a specialization of a more general variable.".
+
+:Aggregation a owl:Class ;
+  rdfs:label "Aggregation" ;
+  rdfs:comment "A process that combines values of a variable into a single value.".
+
+:Quantization a owl:Class ;
+  rdfs:label "Quantization" ;
+  rdfs:comment "A discretization of a continuous dimensional space.".
+
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A collection of data values organized for a specific purpose.".
+
+:DataFormat a owl:Class ;
+  rdfs:label "Data Format" ;
+  rdfs:comment "A format for serializing data.".
+
+:DataSource a owl:Class ;
+  rdfs:label "Data Source" ;
+  rdfs:comment "A provider of data.".
+
+# Properties
+:hasDimensionalSpace rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:range :DimensionalSpace ;
+  rdfs:label "Has Dimensional Space" ;
+  rdfs:comment "The dimensional space on which a variable takes its values.".
+
+:isIndependent rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "Is Independent" ;
+  rdfs:comment "Indicates whether a variable is independent or dependent.".
+
+:dependsOn rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :DependentVariable ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :IndependentVariable ] ;
+  rdfs:label "Depends On" ;
+  rdfs:comment "The independent variables on which a dependent variable depends.".
+
+:isRescaledFrom rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :RescaledVariable ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Rescaled From" ;
+  rdfs:comment "The original (non-rescaled) variable from which a rescaled variable is derived.".
+
+:isComposedOf rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :CompositeVariable ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Composed Of" ;
+  rdfs:comment "The component variables of a composite variable.".
+
+:isSpecializationOf rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Specialization ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Specialization Of" ;
+  rdfs:comment "The more general variable from which a specialization is derived.".
+
+:isConstrainedBy rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Specialization ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :IndependentVariable ] ;
+  rdfs:label "Is Constrained By" ;
+  rdfs:comment "The independent variable that is constrained by a specialization.".
+
+:isAggregatedBy rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Aggregation ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Aggregated By" ;
+  rdfs:comment "The variable being aggregated by an aggregation.".
+
+:hasAggregationGroup rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Aggregation ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :IndependentVariable ] ;
+  rdfs:label "Has Aggregation Group" ;
+  rdfs:comment "The independent variable over which a given aggregation groups values.".
+
+:hasQuantization rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Quantization ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :DimensionalSpace ] ;
+  rdfs:label "Has Quantization" ;
+  rdfs:comment "The discretization of a continuous dimensional space.".
+
+:hasDataFormat rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Dataset ] ;
+  rdfs:range :DataFormat ;
+  rdfs:label "Has Data Format" ;
+  rdfs:comment "The format in which a dataset is serialized.".
+
+:hasDataSource rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Dataset ] ;
+  rdfs:range :DataSource ;
+  rdfs:label "Has Data Source" ;
+  rdfs:comment "The provider of a dataset.".
+
+:isDerivedFrom rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Derived From" ;
+  rdfs:comment "Two independently modelled variables that are asserted to always coincide in value.".
+
+```
+
+Scenario-requirement-to-axiom mapping:
+1. The ontology describes variables, their dimensional spaces, independence, and dependencies (`:Variable`, `:DependentVariable`, `:IndependentVariable`, `:hasDimensionalSpace`, `:isIndependent`, `:dependsOn`).
+2. The ontology describes rescaled variables and their original variables (`:RescaledVariable`, `:isRescaledFrom`).
+3. The ontology describes composite variables and their component variables (`:CompositeVariable`, `:isComposedOf`).
+4. The ontology describes specializations of variables and the independent variables they constrain (`:Specialization`, `:isSpecializationOf`, `:isConstrainedBy`).
+5. The ontology describes aggregations and the variables they aggregate, the independent variables they group values over, and the suggested quantizations (`:Aggregation`, `:isAggregatedBy`, `:hasAggregationGroup`, `:hasQuantization`).
+6. The ontology describes datasets, their data formats, data sources, and the processes that generate them (`:Dataset`, `:DataFormat`, `:DataSource`, `:hasDataFormat`, `:hasDataSource`, `:isDerivedFrom`).
+
+CQ-to-axiom mapping:
+1. To answer this CQ, you can use the `:hasDimensionalSpace` property to determine the dimensional space on which a given variable takes its values.
+2. To answer this CQ, you can use the `:isIndependent` property to check if a given variable is independent.
+3. To answer this CQ, you can use the `:dependsOn` property to determine the independent variables on which a given dependent variable depends.
+4. To answer this CQ, you can use the `:isIndependent` property for the "daily closing price of an equity" and the `:dependsOn` property for the independent variables (e.g., trading date, instrument identifier).
+5. To answer this CQ, you can use the `:dependsOn` property to determine if "weekly influenza-like-illness incidence rate" depends on both a temporal and a geographic independent variable.
+6. To answer this CQ, you can use the `:isSpecializationOf` and `:isConstrainedBy` properties to determine the more general variable from which a given specialization is derived and the independent variable that the specialization constrains.
+7. To answer this CQ, you can use the `:isSpecializationOf` property to determine if "measles incidence rate in Region X" is a specialization of the general "measles incidence rate" variable.
+8. To answer this CQ, you can use the `:isSpecializationOf` property to determine if "NASDAQ-100 closing price" is a specialization of a generic "equity-index closing price" variable.
+9. To answer this CQ, you can use the `:isConstrainedBy` property to determine the independent variable that is constrained by a given variable-specialization instance.
+10. To answer this CQ, you can use the `:isRescaledFrom` property to determine if a given variable is a rescaled version of another variable.
+11. To answer this CQ, you can use the `:isRescaledFrom` property to determine if "air temperature in Celsius" is a rescaled version of "air temperature in Kelvin".
+12. To answer this CQ, you can use the `:isRescaledFrom` property to determine if "closing price in EUR" is a rescaled version of "closing price in USD" for the same underlying asset variable.
+13. To answer this CQ, you can use the `:isComposedOf` property to determine the component variables of a given composite variable.
+14. To answer this CQ, you can use the `:isComposedOf` property to determine the component variables of a "geodetic coordinate" variable (e.g., latitude and longitude).
+15. To answer this CQ, you can use the `:isComposedOf` property to determine if a composite "socio-economic status index" is composed of component variables such as household income, educational attainment, and occupational prestige.
+16. To answer this CQ, you can use the `:hasQuantization` property to determine if a given dimensional space is a sub-dimensional space (projection) of a composite spatio-temporal dimensional space.
+17. To answer this CQ, you can use the `:isAggregatedBy` property to determine if a given dependent variable is aggregating and which aggregation(s) it defines.
+18. To answer this CQ, you can use the `:hasAggregationGroup` property to determine over which variable a given aggregation groups values, and which quantizations are suggested as candidate granularities for it.
+19. To answer this CQ, you can use the `:isAggregatedBy`, `:hasAggregationGroup`, and `:hasQuantization` properties to determine along which two independent variables (time and geodetic space) a given aggregation is performed, and what quantization is suggested for each.
+20. To answer this CQ, you can use the `:isAggregatedBy`, `:hasAggregationGroup`, and `:hasQuantization` properties to determine the variable being aggregated, and which candidate quantizations (e.g., daily, monthly, quarterly grouping) are suggested before a specific granularity is chosen.
+21. To answer this CQ, you can use the `:isAggregatedBy`, `:hasAggregationGroup`, and `:hasQuantization` properties to determine the aggregation function and axis that produce "average daily household energy consumption" from raw smart-meter readings, and which temporal quantization (e.g., daily bins) it suggests.
+22. To answer this CQ, you can use the `:hasQuantization` property to determine if a given dimensional space is continuous or discrete.
+23. To answer this CQ, you can use the `:hasQuantization` property to determine of which continuum is a given quantization a discretization, and if it is obtained by sampling or by binning.
+24. To answer this CQ, you can use the `:hasQuantization` property to determine the exact resolution of the daily temporal quantization used to grid tasmax for the year 2024.
+25. To answer this CQ, you can use the `:hasQuantization` property to determine the spatial bin size (resolution) of a satellite-derived land-cover raster, and if it is a regular binning.
+26. To answer this CQ, you can use the `:hasQuantization` property to determine are weekly disease-surveillance counts obtained via a periodic binning of a temporal continuum, and what are its period and in-period resolution.
+27. To answer this CQ, you can use the `:hasQuantization` property to determine if a given discrete dimensional space is also bounded, and therefore finite (fully enumerable with finite resources).
+28. To answer this CQ, you can use the `:hasDataFormat` property to determine the exact (or approximate) bounding region of a given dimensional space or dataset.
+29. To answer this CQ, you can use the `:hasDataFormat` property to determine what time span a historical stock-price dataset covers.
+30. To answer this CQ, you can use the `:hasDataFormat` property to determine what is the geodetic and temporal coverage of the tasmax, Italy, 2024 dataset.
+31. To answer this CQ, you can use the `:hasDataSource` property to determine which data source(s) offer a serialization of a given dataset, and in which data format(s).
+32. To answer this CQ, you can use the `:hasDataSource` property to determine in which formats (e.g., CSV, Parquet) a smart-meter aggregate dataset is available, and at which URL.
+33. To answer this CQ, you can use the `:isDerivedFrom` property to determine by which process a given dataset was generated, and if that process also consumes other dataset(s) as input (i.e., is it a data transformation).
+34. To answer this CQ, you can use the `:isDerivedFrom` property to determine which raw case-report dataset(s) were consumed by the process that produced a weekly aggregated incidence dataset.
+35. To answer this CQ, you can use the `:isDerivedFrom` property to determine if two independently modelled variables are asserted to always coincide in value, despite being derived through different chains.
+36. To answer this CQ, you can use the `:isDerivedFrom` property to determine if "GDP per capita" as published by the World Bank is equivalent to "GDP per capita" as published by the IMF, even though the two

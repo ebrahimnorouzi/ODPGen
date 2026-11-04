@@ -1,0 +1,401 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Variable, dimensional space, aggregation, quantization, and dataset publication ODP" ;
+  rdfs:comment "An ontology design pattern for describing variables, their dependency structure, dimensional spaces, specializations, rescalings, composite variables, aggregations, quantizations, dataset coverage, serializations, generation processes, and asserted equivalences, grounded in the climate-services scenario of a daily Italy-wide tasmax dataset for 2024." .
+
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "A variable whose values may depend on one or more independent variables and that may be related to other variables by specialization, rescaling, composition, aggregation, derivation, or equivalence." .
+
+:IndependentVariable a owl:Class ;
+  rdfs:label "Independent variable" ;
+  rdfs:comment "A variable that serves as an argument or axis on which another variable depends." ;
+  rdfs:subClassOf :Variable .
+
+:DependentVariable a owl:Class ;
+  rdfs:label "Dependent variable" ;
+  rdfs:comment "A variable whose values depend on one or more independent variables." ;
+  rdfs:subClassOf :Variable .
+
+:CompositeVariable a owl:Class ;
+  rdfs:label "Composite variable" ;
+  rdfs:comment "A variable composed of component variables." ;
+  rdfs:subClassOf :Variable .
+
+:AggregatingVariable a owl:Class ;
+  rdfs:label "Aggregating variable" ;
+  rdfs:comment "A dependent variable that defines one or more aggregations over another variable along one or more independent variables." ;
+  rdfs:subClassOf :DependentVariable .
+
+:DimensionalSpace a owl:Class ;
+  rdfs:label "Dimensional space" ;
+  rdfs:comment "A dimensional space on which a variable takes its values." .
+
+:ContinuousDimensionalSpace a owl:Class ;
+  rdfs:label "Continuous dimensional space" ;
+  rdfs:comment "A dimensional space that is continuous." ;
+  rdfs:subClassOf :DimensionalSpace .
+
+:DiscreteDimensionalSpace a owl:Class ;
+  rdfs:label "Discrete dimensional space" ;
+  rdfs:comment "A dimensional space that is discrete." ;
+  rdfs:subClassOf :DimensionalSpace .
+
+:BoundedDimensionalSpace a owl:Class ;
+  rdfs:label "Bounded dimensional space" ;
+  rdfs:comment "A dimensional space that has a bounding region or span." ;
+  rdfs:subClassOf :DimensionalSpace .
+
+:FiniteDimensionalSpace a owl:Class ;
+  rdfs:label "Finite dimensional space" ;
+  rdfs:comment "A discrete bounded dimensional space that is fully enumerable with finite resources." ;
+  rdfs:subClassOf :DiscreteDimensionalSpace, :BoundedDimensionalSpace .
+
+:SubDimensionalSpace a owl:Class ;
+  rdfs:label "Sub-dimensional space" ;
+  rdfs:comment "A dimensional space that is a projection or sub-space of another dimensional space." ;
+  rdfs:subClassOf :DimensionalSpace .
+
+:Continuum a owl:Class ;
+  rdfs:label "Continuum" ;
+  rdfs:comment "A continuum of values that may be discretized by a quantization." .
+
+:Quantization a owl:Class ;
+  rdfs:label "Quantization" ;
+  rdfs:comment "A discretization of a continuum, possibly by sampling or binning, and possibly with a stated resolution." .
+
+:SamplingQuantization a owl:Class ;
+  rdfs:label "Sampling quantization" ;
+  rdfs:comment "A quantization obtained by sampling a continuum." ;
+  rdfs:subClassOf :Quantization .
+
+:BinningQuantization a owl:Class ;
+  rdfs:label "Binning quantization" ;
+  rdfs:comment "A quantization obtained by binning a continuum." ;
+  rdfs:subClassOf :Quantization .
+
+:PeriodicBinningQuantization a owl:Class ;
+  rdfs:label "Periodic binning quantization" ;
+  rdfs:comment "A binning quantization characterized by a period and an in-period resolution." ;
+  rdfs:subClassOf :BinningQuantization .
+
+:Aggregation a owl:Class ;
+  rdfs:label "Aggregation" ;
+  rdfs:comment "An aggregation defined by an aggregating variable over another variable, using an aggregation function and grouping along an independent variable with candidate quantizations." .
+
+:AggregationFunction a owl:Class ;
+  rdfs:label "Aggregation function" ;
+  rdfs:comment "A function such as average used by an aggregation." .
+
+:VariableSpecialization a owl:Class ;
+  rdfs:label "Variable specialization" ;
+  rdfs:comment "A relation-like entity representing that a variable specializes a more general variable by constraining a specific independent variable." .
+
+:Rescaling a owl:Class ;
+  rdfs:label "Rescaling" ;
+  rdfs:comment "A relation-like entity representing that a variable is a rescaled version of another variable without changing the underlying dependency structure." .
+
+:VariableEquivalenceAssertion a owl:Class ;
+  rdfs:label "Variable equivalence assertion" ;
+  rdfs:comment "An assertion that two independently modelled variables always coincide in value, despite possibly different derivation chains." .
+
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A published dataset containing values for one or more variables and associated coverage, serializations, and provenance." .
+
+:DatasetSerialization a owl:Class ;
+  rdfs:label "Dataset serialization" ;
+  rdfs:comment "A concrete serialization of a dataset offered by a data source in a specific format and location." .
+
+:DataFormat a owl:Class ;
+  rdfs:label "Data format" ;
+  rdfs:comment "A data format in which a dataset serialization is provided." .
+
+:DataSource a owl:Class ;
+  rdfs:label "Data source" ;
+  rdfs:comment "A source that offers a serialization of a dataset." .
+
+:Process a owl:Class ;
+  rdfs:label "Process" ;
+  rdfs:comment "A process by which a dataset is generated, possibly consuming other datasets as input." .
+
+:TransformationProcess a owl:Class ;
+  rdfs:label "Transformation process" ;
+  rdfs:comment "A process that consumes one or more input datasets to generate an output dataset." ;
+  rdfs:subClassOf :Process .
+
+:Region a owl:Class ;
+  rdfs:label "Region" ;
+  rdfs:comment "A geographic or geodetic region used as a bound or constrained value." .
+
+:TimeInterval a owl:Class ;
+  rdfs:label "Time interval" ;
+  rdfs:comment "A temporal interval used as a bound or coverage span." .
+
+:Resolution a owl:Class ;
+  rdfs:label "Resolution" ;
+  rdfs:comment "A stated exact or approximate resolution associated with a quantization." .
+
+:BoundingRegion a owl:Class ;
+  rdfs:label "Bounding region" ;
+  rdfs:comment "A spatial, temporal, or other bounding specification for a dimensional space or dataset." .
+
+:hasDimensionalSpace a owl:ObjectProperty ;
+  rdfs:label "has dimensional space" ;
+  rdfs:comment "Relates a variable to the dimensional space on which it takes its values." ;
+  rdfs:domain :Variable ;
+  rdfs:range :DimensionalSpace .
+
+:dependsOn a owl:ObjectProperty ;
+  rdfs:label "depends on" ;
+  rdfs:comment "Relates a dependent variable to an independent variable on which it depends." ;
+  rdfs:domain :DependentVariable ;
+  rdfs:range :IndependentVariable .
+
+:hasComponentVariable a owl:ObjectProperty ;
+  rdfs:label "has component variable" ;
+  rdfs:comment "Relates a composite variable to one of its component variables." ;
+  rdfs:domain :CompositeVariable ;
+  rdfs:range :Variable .
+
+:definesAggregation a owl:ObjectProperty ;
+  rdfs:label "defines aggregation" ;
+  rdfs:comment "Relates an aggregating variable to an aggregation that it defines." ;
+  rdfs:domain :AggregatingVariable ;
+  rdfs:range :Aggregation .
+
+:aggregatesVariable a owl:ObjectProperty ;
+  rdfs:label "aggregates variable" ;
+  rdfs:comment "Relates an aggregation to the variable whose values are aggregated." ;
+  rdfs:domain :Aggregation ;
+  rdfs:range :Variable .
+
+:groupsByVariable a owl:ObjectProperty ;
+  rdfs:label "groups by variable" ;
+  rdfs:comment "Relates an aggregation to an independent variable along which values are grouped." ;
+  rdfs:domain :Aggregation ;
+  rdfs:range :IndependentVariable .
+
+:suggestsQuantization a owl:ObjectProperty ;
+  rdfs:label "suggests quantization" ;
+  rdfs:comment "Relates an aggregation to a candidate quantization suggested for grouping." ;
+  rdfs:domain :Aggregation ;
+  rdfs:range :Quantization .
+
+:usesAggregationFunction a owl:ObjectProperty ;
+  rdfs:label "uses aggregation function" ;
+  rdfs:comment "Relates an aggregation to the aggregation function it uses." ;
+  rdfs:domain :Aggregation ;
+  rdfs:range :AggregationFunction .
+
+:derivedFromVariable a owl:ObjectProperty ;
+  rdfs:label "derived from variable" ;
+  rdfs:comment "Relates a derived variable to a more general variable from which it is derived." ;
+  rdfs:domain :Variable ;
+  rdfs:range :Variable .
+
+:hasSpecialization a owl:ObjectProperty ;
+  rdfs:label "has specialization" ;
+  rdfs:comment "Relates a specialized variable to a variable-specialization description." ;
+  rdfs:domain :Variable ;
+  rdfs:range :VariableSpecialization .
+
+:specializesVariable a owl:ObjectProperty ;
+  rdfs:label "specializes variable" ;
+  rdfs:comment "Relates a variable-specialization description to the more general variable being specialized." ;
+  rdfs:domain :VariableSpecialization ;
+  rdfs:range :Variable .
+
+:constrainsIndependentVariable a owl:ObjectProperty ;
+  rdfs:label "constrains independent variable" ;
+  rdfs:comment "Relates a variable-specialization description to the independent variable that is fixed or constrained." ;
+  rdfs:domain :VariableSpecialization ;
+  rdfs:range :IndependentVariable .
+
+:hasRescaling a owl:ObjectProperty ;
+  rdfs:label "has rescaling" ;
+  rdfs:comment "Relates a rescaled variable to a rescaling description." ;
+  rdfs:domain :Variable ;
+  rdfs:range :Rescaling .
+
+:rescaledFromVariable a owl:ObjectProperty ;
+  rdfs:label "rescaled from variable" ;
+  rdfs:comment "Relates a rescaling description to the original non-rescaled variable." ;
+  rdfs:domain :Rescaling ;
+  rdfs:range :Variable .
+
+:hasSubDimensionalSpace a owl:ObjectProperty ;
+  rdfs:label "has sub-dimensional space" ;
+  rdfs:comment "Relates a dimensional space to a sub-dimensional space that is a projection of it." ;
+  rdfs:domain :DimensionalSpace ;
+  rdfs:range :SubDimensionalSpace .
+
+:isProjectionOf a owl:ObjectProperty ;
+  rdfs:label "is projection of" ;
+  rdfs:comment "Relates a sub-dimensional space to the composite dimensional space of which it is a projection." ;
+  rdfs:domain :SubDimensionalSpace ;
+  rdfs:range :DimensionalSpace .
+
+:discretizesContinuum a owl:ObjectProperty ;
+  rdfs:label "discretizes continuum" ;
+  rdfs:comment "Relates a quantization to the continuum it discretizes." ;
+  rdfs:domain :Quantization ;
+  rdfs:range :Continuum .
+
+:hasResolution a owl:ObjectProperty ;
+  rdfs:label "has resolution" ;
+  rdfs:comment "Relates a quantization to a stated resolution." ;
+  rdfs:domain :Quantization ;
+  rdfs:range :Resolution .
+
+:hasBoundingRegion a owl:ObjectProperty ;
+  rdfs:label "has bounding region" ;
+  rdfs:comment "Relates a dimensional space or dataset to a bounding region specification." ;
+  rdfs:range :BoundingRegion .
+
+:hasTemporalCoverage a owl:ObjectProperty ;
+  rdfs:label "has temporal coverage" ;
+  rdfs:comment "Relates a dataset to its temporal coverage interval." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :TimeInterval .
+
+:hasGeodeticCoverage a owl:ObjectProperty ;
+  rdfs:label "has geodetic coverage" ;
+  rdfs:comment "Relates a dataset to its geodetic coverage region." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :Region .
+
+:hasSerialization a owl:ObjectProperty ;
+  rdfs:label "has serialization" ;
+  rdfs:comment "Relates a dataset to one of its offered serializations." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :DatasetSerialization .
+
+:offeredBySource a owl:ObjectProperty ;
+  rdfs:label "offered by source" ;
+  rdfs:comment "Relates a dataset serialization to the data source that offers it." ;
+  rdfs:domain :DatasetSerialization ;
+  rdfs:range :DataSource .
+
+:hasFormat a owl:ObjectProperty ;
+  rdfs:label "has format" ;
+  rdfs:comment "Relates a dataset serialization to its data format." ;
+  rdfs:domain :DatasetSerialization ;
+  rdfs:range :DataFormat .
+
+:generatedByProcess a owl:ObjectProperty ;
+  rdfs:label "generated by process" ;
+  rdfs:comment "Relates a dataset to the process by which it was generated." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :Process .
+
+:consumesDataset a owl:ObjectProperty ;
+  rdfs:label "consumes dataset" ;
+  rdfs:comment "Relates a process to an input dataset that it consumes." ;
+  rdfs:domain :Process ;
+  rdfs:range :Dataset .
+
+:containsVariable a owl:ObjectProperty ;
+  rdfs:label "contains variable" ;
+  rdfs:comment "Relates a dataset to a variable represented in it." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :Variable .
+
+:hasEquivalenceAssertion a owl:ObjectProperty ;
+  rdfs:label "has equivalence assertion" ;
+  rdfs:comment "Relates a variable to an equivalence assertion in which it participates." ;
+  rdfs:domain :Variable ;
+  rdfs:range :VariableEquivalenceAssertion .
+
+:equivalentToVariable a owl:ObjectProperty ;
+  rdfs:label "equivalent to variable" ;
+  rdfs:comment "Relates an equivalence assertion to a variable asserted to coincide in value with another variable in the same assertion." ;
+  rdfs:domain :VariableEquivalenceAssertion ;
+  rdfs:range :Variable .
+
+:serializationURL a owl:DatatypeProperty ;
+  rdfs:label "serialization URL" ;
+  rdfs:comment "The URL at which a dataset serialization is available." ;
+  rdfs:domain :DatasetSerialization ;
+  rdfs:range xsd:anyURI .
+
+:isContinuous a owl:DatatypeProperty ;
+  rdfs:label "is continuous" ;
+  rdfs:comment "States whether a dimensional space is continuous." ;
+  rdfs:domain :DimensionalSpace ;
+  rdfs:range xsd:boolean .
+
+:isDiscrete a owl:DatatypeProperty ;
+  rdfs:label "is discrete" ;
+  rdfs:comment "States whether a dimensional space is discrete." ;
+  rdfs:domain :DimensionalSpace ;
+  rdfs:range xsd:boolean .
+
+:isBounded a owl:DatatypeProperty ;
+  rdfs:label "is bounded" ;
+  rdfs:comment "States whether a dimensional space is bounded." ;
+  rdfs:domain :DimensionalSpace ;
+  rdfs:range xsd:boolean .
+
+:isFinite a owl:DatatypeProperty ;
+  rdfs:label "is finite" ;
+  rdfs:comment "States whether a dimensional space is finite." ;
+  rdfs:domain :DimensionalSpace ;
+  rdfs:range xsd:boolean .
+
+:isRegularBinning a owl:DatatypeProperty ;
+  rdfs:label "is regular binning" ;
+  rdfs:comment "States whether a binning quantization uses regular bins." ;
+  rdfs:domain :BinningQuantization ;
+  rdfs:range xsd:boolean .
+
+:resolutionValue a owl:DatatypeProperty ;
+  rdfs:label "resolution value" ;
+  rdfs:comment "The exact or approximate value of a resolution." ;
+  rdfs:domain :Resolution ;
+  rdfs:range xsd:string .
+
+:boundingDescription a owl:DatatypeProperty ;
+  rdfs:label "bounding description" ;
+  rdfs:comment "A textual description of an exact or approximate bounding region or span." ;
+  rdfs:domain :BoundingRegion ;
+  rdfs:range xsd:string .
+
+:periodValue a owl:DatatypeProperty ;
+  rdfs:label "period value" ;
+  rdfs:comment "The period of a periodic binning quantization." ;
+  rdfs:domain :PeriodicBinningQuantization ;
+  rdfs:range xsd:string .
+
+:inPeriodResolutionValue a owl:DatatypeProperty ;
+  rdfs:label "in-period resolution value" ;
+  rdfs:comment "The in-period resolution of a periodic binning quantization." ;
+  rdfs:domain :PeriodicBinningQuantization ;
+  rdfs:range xsd:string .
+```
+
+2. Scenario-requirement-to-axiom mapping
+
+- Requirement: There are variables with independent and dependent roles.
+  - Axioms:
+    - `:Variable a owl:Class`
+    - `:IndependentVariable a owl:Class ; rdfs:subClassOf :Variable`
+    - `:DependentVariable a owl:Class ; rdfs:subClassOf :Variable`
+    - `:dependsOn a owl:ObjectProperty ; rdfs:domain :DependentVariable ; rdfs:range :IndependentVariable`
+
+- Requirement: A variable takes values on a dimensional space.
+  - Axioms:
+    - `:DimensionalSpace a owl:Class`
+    - `:hasDimensionalSpace a owl:ObjectProperty ; rdfs:domain :Variable ; rdfs:range :DimensionalSpace`
+
+- Requirement: The tasmax example has one independent variable, time, and one dependent variable.
+  - Axioms:
+    - Structural support

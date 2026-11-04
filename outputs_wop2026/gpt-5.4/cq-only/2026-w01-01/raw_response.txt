@@ -1,0 +1,220 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "LCA activity-flow-impact ontology design pattern" ;
+    rdfs:comment "An ontology design pattern for representing activities, flows, dependencies, flow datasets, flow classifications, LCA model metadata, impact results, contribution shares, and flow amounts within a system boundary, sufficient to answer the stated competency questions." .
+
+#################################################################
+# Classes
+#################################################################
+
+:LcaModel a owl:Class ;
+    rdfs:label "LCA model" ;
+    rdfs:comment "A life cycle assessment model that groups activities, metadata, and system-level settings." .
+
+:Activity a owl:Class ;
+    rdfs:label "Activity" ;
+    rdfs:comment "A modeled activity that consumes input flows, produces output flows, may depend on other activities, and may have impact results." .
+
+:Flow a owl:Class ;
+    rdfs:label "Flow" ;
+    rdfs:comment "A flow associated with activities and impact assessment, such as a resource, product, emission, elementary flow, or intermediate flow." .
+
+:FlowDataset a owl:Class ;
+    rdfs:label "Flow dataset" ;
+    rdfs:comment "A dataset describing a flow and its provenance source." .
+
+:Database a owl:Class ;
+    rdfs:label "Database" ;
+    rdfs:comment "A database that serves as the source of a flow dataset." .
+
+:FlowClassification a owl:Class ;
+    rdfs:label "Flow classification" ;
+    rdfs:comment "A classification assigned to a flow, such as resource, emission, product, elementary flow, or intermediate flow." .
+
+:ImpactCategory a owl:Class ;
+    rdfs:label "Impact category" ;
+    rdfs:comment "An impact assessment category used to organize impact results and contributions." .
+
+:ImpactResult a owl:Class ;
+    rdfs:label "Impact result" ;
+    rdfs:comment "A quantified impact result for an activity or flow in a given impact category." .
+
+:ImpactContribution a owl:Class ;
+    rdfs:label "Impact contribution" ;
+    rdfs:comment "A quantified contribution of a flow to an impact category, optionally in the context of an activity." .
+
+:FunctionalUnit a owl:Class ;
+    rdfs:label "Functional unit" ;
+    rdfs:comment "The functional unit defined for an LCA model." .
+
+:Scope a owl:Class ;
+    rdfs:label "Scope" ;
+    rdfs:comment "The scope defined for an LCA model." .
+
+:SystemBoundary a owl:Class ;
+    rdfs:label "System boundary" ;
+    rdfs:comment "The system boundary that delimits what is included in an LCA model." .
+
+:Agent a owl:Class ;
+    rdfs:label "Agent" ;
+    rdfs:comment "A responsible agent associated with an LCA model." .
+
+:FlowAmount a owl:Class ;
+    rdfs:label "Flow amount" ;
+    rdfs:comment "A quantified amount of a flow, optionally scoped to a system boundary." .
+
+#################################################################
+# Object Properties
+#################################################################
+
+:hasActivity a owl:ObjectProperty ;
+    rdfs:label "has activity" ;
+    rdfs:comment "Relates an LCA model to an activity included in the model." ;
+    rdfs:domain :LcaModel ;
+    rdfs:range :Activity .
+
+:hasInputFlow a owl:ObjectProperty ;
+    rdfs:label "has input flow" ;
+    rdfs:comment "Relates an activity to a flow used as an input." ;
+    rdfs:domain :Activity ;
+    rdfs:range :Flow .
+
+:hasOutputFlow a owl:ObjectProperty ;
+    rdfs:label "has output flow" ;
+    rdfs:comment "Relates an activity to a flow produced as an output." ;
+    rdfs:domain :Activity ;
+    rdfs:range :Flow .
+
+:dependsOnActivity a owl:ObjectProperty ;
+    rdfs:label "depends on activity" ;
+    rdfs:comment "Relates an activity to another activity on which it depends, enabling dependency chains." ;
+    rdfs:domain :Activity ;
+    rdfs:range :Activity .
+
+:hasFlowDataset a owl:ObjectProperty ;
+    rdfs:label "has flow dataset" ;
+    rdfs:comment "Relates a flow to a dataset that describes it." ;
+    rdfs:domain :Flow ;
+    rdfs:range :FlowDataset .
+
+:comesFromDatabase a owl:ObjectProperty ;
+    rdfs:label "comes from database" ;
+    rdfs:comment "Relates a flow dataset to the database from which it comes." ;
+    rdfs:domain :FlowDataset ;
+    rdfs:range :Database .
+
+:hasClassification a owl:ObjectProperty ;
+    rdfs:label "has classification" ;
+    rdfs:comment "Relates a flow to a flow classification." ;
+    rdfs:domain :Flow ;
+    rdfs:range :FlowClassification .
+
+:hasFunctionalUnit a owl:ObjectProperty ;
+    rdfs:label "has functional unit" ;
+    rdfs:comment "Relates an LCA model to its functional unit." ;
+    rdfs:domain :LcaModel ;
+    rdfs:range :FunctionalUnit .
+
+:hasScope a owl:ObjectProperty ;
+    rdfs:label "has scope" ;
+    rdfs:comment "Relates an LCA model to its scope." ;
+    rdfs:domain :LcaModel ;
+    rdfs:range :Scope .
+
+:hasSystemBoundary a owl:ObjectProperty ;
+    rdfs:label "has system boundary" ;
+    rdfs:comment "Relates an LCA model to its system boundary." ;
+    rdfs:domain :LcaModel ;
+    rdfs:range :SystemBoundary .
+
+:hasResponsibleAgent a owl:ObjectProperty ;
+    rdfs:label "has responsible agent" ;
+    rdfs:comment "Relates an LCA model to the agent responsible for it." ;
+    rdfs:domain :LcaModel ;
+    rdfs:range :Agent .
+
+:hasImpactResult a owl:ObjectProperty ;
+    rdfs:label "has impact result" ;
+    rdfs:comment "Relates an activity or flow to an impact result." ;
+    rdfs:range :ImpactResult .
+
+:forImpactCategory a owl:ObjectProperty ;
+    rdfs:label "for impact category" ;
+    rdfs:comment "Relates an impact result or impact contribution to the impact category it concerns." ;
+    rdfs:range :ImpactCategory .
+
+:hasImpactContribution a owl:ObjectProperty ;
+    rdfs:label "has impact contribution" ;
+    rdfs:comment "Relates an activity or impact category to an impact contribution record." ;
+    rdfs:range :ImpactContribution .
+
+:contributionOfFlow a owl:ObjectProperty ;
+    rdfs:label "contribution of flow" ;
+    rdfs:comment "Relates an impact contribution to the flow that contributes to the impact category." ;
+    rdfs:domain :ImpactContribution ;
+    rdfs:range :Flow .
+
+:withinActivity a owl:ObjectProperty ;
+    rdfs:label "within activity" ;
+    rdfs:comment "Relates an impact contribution to the activity context in which the contribution is assessed." ;
+    rdfs:domain :ImpactContribution ;
+    rdfs:range :Activity .
+
+:hasFlowAmount a owl:ObjectProperty ;
+    rdfs:label "has flow amount" ;
+    rdfs:comment "Relates a flow or system boundary to a quantified flow amount." ;
+    rdfs:range :FlowAmount .
+
+:amountForFlow a owl:ObjectProperty ;
+    rdfs:label "amount for flow" ;
+    rdfs:comment "Relates a flow amount to the flow being quantified." ;
+    rdfs:domain :FlowAmount ;
+    rdfs:range :Flow .
+
+:withinSystemBoundary a owl:ObjectProperty ;
+    rdfs:label "within system boundary" ;
+    rdfs:comment "Relates a flow amount to the system boundary within which the amount is measured." ;
+    rdfs:domain :FlowAmount ;
+    rdfs:range :SystemBoundary .
+
+#################################################################
+# Datatype Properties
+#################################################################
+
+:impactValue a owl:DatatypeProperty ;
+    rdfs:label "impact value" ;
+    rdfs:comment "The numeric value of an impact result." ;
+    rdfs:domain :ImpactResult ;
+    rdfs:range xsd:decimal .
+
+:contributionShare a owl:DatatypeProperty ;
+    rdfs:label "contribution share" ;
+    rdfs:comment "The numeric share or percentage contribution of a flow to an impact category." ;
+    rdfs:domain :ImpactContribution ;
+    rdfs:range xsd:decimal .
+
+:amountValue a owl:DatatypeProperty ;
+    rdfs:label "amount value" ;
+    rdfs:comment "The numeric value of a quantified flow amount." ;
+    rdfs:domain :FlowAmount ;
+    rdfs:range xsd:decimal .
+```
+
+| Competency Question | Classes | Properties |
+|---|---|---|
+| What are the input and output flows of all activities? | `:Activity`, `:Flow` | `:hasInputFlow`, `:hasOutputFlow` |
+| What is the dependency chain of activities in a system model? | `:LcaModel`, `:Activity` | `:hasActivity`, `:dependsOnActivity` |
+| Which flow datasets come from database X? | `:Flow`, `:FlowDataset`, `:Database` | `:hasFlowDataset`, `:comesFromDatabase` |
+| What are the elementary and intermediate flows associated with a given activity? | `:Activity`, `:Flow`, `:FlowClassification` | `:hasInputFlow`, `:hasOutputFlow`, `:hasClassification` |
+| Which flows are classified as resources, emissions, or products? | `:Flow`, `:FlowClassification` | `:hasClassification` |
+| What is the functional unit, scope, system boundary, and responsible agent of the LCA model? | `:LcaModel`, `:FunctionalUnit`, `:Scope`, `:SystemBoundary`, `:Agent` | `:hasFunctionalUnit`, `:hasScope`, `:hasSystemBoundary`, `:hasResponsibleAgent` |
+| What is the impact result of a given activity or flow across impact categories? | `:Activity`, `:Flow`, `:ImpactResult`, `:ImpactCategory` | `:hasImpactResult`, `:forImpactCategory`, `:impactValue` |
+| Which flows contribute significantly (e.g., > 2%) to a given impact category? | `:Flow`, `:ImpactContribution`, `:ImpactCategory` | `:hasImpactContribution`, `:contributionOfFlow`, `:forImpactCategory`, `:contributionShare` |
+| What are the top contributors to an impact category for a given activity? | `:Activity`, `:Flow`, `:ImpactContribution`, `:ImpactCategory` | `:hasImpactContribution`, `:withinActivity`, `:contributionOfFlow`, `:forImpactCategory`, `:contributionShare` |
+| What is the total amount of flow X generated within the system boundary? | `:Flow`, `:SystemBoundary`, `:FlowAmount` | `:hasFlowAmount`, `:amountForFlow`, `:withinSystemBoundary`, `:amountValue` |

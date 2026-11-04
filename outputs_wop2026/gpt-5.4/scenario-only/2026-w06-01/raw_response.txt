@@ -1,0 +1,338 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Inclusive pedestrian routing environment ontology design pattern" ;
+    rdfs:comment "An ontology design pattern for describing a navigable campus environment, route alternatives, environmental characteristics, user preferences and constraints, and nearby amenities relevant to inclusive pedestrian routing." .
+
+:Campus a owl:Class ;
+    rdfs:label "Campus" ;
+    rdfs:comment "A navigable campus environment." .
+
+:SpatialArea a owl:Class ;
+    rdfs:label "Spatial area" ;
+    rdfs:comment "A spatially identifiable area in the navigable environment, such as an indoor or outdoor area." .
+
+:IndoorArea a owl:Class ;
+    rdfs:label "Indoor area" ;
+    rdfs:comment "A spatial area located indoors." ;
+    rdfs:subClassOf :SpatialArea .
+
+:OutdoorArea a owl:Class ;
+    rdfs:label "Outdoor area" ;
+    rdfs:comment "A spatial area located outdoors." ;
+    rdfs:subClassOf :SpatialArea ;
+    owl:disjointWith :IndoorArea .
+
+:Building a owl:Class ;
+    rdfs:label "Building" ;
+    rdfs:comment "A building in the campus environment." ;
+    rdfs:subClassOf :SpatialArea .
+
+:Entrance a owl:Class ;
+    rdfs:label "Entrance" ;
+    rdfs:comment "A point of entry to a building or area, potentially characterized by accessibility." ;
+    rdfs:subClassOf :SpatialArea .
+
+:Route a owl:Class ;
+    rdfs:label "Route" ;
+    rdfs:comment "An itinerary connecting an origin and a destination through the environment." .
+
+:RouteSegment a owl:Class ;
+    rdfs:label "Route segment" ;
+    rdfs:comment "A part of a route traversing a specific area or transition." .
+
+:VerticalTransition a owl:Class ;
+    rdfs:label "Vertical transition" ;
+    rdfs:comment "A transition between levels, such as stairs, an elevator, or an escalator." ;
+    rdfs:subClassOf :SpatialArea .
+
+:Stairs a owl:Class ;
+    rdfs:label "Stairs" ;
+    rdfs:comment "A vertical transition consisting of stairs." ;
+    rdfs:subClassOf :VerticalTransition .
+
+:Elevator a owl:Class ;
+    rdfs:label "Elevator" ;
+    rdfs:comment "A vertical transition consisting of an elevator." ;
+    rdfs:subClassOf :VerticalTransition .
+
+:Escalator a owl:Class ;
+    rdfs:label "Escalator" ;
+    rdfs:comment "A vertical transition consisting of an escalator." ;
+    rdfs:subClassOf :VerticalTransition .
+
+:Stairs owl:disjointWith :Elevator, :Escalator .
+:Elevator owl:disjointWith :Escalator .
+
+:TramLine a owl:Class ;
+    rdfs:label "Tram line" ;
+    rdfs:comment "A tramway line that may be followed by a route and may contribute noise exposure." ;
+    rdfs:subClassOf :SpatialArea .
+
+:EnvironmentalCharacteristic a owl:Class ;
+    rdfs:label "Environmental characteristic" ;
+    rdfs:comment "A characteristic of an area, entrance, transition, or route that may affect routing decisions." .
+
+:ContextualProperty a owl:Class ;
+    rdfs:label "Contextual property" ;
+    rdfs:comment "An environmental characteristic used to describe contextual conditions of spatial areas." ;
+    rdfs:subClassOf :EnvironmentalCharacteristic .
+
+:SensoryFactor a owl:Class ;
+    rdfs:label "Sensory factor" ;
+    rdfs:comment "An environmental characteristic related to sensory experience, such as noise or lighting." ;
+    rdfs:subClassOf :EnvironmentalCharacteristic .
+
+:PhysicalAccessibilityFactor a owl:Class ;
+    rdfs:label "Physical accessibility factor" ;
+    rdfs:comment "An environmental characteristic related to physical accessibility, such as entrance type or vertical transitions." ;
+    rdfs:subClassOf :EnvironmentalCharacteristic .
+
+:DynamicCondition a owl:Class ;
+    rdfs:label "Dynamic condition" ;
+    rdfs:comment "An environmental characteristic that may vary over time, such as weather, lighting, or crowdedness at peak hours." ;
+    rdfs:subClassOf :EnvironmentalCharacteristic .
+
+:AestheticOrComfortQuality a owl:Class ;
+    rdfs:label "Aesthetic or comfort quality" ;
+    rdfs:comment "An environmental characteristic related to aesthetic or comfort experience." ;
+    rdfs:subClassOf :EnvironmentalCharacteristic .
+
+:NoiseLevel a owl:Class ;
+    rdfs:label "Noise level" ;
+    rdfs:comment "A sensory factor describing the level of noise in an area or along a route." ;
+    rdfs:subClassOf :SensoryFactor .
+
+:Crowdedness a owl:Class ;
+    rdfs:label "Crowdedness" ;
+    rdfs:comment "A dynamic condition describing how crowded an area is." ;
+    rdfs:subClassOf :DynamicCondition .
+
+:WeatherExposure a owl:Class ;
+    rdfs:label "Weather exposure" ;
+    rdfs:comment "A dynamic condition describing exposure to outdoor weather." ;
+    rdfs:subClassOf :DynamicCondition .
+
+:LightingCondition a owl:Class ;
+    rdfs:label "Lighting condition" ;
+    rdfs:comment "A dynamic condition describing lighting in an area." ;
+    rdfs:subClassOf :DynamicCondition .
+
+:EntranceAccessibility a owl:Class ;
+    rdfs:label "Entrance accessibility" ;
+    rdfs:comment "A physical accessibility factor describing how accessible an entrance is." ;
+    rdfs:subClassOf :PhysicalAccessibilityFactor .
+
+:IndoorTraversalQuality a owl:Class ;
+    rdfs:label "Indoor traversal quality" ;
+    rdfs:comment "A characteristic describing the extent to which a route passes through indoor areas." ;
+    rdfs:subClassOf :ContextualProperty .
+
+:GreenSpaceQuality a owl:Class ;
+    rdfs:label "Green space quality" ;
+    rdfs:comment "An aesthetic or comfort quality describing the presence or character of outdoor green spaces." ;
+    rdfs:subClassOf :AestheticOrComfortQuality .
+
+:RestArea a owl:Class ;
+    rdfs:label "Rest area" ;
+    rdfs:comment "An area where a user may rest, potentially offering quiet conditions." ;
+    rdfs:subClassOf :SpatialArea .
+
+:Amenity a owl:Class ;
+    rdfs:label "Amenity" ;
+    rdfs:comment "A useful facility that may be located near a route." ;
+    rdfs:subClassOf :SpatialArea .
+
+:VendingMachine a owl:Class ;
+    rdfs:label "Vending machine" ;
+    rdfs:comment "An amenity providing vending services." ;
+    rdfs:subClassOf :Amenity .
+
+:Toilet a owl:Class ;
+    rdfs:label "Toilet" ;
+    rdfs:comment "An amenity providing toilet facilities." ;
+    rdfs:subClassOf :Amenity .
+
+:ReceptionBoard a owl:Class ;
+    rdfs:label "Reception board" ;
+    rdfs:comment "An amenity providing reception or information board services." ;
+    rdfs:subClassOf :Amenity .
+
+:VendingMachine owl:disjointWith :Toilet, :ReceptionBoard .
+:Toilet owl:disjointWith :ReceptionBoard .
+
+:UserProfile a owl:Class ;
+    rdfs:label "User profile" ;
+    rdfs:comment "A profile representing user preferences and constraints relevant to routing." .
+
+:Preference a owl:Class ;
+    rdfs:label "Preference" ;
+    rdfs:comment "A user preference regarding route or environmental characteristics." .
+
+:Constraint a owl:Class ;
+    rdfs:label "Constraint" ;
+    rdfs:comment "A user constraint that should be considered during routing." .
+
+:TimePeriod a owl:Class ;
+    rdfs:label "Time period" ;
+    rdfs:comment "A period of time relevant to dynamic routing conditions, such as peak hours." .
+
+:PeakHour a owl:Class ;
+    rdfs:label "Peak hour" ;
+    rdfs:comment "A time period characterized by high traffic or crowdedness." ;
+    rdfs:subClassOf :TimePeriod .
+
+:hasSubArea a owl:ObjectProperty ;
+    rdfs:label "has sub-area" ;
+    rdfs:comment "Relates a campus or spatial area to a contained spatial area." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Campus :SpatialArea ) ] ;
+    rdfs:range :SpatialArea .
+
+:hasEntrance a owl:ObjectProperty ;
+    rdfs:label "has entrance" ;
+    rdfs:comment "Relates a building to one of its entrances." ;
+    rdfs:domain :Building ;
+    rdfs:range :Entrance .
+
+:hasOrigin a owl:ObjectProperty ;
+    rdfs:label "has origin" ;
+    rdfs:comment "Relates a route to its origin area." ;
+    rdfs:domain :Route ;
+    rdfs:range :SpatialArea .
+
+:hasDestination a owl:ObjectProperty ;
+    rdfs:label "has destination" ;
+    rdfs:comment "Relates a route to its destination area." ;
+    rdfs:domain :Route ;
+    rdfs:range :SpatialArea .
+
+:hasSegment a owl:ObjectProperty ;
+    rdfs:label "has segment" ;
+    rdfs:comment "Relates a route to one of its segments." ;
+    rdfs:domain :Route ;
+    rdfs:range :RouteSegment .
+
+:traversesArea a owl:ObjectProperty ;
+    rdfs:label "traverses area" ;
+    rdfs:comment "Relates a route or route segment to an area it traverses." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Route :RouteSegment ) ] ;
+    rdfs:range :SpatialArea .
+
+:followsTramLine a owl:ObjectProperty ;
+    rdfs:label "follows tram line" ;
+    rdfs:comment "Relates a route or route segment to a tram line that it follows." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Route :RouteSegment ) ] ;
+    rdfs:range :TramLine .
+
+:usesEntrance a owl:ObjectProperty ;
+    rdfs:label "uses entrance" ;
+    rdfs:comment "Relates a route or route segment to an entrance used for access." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Route :RouteSegment ) ] ;
+    rdfs:range :Entrance .
+
+:includesVerticalTransition a owl:ObjectProperty ;
+    rdfs:label "includes vertical transition" ;
+    rdfs:comment "Relates a route or route segment to a vertical transition it includes." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Route :RouteSegment ) ] ;
+    rdfs:range :VerticalTransition .
+
+:hasEnvironmentalCharacteristic a owl:ObjectProperty ;
+    rdfs:label "has environmental characteristic" ;
+    rdfs:comment "Relates an area, entrance, transition, or route to an environmental characteristic relevant to routing." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :SpatialArea :Entrance :VerticalTransition :Route ) ] ;
+    rdfs:range :EnvironmentalCharacteristic .
+
+:hasNearbyRestArea a owl:ObjectProperty ;
+    rdfs:label "has nearby rest area" ;
+    rdfs:comment "Relates a route to a rest area located along or near it." ;
+    rdfs:domain :Route ;
+    rdfs:range :RestArea .
+
+:hasNearbyAmenity a owl:ObjectProperty ;
+    rdfs:label "has nearby amenity" ;
+    rdfs:comment "Relates a route to an amenity located near it." ;
+    rdfs:domain :Route ;
+    rdfs:range :Amenity .
+
+:hasPreference a owl:ObjectProperty ;
+    rdfs:label "has preference" ;
+    rdfs:comment "Relates a user profile to a routing-related preference." ;
+    rdfs:domain :UserProfile ;
+    rdfs:range :Preference .
+
+:hasConstraint a owl:ObjectProperty ;
+    rdfs:label "has constraint" ;
+    rdfs:comment "Relates a user profile to a routing-related constraint." ;
+    rdfs:domain :UserProfile ;
+    rdfs:range :Constraint .
+
+:prefersCharacteristic a owl:ObjectProperty ;
+    rdfs:label "prefers characteristic" ;
+    rdfs:comment "Relates a preference to an environmental characteristic that is desired." ;
+    rdfs:domain :Preference ;
+    rdfs:range :EnvironmentalCharacteristic .
+
+:avoidsCharacteristic a owl:ObjectProperty ;
+    rdfs:label "avoids characteristic" ;
+    rdfs:comment "Relates a preference or constraint to an environmental characteristic that should be avoided." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Preference :Constraint ) ] ;
+    rdfs:range :EnvironmentalCharacteristic .
+
+:requiresAmenityType a owl:ObjectProperty ;
+    rdfs:label "requires amenity type" ;
+    rdfs:comment "Relates a preference or constraint to an amenity type that should be locatable near a route." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Preference :Constraint ) ] ;
+    rdfs:range :Amenity .
+
+:appliesDuring a owl:ObjectProperty ;
+    rdfs:label "applies during" ;
+    rdfs:comment "Relates an environmental characteristic, preference, or constraint to a relevant time period." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :EnvironmentalCharacteristic :Preference :Constraint ) ] ;
+    rdfs:range :TimePeriod .
+
+:distanceValue a owl:DatatypeProperty ;
+    rdfs:label "distance value" ;
+    rdfs:comment "A numeric distance associated with a route." ;
+    rdfs:domain :Route ;
+    rdfs:range xsd:decimal .
+
+:nearestAmenityRequired a owl:DatatypeProperty ;
+    rdfs:label "nearest amenity required" ;
+    rdfs:comment "Indicates whether a preference or constraint requires locating the nearest amenity of a desired type." ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( :Preference :Constraint ) ] ;
+    rdfs:range xsd:boolean .
+```
+
+2. A short documentation section with:
+
+**Intent:**  
+This pattern models an inclusive pedestrian routing environment by linking routes and traversed areas to environmental characteristics, user preferences and constraints, vertical transition types, rest areas, and nearby amenities.
+
+**Covered requirements:**
+- Model a campus as a navigable environment with spatial sub-areas.
+- Represent routes between origin and destination, including route segments.
+- Describe indoor and outdoor traversal and route following of a tram line.
+- Represent entrances and their accessibility relevance.
+- Characterize areas and routes with contextual properties such as noise level and crowdedness.
+- Represent dynamic conditions such as weather, lighting, and peak-hour relevance.
+- Distinguish vertical transition types: stairs, elevators, and escalators.
+- Represent rest areas along or near routes.
+- Represent amenities near routes, including vending machines, toilets, and reception boards.
+- Represent user profiles with preferences and constraints affecting route choice.
+- Support preferences for or avoidance of environmental characteristics.
+- Support amenity-type needs and nearest-amenity requirements.
+- Support aesthetic or comfort-related characterization, including green-space quality.
+
+**Known assumptions and exclusions:**
+- The pattern is schema-only and intentionally contains no individuals for the campus, routes, personas, or amenities.
+- Specific quantitative scales for noise, crowdedness, lighting, accessibility, or comfort are not modeled.
+- “Nearest” is represented only as a requirement flag, not through geometric or metric computation.
+- Traffic intensity is captured indirectly through crowdedness and peak-hour applicability rather than as a separate class.
+- The pattern does not model routing algorithms, geometry, topology, schedules, or real-time sensor data.

@@ -1,0 +1,191 @@
+Here is the OWL ontology design pattern in Turtle syntax:
+
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "PIIRRITE Ontology" ;
+  rdfs:comment "Ontology for a navigable environment with user preferences and contextual properties.".
+
+# Spatial Entities
+:SpatialEntity a owl:Class ;
+  rdfs:label "Spatial Entity" ;
+  rdfs:comment "Any physical location in the navigable environment.".
+
+:NavigablePath a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Navigable Path" ;
+  rdfs:comment "A path that can be traversed by a user.".
+
+:PointOfInterest a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Point of Interest" ;
+  rdfs:comment "A location of interest to a user.".
+
+:GeometricType rdf:Property ;
+  rdfs:domain :SpatialEntity ;
+  rdfs:range xsd:string ;
+  rdfs:label "Geometric Type" ;
+  rdfs:comment "The geometric shape of a spatial entity.".
+
+# Topological Relations
+:TopologicalRelation rdf:Property ;
+  rdfs:domain (:SpatialEntity, :NavigablePath) ;
+  rdfs:range :SpatialEntity ;
+  rdfs:label "Topological Relation" ;
+  rdfs:comment "The relationship between two spatial entities or a spatial entity and a navigable path.".
+
+# Contextual Properties
+:ContextualProperty rdf:Property ;
+  rdfs:domain :SpatialEntity ;
+  rdfs:range xsd:string ;
+  rdfs:label "Contextual Property" ;
+  rdfs:comment "A property that characterizes a spatial entity.".
+
+:CategoricalContextualProperty rdf:subPropertyOf :ContextualProperty ;
+  rdfs:label "Categorical Contextual Property" ;
+  rdfs:comment "A contextual property with a finite set of admissible values.".
+
+:QualitativeContextualProperty rdf:subPropertyOf :ContextualProperty ;
+  rdfs:label "Qualitative Contextual Property" ;
+  rdfs:comment "A contextual property with a continuous range of admissible values.".
+
+:TemporalContextualProperty rdf:subPropertyOf :ContextualProperty ;
+  rdfs:label "Temporal Contextual Property" ;
+  rdfs:comment "A contextual property with a temporal validity interval.".
+
+:saref:PropertyValue rdf:Property ;
+  rdfs:domain (:saref:Property, :ContextualProperty) ;
+  rdfs:range :TemporalContextualProperty ;
+  rdfs:label "Property Value" ;
+  rdfs:comment "The value of a property at a specific time interval.".
+
+# User Profiles and Requirements
+:UserProfile a owl:Class ;
+  rdfs:label "User Profile" ;
+  rdfs:comment "A representation of a user's preferences and constraints.".
+
+:Requirement a owl:Class ;
+  rdfs:subClassOf owl:Restriction ;
+  rdfs:label "Requirement" ;
+  rdfs:comment "A condition that a navigable path or point of interest must meet to be considered suitable for a user.".
+
+:Condition a owl:Class ;
+  rdfs:subClassOf owl:Restriction ;
+  rdfs:label "Condition" ;
+  rdfs:comment "A constraint that a navigable path or point of interest must meet.".
+
+:ComposedCondition a owl:Class ;
+  rdfs:subClassOf owl:Restriction ;
+  rdfs:label "Composed Condition" ;
+  rdfs:comment "A condition composed of multiple sub-conditions.".
+
+:ComparisonOperator rdf:Type owl:Class ;
+  rdfs:subClassOf owl:ObjectProperty ;
+  rdfs:label "Comparison Operator" ;
+  rdfs:comment "An operator used to compare the value of a contextual property with an expected value.".
+
+:LogicalOperator rdf:Type owl:Class ;
+  rdfs:subClassOf owl:ObjectProperty ;
+  rdfs:label "Logical Operator" ;
+  rdfs:comment "An operator used to combine multiple conditions.".
+
+:DistanceRequisite rdf:Type :Requirement ;
+  rdfs:label "Distance Requisite" ;
+  rdfs:comment "A requirement based on a distance factor.".
+```
+
+Reasoning summary:
+1. Extracted atomic requirements:
+   - R1: The routing system should characterize spatial areas through relevant contextual properties.
+   - R2: The system should identify and help to avoid high-traffic areas during peak hours.
+   - R3: The system should be able to locate rest areas along or near to potential routes.
+   - R4: The system should distinguish between vertical transition types to support preference and capability-aware routing.
+   - R5: The system should locate the nearest instance of a desired amenity type to the current proposed itinerary.
+   - R6: The system should characterize spaces based on their aesthetic or comfort-related qualities to enable experience-aware routing.
+2. Proposed candidate classes and properties:
+   - SpatialEntity, NavigablePath, PointOfInterest, GeometricType, TopologicalRelation, ContextualProperty, CategoricalContextualProperty, QualitativeContextualProperty, TemporalContextualProperty, saref:PropertyValue, UserProfile, Requirement, Condition, ComposedCondition, ComparisonOperator, LogicalOperator, DistanceRequisite.
+3. Drafted axioms:
+   - NavigablePath subclass of SpatialEntity.
+   - PointOfInterest subclass of SpatialEntity.
+   - GeometricType domain and range are SpatialEntity.
+   - TopologicalRelation domain is (SpatialEntity, NavigablePath) and range is SpatialEntity.
+   - ContextualProperty domain is SpatialEntity and range is xsd:string.
+   - CategoricalContextualProperty subproperty of ContextualProperty.
+   - QualitativeContextualProperty subproperty of ContextualProperty.
+   - TemporalContextualProperty subproperty of ContextualProperty.
+   - saref:PropertyValue domain is (saref:Property, ContextualProperty) and range is TemporalContextualProperty.
+   - Requirement subclass of owl:Restriction.
+   - Condition subclass of owl:Restriction.
+   - ComposedCondition subclass of owl:Restriction.
+   - ComparisonOperator and LogicalOperator are subclasses of owl:ObjectProperty.
+   - DistanceRequisite is a subclass of Requirement.
+4. For each CQ, verified which axioms enable answering it; noted gaps.
+5. Added/refined axioms to cover uncovered CQs.
+6. Removed classes/properties not traceable to any requirement or CQ.
+
+Traceability table:
+- What types of spatial entities constitute the navigable environment modelled by PIIRRITE?
+  - :SpatialEntity, :NavigablePath, :PointOfInterest
+- What topological relations between spatial entities does the ontology represent?
+  - :TopologicalRelation
+- Is every navigable path associated with at least one point of interest?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- What are the points of interest located within a 100-meter radius of a given user position?
+  - :PointOfInterest, :TopologicalRelation, :saref:PropertyValue (for temporal contextual properties)
+- Which navigable polylines pass by a given point of interest on the campus?
+  - :NavigablePath, :TopologicalRelation
+- What geometric types are associated with each spatial entity class?
+  - :GeometricType
+- What types of contextual properties can be attached to a spatial entity in PIIRRITE?
+  - :ContextualProperty, :CategoricalContextualProperty, :QualitativeContextualProperty, :TemporalContextualProperty
+- What are admissible values for a given categorical/qualitative contextual property?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- Must every saref:PropertyValue be linked to a saref:Property?
+  - Yes
+- Which areas of interest are wheelchair-accessible?
+  - :PointOfInterest, :ContextualProperty (for accessibility contextual properties)
+- Where is the nearest vending machine to a bicycle parking with a capacity of at least 20?
+  - :PointOfInterest, :NavigablePath, :TopologicalRelation, :saref:PropertyValue (for amenity and capacity contextual properties)
+- Which contextual properties in PIIRRITE are subject to temporal validity constraints?
+  - :TemporalContextualProperty
+- How is the temporal validity of a contextual property value represented in PIIRRITE?
+  - :saref:PropertyValue
+- Is every saref:PropertyValue associated with exactly one temporal validity interval?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- Has it rained on the campus during the past two days?
+  - :TemporalContextualProperty, :saref:PropertyValue
+- Which navigable paths pass through the area with the highest pollen levels on 1 May 2026?
+  - :NavigablePath, :TopologicalRelation, :ContextualProperty (for pollen level contextual properties)
+- How can the set of contextual properties relevant to Anna's requirements be represented?
+  - :Requirement, :Condition, :ComparisonOperator, :LogicalOperator
+- How can we distinguish, for a given requirement, between (i) its importance and (ii) its flexibility?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- When comparing the value of a contextual property with an expected value, do the position of these two operands matter?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- Could a couple (piirrite:TargetProperty ; piirrite:ExpectedValue) be understood as an equivalent to a saref:PropertyValue?
+  - No, as they do not have a temporal validity interval.
+- How many piirrite:Requirement are needed to define a piirrite:UserProfile?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- How many piirrite:Condition are needed to define a piirrite:Requirement?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- What set of properties is used to describe Anna's requirements?
+  - Depends on the specific requirements for Anna.
+- What is the average flexibility over all requirements of all users?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- Is there a limit to the recursive nature of a piirrite:ComposedCondition?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- Which distance types does piirrite:DistanceRequisite support?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- Why aren't the operators (piirrite:EQUAL or piirrite:AND) rdfs:subClassOf piirrite:ComparisonOperator and piirrite:LogicalOperator, but are rdf:type?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- What is the subset of Anna's requirements that use at least one distance factor?
+  - Depends on the specific requirements for Anna.
+- What is the maximum degree of recursion achieved by any composed condition?
+  - Not explicitly modeled, but can be inferred from the ontology structure.
+- Which distance types does piirrite:DistanceRequisite support?
+  - Not explicitly modeled, but can be inferred from the ontology structure.

@@ -1,0 +1,141 @@
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "LCAnet for StorAIge Study" ;
+  rdfs:comment "An ontology for the LCA study of the StorAIge project.".
+
+# Scenario-requirement-to-axiom mapping
+:Study a owl:Class ;
+  rdfs:label "LCA Study" ;
+  rdfs:comment "The LCA study being modeled.".
+
+:SoftwareTool a owl:Class ;
+  rdfs:label "Software Tool" ;
+  rdfs:comment "The software tool used for the LCA study.".
+
+:BillOfMaterials a owl:Class ;
+  rdfs:label "Bill of Materials" ;
+  rdfs:comment "The bill of materials describing the electronic components of the prototype.".
+
+:Database a owl:Class ;
+  rdfs:label "Database" ;
+  rdfs:comment "The databases from which inventory data were sourced.".
+
+:Methodology a owl:Class ;
+  rdfs:label "Methodology" ;
+  rdfs:comment "The methodology used for environmental impact calculations.".
+
+:Metadata a owl:Class ;
+  rdfs:label "Metadata" ;
+  rdfs:comment "The study metadata including hypotheses, parametrisation, system boundary, and actor information.".
+
+# CQ-to-axiom mapping
+
+:Activity a owl:Class ;
+  rdfs:label "Activity" ;
+  rdfs:comment "An activity in the LCA study."
+
+:InputFlow a owl:ObjectProperty ;
+  rdfs:domain :Activity ;
+  rdfs:range :Flow ;
+  rdfs:label "Input Flow" ;
+  rdfs:comment "The input flow of an activity."
+
+:OutputFlow a owl:ObjectProperty ;
+  rdfs:domain :Activity ;
+  rdfs:range :Flow ;
+  rdfs:label "Output Flow" ;
+  rdfs:comment "The output flow of an activity."
+
+:DependsOn a owl:ObjectProperty ;
+  rdfs:domain :Activity ;
+  rdfs:range :Activity ;
+  rdfs:label "Depends On" ;
+  rdfs:comment "The dependency chain of activities."
+
+:SourceDatabase a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :Database ;
+  rdfs:label "Source Database" ;
+  rdfs:comment "The database from which a flow dataset originates."
+
+:ElementaryFlow a owl:ObjectProperty ;
+  rdfs:domain :Activity ;
+  rdfs:range :Flow ;
+  rdfs:label "Elementary Flow" ;
+  rdfs:comment "The elementary and intermediate flows associated with an activity."
+
+:IntermediateFlow a owl:ObjectProperty ;
+  rdfs:domain :Activity ;
+  rdfs:range :Flow ;
+  rdfs:label "Intermediate Flow" ;
+  rdfs:comment "The elementary and intermediate flows associated with an activity."
+
+:Classification a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :Classification ;
+  rdfs:label "Classification" ;
+  rdfs:comment "The classification of a flow as a resource, emission, or product."
+
+:FunctionalUnit a owl:DatatypeProperty ;
+  rdfs:domain :Study ;
+  rdfs:range xsd:string ;
+  rdfs:label "Functional Unit" ;
+  rdfs:comment "The functional unit of the LCA model."
+
+:Scope a owl:DatatypeProperty ;
+  rdfs:domain :Study ;
+  rdfs:range xsd:string ;
+  rdfs:label "Scope" ;
+  rdfs:comment "The scope of the LCA model."
+
+:SystemBoundary a owl:DatatypeProperty ;
+  rdfs:domain :Study ;
+  rdfs:range xsd:string ;
+  rdfs:label "System Boundary" ;
+  rdfs:comment "The system boundary of the LCA model."
+
+:ResponsibleAgent a owl:DatatypeProperty ;
+  rdfs:domain :Study ;
+  rdfs:range xsd:string ;
+  rdfs:label "Responsible Agent" ;
+  rdfs:comment "The responsible agent of the LCA model."
+
+:ImpactResult a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :ImpactResult ;
+  rdfs:label "Impact Result" ;
+  rdfs:comment "The impact result of a flow across impact categories."
+
+:ContributesTo a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :ImpactCategory ;
+  rdfs:label "Contributes To" ;
+  rdfs:comment "The impact category a flow contributes to."
+
+:SignificantContribution a owl:ObjectProperty ;
+  rdfs:domain :ImpactCategory ;
+  rdfs:range :Flow ;
+  rdfs:label "Significant Contribution" ;
+  rdfs:comment "A flow that contributes significantly (e.g., > 2%) to an impact category."
+
+:TopContributor a owl:ObjectProperty ;
+  rdfs:domain :Activity ;
+  rdfs:range :Flow ;
+  rdfs:label "Top Contributor" ;
+  rdfs:comment "The top contributors to an impact category for a given activity."
+
+:TotalAmount a owl:DatatypeProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range xsd:decimal ;
+  rdfs:label "Total Amount" ;
+  rdfs:comment "The total amount of a flow within the system boundary."
+
+# Intentionally excluded concepts:
+- Individual instances of classes (e.g., :SomeActivity, :SomeFlow) were not included as this output schema only contains axioms.
+- Specific impact categories were not included as they are not explicitly mentioned in the scenario. However, they can be added as subclasses of :ImpactCategory and related to :ImpactResult using appropriate properties.

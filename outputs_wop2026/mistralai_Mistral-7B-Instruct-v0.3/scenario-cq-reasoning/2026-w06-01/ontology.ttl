@@ -1,0 +1,96 @@
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "PIIRRITE Ontology" ;
+  rdfs:comment "Ontology for a navigable environment with user preferences and contextual properties.".
+
+# Spatial Entities
+:SpatialEntity a owl:Class ;
+  rdfs:label "Spatial Entity" ;
+  rdfs:comment "Any physical location in the navigable environment.".
+
+:NavigablePath a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Navigable Path" ;
+  rdfs:comment "A path that can be traversed by a user.".
+
+:PointOfInterest a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Point of Interest" ;
+  rdfs:comment "A location of interest to a user.".
+
+:GeometricType rdf:Property ;
+  rdfs:domain :SpatialEntity ;
+  rdfs:range xsd:string ;
+  rdfs:label "Geometric Type" ;
+  rdfs:comment "The geometric shape of a spatial entity.".
+
+# Topological Relations
+:TopologicalRelation rdf:Property ;
+  rdfs:domain (:SpatialEntity, :NavigablePath) ;
+  rdfs:range :SpatialEntity ;
+  rdfs:label "Topological Relation" ;
+  rdfs:comment "The relationship between two spatial entities or a spatial entity and a navigable path.".
+
+# Contextual Properties
+:ContextualProperty rdf:Property ;
+  rdfs:domain :SpatialEntity ;
+  rdfs:range xsd:string ;
+  rdfs:label "Contextual Property" ;
+  rdfs:comment "A property that characterizes a spatial entity.".
+
+:CategoricalContextualProperty rdf:subPropertyOf :ContextualProperty ;
+  rdfs:label "Categorical Contextual Property" ;
+  rdfs:comment "A contextual property with a finite set of admissible values.".
+
+:QualitativeContextualProperty rdf:subPropertyOf :ContextualProperty ;
+  rdfs:label "Qualitative Contextual Property" ;
+  rdfs:comment "A contextual property with a continuous range of admissible values.".
+
+:TemporalContextualProperty rdf:subPropertyOf :ContextualProperty ;
+  rdfs:label "Temporal Contextual Property" ;
+  rdfs:comment "A contextual property with a temporal validity interval.".
+
+:saref:PropertyValue rdf:Property ;
+  rdfs:domain (:saref:Property, :ContextualProperty) ;
+  rdfs:range :TemporalContextualProperty ;
+  rdfs:label "Property Value" ;
+  rdfs:comment "The value of a property at a specific time interval.".
+
+# User Profiles and Requirements
+:UserProfile a owl:Class ;
+  rdfs:label "User Profile" ;
+  rdfs:comment "A representation of a user's preferences and constraints.".
+
+:Requirement a owl:Class ;
+  rdfs:subClassOf owl:Restriction ;
+  rdfs:label "Requirement" ;
+  rdfs:comment "A condition that a navigable path or point of interest must meet to be considered suitable for a user.".
+
+:Condition a owl:Class ;
+  rdfs:subClassOf owl:Restriction ;
+  rdfs:label "Condition" ;
+  rdfs:comment "A constraint that a navigable path or point of interest must meet.".
+
+:ComposedCondition a owl:Class ;
+  rdfs:subClassOf owl:Restriction ;
+  rdfs:label "Composed Condition" ;
+  rdfs:comment "A condition composed of multiple sub-conditions.".
+
+:ComparisonOperator rdf:Type owl:Class ;
+  rdfs:subClassOf owl:ObjectProperty ;
+  rdfs:label "Comparison Operator" ;
+  rdfs:comment "An operator used to compare the value of a contextual property with an expected value.".
+
+:LogicalOperator rdf:Type owl:Class ;
+  rdfs:subClassOf owl:ObjectProperty ;
+  rdfs:label "Logical Operator" ;
+  rdfs:comment "An operator used to combine multiple conditions.".
+
+:DistanceRequisite rdf:Type :Requirement ;
+  rdfs:label "Distance Requisite" ;
+  rdfs:comment "A requirement based on a distance factor.".

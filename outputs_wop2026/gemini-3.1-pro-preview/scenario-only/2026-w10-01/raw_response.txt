@@ -1,0 +1,150 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "SMARTY Matchmaker Ontology Design Pattern"@en ;
+    rdfs:comment "An ontology design pattern representing the semantic management of digital assets, focusing on a matchmaker that allocates hardware resources (DPUs and GPUs) by comparing software requirements with asset characteristics from a catalogue."@en .
+
+### Classes ###
+
+:Catalogue a owl:Class ;
+    rdfs:label "Catalogue"@en ;
+    rdfs:comment "A catalogue that describes the actual characteristics of software and hardware resources."@en .
+
+:Characteristic a owl:Class ;
+    rdfs:label "Characteristic"@en ;
+    rdfs:comment "An actual feature or property of a software, hardware resource, or service request."@en .
+
+:DigitalAsset a owl:Class ;
+    rdfs:label "Digital Asset"@en ;
+    rdfs:comment "A digital asset managed for interoperability, including software and hardware resources."@en .
+
+:HardwareResource a owl:Class ;
+    rdfs:subClassOf :DigitalAsset ;
+    owl:disjointWith :Software ;
+    rdfs:label "Hardware Resource"@en ;
+    rdfs:comment "A physical or virtual hardware component available for allocation."@en .
+
+:DPU a owl:Class ;
+    rdfs:subClassOf :HardwareResource ;
+    owl:disjointWith :GPU ;
+    rdfs:label "DPU"@en ;
+    rdfs:comment "Data Processing Unit, a specific type of hardware resource."@en .
+
+:GPU a owl:Class ;
+    rdfs:subClassOf :HardwareResource ;
+    rdfs:label "GPU"@en ;
+    rdfs:comment "Graphics Processing Unit, a specific type of hardware resource."@en .
+
+:Matchmaker a owl:Class ;
+    rdfs:label "Matchmaker"@en ;
+    rdfs:comment "A system component that dynamically allocates hardware resources by comparing requirements and characteristics."@en .
+
+:Requirement a owl:Class ;
+    rdfs:label "Requirement"@en ;
+    rdfs:comment "A condition or capability needed by a service request or expressed for a given software."@en ;
+    owl:disjointWith :Characteristic .
+
+:ServiceRequest a owl:Class ;
+    rdfs:label "Service Request"@en ;
+    rdfs:comment "An incoming request that specifies characteristics and requirements for software execution."@en .
+
+:Software a owl:Class ;
+    rdfs:subClassOf :DigitalAsset ;
+    rdfs:label "Software"@en ;
+    rdfs:comment "A type of digital asset representing the main software to be executed, supported, or deployed."@en .
+
+### Object Properties ###
+
+:allocates a owl:ObjectProperty ;
+    rdfs:domain :Matchmaker ;
+    rdfs:range :HardwareResource ;
+    rdfs:label "allocates"@en ;
+    rdfs:comment "Relates a matchmaker to the hardware resources it dynamically allocates."@en .
+
+:canDeploy a owl:ObjectProperty ;
+    rdfs:domain :DigitalAsset ;
+    rdfs:range :Software ;
+    rdfs:label "can deploy"@en ;
+    rdfs:comment "Indicates that a candidate resource can be used to deploy the main software."@en .
+
+:canExecute a owl:ObjectProperty ;
+    rdfs:domain :DigitalAsset ;
+    rdfs:range :Software ;
+    rdfs:label "can execute"@en ;
+    rdfs:comment "Indicates that a candidate resource can be used to execute the main software."@en .
+
+:canSupport a owl:ObjectProperty ;
+    rdfs:domain :DigitalAsset ;
+    rdfs:range :Software ;
+    rdfs:label "can support"@en ;
+    rdfs:comment "Indicates that a candidate resource can be used to support the main software."@en .
+
+:compares a owl:ObjectProperty ;
+    rdfs:domain :Matchmaker ;
+    rdfs:label "compares"@en ;
+    rdfs:comment "Relates the matchmaker to the requirements or characteristics it evaluates during the matching process."@en .
+
+:describesAsset a owl:ObjectProperty ;
+    rdfs:domain :Catalogue ;
+    rdfs:range :DigitalAsset ;
+    rdfs:label "describes asset"@en ;
+    rdfs:comment "Relates a catalogue to the digital assets (software and hardware resources) it describes."@en .
+
+:hasCharacteristic a owl:ObjectProperty ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :DigitalAsset :ServiceRequest )
+    ] ;
+    rdfs:range :Characteristic ;
+    rdfs:label "has characteristic"@en ;
+    rdfs:comment "Relates a digital asset or service request to its actual characteristics."@en .
+
+:hasRequirement a owl:ObjectProperty ;
+    rdfs:domain [
+        a owl:Class ;
+        owl:unionOf ( :Software :ServiceRequest )
+    ] ;
+    rdfs:range :Requirement ;
+    rdfs:label "has requirement"@en ;
+    rdfs:comment "Relates a software or service request to its expressed requirements."@en .
+
+:identifiesCandidate a owl:ObjectProperty ;
+    rdfs:domain :Matchmaker ;
+    rdfs:range :DigitalAsset ;
+    rdfs:label "identifies candidate"@en ;
+    rdfs:comment "Relates a matchmaker to the candidate digital assets it identifies for a software."@en .
+
+:processesRequest a owl:ObjectProperty ;
+    rdfs:domain :Matchmaker ;
+    rdfs:range :ServiceRequest ;
+    rdfs:label "processes request"@en ;
+    rdfs:comment "Relates a matchmaker to the incoming service requests it handles."@en .
+
+:requestsSoftware a owl:ObjectProperty ;
+    rdfs:domain :ServiceRequest ;
+    rdfs:range :Software ;
+    rdfs:label "requests software"@en ;
+    rdfs:comment "Relates a service request to the specific software it concerns."@en .
+```
+
+### Documentation
+
+**Intent:** 
+This ontology design pattern models the semantic management and dynamic allocation of digital assets by representing a matchmaker that evaluates incoming service requests and software requirements against the catalogued characteristics of hardware resources (such as DPUs and GPUs) to identify and allocate suitable execution, support, or deployment candidates.
+
+**Covered requirements:**
+*   Representation of a `Catalogue` that describes `DigitalAsset` entities.
+*   Taxonomy of digital assets, explicitly distinguishing `Software` and `HardwareResource` (with specific subclasses for `DPU` and `GPU`).
+*   Modeling of incoming `ServiceRequest`s that target specific software.
+*   Association of `Requirement`s to software and service requests, and `Characteristic`s to digital assets and service requests.
+*   Representation of a `Matchmaker` that processes requests, compares requirements and characteristics, and allocates hardware resources.
+*   Properties defining how candidate resources interact with the main software (`canExecute`, `canSupport`, `canDeploy`).
+
+**Known assumptions and exclusions:**
+*   **Assumptions:** "Candidate resources" are modeled contextually via the `identifiesCandidate` property rather than as a distinct subclass, assuming any `DigitalAsset` can act as a candidate. Union domains are used for `hasCharacteristic` and `hasRequirement` to accurately reflect that both service requests and assets/software can possess them.
+*   **Exclusions:** The pattern excludes the internal algorithmic logic of the matchmaker's comparison process. It also excludes broader project context concepts mentioned in the prompt (e.g., "quantum-resilient", "trustworthy AI", "edge computing") as they are motivational background rather than explicit entities interacting within the matchmaker's allocation mechanism.

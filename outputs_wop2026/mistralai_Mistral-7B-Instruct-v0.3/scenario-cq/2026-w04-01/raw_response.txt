@@ -1,0 +1,152 @@
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Software Reverse Engineering Knowledge Graph" ;
+  rdfs:comment "An ontology for representing and analyzing symbol table data from binary executable files.".
+
+# Scenario-requirement-to-axiom mapping
+
+# 1. Represents executable files
+:Executable a owl:Class ;
+  rdfs:label "Executable" ;
+  rdfs:comment "A binary file that can be executed.".
+
+# 2. Represents symbols (functions, variables) in an executable
+:Symbol a owl:Class ;
+  rdfs:label "Symbol" ;
+  rdfs:comment "A named entity in an executable, such as a function or variable.".
+
+# 3. Represents the relationship between an executable and its symbols
+:hasSymbol a owl:ObjectProperty ;
+  domain :Executable ;
+  range :Symbol ;
+  rdfs:label "Has Symbol" ;
+  rdfs:comment "Relates an executable to one of its symbols.".
+
+# 4. Represents API calls in an executable
+:APICall a owl:Class ;
+  rdfs:label "API Call" ;
+  rdfs:comment "A call to a system or library function.".
+
+# 5. Represents networking activity in an executable
+:NetworkActivity a owl:Class ;
+  rdfs:label "Network Activity" ;
+  rdfs:comment "Activity related to network communication.".
+
+# 6. Represents control flow patterns in an executable
+:ControlFlowPattern a owl:Class ;
+  rdfs:label "Control Flow Pattern" ;
+  rdfs:comment "A pattern of execution flow within the executable.".
+
+# 7. Represents entropy in an executable
+:Entropy a owl:Class ;
+  rdfs:label "Entropy" ;
+  rdfs:comment "A measure of randomness or unpredictability in the executable.".
+
+# 8. Represents obfuscation techniques in an executable
+:ObfuscationTechnique a owl:Class ;
+  rdfs:label "Obfuscation Technique" ;
+  rdfs:comment "A method used to make the executable more difficult to understand or reverse engineer.".
+
+# 9. Represents file system activity in an executable
+:FileSystemActivity a owl:Class ;
+  rdfs:label "File System Activity" ;
+  rdfs:comment "Activity related to the file system.".
+
+# 10. Represents jumps into memory in an executable
+:MemoryJump a owl:Class ;
+  rdfs:label "Memory Jump" ;
+  rdfs:comment "A jump to a location in memory.".
+
+# 11. Represents cryptographic activity in an executable
+:CryptographicActivity a owl:Class ;
+  rdfs:label "Cryptographic Activity" ;
+  rdfs:comment "Activity related to encryption or decryption.".
+
+# 12. Represents imported functions in an executable
+:ImportedFunction a owl:Class ;
+  rdfs:label "Imported Function" ;
+  rdfs:comment "A function that is defined in another module and used in the executable.".
+
+# CQ-to-axiom mapping
+
+# CQ1: Can the ontology detect malicious persistent API calls within the executable?
+:APICall rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :persistent ;
+  hasValue true ;
+  owl:minCardinality 1
+].
+
+# CQ2: Is there any suspicious networking activity within the executable?
+:NetworkActivity rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :suspicious ;
+  hasValue true ;
+  owl:minCardinality 1
+].
+
+# CQ3: Are there any indirect control flow patterns in the executable file indicating vulnerable code?
+:ControlFlowPattern rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :indirect ;
+  hasValue true ;
+  owl:minCardinality 1
+].
+
+# CQ4: Can sections of entropy be detected through the ratio of unique opcodes to the total number of instructions in a function?
+:Entropy rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :entropyRatio ;
+  hasValue min:0.5 ;
+  owl:minCardinality 1
+].
+
+# CQ5: Can patterns of self-referential decode loops be found to detect data obfuscation?
+:ObfuscationTechnique rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :selfReferentialDecodeLoop ;
+  hasValue true ;
+  owl:minCardinality 1
+].
+
+# CQ6: Can the ontology detect file system abuse?
+:FileSystemActivity rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :abuse ;
+  hasValue true ;
+  owl:minCardinality 1
+].
+
+# CQ7: Are there any suspicious jumps into memory in the executable?
+:MemoryJump rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :suspicious ;
+  hasValue true ;
+  owl:minCardinality 1
+].
+
+# CQ8: Are there any other suspicious API calls contained in the executable file?
+:APICall rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :suspicious ;
+  hasValue true ;
+  owl:minCardinality 1
+].
+
+# CQ9: Is there cryptographic activity within the executable that can indicate encryption to hide parts of the program?
+:CryptographicActivity rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :encryption ;
+  hasValue true ;
+  owl:minCardinality 1
+].
+
+# CQ10: What percentage of the functions in the binary file are imported (i.e., external)?
+:ImportedFunction rdfs:subClassOf [ a owl:Restriction ;
+  onProperty :importedPercentage ;
+  hasValue min:0.1 ;
+  owl:minCardinality 1
+].
+
+# Intentionally excluded concepts:
+- The ontology does not currently model the specific details of the symbols (e.g., their types, return types, etc.), as this information is not necessary to answer the provided CQs.
+- The ontology does not model the network connections or the cryptographic algorithms used, as this information is not provided in the scenario.
+- The ontology does not model the specific obfuscation techniques used, as this information is not provided in the scenario.
+```

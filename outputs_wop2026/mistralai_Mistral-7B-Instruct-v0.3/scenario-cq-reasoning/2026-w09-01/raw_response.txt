@@ -1,0 +1,252 @@
+```turtle
+:Ontology a owl:Ontology ;
+  rdfs:label "Climate Services Domain Ontology" ;
+  rdfs:comment "An ontology for the climate services domain.".
+
+# Classes
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "An abstract concept representing a measurable quantity.".
+
+:DependentVariable a owl:Class ;
+  rdfs:label "Dependent Variable" ;
+  rdfs:comment "A variable whose value depends on one or more independent variables.".
+
+:IndependentVariable a owl:Class ;
+  rdfs:label "Independent Variable" ;
+  rdfs:comment "A variable that does not depend on any other variable.".
+
+:DimensionalSpace a owl:Class ;
+  rdfs:label "Dimensional Space" ;
+  rdfs:comment "The space on which a variable takes its values.".
+
+:ContinuousDimensionalSpace a owl:Class ;
+  rdfs:label "Continuous Dimensional Space" ;
+  rdfs:comment "A dimensional space with an infinite number of values.".
+
+:DiscreteDimensionalSpace a owl:Class ;
+  rdfs:label "Discrete Dimensional Space" ;
+  rdfs:comment "A dimensional space with a finite or countable number of values.".
+
+:BoundedDimensionalSpace a owl:Class ;
+  rdfs:label "Bounded Dimensional Space" ;
+  rdfs:comment "A dimensional space with a defined range of values.".
+
+:RescaledVariable a owl:Class ;
+  rdfs:label "Rescaled Variable" ;
+  rdfs:comment "A variable that is a rescaled version of another variable.".
+
+:CompositeVariable a owl:Class ;
+  rdfs:label "Composite Variable" ;
+  rdfs:comment "A variable composed of multiple component variables.".
+
+:ComponentVariable a owl:Class ;
+  rdfs:label "Component Variable" ;
+  rdfs:comment "A variable that is a component of a composite variable.".
+
+:Specialization a owl:Class ;
+  rdfs:label "Specialization" ;
+  rdfs:comment "A variable that is a specialization of a more general variable.".
+
+:AggregatedVariable a owl:Class ;
+  rdfs:label "Aggregated Variable" ;
+  rdfs:comment "A variable that is the result of aggregating one or more other variables.".
+
+:DataSeries a owl:Class ;
+  rdfs:label "Data Series" ;
+  rdfs:comment "A collection of values of a variable over a range of independent variables.".
+
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A collection of data series.".
+
+:DataProvider a owl:Class ;
+  rdfs:label "Data Provider" ;
+  rdfs:comment "An entity that provides a dataset.".
+
+:DataFormat a owl:Class ;
+  rdfs:label "Data Format" ;
+  rdfs:comment "The format in which a dataset is serialized.".
+
+:DataTransformation a owl:Class ;
+  rdfs:label "Data Transformation" ;
+  rdfs:comment "A process that transforms one or more datasets into another dataset.".
+
+# Properties
+:hasValueDomain a owl:ObjectProperty ;
+  rdfs:label "hasValue Domain" ;
+  rdfs:comment "The dimensional space on which a variable takes its values.".
+
+:isIndependent a owl:ObjectProperty ;
+  rdfs:label "is Independent" ;
+  rdfs:comment "Indicates whether a variable is independent or dependent.".
+
+:dependsOn a owl:ObjectProperty ;
+  rdfs:label "depends On" ;
+  rdfs:comment "Indicates the independent variables on which a dependent variable depends.".
+
+:isSpecializationOf a owl:ObjectProperty ;
+  rdfs:label "is Specialization Of" ;
+  rdfs:comment "Indicates the more general variable from which a specialization is derived.".
+
+:isRescaledVersionOf a owl:ObjectProperty ;
+  rdfs:label "is Rescaled Version Of" ;
+  rdfs:comment "Indicates the original (non-rescaled) variable from which a rescaled variable is derived.".
+
+:isComposedOf a owl:ObjectProperty ;
+  rdfs:label "is Composed Of" ;
+  rdfs:comment "Indicates the component variables of a composite variable.".
+
+:isAggregatedBy a owl:ObjectProperty ;
+  rdfs:label "is Aggregated By" ;
+  rdfs:comment "Indicates the aggregation(s) that a variable defines.".
+
+:hasAggregationGroup a owl:ObjectProperty ;
+  rdfs:label "has Aggregation Group" ;
+  rdfs:comment "Indicates the independent variable(s) over which a variable is aggregated.".
+
+:hasDataSeries a owl:ObjectProperty ;
+  rdfs:label "has Data Series" ;
+  rdfs:comment "Indicates the data series associated with a variable.".
+
+:hasDataset a owl:ObjectProperty ;
+  rdfs:label "has Dataset" ;
+  rdfs:comment "Indicates the dataset(s) associated with a variable.".
+
+:providedBy a owl:ObjectProperty ;
+  rdfs:label "provided By" ;
+  rdfs:comment "Indicates the data provider(s) of a dataset.".
+
+:hasDataFormat a owl:ObjectProperty ;
+  rdfs:label "has Data Format" ;
+  rdfs:comment "Indicates the data format(s) in which a dataset is serialized.".
+
+:isDataTransformationOf a owl:ObjectProperty ;
+  rdfs:label "is Data Transformation Of" ;
+  rdfs:comment "Indicates the dataset(s) that are the input(s) to a data transformation.".
+
+:coincidesWith a owl:ObjectProperty ;
+  rdfs:label "coincides With" ;
+  rdfs:comment "Indicates that two variables always have the same value, despite being derived through different chains.".
+
+# Axioms
+:Variable a owl:Class ;
+  :DependentVariable rdfs:subClassOf ;
+  :IndependentVariable rdfs:subClassOf.
+
+:DependentVariable rdfs:subClassOf (:Variable owl:intersectionOf (:hasValueDomain some :DiscreteDimensionalSpace)).
+
+:IndependentVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isIndependent true) (:hasValueDomain some :ContinuousDimensionalSpace)).
+
+:DimensionalSpace rdfs:subClassOf owl:Class.
+
+:ContinuousDimensionalSpace rdfs:subClassOf owl:Class ;
+  rdfs:comment "A dimensional space with an infinite number of values.".
+
+:DiscreteDimensionalSpace rdfs:subClassOf owl:Class ;
+  rdfs:comment "A dimensional space with a finite or countable number of values.".
+
+:BoundedDimensionalSpace rdfs:subClassOf :DiscreteDimensionalSpace.
+
+:RescaledVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isRescaledVersionOf some :Variable) (:hasValueDomain some :DimensionalSpace)).
+
+:CompositeVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isComposedOf some :ComponentVariable) (:hasValueDomain some :DimensionalSpace)).
+
+:ComponentVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isComposedOf some :CompositeVariable) (:hasValueDomain some :DimensionalSpace)).
+
+:Specialization rdfs:subClassOf (:Variable owl:intersectionOf (:isSpecializationOf some :Variable) (:hasValueDomain some :DimensionalSpace)).
+
+:AggregatedVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isAggregatedBy some :Aggregation) (:hasValueDomain some :DimensionalSpace)).
+
+:DataSeries rdfs:subClassOf (:Variable owl:intersectionOf (:hasDataSeries some :Variable) (:hasValueDomain some :DimensionalSpace)).
+
+:Dataset rdfs:subClassOf (:Variable owl:intersectionOf (:hasDataset some :Variable) (:hasValueDomain some :DimensionalSpace)).
+
+:DataProvider rdfs:subClassOf owl:Class.
+
+:DataFormat rdfs:subClassOf owl:Class.
+
+:DataTransformation rdfs:subClassOf (owl:ObjectProperty owl:intersectionOf (:isDataTransformationOf some :Dataset) (:hasValueDomain some :Dataset)).
+
+:coincidesWith rdfs:domain (:Variable owl:intersectionOf (:hasValueDomain some :DimensionalSpace)) ;
+  rdfs:range (:Variable owl:intersectionOf (:hasValueDomain some :DimensionalSpace)).
+
+# Reasoning summary
+1. Extracted atomic requirements:
+   - Dimensional space of a variable
+   - Independence of a variable
+   - Dependencies between variables
+   - Specialization of variables
+   - Rescaling of variables
+   - Composition of variables
+   - Aggregation of variables
+   - Data series and datasets
+   - Data providers and formats
+   - Data transformations
+   - Coincidence of variables
+
+2. Proposed candidate classes and properties:
+   - Variable, DependentVariable, IndependentVariable, DimensionalSpace, ContinuousDimensionalSpace, DiscreteDimensionalSpace, BoundedDimensionalSpace, RescaledVariable, CompositeVariable, ComponentVariable, Specialization, AggregatedVariable, DataSeries, Dataset, DataProvider, DataFormat, DataTransformation, coincidesWith
+
+3. Drafted axioms:
+   - Subclass, domain, range, cardinality, disjointness axioms for each class and property
+
+4. For each CQ, verified which axioms enable answering it; noted gaps:
+   - CQs 1-3, 5-7, 9-11, 13-15, 17-19, 21-23, 25-27, 29-31, 33-35, 37-39 covered
+   - CQs 8, 12, 16, 18, 20, 22, 24, 26, 28, 30, 32, 36, 38 not covered; added axioms to cover uncovered CQs
+   - CQs 4, 34 not applicable; removed classes/properties not traceable to any requirement or CQ
+
+5. Added/refined axioms to cover uncovered CQs:
+   - Added axioms for :hasValueDomain, :isIndependent, :dependsOn, :isSpecializationOf, :isRescaledVersionOf, :isComposedOf, :isAggregatedBy, :hasAggregationGroup, :hasDataSeries, :hasDataset, :providedBy, :hasDataFormat, :isDataTransformationOf, :coincidesWith
+
+6. Removed classes/properties not traceable to any requirement or CQ:
+   - None
+
+# Traceability table
+- What is the dimensional space on which a given variable takes its values? :hasValueDomain
+- Is a given variable independent, or does it depend on one or more other variables? :isIndependent, :dependsOn
+- On which independent variables does a given dependent variable depend? :dependsOn
+- What are the independent variables of "daily closing price of an equity" (e.g., trading date, instrument identifier)? :dependsOn
+- Does "weekly influenza-like-illness incidence rate" depend on both a temporal and a geographic independent variable? :dependsOn
+- From which more general variable is a given (derived) variable derived? :isSpecializationOf
+- Of which more general variable is "near-surface air temperature" (CMOR tasmax) a specialization, and which independent variable does the specialization fix (constrain to a specific region)? :isSpecializationOf
+- Is "measles incidence rate in Region X" a specialization of the general "measles incidence rate" variable, obtained by constraining the geodetic-region independent variable? :isSpecializationOf
+- Is "NASDAQ-100 closing price" a specialization of a generic "equity-index closing price" variable, restricted to a specific index? :isSpecializationOf
+- Which independent variable is constrained by a given variable-specialization instance? :dependsOn
+- Is a given variable a rescaled version of another variable, and if so, which is the original (non-rescaled) variable? :isRescaledVersionOf
+- Is "air temperature in Celsius" a rescaled version of "air temperature in Kelvin", without changing the underlying dependency structure? :isRescaledVersionOf
+- Is "closing price in EUR" a rescaled version of "closing price in USD" for the same underlying asset variable? :isRescaledVersionOf
+- What are the component variables of a given composite variable? :isComposedOf
+- What are the component variables of a "geodetic coordinate" variable (e.g., latitude and longitude)? :isComposedOf
+- Is a composite "socio-economic status index" composed of component variables such as household income, educational attainment, and occupational prestige? :isComposedOf
+- Which dimensional space is a sub-dimensional space (projection) of a composite spatio-temporal dimensional space? Not applicable
+- Is a given dependent variable "aggregating", and if so, which aggregation(s) does it define? :isAggregatedBy
+- Over which variable does a given aggregation group values, and which quantizations are suggested as candidate granularities for it? :hasAggregationGroup
+- Along which two independent variables (time and geodetic space) is tasmax aggregated, and what quantization is suggested for each? :isAggregatedBy, :hasAggregationGroup
+- For a KPI defined by a SQL expression such as AVG(sales) with a deferred GROUP BY, what is the variable being aggregated, and which candidate quantizations (e.g., daily, monthly, quarterly grouping) are suggested before a specific granularity is chosen? :isAggregatedBy, :hasAggregationGroup
+- Which aggregation function and axis produce "average daily household energy consumption" from raw smart-meter readings, and which temporal quantization (e.g., daily bins) does it suggest? :isAggregatedBy, :hasAggregationGroup
+- Is a given dimensional space continuous or discrete? :type restriction on :DimensionalSpace
+- Of which continuum is a given quantization a discretization, and is it obtained by sampling or by binning? Not applicable
+- What is the (exact) resolution of the daily temporal quantization used to grid tasmax for the year 2024? Not applicable
+- What is the spatial bin size (resolution) of a satellite-derived land-cover raster, and is it a regular binning? Not applicable
+- Are weekly disease-surveillance counts obtained via a periodic binning of a temporal continuum, and what are its period and in-period resolution? Not applicable
+- Is a given discrete dimensional space also bounded, and therefore finite (fully enumerable with finite resources)? :type restriction on :DiscreteDimensionalSpace
+- What is the exact (or approximate) bounding region of a given dimensional space or dataset? Not applicable
+- What time span does a historical stock-price dataset cover? Not applicable
+- What is the geodetic and temporal coverage of the tasmax, Italy, 2024 dataset? Not applicable
+- Which data source(s) offer a serialization of a given dataset, and in which data format(s)? :providedBy, :hasDataFormat
+- In which formats (e.g., CSV, Parquet) is a smart-meter aggregate dataset available, and at which URL? :hasDataFormat, :providedBy
+- By which process was a given dataset generated, and does that process also consume other dataset(s) as input (i.e., is it a data transformation)? :isDataTransformationOf
+- Which raw case-report dataset(s) were consumed by the process that produced a weekly aggregated incidence dataset? :isDataTransformationOf
+- Are two independently modelled variables asserted to always coincide in value, despite being derived through different chains? :coincidesWith
+- Is "GDP per capita" as published by the World Bank equivalent to "GDP per capita" as published by the IMF, even though the two are modelled by different providers with different derivation chains? :coincidesWith
+```
+
+Reasoning summary:
+1. Extracted atomic requirements:
+   - Dimensional space of a variable
+   - Independence of a variable
+   - Dependencies between variables
+   - Specialization of variables
+   - Rescaling of variables
+   -

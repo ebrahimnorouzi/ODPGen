@@ -1,0 +1,144 @@
+# ODPGEN-TRUNCATED: this generation was cut off before the model finished.
+# ODPGEN-TRUNCATION-SIGNALS: unterminated_code_fence
+# Do NOT score this file as a complete ontology; see metadata.json.
+:Ontology a owl:Ontology ;
+  rdfs:label "PIIRRITE Ontology" ;
+  rdfs:comment "Ontology for a navigable environment with user preferences and contextual properties.".
+
+# Spatial Entities
+:SpatialEntity a owl:Class ;
+  rdfs:label "Spatial Entity" ;
+  rdfs:comment "Any physical location in the navigable environment.".
+
+:Building a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Building" ;
+  rdfs:comment "A large structure with multiple rooms.".
+
+:Room a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Room" ;
+  rdfs:comment "A smaller enclosed space within a building.".
+
+:OutdoorArea a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Outdoor Area" ;
+  rdfs:comment "An open space outside a building.".
+
+:Polyline a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Navigable Path" ;
+  rdfs:comment "A continuous sequence of points connecting two spatial entities.".
+
+:PointOfInterest a owl:Class ;
+  rdfs:subClassOf :SpatialEntity ;
+  rdfs:label "Point of Interest" ;
+  rdfs:comment "A notable location within the navigable environment.".
+
+:GeometricType rdf:Property ;
+  rdfs:domain :SpatialEntity ;
+  rdfs:range xsd:string ;
+  rdfs:label "Geometric Type" ;
+  rdfs:comment "The shape or form of a spatial entity.".
+
+# Topological Relations
+:TopologicalRelation rdf:Property ;
+  rdfs:domain :SpatialEntity ;
+  rdfs:range :SpatialEntity ;
+  rdfs:label "Topological Relation" ;
+  rdfs:comment "The relationship between two spatial entities in terms of spatial proximity or containment.".
+
+# Contextual Properties
+:ContextualProperty rdf:Property ;
+  rdfs:domain :SpatialEntity ;
+  rdfs:range xsd:string ;
+  rdfs:label "Contextual Property" ;
+  rdfs:comment "A characteristic of a spatial entity that may affect user preferences or accessibility.".
+
+:NoiseLevel a :ContextualProperty ;
+  rdfs:label "Noise Level" ;
+  rdfs:comment "The loudness of a spatial entity.".
+
+:Crowdedness a :ContextualProperty ;
+  rdfs:label "Crowdedness" ;
+  rdfs:comment "The number of people in a spatial entity.".
+
+:VerticalTransition a :ContextualProperty ;
+  rdfs:label "Vertical Transition" ;
+  rdfs:comment "The type of vertical movement required to traverse a spatial entity.".
+
+:AmenityType a :ContextualProperty ;
+  rdfs:label "Amenity Type" ;
+  rdfs:comment "The type of amenity located within a spatial entity.".
+
+:AestheticQuality a :ContextualProperty ;
+  rdfs:label "Aesthetic Quality" ;
+  rdfs:comment "The visual appeal or comfort of a spatial entity.".
+
+# Temporal Validity
+:TemporalValidityInterval rdf:Property ;
+  rdfs:domain :saref:PropertyValue ;
+  rdfs:range xsd:dateTime ;
+  rdfs:label "Temporal Validity Interval" ;
+  rdfs:comment "The time period during which a contextual property value is valid.".
+
+# User Profile and Requirements
+:UserProfile a owl:Class ;
+  rdfs:label "User Profile" ;
+  rdfs:comment "A collection of requirements for a specific user.".
+
+:Requirement a owl:Class ;
+  rdfs:label "Requirement" ;
+  rdfs:comment "A condition or preference that a user has for a navigable path.".
+
+:Condition a owl:Class ;
+  rdfs:label "Condition" ;
+  rdfs:comment "A sub-requirement or constraint within a requirement.".
+
+:ComposedCondition a owl:Class ;
+  rdfs:label "Composed Condition" ;
+  rdfs:comment "A requirement composed of multiple conditions.".
+
+# SAREF
+@prefix saref: <http://www.w3.org/2008/05/ontology-saref#>.
+:PropertyValue a saref:PropertyValue ;
+  rdfs:domain saref:Property ;
+  rdfs:range xsd:string ;
+  rdfs:label "Property Value" ;
+  rdfs:comment "The value of a contextual property.".
+
+2.
+- R1: :GeometricType
+- R2: :NoiseLevel, :Crowdedness
+- R3: :PointOfInterest
+- R4: :VerticalTransition
+- R5: :AmenityType
+- R6: :AestheticQuality
+
+3.
+- CQ1: :SpatialEntity, :TopologicalRelation
+- CQ2: :TopologicalRelation
+- CQ3: :Polyline, :PointOfInterest
+- CQ4: :PointOfInterest
+- CQ5: :Polyline
+- CQ6: :GeometricType
+- CQ7: :ContextualProperty
+- CQ8: :ContextualProperty
+- CQ9: true
+- CQ10: :WheelchairAccessibility
+- CQ11: :VendingMachine, :BicycleParking
+- CQ12: :ContextualProperty
+- CQ13: :TemporalValidityInterval
+- CQ14: true
+- CQ15: :Polyline
+- CQ16: :PollenLevel
+- CQ17: :NoiseLevel, :Crowdedness, :VerticalTransition, :AmenityType, :AestheticQuality
+- CQ18: average(count(?req) where {?userProfile a :UserProfile ; :Requirement count(?req)})
+- CQ19: max(?degree) where {?composedCondition a :ComposedCondition ; piirrite:degree?degree}
+- CQ20: :DistanceRequisite
+- CQ21: :EQUAL, :AND are rdf:type piirrite:ComparisonOperator and piirrite:LogicalOperator, but are not rdfs:subClassOf due to design choice.
+- CQ22: subset of Anna's requirements that use at least one distance factor: {:DistanceRequisite}
+- CQ23: max(?degree) where {?composedCondition a :ComposedCondition ; piirrite:degree?degree}
+
+4.
+- No explicit concepts left out as they are all grounded in the scenario or CQs. However, some concepts may be added in the future if new requirements or competency questions arise.

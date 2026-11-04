@@ -1,0 +1,85 @@
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix saref: <http://www.sarefology.org/ontology/>.
+@prefix piirrite: <http://example.org/piirrite#>.
+
+:Ontology a owl:Ontology ;
+    rdfs:label "PIIRRITE Ontology" ;
+    rdfs:comment "Ontology for a navigable environment with user preferences and contextual properties.".
+
+# Spatial Entities
+:SpatialEntity a owl:Class ;
+    rdfs:label "Spatial Entity" ;
+    rdfs:comment "Any physical location in the navigable environment.".
+
+:NavigablePath a owl:Class ;
+    rdfs:label "Navigable Path" ;
+    rdfs:comment "A path that can be traversed by a user." ;
+    rdf:type owl:UnionOf ;
+    rdf:first :Polyline ;
+    rdf:rest rdf:nil.
+
+:Polyline a owl:Class ;
+    rdfs:label "Polyline" ;
+    rdfs:comment "A sequence of connected points representing a path." ;
+    rdf:type owl:Restriction ;
+    owl:onProperty :hasPoint ;
+    owl:allValuesFrom :SpatialEntity.
+
+:PointOfInterest a owl:Class ;
+    rdfs:label "Point of Interest" ;
+    rdfs:comment "A location of interest to a user." ;
+    rdf:type owl:Restriction ;
+    owl:onProperty :withinRadius ;
+    owl:someValuesFrom xsd:decimal.
+
+# Contextual Properties
+:ContextualProperty a owl:Class ;
+    rdfs:label "Contextual Property" ;
+    rdfs:comment "A property that characterizes a spatial entity." ;
+    rdf:type owl:Class ;
+    rdf:subClassOf rdf:Property.
+
+:TemporalContextualProperty a owl:Class ;
+    rdfs:label "Temporal Contextual Property" ;
+    rdfs:comment "A contextual property with temporal validity." ;
+    rdf:type owl:Class ;
+    rdf:subClassOf :ContextualProperty.
+
+# User Profiles and Requirements
+:UserProfile a owl:Class ;
+    rdfs:label "User Profile" ;
+    rdfs:comment "A representation of a user's preferences and constraints.".
+
+:Requirement a owl:Class ;
+    rdfs:label "Requirement" ;
+    rdfs:comment "A condition that a navigable path or spatial entity must meet." ;
+    rdf:type owl:Class ;
+    rdf:subClassOf rdf:Property.
+
+:ComposedCondition a owl:Class ;
+    rdfs:label "Composed Condition" ;
+    rdfs:comment "A requirement composed of multiple conditions." ;
+    rdf:type owl:Class ;
+    rdf:subClassOf rdf:Property.
+
+:Condition a owl:Class ;
+    rdfs:label "Condition" ;
+    rdfs:comment "A single requirement or a logical combination of requirements." ;
+    rdf:type owl:Class ;
+    rdf:subClassOf rdf:Property.
+
+:ComparisonOperator a owl:Class ;
+    rdfs:label "Comparison Operator" ;
+    rdfs:comment "An operator used to compare the value of a contextual property with an expected value." ;
+    rdf:type owl:Class ;
+    rdf:subClassOf rdf:Property.
+
+:LogicalOperator a owl:Class ;
+    rdfs:label "Logical Operator" ;
+    rdfs:comment "An operator used to combine conditions." ;
+    rdf:type owl:Class ;
+    rdf:subClassOf rdf:Property.

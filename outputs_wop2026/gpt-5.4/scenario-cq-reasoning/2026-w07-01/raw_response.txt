@@ -1,0 +1,434 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Adaptive Pedagogical Learning Ontology Design Pattern" ;
+  rdfs:comment "A minimal reusable OWL ontology design pattern for pedagogical organization, objective alignment, learner context, evaluation, feedback, and learner awareness over time." .
+
+#################################################################
+# Classes
+#################################################################
+
+:Learner a owl:Class ;
+  rdfs:label "Learner" ;
+  rdfs:comment "A person whose goals, context, awareness, and learning progress are represented." .
+
+:Goal a owl:Class ;
+  rdfs:label "Goal" ;
+  rdfs:comment "A learner goal that may target one or more skills." .
+
+:Skill a owl:Class ;
+  rdfs:label "Skill" ;
+  rdfs:comment "A capability or competence that may be targeted by goals, objectives, or awareness observations." .
+
+:Topic a owl:Class ;
+  rdfs:label "Topic" ;
+  rdfs:comment "A subject matter area that may be required, addressed, evaluated, or tracked in learner awareness." .
+
+:LearnerSituation a owl:Class ;
+  rdfs:label "Learner situation" ;
+  rdfs:comment "A contextual condition of a learner relevant to selecting objectives, techniques, resources, or instructional steps." .
+
+:Preference a owl:Class ;
+  rdfs:label "Preference" ;
+  rdfs:comment "A learner preference relevant to selecting resources or activities." ;
+  rdfs:subClassOf :LearnerSituation .
+
+:Challenge a owl:Class ;
+  rdfs:label "Challenge" ;
+  rdfs:comment "A learner challenge relevant to selecting resources or activities." ;
+  rdfs:subClassOf :LearnerSituation .
+
+:AccessibilityNeed a owl:Class ;
+  rdfs:label "Accessibility need" ;
+  rdfs:comment "A learner accessibility-related need relevant to selecting resources or activities." ;
+  rdfs:subClassOf :Challenge .
+
+:LearningObjective a owl:Class ;
+  rdfs:label "Learning objective" ;
+  rdfs:comment "An intended learning outcome that may develop skills, require prior topic knowledge, and be aligned with techniques, resources, and learner situations." .
+
+:PedagogicalFramework a owl:Class ;
+  rdfs:label "Pedagogical framework" ;
+  rdfs:comment "A pedagogical organization that contains ordered pedagogical elements." .
+
+:PedagogicalElement a owl:Class ;
+  rdfs:label "Pedagogical element" ;
+  rdfs:comment "A pedagogical unit that may belong to a framework and participate in an order relation." .
+
+:InstructionalStep a owl:Class ;
+  rdfs:label "Instructional step" ;
+  rdfs:comment "A pedagogical element representing a step in an instructional sequence." ;
+  rdfs:subClassOf :PedagogicalElement .
+
+:PedagogicalTechnique a owl:Class ;
+  rdfs:label "Pedagogical technique" ;
+  rdfs:comment "A pedagogical technique that may support objectives, steps, strategies, or assessments." .
+
+:InstructionalPurpose a owl:Class ;
+  rdfs:label "Instructional purpose" ;
+  rdfs:comment "The instructional purpose served by a pedagogical technique." .
+
+:LearningStrategy a owl:Class ;
+  rdfs:label "Learning strategy" ;
+  rdfs:comment "A strategy used or recommended for learning in relation to objectives, evidence, or feedback." .
+
+:LearningResource a owl:Class ;
+  rdfs:label "Learning resource" ;
+  rdfs:comment "A learning resource unit that may support objectives and satisfy learner situations." .
+
+:Module a owl:Class ;
+  rdfs:label "Module" ;
+  rdfs:comment "A modular learning resource unit." ;
+  rdfs:subClassOf :LearningResource .
+
+:MediaResource a owl:Class ;
+  rdfs:label "Media resource" ;
+  rdfs:comment "A media-based learning resource unit." ;
+  rdfs:subClassOf :LearningResource .
+
+:AssessmentExercise a owl:Class ;
+  rdfs:label "Assessment exercise" ;
+  rdfs:comment "An assessment activity that evaluates objectives, topics, or skills using evaluation techniques." .
+
+:EvaluationTechnique a owl:Class ;
+  rdfs:label "Evaluation technique" ;
+  rdfs:comment "A technique used by an assessment exercise to evaluate learning." .
+
+:EvaluationTechniqueType a owl:Class ;
+  rdfs:label "Evaluation technique type" ;
+  rdfs:comment "A category or type of evaluation technique." .
+
+:EvaluationMetric a owl:Class ;
+  rdfs:label "Evaluation metric" ;
+  rdfs:comment "A metric used to interpret or produce evaluation results." .
+
+:EvaluationResult a owl:Class ;
+  rdfs:label "Evaluation result" ;
+  rdfs:comment "A result produced by an assessment exercise using an evaluation technique and metric." .
+
+:AwarenessObservation a owl:Class ;
+  rdfs:label "Awareness observation" ;
+  rdfs:comment "A time-indexed observation of learner awareness about a topic or skill, potentially supported by evaluation results." .
+
+:Response a owl:Class ;
+  rdfs:label "Response" ;
+  rdfs:comment "A delivered response with source and temporal information, including feedback." .
+
+:Feedback a owl:Class ;
+  rdfs:label "Feedback" ;
+  rdfs:comment "A response intended to support learning, potentially based on evaluation evidence." ;
+  rdfs:subClassOf :Response .
+
+:FeedbackType a owl:Class ;
+  rdfs:label "Feedback type" ;
+  rdfs:comment "A category of feedback such as corrective or motivational." .
+
+:Source a owl:Class ;
+  rdfs:label "Source" ;
+  rdfs:comment "A source that produces a response or feedback." .
+
+:HumanSource a owl:Class ;
+  rdfs:label "Human source" ;
+  rdfs:comment "A human source of a response or feedback." ;
+  rdfs:subClassOf :Source .
+
+:AutomatedSource a owl:Class ;
+  rdfs:label "Automated source" ;
+  rdfs:comment "An automated or AI source of a response or feedback." ;
+  rdfs:subClassOf :Source .
+
+#################################################################
+# Disjointness
+#################################################################
+
+:Topic owl:disjointWith :Skill .
+:PedagogicalFramework owl:disjointWith :PedagogicalElement .
+:LearningObjective owl:disjointWith :LearningResource .
+:Module owl:disjointWith :MediaResource .
+:Feedback owl:disjointWith :AwarenessObservation .
+:HumanSource owl:disjointWith :AutomatedSource .
+:Preference owl:disjointWith :Challenge .
+
+#################################################################
+# Object Properties
+#################################################################
+
+:hasGoal a owl:ObjectProperty ;
+  rdfs:label "has goal" ;
+  rdfs:comment "Relates a learner to a goal the learner has or is pursuing." ;
+  rdfs:domain :Learner ;
+  rdfs:range :Goal .
+
+:targetsSkill a owl:ObjectProperty ;
+  rdfs:label "targets skill" ;
+  rdfs:comment "Relates a goal, objective, assessment, or awareness observation to a skill it targets or concerns." ;
+  rdfs:range :Skill .
+
+:hasSituation a owl:ObjectProperty ;
+  rdfs:label "has situation" ;
+  rdfs:comment "Relates a learner to a learner situation relevant to adaptation." ;
+  rdfs:domain :Learner ;
+  rdfs:range :LearnerSituation .
+
+:hasPreference a owl:ObjectProperty ;
+  rdfs:label "has preference" ;
+  rdfs:comment "Relates a learner to a preference." ;
+  rdfs:domain :Learner ;
+  rdfs:range :Preference ;
+  rdfs:subPropertyOf :hasSituation .
+
+:hasChallenge a owl:ObjectProperty ;
+  rdfs:label "has challenge" ;
+  rdfs:comment "Relates a learner to a challenge." ;
+  rdfs:domain :Learner ;
+  rdfs:range :Challenge ;
+  rdfs:subPropertyOf :hasSituation .
+
+:hasAccessibilityNeed a owl:ObjectProperty ;
+  rdfs:label "has accessibility need" ;
+  rdfs:comment "Relates a learner to an accessibility need." ;
+  rdfs:domain :Learner ;
+  rdfs:range :AccessibilityNeed ;
+  rdfs:subPropertyOf :hasChallenge .
+
+:pursuesObjective a owl:ObjectProperty ;
+  rdfs:label "pursues objective" ;
+  rdfs:comment "Relates a learner or goal to a learning objective being pursued." ;
+  rdfs:range :LearningObjective .
+
+:relevantForGoal a owl:ObjectProperty ;
+  rdfs:label "relevant for goal" ;
+  rdfs:comment "Relates a learning objective to a goal for which it is relevant." ;
+  rdfs:domain :LearningObjective ;
+  rdfs:range :Goal .
+
+:requiresPriorKnowledgeOf a owl:ObjectProperty ;
+  rdfs:label "requires prior knowledge of" ;
+  rdfs:comment "Relates a learning objective to a topic that should be known beforehand." ;
+  rdfs:domain :LearningObjective ;
+  rdfs:range :Topic .
+
+:developsSkill a owl:ObjectProperty ;
+  rdfs:label "develops skill" ;
+  rdfs:comment "Relates a learning objective to a skill it develops." ;
+  rdfs:domain :LearningObjective ;
+  rdfs:range :Skill ;
+  rdfs:subPropertyOf :targetsSkill .
+
+:alignedWithSituation a owl:ObjectProperty ;
+  rdfs:label "aligned with situation" ;
+  rdfs:comment "Relates a learning objective, technique, resource, or step to a learner situation it is aligned with." ;
+  rdfs:range :LearnerSituation .
+
+:supportsObjective a owl:ObjectProperty ;
+  rdfs:label "supports objective" ;
+  rdfs:comment "Relates a pedagogical element, technique, resource, strategy, assessment, or feedback to a learning objective it supports." ;
+  rdfs:range :LearningObjective .
+
+:usesTechnique a owl:ObjectProperty ;
+  rdfs:label "uses technique" ;
+  rdfs:comment "Relates an assessment exercise or learning strategy to a technique it uses." ;
+  rdfs:range :PedagogicalTechnique .
+
+:servesPurpose a owl:ObjectProperty ;
+  rdfs:label "serves purpose" ;
+  rdfs:comment "Relates a pedagogical technique to the instructional purpose it serves." ;
+  rdfs:domain :PedagogicalTechnique ;
+  rdfs:range :InstructionalPurpose .
+
+:containsElement a owl:ObjectProperty ;
+  rdfs:label "contains element" ;
+  rdfs:comment "Relates a pedagogical framework to a pedagogical element it contains." ;
+  rdfs:domain :PedagogicalFramework ;
+  rdfs:range :PedagogicalElement .
+
+:isElementOf a owl:ObjectProperty ;
+  rdfs:label "is element of" ;
+  rdfs:comment "Relates a pedagogical element to a pedagogical framework that contains it." ;
+  rdfs:domain :PedagogicalElement ;
+  rdfs:range :PedagogicalFramework ;
+  owl:inverseOf :containsElement .
+
+:followsElement a owl:ObjectProperty ;
+  rdfs:label "follows element" ;
+  rdfs:comment "Relates a pedagogical element to another pedagogical element that immediately precedes it." ;
+  rdfs:domain :PedagogicalElement ;
+  rdfs:range :PedagogicalElement .
+
+:hasFirstStep a owl:ObjectProperty ;
+  rdfs:label "has first step" ;
+  rdfs:comment "Relates a pedagogical framework to the instructional step that occurs first." ;
+  rdfs:domain :PedagogicalFramework ;
+  rdfs:range :InstructionalStep .
+
+:supportsStep a owl:ObjectProperty ;
+  rdfs:label "supports step" ;
+  rdfs:comment "Relates a pedagogical technique or learner situation to an instructional step it supports." ;
+  rdfs:range :InstructionalStep .
+
+:alignedResource a owl:ObjectProperty ;
+  rdfs:label "aligned resource" ;
+  rdfs:comment "Relates a learning objective to a learning resource aligned to it." ;
+  rdfs:domain :LearningObjective ;
+  rdfs:range :LearningResource .
+
+:containsAssessmentExercise a owl:ObjectProperty ;
+  rdfs:label "contains assessment exercise" ;
+  rdfs:comment "Relates a learning resource to an assessment exercise it contains." ;
+  rdfs:domain :LearningResource ;
+  rdfs:range :AssessmentExercise .
+
+:evaluatesObjective a owl:ObjectProperty ;
+  rdfs:label "evaluates objective" ;
+  rdfs:comment "Relates an assessment exercise or evaluation technique to a learning objective it evaluates." ;
+  rdfs:range :LearningObjective .
+
+:evaluatesTopic a owl:ObjectProperty ;
+  rdfs:label "evaluates topic" ;
+  rdfs:comment "Relates an assessment exercise to a topic it evaluates." ;
+  rdfs:domain :AssessmentExercise ;
+  rdfs:range :Topic .
+
+:usesEvaluationTechnique a owl:ObjectProperty ;
+  rdfs:label "uses evaluation technique" ;
+  rdfs:comment "Relates an assessment exercise to an evaluation technique it uses." ;
+  rdfs:domain :AssessmentExercise ;
+  rdfs:range :EvaluationTechnique .
+
+:usesMetric a owl:ObjectProperty ;
+  rdfs:label "uses metric" ;
+  rdfs:comment "Relates an evaluation technique or result to an evaluation metric used." ;
+  rdfs:range :EvaluationMetric .
+
+:hasTechniqueType a owl:ObjectProperty ;
+  rdfs:label "has technique type" ;
+  rdfs:comment "Relates an evaluation technique to its evaluation technique type." ;
+  rdfs:domain :EvaluationTechnique ;
+  rdfs:range :EvaluationTechniqueType .
+
+:producesResult a owl:ObjectProperty ;
+  rdfs:label "produces result" ;
+  rdfs:comment "Relates an assessment exercise or evaluation technique to an evaluation result it produces." ;
+  rdfs:range :EvaluationResult .
+
+:supportsAwarenessObservation a owl:ObjectProperty ;
+  rdfs:label "supports awareness observation" ;
+  rdfs:comment "Relates an evaluation result to an awareness observation it supports." ;
+  rdfs:domain :EvaluationResult ;
+  rdfs:range :AwarenessObservation .
+
+:hasAwarenessObservation a owl:ObjectProperty ;
+  rdfs:label "has awareness observation" ;
+  rdfs:comment "Relates a learner to an awareness observation." ;
+  rdfs:domain :Learner ;
+  rdfs:range :AwarenessObservation .
+
+:aboutTopic a owl:ObjectProperty ;
+  rdfs:label "about topic" ;
+  rdfs:comment "Relates an awareness observation or feedback to the topic it concerns." ;
+  rdfs:range :Topic .
+
+:aboutSkill a owl:ObjectProperty ;
+  rdfs:label "about skill" ;
+  rdfs:comment "Relates an awareness observation or feedback to the skill it concerns." ;
+  rdfs:range :Skill .
+
+:usedStrategy a owl:ObjectProperty ;
+  rdfs:label "used strategy" ;
+  rdfs:comment "Relates an evaluation result or feedback to a learning strategy used or recommended." ;
+  rdfs:range :LearningStrategy .
+
+:supportedByResult a owl:ObjectProperty ;
+  rdfs:label "supported by result" ;
+  rdfs:comment "Relates a feedback or response to an evaluation result that supports it." ;
+  rdfs:range :EvaluationResult .
+
+:hasFeedbackType a owl:ObjectProperty ;
+  rdfs:label "has feedback type" ;
+  rdfs:comment "Relates feedback to its feedback type." ;
+  rdfs:domain :Feedback ;
+  rdfs:range :FeedbackType .
+
+:hasSource a owl:ObjectProperty ;
+  rdfs:label "has source" ;
+  rdfs:comment "Relates a response or feedback to the source that produced it." ;
+  rdfs:domain :Response ;
+  rdfs:range :Source .
+
+:mayAffectStrategy a owl:ObjectProperty ;
+  rdfs:label "may affect strategy" ;
+  rdfs:comment "Relates feedback to a learning strategy it may affect." ;
+  rdfs:domain :Feedback ;
+  rdfs:range :LearningStrategy .
+
+:satisfiesSituation a owl:ObjectProperty ;
+  rdfs:label "satisfies situation" ;
+  rdfs:comment "Relates a learning resource to a learner situation it satisfies." ;
+  rdfs:domain :LearningResource ;
+  rdfs:range :LearnerSituation .
+
+:informedBy a owl:ObjectProperty ;
+  rdfs:label "informed by" ;
+  rdfs:comment "Relates a selected objective, technique, resource, strategy, step, or feedback to information that supports the selection." .
+
+#################################################################
+# Datatype Properties
+#################################################################
+
+:awarenessLevel a owl:DatatypeProperty ;
+  rdfs:label "awareness level" ;
+  rdfs:comment "A value representing the learner's awareness level in an awareness observation." ;
+  rdfs:domain :AwarenessObservation ;
+  rdfs:range xsd:string .
+
+:resultValue a owl:DatatypeProperty ;
+  rdfs:label "result value" ;
+  rdfs:comment "A value representing an evaluation result." ;
+  rdfs:domain :EvaluationResult ;
+  rdfs:range xsd:string .
+
+:observedAt a owl:DatatypeProperty ;
+  rdfs:label "observed at" ;
+  rdfs:comment "The time at which an awareness observation was made." ;
+  rdfs:domain :AwarenessObservation ;
+  rdfs:range xsd:dateTime .
+
+:deliveredAt a owl:DatatypeProperty ;
+  rdfs:label "delivered at" ;
+  rdfs:comment "The time at which a response or feedback was delivered." ;
+  rdfs:domain :Response ;
+  rdfs:range xsd:dateTime .
+
+#################################################################
+# Minimal cardinality / existential constraints
+#################################################################
+
+:PedagogicalFramework rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :containsElement ;
+    owl:someValuesFrom :PedagogicalElement
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasFirstStep ;
+    owl:allValuesFrom :InstructionalStep
+  ] .
+
+:InstructionalStep rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :isElementOf ;
+    owl:someValuesFrom :PedagogicalFramework
+  ] .
+
+:LearningObjective rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :alignedResource ;
+    owl:allValuesFrom :LearningResource
+  ] ,
+  [ a owl:Restriction ;

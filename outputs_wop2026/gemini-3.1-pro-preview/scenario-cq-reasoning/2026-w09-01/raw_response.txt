@@ -1,0 +1,305 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Climate Services and Dataset Variables Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern for modeling datasets, their independent and dependent variables, dimensional spaces, derivations, aggregations, and quantizations." .
+
+### Classes ###
+
+:Dataset a owl:Class ;
+    rdfs:label "Dataset" ;
+    rdfs:comment "A collection of data representing values of variables over a dimensional space." .
+
+:Variable a owl:Class ;
+    rdfs:label "Variable" ;
+    rdfs:comment "A characteristic, number, or quantity that can be measured or counted." .
+
+:IndependentVariable a owl:Class ;
+    rdfs:subClassOf :Variable ;
+    owl:disjointWith :DependentVariable ;
+    rdfs:label "Independent Variable" ;
+    rdfs:comment "A variable whose variation does not depend on that of another (e.g., time, space)." .
+
+:DependentVariable a owl:Class ;
+    rdfs:subClassOf :Variable ;
+    rdfs:label "Dependent Variable" ;
+    rdfs:comment "A variable whose value depends on one or more independent variables." .
+
+:VariableSpecialization a owl:Class ;
+    rdfs:subClassOf :Variable ;
+    rdfs:label "Variable Specialization" ;
+    rdfs:comment "A variable derived by constraining or fixing an independent variable of a more general variable." .
+
+:RescaledVariable a owl:Class ;
+    rdfs:subClassOf :Variable ;
+    rdfs:label "Rescaled Variable" ;
+    rdfs:comment "A variable derived by changing the scale or unit of another variable without changing its dependency structure." .
+
+:CompositeVariable a owl:Class ;
+    rdfs:subClassOf :Variable ;
+    rdfs:label "Composite Variable" ;
+    rdfs:comment "A variable composed of multiple component variables." .
+
+:DimensionalSpace a owl:Class ;
+    rdfs:label "Dimensional Space" ;
+    rdfs:comment "The mathematical or conceptual space over which a variable takes its values." .
+
+:Continuum a owl:Class ;
+    rdfs:subClassOf :DimensionalSpace ;
+    rdfs:label "Continuum" ;
+    rdfs:comment "A continuous dimensional space." .
+
+:Quantization a owl:Class ;
+    rdfs:subClassOf :DimensionalSpace ;
+    rdfs:label "Quantization" ;
+    rdfs:comment "A discrete dimensional space obtained by discretizing a continuum (e.g., via sampling or binning)." .
+
+:Aggregation a owl:Class ;
+    rdfs:label "Aggregation" ;
+    rdfs:comment "A definition of how values are grouped and summarized over specific variables." .
+
+:BoundingRegion a owl:Class ;
+    rdfs:label "Bounding Region" ;
+    rdfs:comment "The exact or approximate boundaries (coverage) of a dimensional space or dataset." .
+
+:Process a owl:Class ;
+    rdfs:label "Process" ;
+    rdfs:comment "An activity or transformation that generates a dataset, potentially consuming other datasets." .
+
+:DataSource a owl:Class ;
+    rdfs:label "Data Source" ;
+    rdfs:comment "A specific serialization or distribution of a dataset." .
+
+:DataFormat a owl:Class ;
+    rdfs:label "Data Format" ;
+    rdfs:comment "The technical format of a data source (e.g., CSV, Parquet)." .
+
+### Object Properties ###
+
+:hasVariable a owl:ObjectProperty ;
+    rdfs:domain :Dataset ;
+    rdfs:range :Variable ;
+    rdfs:label "has variable" ;
+    rdfs:comment "Links a dataset to the variables it contains." .
+
+:dependsOn a owl:ObjectProperty ;
+    rdfs:domain :DependentVariable ;
+    rdfs:range :IndependentVariable ;
+    rdfs:label "depends on" ;
+    rdfs:comment "Indicates the independent variables that a dependent variable relies upon." .
+
+:hasDimensionalSpace a owl:ObjectProperty ;
+    rdfs:domain :Variable ;
+    rdfs:range :DimensionalSpace ;
+    rdfs:label "has dimensional space" ;
+    rdfs:comment "Links a variable to the dimensional space on which it takes values." .
+
+:derivedFrom a owl:ObjectProperty ;
+    rdfs:domain :Variable ;
+    rdfs:range :Variable ;
+    rdfs:label "derived from" ;
+    rdfs:comment "Indicates that a variable is derived from a more general or source variable." .
+
+:specializes a owl:ObjectProperty ;
+    rdfs:subPropertyOf :derivedFrom ;
+    rdfs:domain :VariableSpecialization ;
+    rdfs:range :Variable ;
+    rdfs:label "specializes" ;
+    rdfs:comment "Indicates the more general variable that this specialization restricts." .
+
+:constrainsVariable a owl:ObjectProperty ;
+    rdfs:domain :VariableSpecialization ;
+    rdfs:range :IndependentVariable ;
+    rdfs:label "constrains variable" ;
+    rdfs:comment "Indicates the independent variable that is fixed or constrained by a specialization." .
+
+:rescales a owl:ObjectProperty ;
+    rdfs:subPropertyOf :derivedFrom ;
+    rdfs:domain :RescaledVariable ;
+    rdfs:range :Variable ;
+    rdfs:label "rescales" ;
+    rdfs:comment "Indicates the original variable that this rescaled variable modifies." .
+
+:hasComponentVariable a owl:ObjectProperty ;
+    rdfs:domain :CompositeVariable ;
+    rdfs:range :Variable ;
+    rdfs:label "has component variable" ;
+    rdfs:comment "Links a composite variable to its constituent variables." .
+
+:subSpaceOf a owl:ObjectProperty ;
+    rdfs:domain :DimensionalSpace ;
+    rdfs:range :DimensionalSpace ;
+    rdfs:label "sub-space of" ;
+    rdfs:comment "Indicates that a dimensional space is a projection or subset of another." .
+
+:hasAggregation a owl:ObjectProperty ;
+    rdfs:domain :DependentVariable ;
+    rdfs:range :Aggregation ;
+    rdfs:label "has aggregation" ;
+    rdfs:comment "Links a dependent variable to the aggregation it defines." .
+
+:aggregatesOver a owl:ObjectProperty ;
+    rdfs:domain :Aggregation ;
+    rdfs:range :Variable ;
+    rdfs:label "aggregates over" ;
+    rdfs:comment "Indicates the variable(s) over which an aggregation groups values." .
+
+:suggestsQuantization a owl:ObjectProperty ;
+    rdfs:domain :Aggregation ;
+    rdfs:range :Quantization ;
+    rdfs:label "suggests quantization" ;
+    rdfs:comment "Indicates candidate granularities or quantizations suggested by an aggregation." .
+
+:discretizes a owl:ObjectProperty ;
+    rdfs:domain :Quantization ;
+    rdfs:range :Continuum ;
+    rdfs:label "discretizes" ;
+    rdfs:comment "Links a quantization to the continuum it discretizes." .
+
+:hasBoundingRegion a owl:ObjectProperty ;
+    rdfs:domain :DimensionalSpace ;
+    rdfs:range :BoundingRegion ;
+    rdfs:label "has bounding region" ;
+    rdfs:comment "Links a dimensional space to its bounding region." .
+
+:hasCoverage a owl:ObjectProperty ;
+    rdfs:domain :Dataset ;
+    rdfs:range :BoundingRegion ;
+    rdfs:label "has coverage" ;
+    rdfs:comment "Links a dataset to its spatio-temporal or dimensional coverage." .
+
+:generatedBy a owl:ObjectProperty ;
+    rdfs:domain :Dataset ;
+    rdfs:range :Process ;
+    rdfs:label "generated by" ;
+    rdfs:comment "Links a dataset to the process that produced it." .
+
+:consumesDataset a owl:ObjectProperty ;
+    rdfs:domain :Process ;
+    rdfs:range :Dataset ;
+    rdfs:label "consumes dataset" ;
+    rdfs:comment "Links a process to the input datasets it consumes." .
+
+:hasSerialization a owl:ObjectProperty ;
+    rdfs:domain :Dataset ;
+    rdfs:range :DataSource ;
+    rdfs:label "has serialization" ;
+    rdfs:comment "Links a dataset to a specific data source offering it." .
+
+:hasFormat a owl:ObjectProperty ;
+    rdfs:domain :DataSource ;
+    rdfs:range :DataFormat ;
+    rdfs:label "has format" ;
+    rdfs:comment "Links a data source to its technical format." .
+
+:equivalentVariable a owl:ObjectProperty , owl:SymmetricProperty ;
+    rdfs:domain :Variable ;
+    rdfs:range :Variable ;
+    rdfs:label "equivalent variable" ;
+    rdfs:comment "Asserts that two independently modeled variables always coincide in value." .
+
+### Datatype Properties ###
+
+:isContinuous a owl:DatatypeProperty ;
+    rdfs:domain :DimensionalSpace ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is continuous" ;
+    rdfs:comment "Indicates whether a dimensional space is continuous." .
+
+:isDiscrete a owl:DatatypeProperty ;
+    rdfs:domain :DimensionalSpace ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is discrete" ;
+    rdfs:comment "Indicates whether a dimensional space is discrete." .
+
+:isBounded a owl:DatatypeProperty ;
+    rdfs:domain :DimensionalSpace ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is bounded" ;
+    rdfs:comment "Indicates whether a dimensional space is bounded." .
+
+:isFinite a owl:DatatypeProperty ;
+    rdfs:domain :DimensionalSpace ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is finite" ;
+    rdfs:comment "Indicates whether a dimensional space is fully enumerable with finite resources." .
+
+:discretizationMethod a owl:DatatypeProperty ;
+    rdfs:domain :Quantization ;
+    rdfs:range xsd:string ;
+    rdfs:label "discretization method" ;
+    rdfs:comment "The method used to discretize a continuum (e.g., 'sampling', 'binning')." .
+
+:hasResolution a owl:DatatypeProperty ;
+    rdfs:domain :Quantization ;
+    rdfs:range xsd:string ;
+    rdfs:label "has resolution" ;
+    rdfs:comment "The exact resolution, bin size, or period of a quantization." .
+
+:hasAggregationFunction a owl:DatatypeProperty ;
+    rdfs:domain :Aggregation ;
+    rdfs:range xsd:string ;
+    rdfs:label "has aggregation function" ;
+    rdfs:comment "The mathematical function used for aggregation (e.g., AVG, SUM)." .
+
+:hasURL a owl:DatatypeProperty ;
+    rdfs:domain :DataSource ;
+    rdfs:range xsd:anyURI ;
+    rdfs:label "has URL" ;
+    rdfs:comment "The web address where a data source can be accessed." .
+```
+
+### Reasoning Summary
+1. **Extract requirements:** Identified core concepts: datasets, independent/dependent variables, dimensional spaces, derivations (specialization, rescaling, aggregation), quantizations, bounding regions, processes, and serializations.
+2. **Propose classes/properties:** Created classes like `Variable`, `DimensionalSpace`, `Aggregation`, `Quantization`, `Dataset`, and properties like `dependsOn`, `specializes`, `aggregatesOver`, `discretizes`.
+3. **Draft axioms:** Defined domains, ranges, subclass hierarchies (e.g., `IndependentVariable` disjoint with `DependentVariable`), and symmetric properties (`equivalentVariable`).
+4. **Verify against CQs:** Checked each CQ against the drafted schema; ensured properties existed for querying dependencies, derivations, resolutions, and formats.
+5. **Refine axioms:** Added datatype properties (`isContinuous`, `isDiscrete`, `hasResolution`, `discretizationMethod`, `hasAggregationFunction`) to cover specific CQs regarding space properties and aggregation details.
+6. **Remove unused elements:** Ensured all declared entities directly answer at least one CQ or fulfill a scenario requirement, keeping the model minimal and strictly schema-focused.
+
+### Traceability Table
+
+| Competency Question / Requirement | Covering Axiom(s) (Classes & Properties) |
+| :--- | :--- |
+| What is the dimensional space on which a given variable takes its values? | `:hasDimensionalSpace` |
+| Is a given variable independent, or does it depend on one or more other variables? | `:IndependentVariable`, `:DependentVariable`, `:dependsOn` |
+| On which independent variables does a given dependent variable depend? | `:dependsOn` |
+| What are the independent variables of "daily closing price of an equity"? | `:dependsOn` |
+| Does "weekly influenza-like-illness incidence rate" depend on both a temporal and a geographic independent variable? | `:dependsOn` |
+| From which more general variable is a given (derived) variable derived? | `:derivedFrom` |
+| Of which more general variable is "near-surface air temperature" a specialization, and which independent variable does the specialization fix? | `:VariableSpecialization`, `:specializes`, `:constrainsVariable` |
+| Is "measles incidence rate in Region X" a specialization... obtained by constraining the geodetic-region independent variable? | `:VariableSpecialization`, `:specializes`, `:constrainsVariable` |
+| Is "NASDAQ-100 closing price" a specialization of a generic "equity-index closing price" variable...? | `:VariableSpecialization`, `:specializes` |
+| Which independent variable is constrained by a given variable-specialization instance? | `:constrainsVariable` |
+| Is a given variable a rescaled version of another variable, and if so, which is the original (non-rescaled) variable? | `:RescaledVariable`, `:rescales` |
+| Is "air temperature in Celsius" a rescaled version of "air temperature in Kelvin"...? | `:RescaledVariable`, `:rescales` |
+| Is "closing price in EUR" a rescaled version of "closing price in USD"...? | `:RescaledVariable`, `:rescales` |
+| What are the component variables of a given composite variable? | `:CompositeVariable`, `:hasComponentVariable` |
+| What are the component variables of a "geodetic coordinate" variable...? | `:CompositeVariable`, `:hasComponentVariable` |
+| Is a composite "socio-economic status index" composed of component variables...? | `:CompositeVariable`, `:hasComponentVariable` |
+| Which dimensional space is a sub-dimensional space (projection) of a composite spatio-temporal dimensional space? | `:subSpaceOf` |
+| Is a given dependent variable "aggregating", and if so, which aggregation(s) does it define? | `:hasAggregation`, `:Aggregation` |
+| Over which variable does a given aggregation group values, and which quantizations are suggested as candidate granularities for it? | `:aggregatesOver`, `:suggestsQuantization` |
+| Along which two independent variables... is tasmax aggregated, and what quantization is suggested for each? | `:aggregatesOver`, `:suggestsQuantization` |
+| For a KPI defined by a SQL expression... what is the variable being aggregated, and which candidate quantizations... are suggested...? | `:aggregatesOver`, `:suggestsQuantization` |
+| Which aggregation function and axis produce "average daily household energy consumption"... and which temporal quantization... does it suggest? | `:hasAggregationFunction`, `:aggregatesOver`, `:suggestsQuantization` |
+| Is a given dimensional space continuous or discrete? | `:isContinuous`, `:isDiscrete` |
+| Of which continuum is a given quantization a discretization, and is it obtained by sampling or by binning? | `:Quantization`, `:discretizes`, `:Continuum`, `:discretizationMethod` |
+| What is the (exact) resolution of the daily temporal quantization used to grid tasmax for the year 2024? | `:hasResolution` |
+| What is the spatial bin size (resolution) of a satellite-derived land-cover raster, and is it a regular binning? | `:hasResolution`, `:discretizationMethod` |
+| Are weekly disease-surveillance counts obtained via a periodic binning of a temporal continuum, and what are its period and in-period resolution? | `:discretizationMethod`, `:hasResolution` |
+| Is a given discrete dimensional space also bounded, and therefore finite (fully enumerable with finite resources)? | `:isBounded`, `:isFinite` |
+| What is the exact (or approximate) bounding region of a given dimensional space or dataset? | `:hasBoundingRegion`, `:hasCoverage`, `:BoundingRegion` |
+| What time span does a historical stock-price dataset cover? | `:hasCoverage` |
+| What is the geodetic and temporal coverage of the tasmax, Italy, 2024 dataset? | `:hasCoverage` |
+| Which data source(s) offer a serialization of a given dataset, and in which data format(s)? | `:hasSerialization`, `:DataSource`, `:hasFormat`, `:DataFormat` |
+| In which formats (e.g., CSV, Parquet) is a smart-meter aggregate dataset available, and at which URL? | `:hasFormat`, `:hasURL` |
+| By which process was a given dataset generated, and does that process also consume other dataset(s) as input...? | `:generatedBy`, `:Process`, `:consumesDataset` |
+| Which raw case-report dataset(s) were consumed by the process that produced a weekly aggregated incidence dataset? | `:consumesDataset` |
+| Are two independently modelled variables asserted to always coincide in value, despite being derived through different chains? | `:equivalentVariable` |
+| Is "GDP per capita" as published by the World Bank equivalent to "GDP per capita" as published by the IMF...? | `:equivalentVariable` |

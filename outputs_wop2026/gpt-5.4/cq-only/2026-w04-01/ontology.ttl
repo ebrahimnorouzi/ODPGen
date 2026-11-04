@@ -1,0 +1,153 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Executable Suspicious Behavior Detection ODP" ;
+  rdfs:comment "An ontology design pattern for representing executables, functions, instructions, API calls, and suspicious behavioral indicators needed to answer competency questions about malicious persistence, networking, control flow, entropy-related opcode diversity, self-referential decode loops, file system abuse, suspicious memory jumps, suspicious API usage, cryptographic activity, and imported function percentage." .
+
+:ExecutableFile a owl:Class ;
+  rdfs:label "Executable File" ;
+  rdfs:comment "A binary executable file being analyzed." .
+
+:Function a owl:Class ;
+  rdfs:label "Function" ;
+  rdfs:comment "A function contained in an executable file." .
+
+:Instruction a owl:Class ;
+  rdfs:label "Instruction" ;
+  rdfs:comment "A machine instruction contained in a function." .
+
+:ApiCall a owl:Class ;
+  rdfs:label "API Call" ;
+  rdfs:comment "An API call contained in or invoked by an executable." .
+
+:BehaviorPattern a owl:Class ;
+  rdfs:label "Behavior Pattern" ;
+  rdfs:comment "A detectable behavioral or structural pattern found in an executable or function." .
+
+:PersistentApiCall a owl:Class ;
+  rdfs:label "Persistent API Call" ;
+  rdfs:comment "An API call associated with persistence behavior." ;
+  rdfs:subClassOf :ApiCall .
+
+:NetworkingActivity a owl:Class ;
+  rdfs:label "Networking Activity" ;
+  rdfs:comment "A networking-related activity found in an executable." ;
+  rdfs:subClassOf :BehaviorPattern .
+
+:IndirectControlFlowPattern a owl:Class ;
+  rdfs:label "Indirect Control Flow Pattern" ;
+  rdfs:comment "A control flow pattern involving indirect transfers of execution that may indicate vulnerable code." ;
+  rdfs:subClassOf :BehaviorPattern .
+
+:SelfReferentialDecodeLoop a owl:Class ;
+  rdfs:label "Self-Referential Decode Loop" ;
+  rdfs:comment "A loop pattern in which code references and decodes itself, indicating possible data obfuscation." ;
+  rdfs:subClassOf :BehaviorPattern .
+
+:FileSystemAbuse a owl:Class ;
+  rdfs:label "File System Abuse" ;
+  rdfs:comment "A suspicious pattern of file system interaction." ;
+  rdfs:subClassOf :BehaviorPattern .
+
+:SuspiciousMemoryJump a owl:Class ;
+  rdfs:label "Suspicious Memory Jump" ;
+  rdfs:comment "A suspicious jump into memory detected in an executable or function." ;
+  rdfs:subClassOf :BehaviorPattern .
+
+:SuspiciousApiCall a owl:Class ;
+  rdfs:label "Suspicious API Call" ;
+  rdfs:comment "An API call considered suspicious for security analysis." ;
+  rdfs:subClassOf :ApiCall .
+
+:CryptographicActivity a owl:Class ;
+  rdfs:label "Cryptographic Activity" ;
+  rdfs:comment "An activity indicating cryptographic operations that may hide parts of the program." ;
+  rdfs:subClassOf :BehaviorPattern .
+
+:ImportedFunction a owl:Class ;
+  rdfs:label "Imported Function" ;
+  rdfs:comment "A function that is imported from an external library or binary." ;
+  rdfs:subClassOf :Function .
+
+:containsFunction a owl:ObjectProperty ;
+  rdfs:label "contains function" ;
+  rdfs:comment "Relates an executable file to a function it contains." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range :Function .
+
+:containsInstruction a owl:ObjectProperty ;
+  rdfs:label "contains instruction" ;
+  rdfs:comment "Relates a function to an instruction it contains." ;
+  rdfs:domain :Function ;
+  rdfs:range :Instruction .
+
+:containsApiCall a owl:ObjectProperty ;
+  rdfs:label "contains API call" ;
+  rdfs:comment "Relates an executable file to an API call it contains." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range :ApiCall .
+
+:hasBehaviorPattern a owl:ObjectProperty ;
+  rdfs:label "has behavior pattern" ;
+  rdfs:comment "Relates an executable file or function to a detected behavioral or structural pattern." .
+
+:hasNetworkingActivity a owl:ObjectProperty ;
+  rdfs:label "has networking activity" ;
+  rdfs:comment "Relates an executable file to detected networking activity." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range :NetworkingActivity ;
+  rdfs:subPropertyOf :hasBehaviorPattern .
+
+:hasIndirectControlFlowPattern a owl:ObjectProperty ;
+  rdfs:label "has indirect control flow pattern" ;
+  rdfs:comment "Relates an executable file or function to an indirect control flow pattern." ;
+  rdfs:range :IndirectControlFlowPattern ;
+  rdfs:subPropertyOf :hasBehaviorPattern .
+
+:hasSelfReferentialDecodeLoop a owl:ObjectProperty ;
+  rdfs:label "has self-referential decode loop" ;
+  rdfs:comment "Relates an executable file or function to a self-referential decode loop pattern." ;
+  rdfs:range :SelfReferentialDecodeLoop ;
+  rdfs:subPropertyOf :hasBehaviorPattern .
+
+:hasFileSystemAbuse a owl:ObjectProperty ;
+  rdfs:label "has file system abuse" ;
+  rdfs:comment "Relates an executable file to detected file system abuse." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range :FileSystemAbuse ;
+  rdfs:subPropertyOf :hasBehaviorPattern .
+
+:hasSuspiciousMemoryJump a owl:ObjectProperty ;
+  rdfs:label "has suspicious memory jump" ;
+  rdfs:comment "Relates an executable file or function to a suspicious jump into memory." ;
+  rdfs:range :SuspiciousMemoryJump ;
+  rdfs:subPropertyOf :hasBehaviorPattern .
+
+:hasCryptographicActivity a owl:ObjectProperty ;
+  rdfs:label "has cryptographic activity" ;
+  rdfs:comment "Relates an executable file to detected cryptographic activity." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range :CryptographicActivity ;
+  rdfs:subPropertyOf :hasBehaviorPattern .
+
+:invokesApiCall a owl:ObjectProperty ;
+  rdfs:label "invokes API call" ;
+  rdfs:comment "Relates a function to an API call it invokes." ;
+  rdfs:domain :Function ;
+  rdfs:range :ApiCall .
+
+:hasOpcodeDiversityRatio a owl:DatatypeProperty ;
+  rdfs:label "has opcode diversity ratio" ;
+  rdfs:comment "Gives the ratio of unique opcodes to the total number of instructions in a function." ;
+  rdfs:domain :Function ;
+  rdfs:range xsd:decimal .
+
+:hasImportedFunctionPercentage a owl:DatatypeProperty ;
+  rdfs:label "has imported function percentage" ;
+  rdfs:comment "Gives the percentage of functions in a binary file that are imported external functions." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range xsd:decimal .

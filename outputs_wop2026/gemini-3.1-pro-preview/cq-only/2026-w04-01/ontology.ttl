@@ -1,0 +1,197 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Executable Malware Analysis Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern for detecting malicious patterns, obfuscation, suspicious activities, and structural properties in executable and binary files." .
+
+### Classes ###
+
+:Executable a owl:Class ;
+    rdfs:label "Executable" ;
+    rdfs:comment "A compiled program or executable file being analyzed for malicious or suspicious behavior." .
+
+:BinaryFile a owl:Class ;
+    owl:equivalentClass :Executable ;
+    rdfs:label "Binary File" ;
+    rdfs:comment "A binary file, equivalent to an executable in the context of this analysis." .
+
+:APICall a owl:Class ;
+    rdfs:label "API Call" ;
+    rdfs:comment "An application programming interface call made by the executable." .
+
+:NetworkingActivity a owl:Class ;
+    rdfs:label "Networking Activity" ;
+    rdfs:comment "Network communication or connection attempts initiated by the executable." .
+
+:ControlFlowPattern a owl:Class ;
+    rdfs:label "Control Flow Pattern" ;
+    rdfs:comment "A specific sequence or structure of execution flow within the program." .
+
+:VulnerableCode a owl:Class ;
+    rdfs:label "Vulnerable Code" ;
+    rdfs:comment "Code segments that contain security vulnerabilities." .
+
+:Function a owl:Class ;
+    rdfs:label "Function" ;
+    rdfs:comment "A distinct block of code or subroutine within the executable or binary file." .
+
+:EntropySection a owl:Class ;
+    rdfs:label "Entropy Section" ;
+    rdfs:comment "A section of code or data exhibiting specific entropy characteristics, often indicating packing or obfuscation." .
+
+:DecodeLoop a owl:Class ;
+    rdfs:label "Decode Loop" ;
+    rdfs:comment "A loop structure used to decode or decrypt data or code at runtime." .
+
+:DataObfuscation a owl:Class ;
+    rdfs:label "Data Obfuscation" ;
+    rdfs:comment "Techniques used to hide or obscure the true intent or content of data within the executable." .
+
+:FileSystemAbuse a owl:Class ;
+    rdfs:label "File System Abuse" ;
+    rdfs:comment "Malicious or unauthorized interactions with the host file system." .
+
+:MemoryJump a owl:Class ;
+    rdfs:label "Memory Jump" ;
+    rdfs:comment "An instruction that transfers control flow to a specific memory address." .
+
+:CryptographicActivity a owl:Class ;
+    rdfs:label "Cryptographic Activity" ;
+    rdfs:comment "Operations involving encryption, decryption, or hashing within the executable." .
+
+:Encryption a owl:Class ;
+    rdfs:label "Encryption" ;
+    rdfs:comment "The process of encoding information to hide parts of the program or data." .
+
+### Object Properties ###
+
+:hasAPICall a owl:ObjectProperty ;
+    rdfs:domain :Executable ;
+    rdfs:range :APICall ;
+    rdfs:label "has API call" ;
+    rdfs:comment "Relates an executable to an API call it contains or executes." .
+
+:hasNetworkingActivity a owl:ObjectProperty ;
+    rdfs:domain :Executable ;
+    rdfs:range :NetworkingActivity ;
+    rdfs:label "has networking activity" ;
+    rdfs:comment "Relates an executable to its networking activities." .
+
+:hasControlFlowPattern a owl:ObjectProperty ;
+    rdfs:domain :Executable ;
+    rdfs:range :ControlFlowPattern ;
+    rdfs:label "has control flow pattern" ;
+    rdfs:comment "Relates an executable to a control flow pattern found within it." .
+
+:indicatesVulnerability a owl:ObjectProperty ;
+    rdfs:domain :ControlFlowPattern ;
+    rdfs:range :VulnerableCode ;
+    rdfs:label "indicates vulnerability" ;
+    rdfs:comment "Links a control flow pattern to the vulnerable code it signifies." .
+
+:hasFunction a owl:ObjectProperty ;
+    rdfs:domain :Executable ;
+    rdfs:range :Function ;
+    rdfs:label "has function" ;
+    rdfs:comment "Relates an executable or binary file to a function it contains." .
+
+:hasEntropySection a owl:ObjectProperty ;
+    rdfs:domain :Function ;
+    rdfs:range :EntropySection ;
+    rdfs:label "has entropy section" ;
+    rdfs:comment "Relates a function to a detected section of entropy." .
+
+:detectsObfuscation a owl:ObjectProperty ;
+    rdfs:domain :DecodeLoop ;
+    rdfs:range :DataObfuscation ;
+    rdfs:label "detects obfuscation" ;
+    rdfs:comment "Links a decode loop to the data obfuscation it reveals or implements." .
+
+:hasFileSystemAbuse a owl:ObjectProperty ;
+    rdfs:domain :Executable ;
+    rdfs:range :FileSystemAbuse ;
+    rdfs:label "has file system abuse" ;
+    rdfs:comment "Relates an executable to instances of file system abuse it performs." .
+
+:hasMemoryJump a owl:ObjectProperty ;
+    rdfs:domain :Executable ;
+    rdfs:range :MemoryJump ;
+    rdfs:label "has memory jump" ;
+    rdfs:comment "Relates an executable to a memory jump instruction it contains." .
+
+:hasCryptographicActivity a owl:ObjectProperty ;
+    rdfs:domain :Executable ;
+    rdfs:range :CryptographicActivity ;
+    rdfs:label "has cryptographic activity" ;
+    rdfs:comment "Relates an executable to cryptographic operations it performs." .
+
+:indicatesEncryption a owl:ObjectProperty ;
+    rdfs:domain :CryptographicActivity ;
+    rdfs:range :Encryption ;
+    rdfs:label "indicates encryption" ;
+    rdfs:comment "Links cryptographic activity to the encryption used to hide parts of the program." .
+
+### Datatype Properties ###
+
+:isMalicious a owl:DatatypeProperty ;
+    rdfs:domain :APICall ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is malicious" ;
+    rdfs:comment "Indicates whether an API call is considered malicious." .
+
+:isPersistent a owl:DatatypeProperty ;
+    rdfs:domain :APICall ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is persistent" ;
+    rdfs:comment "Indicates whether an API call exhibits persistent behavior." .
+
+:isSuspicious a owl:DatatypeProperty ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is suspicious" ;
+    rdfs:comment "Indicates whether an activity, call, or jump is considered suspicious. Domain is left open to apply to NetworkingActivity, MemoryJump, and APICall." .
+
+:isIndirect a owl:DatatypeProperty ;
+    rdfs:domain :ControlFlowPattern ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is indirect" ;
+    rdfs:comment "Indicates whether a control flow pattern is indirect." .
+
+:uniqueOpcodeCount a owl:DatatypeProperty ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:integer ;
+    rdfs:label "unique opcode count" ;
+    rdfs:comment "The number of unique opcodes present in a function." .
+
+:totalInstructionCount a owl:DatatypeProperty ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:integer ;
+    rdfs:label "total instruction count" ;
+    rdfs:comment "The total number of instructions present in a function." .
+
+:entropyRatio a owl:DatatypeProperty ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "entropy ratio" ;
+    rdfs:comment "The ratio of unique opcodes to the total number of instructions, used to detect entropy." .
+
+:isSelfReferential a owl:DatatypeProperty ;
+    rdfs:domain :DecodeLoop ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is self-referential" ;
+    rdfs:comment "Indicates whether a decode loop is self-referential." .
+
+:isImported a owl:DatatypeProperty ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is imported" ;
+    rdfs:comment "Indicates whether a function is imported (external) rather than locally defined." .
+
+:importedFunctionPercentage a owl:DatatypeProperty ;
+    rdfs:domain :Executable ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "imported function percentage" ;
+    rdfs:comment "The percentage of functions in the binary file that are imported." .

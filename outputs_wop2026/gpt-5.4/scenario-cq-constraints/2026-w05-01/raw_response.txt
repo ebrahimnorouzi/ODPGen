@@ -1,0 +1,220 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Prompting and Foundation Model Usage ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing tasks, data modalities, constraints, prompting techniques, foundation models, prompts, responses, chats, and usage statistics grounded in the scenario and competency questions." .
+
+:Task a owl:Class ;
+  rdfs:label "Task" ;
+  rdfs:comment "A task that Mike needs to solve by prompting a foundation model." .
+
+:PromptingTechnique a owl:Class ;
+  rdfs:label "Prompting technique" ;
+  rdfs:comment "A technique used to formulate prompts and considered for suitability to tasks." .
+
+:FoundationModel a owl:Class ;
+  rdfs:label "Foundation model" ;
+  rdfs:comment "A foundation model to which prompts can be submitted." .
+
+:ModelArchitecture a owl:Class ;
+  rdfs:label "Model architecture" ;
+  rdfs:comment "An architecture of a foundation model." .
+
+:DataModality a owl:Class ;
+  rdfs:label "Data modality" ;
+  rdfs:comment "A data modality involved in a task or processable by a foundation model." .
+
+:Constraint a owl:Class ;
+  rdfs:label "Constraint" ;
+  rdfs:comment "A constraint that applies to a task or to model architecture selection." .
+
+:Resource a owl:Class ;
+  rdfs:label "Resource" ;
+  rdfs:comment "An available resource on which model architecture depends." .
+
+:ModelFamily a owl:Class ;
+  rdfs:label "Model family" ;
+  rdfs:comment "A family grouping related foundation models for exploration and experimentation." .
+
+:Prompt a owl:Class ;
+  rdfs:label "Prompt" ;
+  rdfs:comment "A prompt submitted to a foundation model and based on a prompting technique." .
+
+:Response a owl:Class ;
+  rdfs:label "Response" ;
+  rdfs:comment "A response produced for a prompt." .
+
+:Chat a owl:Class ;
+  rdfs:label "Chat" ;
+  rdfs:comment "A chat whose prior interactions can be analyzed for usage patterns." .
+
+:UsageStatistic a owl:Class ;
+  rdfs:label "Usage statistic" ;
+  rdfs:comment "A statistic derived from chats, such as averages or counts." .
+
+:ConversationLengthStatistic a owl:Class ;
+  rdfs:label "Conversation length statistic" ;
+  rdfs:comment "A statistic about conversation length in chats." ;
+  rdfs:subClassOf :UsageStatistic .
+
+:AveragePromptCountPerChatStatistic a owl:Class ;
+  rdfs:label "Average prompt count per chat statistic" ;
+  rdfs:comment "A statistic representing the average number of prompts per chat." ;
+  rdfs:subClassOf :UsageStatistic .
+
+:AverageResponseCountPerChatStatistic a owl:Class ;
+  rdfs:label "Average response count per chat statistic" ;
+  rdfs:comment "A statistic representing the average number of responses per chat." ;
+  rdfs:subClassOf :UsageStatistic .
+
+:ChatCountPerModelStatistic a owl:Class ;
+  rdfs:label "Chat count per model statistic" ;
+  rdfs:comment "A statistic representing how many chats were conducted per foundation model." ;
+  rdfs:subClassOf :UsageStatistic .
+
+:hasDataModality a owl:ObjectProperty ;
+  rdfs:label "has data modality" ;
+  rdfs:comment "Relates a task or foundation model to a data modality." ;
+  rdfs:domain owl:Thing ;
+  rdfs:range :DataModality .
+
+:hasConstraint a owl:ObjectProperty ;
+  rdfs:label "has constraint" ;
+  rdfs:comment "Relates a task to a constraint that applies to it." ;
+  rdfs:domain :Task ;
+  rdfs:range :Constraint .
+
+:hasArchitecture a owl:ObjectProperty ;
+  rdfs:label "has architecture" ;
+  rdfs:comment "Relates a foundation model to its architecture." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :ModelArchitecture .
+
+:dependsOnResource a owl:ObjectProperty ;
+  rdfs:label "depends on resource" ;
+  rdfs:comment "Relates a model architecture to an available resource it depends on." ;
+  rdfs:domain :ModelArchitecture ;
+  rdfs:range :Resource .
+
+:hasVariant a owl:ObjectProperty ;
+  rdfs:label "has variant" ;
+  rdfs:comment "Relates a foundation model to one of its variants." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :FoundationModel .
+
+:hasEvolution a owl:ObjectProperty ;
+  rdfs:label "has evolution" ;
+  rdfs:comment "Relates a foundation model to one of its evolutions." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :FoundationModel .
+
+:belongsToFamily a owl:ObjectProperty ;
+  rdfs:label "belongs to family" ;
+  rdfs:comment "Relates a foundation model to a model family." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :ModelFamily .
+
+:basedOnTechnique a owl:ObjectProperty ;
+  rdfs:label "based on technique" ;
+  rdfs:comment "Relates a prompt to the prompting technique it is based on." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :PromptingTechnique .
+
+:hasResponse a owl:ObjectProperty ;
+  rdfs:label "has response" ;
+  rdfs:comment "Relates a prompt to its response." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :Response .
+
+:submittedToModel a owl:ObjectProperty ;
+  rdfs:label "submitted to model" ;
+  rdfs:comment "Relates a prompt to the foundation model it is submitted to." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :FoundationModel .
+
+:usesTechnique a owl:ObjectProperty ;
+  rdfs:label "uses technique" ;
+  rdfs:comment "Relates a task to a prompting technique suitable for it." ;
+  rdfs:domain :Task ;
+  rdfs:range :PromptingTechnique .
+
+:hasPrompt a owl:ObjectProperty ;
+  rdfs:label "has prompt" ;
+  rdfs:comment "Relates a chat to a prompt occurring in it." ;
+  rdfs:domain :Chat ;
+  rdfs:range :Prompt .
+
+:hasChatResponse a owl:ObjectProperty ;
+  rdfs:label "has chat response" ;
+  rdfs:comment "Relates a chat to a response occurring in it." ;
+  rdfs:domain :Chat ;
+  rdfs:range :Response .
+
+:usesModel a owl:ObjectProperty ;
+  rdfs:label "uses model" ;
+  rdfs:comment "Relates a chat to the foundation model used in it." ;
+  rdfs:domain :Chat ;
+  rdfs:range :FoundationModel .
+
+:analyzesChat a owl:ObjectProperty ;
+  rdfs:label "analyzes chat" ;
+  rdfs:comment "Relates a usage statistic to a chat it is derived from or based on." ;
+  rdfs:domain :UsageStatistic ;
+  rdfs:range :Chat .
+
+:aboutModel a owl:ObjectProperty ;
+  rdfs:label "about model" ;
+  rdfs:comment "Relates a usage statistic to the foundation model it is about." ;
+  rdfs:domain :UsageStatistic ;
+  rdfs:range :FoundationModel .
+
+:averageValue a owl:DatatypeProperty ;
+  rdfs:label "average value" ;
+  rdfs:comment "A numeric average value recorded by a usage statistic." ;
+  rdfs:domain :UsageStatistic ;
+  rdfs:range xsd:decimal .
+
+:countValue a owl:DatatypeProperty ;
+  rdfs:label "count value" ;
+  rdfs:comment "A numeric count value recorded by a usage statistic." ;
+  rdfs:domain :UsageStatistic ;
+  rdfs:range xsd:integer .
+```
+
+2. Validation report: checklist items 1–6 each marked PASS or FAIL with a brief reason.
+
+1. PASS — Turtle syntax is well-formed with declared prefixes, terminated triples, and valid class/property declarations.
+2. PASS — All prefixes used in the ontology body (`owl`, `rdf`, `rdfs`, `xsd`, `:`) are declared at the top.
+3. PASS — All domain and range declarations refer only to classes defined in this ontology or to `owl:Thing` and XML Schema datatypes.
+4. PASS — No contradictory axioms such as disjointness/subclass conflicts or incompatible restrictions are present.
+5. PASS — Each competency question maps to at least one class or property, e.g. tasks (`:Task`), modalities (`:hasDataModality`), constraints (`:hasConstraint`), architectures (`:ModelArchitecture`, `:hasArchitecture`), variants/evolutions (`:hasVariant`, `:hasEvolution`), prompts/responses/chats/statistics (`:Prompt`, `:Response`, `:Chat`, `:UsageStatistic` and related properties).
+6. PASS — All included concepts are grounded in the scenario or competency questions; no extra domain concepts or individuals were introduced.
+
+3. Scope report: (a) requirements from the scenario that are covered, (b) any scenario concepts explicitly excluded and why.
+
+(a) Covered requirements:
+- Representation of tasks to be solved with foundation models.
+- Representation of prompting techniques and their suitability for tasks.
+- Representation of task data modalities.
+- Representation of task constraints.
+- Representation of foundation models and their architectures.
+- Representation of architecture dependence on available resources.
+- Representation of model families, variants, and evolutions.
+- Representation of prompts, responses, and the model a prompt is submitted to.
+- Representation of chats for prior-chat analysis.
+- Representation of usage statistics for average prompts per chat, average responses per chat, conversation length, and chats per model.
+- Support for querying prompting techniques suitable for tasks, modalities, and constrained tasks through the combination of `:Task`, `:hasDataModality`, `:hasConstraint`, and `:usesTechnique`.
+
+(b) Explicitly excluded concepts and why:
+- Mike as a person was excluded because the scenario does not require modeling users or agents for the competency questions.
+- Specific constraint variables were excluded because the scenario mentions “a given variable” only at query level and does not define a separate variable concept.
+- Detailed temporal ordering of prompts and responses within chats was excluded because it is not required by the competency questions.
+- Concrete statistical computation semantics were excluded; the ontology only provides reusable schema hooks (`:UsageStatistic`, `:averageValue`, `:countValue`) without prescribing calculation methods.
+- Individual models, tasks, prompts, chats, or responses were excluded because the instructions require schema axioms only and no instances.

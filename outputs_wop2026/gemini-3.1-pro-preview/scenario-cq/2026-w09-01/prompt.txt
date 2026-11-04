@@ -1,0 +1,65 @@
+You are an ontology engineer. Generate an OWL ontology design pattern (ODP) in Turtle syntax using both the scenario and competency questions below.
+
+Requirements:
+- Prioritize semantic faithfulness to the scenario.
+- Ensure the ODP structurally supports every CQ (the classes and properties needed to answer each CQ must be present).
+- Do not add concepts or axioms not grounded in the scenario or CQs.
+- Declare every class with `a owl:Class`, every property with `a owl:ObjectProperty`, `a owl:DatatypeProperty`, or `a owl:AnnotationProperty`.
+- Do NOT create individual instances (e.g. `:SomePerson a :Person`); output schema axioms only.
+- Add rdfs:label and rdfs:comment annotations to every class and property.
+- Declare a mandatory ontology header: `:Ontology a owl:Ontology ; rdfs:label "..." ; rdfs:comment "..." .`
+
+Use these standard prefixes (declare all that you use):
+  @prefix owl:  <http://www.w3.org/2002/07/owl#> .
+  @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+  @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+  @prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+  @prefix :     <http://example.org/odp#> .
+
+Output format — strictly in this order, nothing before item 1:
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block. Output this FIRST, before any explanation.
+2. Scenario-requirement-to-axiom mapping: for each requirement extracted from the scenario, identify the axiom(s) that encode it.
+3. CQ-to-axiom mapping: for each CQ, list the classes and properties that enable answering it.
+4. Intentionally excluded concepts: list any scenario concepts left out and why.
+
+Scenario:
+To ground the abstractions introduced above, we describe a small but representative example, taken from the climate services domain that originally motivated this work: the publication of a dataset of average daily maximum near-surface air temperature over the whole of Italy for the year 2024, derived from some process (possibly including observations, simulations, aggregations, etc.) — i.e., a dataset with a single value per day for the whole region (rather than, e.g., a spatial grid), having one independent variable (time) and one dependent variable.
+
+Competency Questions:
+- What is the dimensional space on which a given variable takes its values?
+- Is a given variable independent, or does it depend on one or more other variables?
+- On which independent variables does a given dependent variable depend?
+- What are the independent variables of "daily closing price of an equity" (e.g., trading date, instrument identifier)?
+- Does "weekly influenza-like-illness incidence rate" depend on both a temporal and a geographic independent variable?
+- From which more general variable is a given (derived) variable derived?
+- Of which more general variable is "near-surface air temperature" (CMOR tasmax) a specialization, and which independent variable does the specialization fix (constrain to a specific region)?
+- Is "measles incidence rate in Region X" a specialization of the general "measles incidence rate" variable, obtained by constraining the geodetic-region independent variable?
+- Is "NASDAQ-100 closing price" a specialization of a generic "equity-index closing price" variable, restricted to a specific index?
+- Which independent variable is constrained by a given variable-specialization instance?
+- Is a given variable a rescaled version of another variable, and if so, which is the original (non-rescaled) variable?
+- Is "air temperature in Celsius" a rescaled version of "air temperature in Kelvin", without changing the underlying dependency structure?
+- Is "closing price in EUR" a rescaled version of "closing price in USD" for the same underlying asset variable?
+- What are the component variables of a given composite variable?
+- What are the component variables of a "geodetic coordinate" variable (e.g., latitude and longitude)?
+- Is a composite "socio-economic status index" composed of component variables such as household income, educational attainment, and occupational prestige?
+- Which dimensional space is a sub-dimensional space (projection) of a composite spatio-temporal dimensional space?
+- Is a given dependent variable "aggregating", and if so, which aggregation(s) does it define?
+- Over which variable does a given aggregation group values, and which quantizations are suggested as candidate granularities for it?
+- Along which two independent variables (time and geodetic space) is tasmax aggregated, and what quantization is suggested for each?
+- For a KPI defined by a SQL expression such as AVG(sales) with a deferred GROUP BY, what is the variable being aggregated, and which candidate quantizations (e.g., daily, monthly, quarterly grouping) are suggested before a specific granularity is chosen?
+- Which aggregation function and axis produce "average daily household energy consumption" from raw smart-meter readings, and which temporal quantization (e.g., daily bins) does it suggest?
+- Is a given dimensional space continuous or discrete?
+- Of which continuum is a given quantization a discretization, and is it obtained by sampling or by binning?
+- What is the (exact) resolution of the daily temporal quantization used to grid tasmax for the year 2024?
+- What is the spatial bin size (resolution) of a satellite-derived land-cover raster, and is it a regular binning?
+- Are weekly disease-surveillance counts obtained via a periodic binning of a temporal continuum, and what are its period and in-period resolution?
+- Is a given discrete dimensional space also bounded, and therefore finite (fully enumerable with finite resources)?
+- What is the exact (or approximate) bounding region of a given dimensional space or dataset?
+- What time span does a historical stock-price dataset cover?
+- What is the geodetic and temporal coverage of the tasmax, Italy, 2024 dataset?
+- Which data source(s) offer a serialization of a given dataset, and in which data format(s)?
+- In which formats (e.g., CSV, Parquet) is a smart-meter aggregate dataset available, and at which URL?
+- By which process was a given dataset generated, and does that process also consume other dataset(s) as input (i.e., is it a data transformation)?
+- Which raw case-report dataset(s) were consumed by the process that produced a weekly aggregated incidence dataset?
+- Are two independently modelled variables asserted to always coincide in value, despite being derived through different chains?
+- Is "GDP per capita" as published by the World Bank equivalent to "GDP per capita" as published by the IMF, even though the two are modelled by different providers with different derivation chains?

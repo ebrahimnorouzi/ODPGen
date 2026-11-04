@@ -1,0 +1,201 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Reverse Engineering Knowledge Graph ODP" ;
+    rdfs:comment "An ontology design pattern for representing reverse engineering artifacts, symbols, control flows, and suspicious behaviors in binary executables." .
+
+### Classes ###
+
+:ExecutableFile a owl:Class ;
+    rdfs:label "Executable File" ;
+    rdfs:comment "A binary executable file or software artifact being reverse engineered." .
+
+:Symbol a owl:Class ;
+    rdfs:label "Symbol" ;
+    rdfs:comment "A symbol extracted from the symbol table of an executable file." .
+
+:Function a owl:Class ;
+    rdfs:subClassOf :Symbol ;
+    rdfs:label "Function" ;
+    rdfs:comment "A function symbol within the executable." .
+
+:Variable a owl:Class ;
+    rdfs:subClassOf :Symbol ;
+    rdfs:label "Variable" ;
+    rdfs:comment "A variable symbol within the executable." .
+
+:APICall a owl:Class ;
+    rdfs:label "API Call" ;
+    rdfs:comment "An Application Programming Interface call made by the executable." .
+
+:Activity a owl:Class ;
+    rdfs:label "Activity" ;
+    rdfs:comment "A behavior or activity exhibited by the executable." .
+
+:NetworkingActivity a owl:Class ;
+    rdfs:subClassOf :Activity ;
+    rdfs:label "Networking Activity" ;
+    rdfs:comment "Network-related behavior exhibited by the executable." .
+
+:FileSystemActivity a owl:Class ;
+    rdfs:subClassOf :Activity ;
+    rdfs:label "File System Activity" ;
+    rdfs:comment "File system interactions, potentially indicating abuse." .
+
+:CryptographicActivity a owl:Class ;
+    rdfs:subClassOf :Activity ;
+    rdfs:label "Cryptographic Activity" ;
+    rdfs:comment "Encryption or cryptographic behavior, often used to hide parts of the program." .
+
+:ControlFlowPattern a owl:Class ;
+    rdfs:label "Control Flow Pattern" ;
+    rdfs:comment "A pattern of execution flow within the binary." .
+
+:IndirectControlFlow a owl:Class ;
+    rdfs:subClassOf :ControlFlowPattern ;
+    rdfs:label "Indirect Control Flow" ;
+    rdfs:comment "An indirect control flow pattern that may indicate vulnerable code." .
+
+:DecodeLoop a owl:Class ;
+    rdfs:subClassOf :ControlFlowPattern ;
+    rdfs:label "Decode Loop" ;
+    rdfs:comment "A loop used for decoding data, potentially self-referential for obfuscation." .
+
+:MemoryJump a owl:Class ;
+    rdfs:subClassOf :ControlFlowPattern ;
+    rdfs:label "Memory Jump" ;
+    rdfs:comment "A jump into memory during execution." .
+
+:Instruction a owl:Class ;
+    rdfs:label "Instruction" ;
+    rdfs:comment "An assembly instruction within a function." .
+
+:Opcode a owl:Class ;
+    rdfs:label "Opcode" ;
+    rdfs:comment "The operation code portion of an instruction." .
+
+### Object Properties ###
+
+:hasSymbol a owl:ObjectProperty ;
+    rdfs:domain :ExecutableFile ;
+    rdfs:range :Symbol ;
+    rdfs:label "has symbol" ;
+    rdfs:comment "Relates an executable file to a symbol in its symbol table." .
+
+:containsAPICall a owl:ObjectProperty ;
+    rdfs:domain :ExecutableFile ;
+    rdfs:range :APICall ;
+    rdfs:label "contains API call" ;
+    rdfs:comment "Relates an executable to an API call it makes." .
+
+:exhibitsActivity a owl:ObjectProperty ;
+    rdfs:domain :ExecutableFile ;
+    rdfs:range :Activity ;
+    rdfs:label "exhibits activity" ;
+    rdfs:comment "Relates an executable to a specific behavior or activity." .
+
+:hasControlFlowPattern a owl:ObjectProperty ;
+    rdfs:domain :ExecutableFile ;
+    rdfs:range :ControlFlowPattern ;
+    rdfs:label "has control flow pattern" ;
+    rdfs:comment "Relates an executable to a control flow pattern it contains." .
+
+:hasInstruction a owl:ObjectProperty ;
+    rdfs:domain :Function ;
+    rdfs:range :Instruction ;
+    rdfs:label "has instruction" ;
+    rdfs:comment "Relates a function to an instruction it contains." .
+
+:hasOpcode a owl:ObjectProperty ;
+    rdfs:domain :Instruction ;
+    rdfs:range :Opcode ;
+    rdfs:label "has opcode" ;
+    rdfs:comment "Relates an instruction to its opcode." .
+
+### Datatype Properties ###
+
+:hasOriginalName a owl:DatatypeProperty ;
+    rdfs:domain :Symbol ;
+    rdfs:range xsd:string ;
+    rdfs:label "has original name" ;
+    rdfs:comment "The original name of the symbol before renaming." .
+
+:hasUserDefinedName a owl:DatatypeProperty ;
+    rdfs:domain :Symbol ;
+    rdfs:range xsd:string ;
+    rdfs:label "has user-defined name" ;
+    rdfs:comment "The name assigned to the symbol by the user during reverse engineering." .
+
+:isImported a owl:DatatypeProperty ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is imported" ;
+    rdfs:comment "Indicates whether the function is imported from an external library." .
+
+:isSuspicious a owl:DatatypeProperty ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is suspicious" ;
+    rdfs:comment "Indicates if an entity (like an API call, activity, or jump) is considered suspicious." .
+
+:isMalicious a owl:DatatypeProperty ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is malicious" ;
+    rdfs:comment "Indicates if an entity is considered malicious." .
+
+:isPersistent a owl:DatatypeProperty ;
+    rdfs:domain :APICall ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is persistent" ;
+    rdfs:comment "Indicates if an API call is persistent." .
+
+:isSelfReferential a owl:DatatypeProperty ;
+    rdfs:domain :DecodeLoop ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is self-referential" ;
+    rdfs:comment "Indicates if a decode loop is self-referential." .
+
+:indicatesVulnerability a owl:DatatypeProperty ;
+    rdfs:domain :ControlFlowPattern ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "indicates vulnerability" ;
+    rdfs:comment "Indicates if a control flow pattern suggests vulnerable code." .
+
+:totalInstructionCount a owl:DatatypeProperty ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:integer ;
+    rdfs:label "total instruction count" ;
+    rdfs:comment "The total number of instructions in a function." .
+
+:uniqueOpcodeCount a owl:DatatypeProperty ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:integer ;
+    rdfs:label "unique opcode count" ;
+    rdfs:comment "The number of unique opcodes in a function." .
+```
+
+### Validation Report
+1. **Turtle syntax is valid:** PASS (All statements are properly terminated with periods, and semicolons are used correctly for predicate-object lists).
+2. **All prefixes used in the body are declared at the top:** PASS (Only `owl:`, `rdf:`, `rdfs:`, `xsd:`, and `:` are used and all are declared).
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies:** PASS (All domains and ranges strictly reference the defined classes or standard `xsd` datatypes).
+4. **No two classes or properties are defined with contradictory restrictions:** PASS (The hierarchy is flat and logical; no disjointness axioms or conflicting domain/range restrictions were introduced).
+5. **Every CQ is traceable to at least one class or property in the ontology:** PASS (e.g., CQ1 maps to `:APICall`, `:isMalicious`, `:isPersistent`; CQ4 maps to `:totalInstructionCount`, `:uniqueOpcodeCount`; CQ10 maps to `:isImported`).
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs:** PASS (Every class and property directly reflects a requirement from the scenario text or the provided competency questions).
+
+### Scope Report
+**a) Requirements from the scenario that are covered:**
+- **Symbol Table & Renaming:** Covered via `:Symbol`, `:Function`, `:Variable`, `:hasOriginalName`, and `:hasUserDefinedName`.
+- **Executable/Binary Files:** Covered via `:ExecutableFile` and its structural relationships (`:hasSymbol`, `:containsAPICall`, `:hasControlFlowPattern`).
+- **Malware/Suspicious Behavior:** Covered via `:Activity` subclasses (`:NetworkingActivity`, `:FileSystemActivity`, `:CryptographicActivity`) and boolean flags (`:isSuspicious`, `:isMalicious`).
+- **Control Flow & Obfuscation:** Covered via `:ControlFlowPattern` subclasses (`:IndirectControlFlow`, `:DecodeLoop`, `:MemoryJump`) and properties like `:isSelfReferential` and `:indicatesVulnerability`.
+- **Entropy/Instruction Analysis:** Covered via `:Instruction`, `:Opcode`, `:totalInstructionCount`, and `:uniqueOpcodeCount`.
+- **External Dependencies:** Covered via `:isImported` for functions.
+
+**b) Scenario concepts explicitly excluded and why:**
+- **Ghidra (Software Tool):** Excluded because the ontology models the *domain* of reverse engineering (the artifacts and their properties), not the specific proprietary tools used to extract them.
+- **Software Supply Chain / Dependency Graph:** While mentioned as a future goal in the scenario ("expand the knowledge graph to apply to finding dependency vulnerabilities in a software supply chain"), the provided CQs focus entirely on the internal analysis of a single executable file. Therefore, supply chain concepts (e.g., `SoftwareBillOfMaterials`, `Vendor`, `ReleaseVersion`) were excluded to keep the ontology minimal and strictly grounded in the current CQs.
+- **Entropy Section (as a distinct class):** Excluded because CQ4 specifically asks to detect entropy *through the ratio* of unique opcodes to total instructions in a function. Modeling the counts as datatype properties on the `:Function` class directly answers the CQ without needing an artificial `EntropySection` class.

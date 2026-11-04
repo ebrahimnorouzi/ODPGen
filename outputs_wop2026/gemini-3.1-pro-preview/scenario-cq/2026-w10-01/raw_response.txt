@@ -1,0 +1,180 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Software and Hardware Requirements Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern for representing software and hardware requirements, characteristics, and resource allocation for a matchmaker in edge computing environments." .
+
+# --- Classes ---
+
+:Resource a owl:Class ;
+    rdfs:label "Resource" ;
+    rdfs:comment "A digital or physical asset, such as software or hardware, that can be allocated or required." .
+
+:Software a owl:Class ;
+    rdfs:subClassOf :Resource ;
+    rdfs:label "Software" ;
+    rdfs:comment "A software resource or digital asset." .
+
+:HardwareResource a owl:Class ;
+    rdfs:subClassOf :Resource ;
+    rdfs:label "Hardware Resource" ;
+    rdfs:comment "A hardware resource used for computing, such as a DPU or GPU." .
+
+:DPU a owl:Class ;
+    rdfs:subClassOf :HardwareResource ;
+    rdfs:label "DPU" ;
+    rdfs:comment "Data Processing Unit, a specific type of hardware resource." .
+
+:GPU a owl:Class ;
+    rdfs:subClassOf :HardwareResource ;
+    rdfs:label "GPU" ;
+    rdfs:comment "Graphics Processing Unit, a specific type of hardware resource." .
+
+:Requirement a owl:Class ;
+    rdfs:label "Requirement" ;
+    rdfs:comment "A condition, capability, or constraint needed by a software to execute, support, or deploy." .
+
+:SoftwareRequirement a owl:Class ;
+    rdfs:subClassOf :Requirement ;
+    rdfs:label "Software Requirement" ;
+    rdfs:comment "A requirement specifying a needed software resource or software characteristic." .
+
+:HardwareRequirement a owl:Class ;
+    rdfs:subClassOf :Requirement ;
+    rdfs:label "Hardware Requirement" ;
+    rdfs:comment "A requirement specifying a needed hardware resource or hardware characteristic." .
+
+:Characteristic a owl:Class ;
+    rdfs:label "Characteristic" ;
+    rdfs:comment "A property, feature, or characteristic of a software or hardware resource (e.g., memory, cores)." .
+
+:ResourceType a owl:Class ;
+    rdfs:label "Resource Type" ;
+    rdfs:comment "The category or type of a software or hardware resource required." .
+
+:Catalogue a owl:Class ;
+    rdfs:label "Catalogue" ;
+    rdfs:comment "A catalogue describing the actual characteristics of available software and hardware resources." .
+
+:Matchmaker a owl:Class ;
+    rdfs:label "Matchmaker" ;
+    rdfs:comment "A system component that dynamically allocates hardware and software resources based on characteristics and requirements." .
+
+:ServiceRequest a owl:Class ;
+    rdfs:label "Service Request" ;
+    rdfs:comment "An incoming request for a service that involves executing, supporting, or deploying a main software." .
+
+# --- Object Properties ---
+
+:hasRequirement a owl:ObjectProperty ;
+    rdfs:domain :Software ;
+    rdfs:range :Requirement ;
+    rdfs:label "has requirement" ;
+    rdfs:comment "Links a software to its specific hardware or software requirements." .
+
+:requiresResource a owl:ObjectProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range :Resource ;
+    rdfs:label "requires resource" ;
+    rdfs:comment "Links a requirement to the specific software or hardware resource instance it requires." .
+
+:requiresResourceType a owl:ObjectProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range :ResourceType ;
+    rdfs:label "requires resource type" ;
+    rdfs:comment "Links a requirement to the type or category of software/hardware it requires." .
+
+:constrainsCharacteristic a owl:ObjectProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range :Characteristic ;
+    rdfs:label "constrains characteristic" ;
+    rdfs:comment "Links a requirement to the specific property or characteristic of a resource it constrains." .
+
+:listedInCatalogue a owl:ObjectProperty ;
+    rdfs:domain :Resource ;
+    rdfs:range :Catalogue ;
+    rdfs:label "listed in catalogue" ;
+    rdfs:comment "Indicates that a software or hardware resource is described in a specific catalogue." .
+
+:processesRequest a owl:ObjectProperty ;
+    rdfs:domain :Matchmaker ;
+    rdfs:range :ServiceRequest ;
+    rdfs:label "processes request" ;
+    rdfs:comment "Links a matchmaker to the incoming service request it processes." .
+
+:requestsSoftware a owl:ObjectProperty ;
+    rdfs:domain :ServiceRequest ;
+    rdfs:range :Software ;
+    rdfs:label "requests software" ;
+    rdfs:comment "Links a service request to the main software it intends to execute, support, or deploy." .
+
+# --- Datatype Properties ---
+
+:hasMinValue a owl:DatatypeProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has minimum value" ;
+    rdfs:comment "The required minimum numerical value for a constrained characteristic." .
+
+:hasMaxValue a owl:DatatypeProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has maximum value" ;
+    rdfs:comment "The required maximum numerical value for a constrained characteristic." .
+
+:hasExactValue a owl:DatatypeProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has exact value" ;
+    rdfs:comment "The required exact numerical value for a constrained characteristic." .
+
+:hasMinVersion a owl:DatatypeProperty ;
+    rdfs:domain :SoftwareRequirement ;
+    rdfs:range xsd:string ;
+    rdfs:label "has minimum version" ;
+    rdfs:comment "The required minimum version string of a software." .
+
+:hasMaxVersion a owl:DatatypeProperty ;
+    rdfs:domain :SoftwareRequirement ;
+    rdfs:range xsd:string ;
+    rdfs:label "has maximum version" ;
+    rdfs:comment "The required maximum version string of a software." .
+
+:hasExactVersion a owl:DatatypeProperty ;
+    rdfs:domain :SoftwareRequirement ;
+    rdfs:range xsd:string ;
+    rdfs:label "has exact version" ;
+    rdfs:comment "The required exact version string of a software." .
+```
+
+### 2. Scenario-requirement-to-axiom mapping
+*   **"Matchmaker... addresses the dynamic allocation of hardware resources... based on characteristics and requirements of incoming service requests"**: Encoded via the classes `:Matchmaker`, `:ServiceRequest`, `:Requirement`, `:Characteristic`, and the properties `:processesRequest` and `:requestsSoftware`.
+*   **"Hardware resources (DPU and GPU)"**: Encoded via the class `:HardwareResource` and its subclasses `:DPU` and `:GPU`.
+*   **"Characteristics of software and hardware resources described in a catalogue"**: Encoded via the classes `:Resource`, `:Software`, `:HardwareResource`, `:Catalogue`, `:Characteristic`, and the object property `:listedInCatalogue`.
+*   **"Identify candidate resources that can be used to execute, support, or deploy the main software"**: Encoded via the base class `:Resource` and the object property `:requiresResource` (which links the requirement of the main software to the candidate resource).
+
+### 3. CQ-to-axiom mapping
+*   **CQ1: Which is the (software/hardware) requirement of a software?**
+    *   Classes: `:Software`, `:Requirement`, `:SoftwareRequirement`, `:HardwareRequirement`
+    *   Properties: `:hasRequirement`
+*   **CQ2: Which is the software/hardware required by a software?**
+    *   Classes: `:Software`, `:Requirement`, `:Resource`, `:HardwareResource`
+    *   Properties: `:hasRequirement`, `:requiresResource`
+*   **CQ3: Which is the type of software/hardware required by a software?**
+    *   Classes: `:Software`, `:Requirement`, `:ResourceType`
+    *   Properties: `:hasRequirement`, `:requiresResourceType`
+*   **CQ4: Which is the required (minimum/maximum/exact) value of a property of a software/hardware required by a software?**
+    *   Classes: `:Software`, `:Requirement`, `:Characteristic`
+    *   Properties: `:hasRequirement`, `:constrainsCharacteristic`, `:hasMinValue`, `:hasMaxValue`, `:hasExactValue`
+*   **CQ5: Which is the required (maximum/minimum/exact) version of a software required by a software?**
+    *   Classes: `:Software`, `:SoftwareRequirement`
+    *   Properties: `:hasRequirement`, `:hasMinVersion`, `:hasMaxVersion`, `:hasExactVersion`
+
+### 4. Intentionally excluded concepts
+*   **"SMARTY research project", "Trustworthy AI", "Quantum-resilient", "Heterogeneous edge computing"**: These are high-level project motivations and contextual background. They do not represent functional ontological concepts required for the matchmaker's resource allocation logic or the CQs.
+*   **"Execute, support, or deploy"**: These specific verbs were generalized into the structural relationships `:requestsSoftware` and `:requiresResource`. Creating distinct sub-properties for each action was excluded because the CQs do not differentiate between requirements for execution vs. support vs. deployment; they only query what is *required*.

@@ -1,0 +1,174 @@
+# ODPGEN-TRUNCATED: this generation was cut off before the model finished.
+# ODPGEN-TRUNCATION-SIGNALS: repair_dropped_incomplete_statement
+# Do NOT score this file as a complete ontology; see metadata.json.
+:Ontology a owl:Ontology ;
+  rdfs:label "Climate Services Domain Ontology" ;
+  rdfs:comment "An ontology for the climate services domain.".
+
+# Classes
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "An abstract concept representing a measurable quantity.".
+
+:DependentVariable a owl:Class ;
+  rdfs:label "Dependent Variable" ;
+  rdfs:comment "A variable whose value depends on one or more independent variables.".
+
+:IndependentVariable a owl:Class ;
+  rdfs:label "Independent Variable" ;
+  rdfs:comment "A variable that does not depend on any other variable.".
+
+:DimensionalSpace a owl:Class ;
+  rdfs:label "Dimensional Space" ;
+  rdfs:comment "The space on which a variable takes its values.".
+
+:ContinuousDimensionalSpace a owl:Class ;
+  rdfs:label "Continuous Dimensional Space" ;
+  rdfs:comment "A dimensional space with an infinite number of values.".
+
+:DiscreteDimensionalSpace a owl:Class ;
+  rdfs:label "Discrete Dimensional Space" ;
+  rdfs:comment "A dimensional space with a finite or countable number of values.".
+
+:BoundedDimensionalSpace a owl:Class ;
+  rdfs:label "Bounded Dimensional Space" ;
+  rdfs:comment "A dimensional space with a defined range of values.".
+
+:RescaledVariable a owl:Class ;
+  rdfs:label "Rescaled Variable" ;
+  rdfs:comment "A variable that is a rescaled version of another variable.".
+
+:CompositeVariable a owl:Class ;
+  rdfs:label "Composite Variable" ;
+  rdfs:comment "A variable composed of multiple component variables.".
+
+:ComponentVariable a owl:Class ;
+  rdfs:label "Component Variable" ;
+  rdfs:comment "A variable that is a component of a composite variable.".
+
+:Specialization a owl:Class ;
+  rdfs:label "Specialization" ;
+  rdfs:comment "A variable that is a specialization of a more general variable.".
+
+:AggregatedVariable a owl:Class ;
+  rdfs:label "Aggregated Variable" ;
+  rdfs:comment "A variable that is the result of aggregating one or more other variables.".
+
+:DataSeries a owl:Class ;
+  rdfs:label "Data Series" ;
+  rdfs:comment "A collection of values of a variable over a range of independent variables.".
+
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A collection of data series.".
+
+:DataProvider a owl:Class ;
+  rdfs:label "Data Provider" ;
+  rdfs:comment "An entity that provides a dataset.".
+
+:DataFormat a owl:Class ;
+  rdfs:label "Data Format" ;
+  rdfs:comment "The format in which a dataset is serialized.".
+
+:DataTransformation a owl:Class ;
+  rdfs:label "Data Transformation" ;
+  rdfs:comment "A process that transforms one or more datasets into another dataset.".
+
+# Properties
+:hasValueDomain a owl:ObjectProperty ;
+  rdfs:label "hasValue Domain" ;
+  rdfs:comment "The dimensional space on which a variable takes its values.".
+
+:isIndependent a owl:ObjectProperty ;
+  rdfs:label "is Independent" ;
+  rdfs:comment "Indicates whether a variable is independent or dependent.".
+
+:dependsOn a owl:ObjectProperty ;
+  rdfs:label "depends On" ;
+  rdfs:comment "Indicates the independent variables on which a dependent variable depends.".
+
+:isSpecializationOf a owl:ObjectProperty ;
+  rdfs:label "is Specialization Of" ;
+  rdfs:comment "Indicates the more general variable from which a specialization is derived.".
+
+:isRescaledVersionOf a owl:ObjectProperty ;
+  rdfs:label "is Rescaled Version Of" ;
+  rdfs:comment "Indicates the original (non-rescaled) variable from which a rescaled variable is derived.".
+
+:isComposedOf a owl:ObjectProperty ;
+  rdfs:label "is Composed Of" ;
+  rdfs:comment "Indicates the component variables of a composite variable.".
+
+:isAggregatedBy a owl:ObjectProperty ;
+  rdfs:label "is Aggregated By" ;
+  rdfs:comment "Indicates the aggregation(s) that a variable defines.".
+
+:hasAggregationGroup a owl:ObjectProperty ;
+  rdfs:label "has Aggregation Group" ;
+  rdfs:comment "Indicates the independent variable(s) over which a variable is aggregated.".
+
+:hasDataSeries a owl:ObjectProperty ;
+  rdfs:label "has Data Series" ;
+  rdfs:comment "Indicates the data series associated with a variable.".
+
+:hasDataset a owl:ObjectProperty ;
+  rdfs:label "has Dataset" ;
+  rdfs:comment "Indicates the dataset(s) associated with a variable.".
+
+:providedBy a owl:ObjectProperty ;
+  rdfs:label "provided By" ;
+  rdfs:comment "Indicates the data provider(s) of a dataset.".
+
+:hasDataFormat a owl:ObjectProperty ;
+  rdfs:label "has Data Format" ;
+  rdfs:comment "Indicates the data format(s) in which a dataset is serialized.".
+
+:isDataTransformationOf a owl:ObjectProperty ;
+  rdfs:label "is Data Transformation Of" ;
+  rdfs:comment "Indicates the dataset(s) that are the input(s) to a data transformation.".
+
+:coincidesWith a owl:ObjectProperty ;
+  rdfs:label "coincides With" ;
+  rdfs:comment "Indicates that two variables always have the same value, despite being derived through different chains.".
+
+# Axioms
+:Variable a owl:Class ;
+  :DependentVariable rdfs:subClassOf ;
+  :IndependentVariable rdfs:subClassOf.
+
+:DependentVariable rdfs:subClassOf (:Variable owl:intersectionOf (:hasValueDomain some :DiscreteDimensionalSpace)).
+
+:IndependentVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isIndependent true) (:hasValueDomain some :ContinuousDimensionalSpace)).
+
+:DimensionalSpace rdfs:subClassOf owl:Class.
+
+:ContinuousDimensionalSpace rdfs:subClassOf owl:Class ;
+  rdfs:comment "A dimensional space with an infinite number of values.".
+
+:DiscreteDimensionalSpace rdfs:subClassOf owl:Class ;
+  rdfs:comment "A dimensional space with a finite or countable number of values.".
+
+:BoundedDimensionalSpace rdfs:subClassOf :DiscreteDimensionalSpace.
+
+:RescaledVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isRescaledVersionOf some :Variable) (:hasValueDomain some :DimensionalSpace)).
+
+:CompositeVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isComposedOf some :ComponentVariable) (:hasValueDomain some :DimensionalSpace)).
+
+:ComponentVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isComposedOf some :CompositeVariable) (:hasValueDomain some :DimensionalSpace)).
+
+:Specialization rdfs:subClassOf (:Variable owl:intersectionOf (:isSpecializationOf some :Variable) (:hasValueDomain some :DimensionalSpace)).
+
+:AggregatedVariable rdfs:subClassOf (:Variable owl:intersectionOf (:isAggregatedBy some :Aggregation) (:hasValueDomain some :DimensionalSpace)).
+
+:DataSeries rdfs:subClassOf (:Variable owl:intersectionOf (:hasDataSeries some :Variable) (:hasValueDomain some :DimensionalSpace)).
+
+:Dataset rdfs:subClassOf (:Variable owl:intersectionOf (:hasDataset some :Variable) (:hasValueDomain some :DimensionalSpace)).
+
+:DataProvider rdfs:subClassOf owl:Class.
+
+:DataFormat rdfs:subClassOf owl:Class.
+
+:DataTransformation rdfs:subClassOf (owl:ObjectProperty owl:intersectionOf (:isDataTransformationOf some :Dataset) (:hasValueDomain some :Dataset)).
+
+:coincidesWith rdfs:domain (:Variable owl:intersectionOf (:hasValueDomain some :DimensionalSpace)) ;
+  rdfs:range (:Variable owl:intersectionOf (:hasValueDomain some :DimensionalSpace)).

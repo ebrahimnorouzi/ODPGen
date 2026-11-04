@@ -1,0 +1,166 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "LCA Network Ontology Design Pattern" ;
+    rdfs:comment "An OWL ontology design pattern representing Life Cycle Assessment (LCA) studies, including activities, flows, impact results, and metadata." .
+
+# --- Classes ---
+
+:Activity a owl:Class ;
+    rdfs:label "Activity" ;
+    rdfs:comment "An activity or process step within an LCA system model." .
+
+:Agent a owl:Class ;
+    rdfs:label "Agent" ;
+    rdfs:comment "An actor or responsible agent involved in the LCA study." .
+
+:BillOfMaterials a owl:Class ;
+    rdfs:label "Bill of Materials" ;
+    rdfs:comment "A list of components and materials required to manufacture a product." .
+
+:Component a owl:Class ;
+    rdfs:label "Component" ;
+    rdfs:comment "An electronic or physical component listed in a Bill of Materials." .
+
+:Database a owl:Class ;
+    rdfs:label "Database" ;
+    rdfs:comment "A database providing inventory data (e.g., CODDE, NegaOctet)." .
+
+:Flow a owl:Class ;
+    rdfs:label "Flow" ;
+    rdfs:comment "A flow of materials, energy, or information in the LCA model." .
+
+:ElementaryFlow a owl:Class ;
+    rdfs:subClassOf :Flow ;
+    rdfs:label "Elementary Flow" ;
+    rdfs:comment "Material or energy entering or leaving the system directly from/to the environment." .
+
+:IntermediateFlow a owl:Class ;
+    rdfs:subClassOf :Flow ;
+    rdfs:label "Intermediate Flow" ;
+    rdfs:comment "A flow occurring between activities within the technosphere." .
+
+:ResourceFlow a owl:Class ;
+    rdfs:subClassOf :Flow ;
+    rdfs:label "Resource Flow" ;
+    rdfs:comment "A flow classified as a resource input." .
+
+:EmissionFlow a owl:Class ;
+    rdfs:subClassOf :Flow ;
+    rdfs:label "Emission Flow" ;
+    rdfs:comment "A flow classified as an emission to the environment." .
+
+:ProductFlow a owl:Class ;
+    rdfs:subClassOf :Flow ;
+    rdfs:label "Product Flow" ;
+    rdfs:comment "A flow classified as a product output." .
+
+:FlowDataset a owl:Class ;
+    rdfs:label "Flow Dataset" ;
+    rdfs:comment "A dataset containing inventory data for flows." .
+
+:FunctionalUnit a owl:Class ;
+    rdfs:label "Functional Unit" ;
+    rdfs:comment "The quantified performance of a product system for use as a reference unit." .
+
+:Hypothesis a owl:Class ;
+    rdfs:label "Hypothesis" ;
+    rdfs:comment "An assumption or hypothesis made during the LCA study." .
+
+:ImpactCategory a owl:Class ;
+    rdfs:label "Impact Category" ;
+    rdfs:comment "A class representing environmental issues of concern to which LCA results may be assigned." .
+
+:ImpactResult a owl:Class ;
+    rdfs:label "Impact Result" ;
+    rdfs:comment "The calculated environmental impact result for a specific category." .
+
+:LCAModel a owl:Class ;
+    rdfs:label "LCA Model" ;
+    rdfs:comment "The system model representing the Life Cycle Assessment study." .
+
+:Methodology a owl:Class ;
+    rdfs:label "Methodology" ;
+    rdfs:comment "The environmental impact calculation methodology (e.g., EF 3.0)." .
+
+:Parametrisation a owl:Class ;
+    rdfs:label "Parametrisation" ;
+    rdfs:comment "The set of parameters and their values used in the LCA model." .
+
+:SoftwareTool a owl:Class ;
+    rdfs:label "Software Tool" ;
+    rdfs:comment "The software application used to conduct the LCA study (e.g., EIME)." .
+
+:SystemBoundary a owl:Class ;
+    rdfs:label "System Boundary" ;
+    rdfs:comment "The set of criteria specifying which unit processes are part of a product system." .
+
+# --- Object Properties ---
+
+:contributesToCategory a owl:ObjectProperty ;
+    rdfs:label "contributes to category" ;
+    rdfs:comment "Links a flow or activity to the impact category it affects." ;
+    rdfs:range :ImpactCategory .
+
+:dependsOnActivity a owl:ObjectProperty ;
+    rdfs:label "depends on activity" ;
+    rdfs:comment "Establishes a dependency chain between activities." ;
+    rdfs:domain :Activity ;
+    rdfs:range :Activity .
+
+:forImpactCategory a owl:ObjectProperty ;
+    rdfs:label "for impact category" ;
+    rdfs:comment "Specifies the impact category for an impact result." ;
+    rdfs:domain :ImpactResult ;
+    rdfs:range :ImpactCategory .
+
+:hasActivity a owl:ObjectProperty ;
+    rdfs:label "has activity" ;
+    rdfs:comment "Links an LCA model to its constituent activities." ;
+    rdfs:domain :LCAModel ;
+    rdfs:range :Activity .
+
+:hasBillOfMaterials a owl:ObjectProperty ;
+    rdfs:label "has bill of materials" ;
+    rdfs:comment "Links an LCA model to its Bill of Materials." ;
+    rdfs:domain :LCAModel ;
+    rdfs:range :BillOfMaterials .
+
+:hasComponent a owl:ObjectProperty ;
+    rdfs:label "has component" ;
+    rdfs:comment "Links a Bill of Materials to an electronic or physical component." ;
+    rdfs:domain :BillOfMaterials ;
+    rdfs:range :Component .
+
+:hasFlowDataset a owl:ObjectProperty ;
+    rdfs:label "has flow dataset" ;
+    rdfs:comment "Links a flow to its underlying inventory dataset." ;
+    rdfs:domain :Flow ;
+    rdfs:range :FlowDataset .
+
+:hasFunctionalUnit a owl:ObjectProperty ;
+    rdfs:label "has functional unit" ;
+    rdfs:comment "Links an LCA model to its functional unit." ;
+    rdfs:domain :LCAModel ;
+    rdfs:range :FunctionalUnit .
+
+:hasHypothesis a owl:ObjectProperty ;
+    rdfs:label "has hypothesis" ;
+    rdfs:comment "Links an LCA model to a hypothesis used in the study." ;
+    rdfs:domain :LCAModel ;
+    rdfs:range :Hypothesis .
+
+:hasImpactResult a owl:ObjectProperty ;
+    rdfs:label "has impact result" ;
+    rdfs:comment "Links an activity or flow to its calculated impact result." ;
+    rdfs:range :ImpactResult .
+
+:hasInputFlow a owl:ObjectProperty ;
+    rdfs:label "has input flow" ;
+    rdfs:comment "Links an activity to an input flow." ;
+    r

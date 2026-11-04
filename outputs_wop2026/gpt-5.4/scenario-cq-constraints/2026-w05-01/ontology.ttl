@@ -1,0 +1,185 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Prompting and Foundation Model Usage ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing tasks, data modalities, constraints, prompting techniques, foundation models, prompts, responses, chats, and usage statistics grounded in the scenario and competency questions." .
+
+:Task a owl:Class ;
+  rdfs:label "Task" ;
+  rdfs:comment "A task that Mike needs to solve by prompting a foundation model." .
+
+:PromptingTechnique a owl:Class ;
+  rdfs:label "Prompting technique" ;
+  rdfs:comment "A technique used to formulate prompts and considered for suitability to tasks." .
+
+:FoundationModel a owl:Class ;
+  rdfs:label "Foundation model" ;
+  rdfs:comment "A foundation model to which prompts can be submitted." .
+
+:ModelArchitecture a owl:Class ;
+  rdfs:label "Model architecture" ;
+  rdfs:comment "An architecture of a foundation model." .
+
+:DataModality a owl:Class ;
+  rdfs:label "Data modality" ;
+  rdfs:comment "A data modality involved in a task or processable by a foundation model." .
+
+:Constraint a owl:Class ;
+  rdfs:label "Constraint" ;
+  rdfs:comment "A constraint that applies to a task or to model architecture selection." .
+
+:Resource a owl:Class ;
+  rdfs:label "Resource" ;
+  rdfs:comment "An available resource on which model architecture depends." .
+
+:ModelFamily a owl:Class ;
+  rdfs:label "Model family" ;
+  rdfs:comment "A family grouping related foundation models for exploration and experimentation." .
+
+:Prompt a owl:Class ;
+  rdfs:label "Prompt" ;
+  rdfs:comment "A prompt submitted to a foundation model and based on a prompting technique." .
+
+:Response a owl:Class ;
+  rdfs:label "Response" ;
+  rdfs:comment "A response produced for a prompt." .
+
+:Chat a owl:Class ;
+  rdfs:label "Chat" ;
+  rdfs:comment "A chat whose prior interactions can be analyzed for usage patterns." .
+
+:UsageStatistic a owl:Class ;
+  rdfs:label "Usage statistic" ;
+  rdfs:comment "A statistic derived from chats, such as averages or counts." .
+
+:ConversationLengthStatistic a owl:Class ;
+  rdfs:label "Conversation length statistic" ;
+  rdfs:comment "A statistic about conversation length in chats." ;
+  rdfs:subClassOf :UsageStatistic .
+
+:AveragePromptCountPerChatStatistic a owl:Class ;
+  rdfs:label "Average prompt count per chat statistic" ;
+  rdfs:comment "A statistic representing the average number of prompts per chat." ;
+  rdfs:subClassOf :UsageStatistic .
+
+:AverageResponseCountPerChatStatistic a owl:Class ;
+  rdfs:label "Average response count per chat statistic" ;
+  rdfs:comment "A statistic representing the average number of responses per chat." ;
+  rdfs:subClassOf :UsageStatistic .
+
+:ChatCountPerModelStatistic a owl:Class ;
+  rdfs:label "Chat count per model statistic" ;
+  rdfs:comment "A statistic representing how many chats were conducted per foundation model." ;
+  rdfs:subClassOf :UsageStatistic .
+
+:hasDataModality a owl:ObjectProperty ;
+  rdfs:label "has data modality" ;
+  rdfs:comment "Relates a task or foundation model to a data modality." ;
+  rdfs:domain owl:Thing ;
+  rdfs:range :DataModality .
+
+:hasConstraint a owl:ObjectProperty ;
+  rdfs:label "has constraint" ;
+  rdfs:comment "Relates a task to a constraint that applies to it." ;
+  rdfs:domain :Task ;
+  rdfs:range :Constraint .
+
+:hasArchitecture a owl:ObjectProperty ;
+  rdfs:label "has architecture" ;
+  rdfs:comment "Relates a foundation model to its architecture." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :ModelArchitecture .
+
+:dependsOnResource a owl:ObjectProperty ;
+  rdfs:label "depends on resource" ;
+  rdfs:comment "Relates a model architecture to an available resource it depends on." ;
+  rdfs:domain :ModelArchitecture ;
+  rdfs:range :Resource .
+
+:hasVariant a owl:ObjectProperty ;
+  rdfs:label "has variant" ;
+  rdfs:comment "Relates a foundation model to one of its variants." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :FoundationModel .
+
+:hasEvolution a owl:ObjectProperty ;
+  rdfs:label "has evolution" ;
+  rdfs:comment "Relates a foundation model to one of its evolutions." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :FoundationModel .
+
+:belongsToFamily a owl:ObjectProperty ;
+  rdfs:label "belongs to family" ;
+  rdfs:comment "Relates a foundation model to a model family." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :ModelFamily .
+
+:basedOnTechnique a owl:ObjectProperty ;
+  rdfs:label "based on technique" ;
+  rdfs:comment "Relates a prompt to the prompting technique it is based on." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :PromptingTechnique .
+
+:hasResponse a owl:ObjectProperty ;
+  rdfs:label "has response" ;
+  rdfs:comment "Relates a prompt to its response." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :Response .
+
+:submittedToModel a owl:ObjectProperty ;
+  rdfs:label "submitted to model" ;
+  rdfs:comment "Relates a prompt to the foundation model it is submitted to." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :FoundationModel .
+
+:usesTechnique a owl:ObjectProperty ;
+  rdfs:label "uses technique" ;
+  rdfs:comment "Relates a task to a prompting technique suitable for it." ;
+  rdfs:domain :Task ;
+  rdfs:range :PromptingTechnique .
+
+:hasPrompt a owl:ObjectProperty ;
+  rdfs:label "has prompt" ;
+  rdfs:comment "Relates a chat to a prompt occurring in it." ;
+  rdfs:domain :Chat ;
+  rdfs:range :Prompt .
+
+:hasChatResponse a owl:ObjectProperty ;
+  rdfs:label "has chat response" ;
+  rdfs:comment "Relates a chat to a response occurring in it." ;
+  rdfs:domain :Chat ;
+  rdfs:range :Response .
+
+:usesModel a owl:ObjectProperty ;
+  rdfs:label "uses model" ;
+  rdfs:comment "Relates a chat to the foundation model used in it." ;
+  rdfs:domain :Chat ;
+  rdfs:range :FoundationModel .
+
+:analyzesChat a owl:ObjectProperty ;
+  rdfs:label "analyzes chat" ;
+  rdfs:comment "Relates a usage statistic to a chat it is derived from or based on." ;
+  rdfs:domain :UsageStatistic ;
+  rdfs:range :Chat .
+
+:aboutModel a owl:ObjectProperty ;
+  rdfs:label "about model" ;
+  rdfs:comment "Relates a usage statistic to the foundation model it is about." ;
+  rdfs:domain :UsageStatistic ;
+  rdfs:range :FoundationModel .
+
+:averageValue a owl:DatatypeProperty ;
+  rdfs:label "average value" ;
+  rdfs:comment "A numeric average value recorded by a usage statistic." ;
+  rdfs:domain :UsageStatistic ;
+  rdfs:range xsd:decimal .
+
+:countValue a owl:DatatypeProperty ;
+  rdfs:label "count value" ;
+  rdfs:comment "A numeric count value recorded by a usage statistic." ;
+  rdfs:domain :UsageStatistic ;
+  rdfs:range xsd:integer .

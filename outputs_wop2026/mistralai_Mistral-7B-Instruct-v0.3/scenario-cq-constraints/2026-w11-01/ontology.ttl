@@ -1,0 +1,232 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+    rdfs:label "WISDOM Stress Detection Ontology" ;
+    rdfs:comment "A formalized and extensible conceptual data model for representing stress conditions, sensor- and wearable-device-related data structures.".
+
+# Stress-related conditions
+:StressCondition a owl:Class ;
+    rdfs:label "Stress Condition" ;
+    rdfs:comment "Represents different types of stress conditions.".
+
+:CognitiveStress a :StressCondition ;
+    rdfs:label "Cognitive Stress" ;
+    rdfs:comment "Represents cognitive stress conditions.".
+
+:SocioEvaluativeStress a :StressCondition ;
+    rdfs:label "Socio-Evaluative Stress" ;
+    rdfs:comment "Represents socio-evaluative stress conditions.".
+
+# Stressors
+:Stressor a owl:Class ;
+    rdfs:label "Stressor" ;
+    rdfs:comment "Represents different types of stressors.".
+
+# Short-term stressors
+:PhysicalStressor a :Stressor ;
+    rdfs:label "Physical Stressor" ;
+    rdfs:comment "Represents physical stressors.".
+
+:CognitiveStressor a :Stressor ;
+    rdfs:label "Cognitive Stressor" ;
+    rdfs:comment "Represents cognitive stressors.".
+
+:SocioEvaluativeStressor a :Stressor ;
+    rdfs:label "Socio-Evaluative Stressor" ;
+    rdfs:comment "Represents socio-evaluative stressors.".
+
+# Stress responses
+:PhysiologicalResponse a owl:Class ;
+    rdfs:label "Physiological Response" ;
+    rdfs:comment "Represents physiological responses to stressors.".
+
+# Baseline or recovery states
+:BaselineState a :Condition ;
+    rdfs:label "Baseline State" ;
+    rdfs:comment "Represents baseline or recovery states.".
+
+# Activities or experimental phases
+:Activity a owl:Class ;
+    rdfs:label "Activity" ;
+    rdfs:comment "Represents activities or experimental phases.".
+
+# Linking stress condition to activity
+:HasStressCondition rdf:Property ;
+    rdfs:domain :Activity ;
+    rdfs:range :StressCondition ;
+    rdfs:label "Has Stress Condition" ;
+    rdfs:comment "Links an activity to a stress condition.".
+
+# Linking stressor to activity phase
+:HasStressor rdf:Property ;
+    rdfs:domain :ActivityPhase ;
+    rdfs:range :Stressor ;
+    rdfs:label "Has Stressor" ;
+    rdfs:comment "Links an activity phase to a stressor.".
+
+# Sensors
+:Sensor a owl:Class ;
+    rdfs:label "Sensor" ;
+    rdfs:comment "Represents different types of sensors.".
+
+# Physiological sensors
+:PPGSensor a :Sensor ;
+    rdfs:label "PPG Sensor" ;
+    rdfs:comment "Represents PPG sensors.".
+
+:EDASensor a :Sensor ;
+    rdfs:label "EDA Sensor" ;
+    rdfs:comment "Represents EDA sensors.".
+
+:BloodOxygenSensor a :Sensor ;
+    rdfs:label "Blood Oxygen Sensor" ;
+    rdfs:comment "Represents blood oxygen sensors.".
+
+:TemperatureSensor a :Sensor ;
+    rdfs:label "Temperature Sensor" ;
+    rdfs:comment "Represents temperature sensors.".
+
+# Movement-related sensors
+:Accelerometer a :Sensor ;
+    rdfs:label "Accelerometer" ;
+    rdfs:comment "Represents accelerometers.".
+
+# Device or platform
+:MeasurementPlatform a owl:Class ;
+    rdfs:label "Measurement Platform" ;
+    rdfs:comment "Represents devices or platforms used for measurements.".
+
+# Properties of sensors
+:MeasuredProperty rdf:Property ;
+    rdfs:domain :Sensor ;
+    rdfs:range xsd:string ;
+    rdfs:label "Measured Property" ;
+    rdfs:comment "Indicates what a sensor measures.".
+
+# Categories of measurable properties
+:PhysiologicalProperty a owl:Class ;
+    rdfs:label "Physiological Property" ;
+    rdfs:comment "Represents physiological properties.".
+
+:BehavioralIndicator a owl:Class ;
+    rdfs:label "Behavioral Indicator" ;
+    rdfs:comment "Represents behavioral indicators.".
+
+# Environmental factors
+:Environment a owl:Class ;
+    rdfs:label "Environment" ;
+    rdfs:comment "Represents environments.".
+
+:EnvironmentalProperty rdf:Property ;
+    rdfs:domain :Environment ;
+    rdfs:range xsd:string ;
+    rdfs:label "Environmental Property" ;
+    rdfs:comment "Assigns properties to an environment.".
+
+# Metadata for a physiological record
+:RecordMetadata rdf:Property ;
+    rdfs:domain :PhysiologicalRecord ;
+    rdfs:range xsd:string ;
+    rdfs:label "Record Metadata" ;
+    rdfs:comment "Stores metadata for a physiological record.".
+
+# Linking physiological record to signal channels
+:HasSignalChannel rdf:Property ;
+    rdfs:domain :PhysiologicalRecord ;
+    rdfs:range :SignalChannel ;
+    rdfs:label "Has Signal Channel" ;
+    rdfs:comment "Links a physiological record to its signal channels.".
+
+# Information about a signal channel
+:SignalChannelLabel rdf:Property ;
+    rdfs:domain :SignalChannel ;
+    rdfs:range xsd:string ;
+    rdfs:label "Signal Channel Label" ;
+    rdfs:comment "Stores the label for a signal channel.".
+
+# Indicating what a signal channel measures
+:Measures rdf:Property ;
+    rdfs:domain :SignalChannel ;
+    rdfs:range :ObservableProperty ;
+    rdfs:label "Measures" ;
+    rdfs:comment "Indicates what a signal channel measures.".
+
+# Types of observations
+:TimeSeriesObservation a owl:Class ;
+    rdfs:label "Time Series Observation" ;
+    rdfs:comment "Represents time-series observations.".
+
+# Temporal information for a time-series observation
+:ObservationTime rdf:Property ;
+    rdfs:domain :TimeSeriesObservation ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "Observation Time" ;
+    rdfs:comment "Assigns a time to a time-series observation.".
+
+# Linking an observation to its source data
+:HasSourceData rdf:Property ;
+    rdfs:domain :Observation ;
+    rdfs:range :PhysiologicalRecord ;
+    rdfs:label "Has Source Data" ;
+    rdfs:comment "Links an observation to its source data.".
+
+# Linking an observation to the activity during which it was made
+:ObservedDuring rdf:Property ;
+    rdfs:domain :Observation ;
+    rdfs:range :Activity ;
+    rdfs:label "Observed During" ;
+    rdfs:comment "Links an observation to the activity during which it was made.".
+
+# Linking measurements to the activity in which they occurred
+:MeasuredDuring rdf:Property ;
+    rdfs:domain :Measurement ;
+    rdfs:range :Activity ;
+    rdfs:label "Measured During" ;
+    rdfs:comment "Links a measurement to the activity in which it occurred.".
+
+# Annotations
+:Annotation a owl:Class ;
+    rdfs:label "Annotation" ;
+    rdfs:comment "Represents annotations.".
+
+# Assigning an annotation to an activity or phase
+:HasAnnotation rdf:Property ;
+    rdfs:domain :Activity ;
+    rdfs:range :Annotation ;
+    rdfs:label "Has Annotation" ;
+    rdfs:comment "Assigns an annotation to an activity or phase.".
+
+# Connecting an annotation to an observer
+:MadeBy rdf:Property ;
+    rdfs:domain :Annotation ;
+    rdfs:range :Observer ;
+    rdfs:label "Made By" ;
+    rdfs:comment "Connects an annotation to its human observer.".
+
+# Human observer
+:Observer a owl:Class ;
+    rdfs:label "Observer" ;
+    rdfs:comment "Represents human observers.".
+
+# Biomarker assays
+:BiomarkerAssay a owl:Class ;
+    rdfs:label "Biomarker Assay" ;
+    rdfs:comment "Represents biomarker assays.".
+
+# Linking an observation to a biomarker assay
+:HasBiomarkerAssay rdf:Property ;
+    rdfs:domain :Observation ;
+    rdfs:range :BiomarkerAssay ;
+    rdfs:label "Has Biomarker Assay" ;
+    rdfs:comment "Links an observation to a biomarker assay.".
+
+# Documenting the time of a biomarker assay
+:AssayTime rdf:Property ;
+    rdfs:domain :BiomarkerAssay ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "Assay Time" ;
+    rdfs:comment "Documents the time of a biomarker assay.".

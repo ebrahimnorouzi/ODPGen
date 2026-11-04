@@ -1,0 +1,144 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Software and Hardware Requirements Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern for modeling software and hardware requirements, including resource types, properties, values, and versions, to support dynamic resource allocation." .
+
+### Classes ###
+
+:Resource a owl:Class ;
+    rdfs:label "Resource" ;
+    rdfs:comment "A digital or physical asset, such as software or hardware, described in a catalogue." .
+
+:Software a owl:Class ;
+    rdfs:subClassOf :Resource ;
+    rdfs:label "Software" ;
+    rdfs:comment "A software resource that may have requirements or be required by other software." .
+
+:Hardware a owl:Class ;
+    rdfs:subClassOf :Resource ;
+    rdfs:label "Hardware" ;
+    rdfs:comment "A hardware resource that can be required by software." .
+
+:DPU a owl:Class ;
+    rdfs:subClassOf :Hardware ;
+    rdfs:label "DPU" ;
+    rdfs:comment "Data Processing Unit, a specific type of hardware resource." .
+
+:GPU a owl:Class ;
+    rdfs:subClassOf :Hardware ;
+    rdfs:label "GPU" ;
+    rdfs:comment "Graphics Processing Unit, a specific type of hardware resource." .
+
+:Requirement a owl:Class ;
+    rdfs:label "Requirement" ;
+    rdfs:comment "A specification of a condition, capability, or resource needed by a software." .
+
+:SoftwareRequirement a owl:Class ;
+    rdfs:subClassOf :Requirement ;
+    rdfs:label "Software Requirement" ;
+    rdfs:comment "A requirement specifically mandating a software resource." .
+
+:HardwareRequirement a owl:Class ;
+    rdfs:subClassOf :Requirement ;
+    rdfs:label "Hardware Requirement" ;
+    rdfs:comment "A requirement specifically mandating a hardware resource." .
+
+:ResourceType a owl:Class ;
+    rdfs:label "Resource Type" ;
+    rdfs:comment "The category or type of a resource required (e.g., a generic GPU class vs a specific GPU instance)." .
+
+:Property a owl:Class ;
+    rdfs:label "Property" ;
+    rdfs:comment "A measurable or definable characteristic of a resource (e.g., memory, cores) that can be constrained." .
+
+### Object Properties ###
+
+:hasRequirement a owl:ObjectProperty ;
+    rdfs:domain :Software ;
+    rdfs:range :Requirement ;
+    rdfs:label "has requirement" ;
+    rdfs:comment "Links a software to its hardware or software requirements." .
+
+:requiresResource a owl:ObjectProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range :Resource ;
+    rdfs:label "requires resource" ;
+    rdfs:comment "Links a requirement to the specific resource instance it mandates." .
+
+:requiresResourceType a owl:ObjectProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range :ResourceType ;
+    rdfs:label "requires resource type" ;
+    rdfs:comment "Links a requirement to the type or category of resource it mandates." .
+
+:constrainsProperty a owl:ObjectProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range :Property ;
+    rdfs:label "constrains property" ;
+    rdfs:comment "Links a requirement to the specific property of a resource it constrains." .
+
+### Datatype Properties ###
+
+:minValue a owl:DatatypeProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "minimum value" ;
+    rdfs:comment "The minimum required value for a constrained property." .
+
+:maxValue a owl:DatatypeProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "maximum value" ;
+    rdfs:comment "The maximum allowed value for a constrained property." .
+
+:exactValue a owl:DatatypeProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range rdfs:Literal ;
+    rdfs:label "exact value" ;
+    rdfs:comment "The exact required value for a constrained property." .
+
+:minVersion a owl:DatatypeProperty ;
+    rdfs:domain :SoftwareRequirement ;
+    rdfs:range xsd:string ;
+    rdfs:label "minimum version" ;
+    rdfs:comment "The minimum required version of a software." .
+
+:maxVersion a owl:DatatypeProperty ;
+    rdfs:domain :SoftwareRequirement ;
+    rdfs:range xsd:string ;
+    rdfs:label "maximum version" ;
+    rdfs:comment "The maximum allowed version of a software." .
+
+:exactVersion a owl:DatatypeProperty ;
+    rdfs:domain :SoftwareRequirement ;
+    rdfs:range xsd:string ;
+    rdfs:label "exact version" ;
+    rdfs:comment "The exact required version of a software." .
+```
+
+### Validation Report
+1. **PASS**: Turtle syntax is valid (all statements are properly terminated with dots, and semicolons are used correctly for predicate-object lists).
+2. **PASS**: All prefixes used in the body (`owl:`, `rdf:`, `rdfs:`, `xsd:`, `:`) are declared at the top.
+3. **PASS**: Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies (`xsd:decimal`, `xsd:string`, `rdfs:Literal`).
+4. **PASS**: No two classes or properties are defined with contradictory restrictions (the hierarchy is a simple tree and domains/ranges are logically consistent).
+5. **PASS**: Every CQ is traceable to the ontology (CQ1: `:hasRequirement`, CQ2: `:requiresResource`, CQ3: `:requiresResourceType`, CQ4: `:constrainsProperty` & value properties, CQ5: version properties).
+6. **PASS**: No concept appears in the ontology that is not grounded in the scenario or CQs (DPU and GPU are explicitly mentioned in the scenario; all other concepts directly answer the CQs).
+
+### Scope Report
+**a) Requirements from the scenario that are covered:**
+- The ability to express that a software has requirements (`:hasRequirement`, `:Requirement`).
+- The distinction between software and hardware resources (`:Software`, `:Hardware`, `:SoftwareRequirement`, `:HardwareRequirement`).
+- The inclusion of specific hardware types mentioned in the scenario (`:DPU`, `:GPU`).
+- The ability to specify the exact resource or the type of resource required (`:requiresResource`, `:requiresResourceType`).
+- The ability to constrain specific properties of a resource with minimum, maximum, or exact values (`:constrainsProperty`, `:minValue`, `:maxValue`, `:exactValue`).
+- The ability to specify version constraints for software requirements (`:minVersion`, `:maxVersion`, `:exactVersion`).
+
+**b) Scenario concepts explicitly excluded and why:**
+- *Matchmaker / Service Requests / Catalogue*: Excluded because they represent the application/system architecture utilizing the ontology, rather than the domain model of the digital assets and their requirements themselves.
+- *Execution / Support / Deployment*: Excluded because the CQs do not ask for the *purpose* of the requirement (e.g., whether a GPU is needed for deployment vs. execution). Adding this would violate the constraint to keep the ontology minimal and strictly grounded in the provided CQs.

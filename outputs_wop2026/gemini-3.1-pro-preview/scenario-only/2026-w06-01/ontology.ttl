@@ -1,0 +1,200 @@
+# ODPGEN-TRUNCATED: this generation was cut off before the model finished.
+# ODPGEN-TRUNCATION-SIGNALS: finish_reason=FinishReason.MAX_TOKENS
+# Do NOT score this file as a complete ontology; see metadata.json.
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Inclusive Pedestrian Routing Ontology Pattern" ;
+    rdfs:comment "An ontology design pattern for inclusive pedestrian routing, capturing spatial areas, environmental characteristics, amenities, and user preferences to support personalized itineraries." .
+
+# --- Classes ---
+
+:SpatialEntity a owl:Class ;
+    rdfs:label "Spatial Entity" ;
+    rdfs:comment "A physical entity located in space, such as an area, point, or amenity." .
+
+:Itinerary a owl:Class ;
+    rdfs:label "Itinerary" ;
+    rdfs:comment "A proposed route or path connecting a start point and an end point." .
+
+:Point a owl:Class ;
+    rdfs:subClassOf :SpatialEntity ;
+    rdfs:label "Point" ;
+    rdfs:comment "A specific location serving as a start or end node for an itinerary." .
+
+:SpatialArea a owl:Class ;
+    rdfs:subClassOf :SpatialEntity ;
+    rdfs:label "Spatial Area" ;
+    rdfs:comment "A navigable region or space within the environment." .
+
+:IndoorArea a owl:Class ;
+    rdfs:subClassOf :SpatialArea ;
+    owl:disjointWith :OutdoorArea ;
+    rdfs:label "Indoor Area" ;
+    rdfs:comment "A spatial area located inside a building." .
+
+:OutdoorArea a owl:Class ;
+    rdfs:subClassOf :SpatialArea ;
+    rdfs:label "Outdoor Area" ;
+    rdfs:comment "A spatial area located outside, exposed to weather." .
+
+:RestArea a owl:Class ;
+    rdfs:subClassOf :SpatialArea ;
+    rdfs:label "Rest Area" ;
+    rdfs:comment "A quiet space providing an opportunity to rest." .
+
+:Entrance a owl:Class ;
+    rdfs:subClassOf :SpatialArea ;
+    rdfs:label "Entrance" ;
+    rdfs:comment "A spatial area serving as a transition point into a building." .
+
+:VerticalTransition a owl:Class ;
+    rdfs:subClassOf :SpatialArea ;
+    rdfs:label "Vertical Transition" ;
+    rdfs:comment "A spatial area that connects different elevation levels." .
+
+:Stairs a owl:Class ;
+    rdfs:subClassOf :VerticalTransition ;
+    rdfs:label "Stairs" ;
+    rdfs:comment "A vertical transition consisting of steps." .
+
+:Elevator a owl:Class ;
+    rdfs:subClassOf :VerticalTransition ;
+    rdfs:label "Elevator" ;
+    rdfs:comment "A vertical transition consisting of a mechanical lift." .
+
+:Escalator a owl:Class ;
+    rdfs:subClassOf :VerticalTransition ;
+    rdfs:label "Escalator" ;
+    rdfs:comment "A vertical transition consisting of moving stairs." .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :Stairs :Elevator :Escalator ) .
+
+:Amenity a owl:Class ;
+    rdfs:subClassOf :SpatialEntity ;
+    rdfs:label "Amenity" ;
+    rdfs:comment "A useful feature or facility located within the environment." .
+
+:VendingMachine a owl:Class ;
+    rdfs:subClassOf :Amenity ;
+    rdfs:label "Vending Machine" ;
+    rdfs:comment "An amenity dispensing items such as snacks or drinks." .
+
+:Toilet a owl:Class ;
+    rdfs:subClassOf :Amenity ;
+    rdfs:label "Toilet" ;
+    rdfs:comment "A restroom or washroom amenity." .
+
+:ReceptionBoard a owl:Class ;
+    rdfs:subClassOf :Amenity ;
+    rdfs:label "Reception Board" ;
+    rdfs:comment "An amenity providing information or reception services." .
+
+:User a owl:Class ;
+    rdfs:label "User" ;
+    rdfs:comment "A person navigating the environment." .
+
+:UserPreference a owl:Class ;
+    rdfs:label "User Preference" ;
+    rdfs:comment "A characteristic or feature preferred by a user for their itinerary." .
+
+:UserConstraint a owl:Class ;
+    rdfs:label "User Constraint" ;
+    rdfs:comment "A strict requirement or limitation for a user's itinerary." .
+
+# --- Object Properties ---
+
+:connectsPoint a owl:ObjectProperty ;
+    rdfs:domain :Itinerary ;
+    rdfs:range :Point ;
+    rdfs:label "connects point" ;
+    rdfs:comment "Relates an itinerary to a point it connects." .
+
+:hasStartPoint a owl:ObjectProperty ;
+    rdfs:subPropertyOf :connectsPoint ;
+    rdfs:label "has start point" ;
+    rdfs:comment "Relates an itinerary to its starting point." .
+
+:hasEndPoint a owl:ObjectProperty ;
+    rdfs:subPropertyOf :connectsPoint ;
+    rdfs:label "has end point" ;
+    rdfs:comment "Relates an itinerary to its destination point." .
+
+:passesThrough a owl:ObjectProperty ;
+    rdfs:domain :Itinerary ;
+    rdfs:range :SpatialArea ;
+    rdfs:label "passes through" ;
+    rdfs:comment "Relates an itinerary to a spatial area it traverses." .
+
+:isNearTo a owl:ObjectProperty ;
+    rdfs:domain :Itinerary ;
+    rdfs:range :SpatialEntity ;
+    rdfs:label "is near to" ;
+    rdfs:comment "Relates an itinerary to a spatial entity (like a rest area or amenity) located in its vicinity." .
+
+:hasPreference a owl:ObjectProperty ;
+    rdfs:domain :User ;
+    rdfs:range :UserPreference ;
+    rdfs:label "has preference" ;
+    rdfs:comment "Relates a user to their routing preferences." .
+
+:hasConstraint a owl:ObjectProperty ;
+    rdfs:domain :User ;
+    rdfs:range :UserConstraint ;
+    rdfs:label "has constraint" ;
+    rdfs:comment "Relates a user to their routing constraints." .
+
+# --- Datatype Properties ---
+
+:hasNoiseLevel a owl:DatatypeProperty ;
+    rdfs:domain :SpatialArea ;
+    rdfs:range xsd:string ;
+    rdfs:label "has noise level" ;
+    rdfs:comment "Indicates the level of noise in a spatial area." .
+
+:hasCrowdednessLevel a owl:DatatypeProperty ;
+    rdfs:domain :SpatialArea ;
+    rdfs:range xsd:string ;
+    rdfs:label "has crowdedness level" ;
+    rdfs:comment "Indicates the density of people in a spatial area." .
+
+:hasWeatherCondition a owl:DatatypeProperty ;
+    rdfs:domain :OutdoorArea ;
+    rdfs:range xsd:string ;
+    rdfs:label "has weather condition" ;
+    rdfs:comment "Indicates the current weather conditions of an outdoor area." .
+
+:hasLightingCondition a owl:DatatypeProperty ;
+    rdfs:domain :SpatialArea ;
+    rdfs:range xsd:string ;
+    rdfs:label "has lighting condition" ;
+    rdfs:comment "Indicates the lighting quality or state in a spatial area." .
+
+:hasAestheticQuality a owl:DatatypeProperty ;
+    rdfs:domain :SpatialArea ;
+    rdfs:range xsd:string ;
+    rdfs:label "has aesthetic quality" ;
+    rdfs:comment "Describes the visual or aesthetic appeal of a spatial area." .
+
+:hasComfortQuality a owl:DatatypeProperty ;
+    rdfs:domain :SpatialArea ;
+    rdfs:range xsd:string ;
+    rdfs:label "has comfort quality" ;
+    rdfs:comment "Describes the physical or psychological comfort level of a spatial area." .
+
+:isHighTrafficDuringPeak a owl:DatatypeProperty ;
+    rdfs:domain :SpatialArea ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is high traffic during peak" ;
+    rdfs:comment "Indicates whether the spatial area experiences high traffic during peak hours." .
+
+:isAccessible a owl:DatatypeProperty ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is accessible" ;
+    rdfs:comment "Indicates whether the spatial entity (e.g., an entrance or route) is physically accessible." .

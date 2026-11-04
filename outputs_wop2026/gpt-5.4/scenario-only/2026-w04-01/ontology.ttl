@@ -1,0 +1,122 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Reverse Engineering Symbol Table Knowledge Graph ODP" ;
+    rdfs:comment "An ontology design pattern for representing symbol-table-derived knowledge about executable files, including symbols, their kinds, recovered and user-assigned names, and relationships that help users understand how parts of a binary fit together. The pattern also leaves room for relating multiple software artifacts and malware-specific behavior in software supply chain vulnerability analysis." .
+
+:SoftwareArtifact a owl:Class ;
+    rdfs:label "Software Artifact" ;
+    rdfs:comment "A software-related artifact considered in analysis, such as an executable file or another artifact in a software supply chain." .
+
+:ExecutableFile a owl:Class ;
+    rdfs:label "Executable File" ;
+    rdfs:comment "A binary executable file whose symbol table data is used for reverse engineering analysis." ;
+    rdfs:subClassOf :SoftwareArtifact .
+
+:Symbol a owl:Class ;
+    rdfs:label "Symbol" ;
+    rdfs:comment "A symbol collected from a binary file, such as one representing a function, variable, or label." .
+
+:FunctionSymbol a owl:Class ;
+    rdfs:label "Function Symbol" ;
+    rdfs:comment "A symbol representing a function in an executable file." ;
+    rdfs:subClassOf :Symbol .
+
+:VariableSymbol a owl:Class ;
+    rdfs:label "Variable Symbol" ;
+    rdfs:comment "A symbol representing a variable in an executable file." ;
+    rdfs:subClassOf :Symbol .
+
+:LabelSymbol a owl:Class ;
+    rdfs:label "Label Symbol" ;
+    rdfs:comment "A symbol representing a label in an executable file." ;
+    rdfs:subClassOf :Symbol .
+
+:RecoveredName a owl:Class ;
+    rdfs:label "Recovered Name" ;
+    rdfs:comment "A name currently associated with a symbol as recovered from reverse engineering tooling, which may not be the original source-level name." .
+
+:UserAssignedName a owl:Class ;
+    rdfs:label "User Assigned Name" ;
+    rdfs:comment "A name assigned by a user during reverse engineering to improve understanding of a symbol." .
+
+:Behavior a owl:Class ;
+    rdfs:label "Behavior" ;
+    rdfs:comment "A behavior associated with software artifacts for analysis purposes." .
+
+:MalwareBehavior a owl:Class ;
+    rdfs:label "Malware Behavior" ;
+    rdfs:comment "A malware-specific behavior that may be connected across software artifacts." ;
+    rdfs:subClassOf :Behavior .
+
+:SupplyChainVulnerability a owl:Class ;
+    rdfs:label "Supply Chain Vulnerability" ;
+    rdfs:comment "A vulnerability identified within a software supply chain." .
+
+:FunctionSymbol owl:disjointWith :VariableSymbol, :LabelSymbol .
+:VariableSymbol owl:disjointWith :LabelSymbol .
+
+:containsSymbol a owl:ObjectProperty ;
+    rdfs:label "contains symbol" ;
+    rdfs:comment "Relates an executable file to a symbol collected from its symbol table." ;
+    rdfs:domain :ExecutableFile ;
+    rdfs:range :Symbol .
+
+:isContainedInExecutableFile a owl:ObjectProperty ;
+    rdfs:label "is contained in executable file" ;
+    rdfs:comment "Relates a symbol to the executable file whose symbol table contains it." ;
+    rdfs:domain :Symbol ;
+    rdfs:range :ExecutableFile ;
+    owl:inverseOf :containsSymbol .
+
+:hasRecoveredName a owl:ObjectProperty ;
+    rdfs:label "has recovered name" ;
+    rdfs:comment "Relates a symbol to a recovered name obtained from reverse engineering tooling." ;
+    rdfs:domain :Symbol ;
+    rdfs:range :RecoveredName .
+
+:hasUserAssignedName a owl:ObjectProperty ;
+    rdfs:label "has user assigned name" ;
+    rdfs:comment "Relates a symbol to a name assigned by a user during analysis." ;
+    rdfs:domain :Symbol ;
+    rdfs:range :UserAssignedName .
+
+:relatesToSymbol a owl:ObjectProperty ;
+    rdfs:label "relates to symbol" ;
+    rdfs:comment "Relates one symbol to another symbol to capture how pieces of data in an executable fit together." ;
+    rdfs:domain :Symbol ;
+    rdfs:range :Symbol .
+
+:relatesToArtifact a owl:ObjectProperty ;
+    rdfs:label "relates to artifact" ;
+    rdfs:comment "Relates one software artifact to another software artifact in broader analysis contexts such as software supply chains." ;
+    rdfs:domain :SoftwareArtifact ;
+    rdfs:range :SoftwareArtifact .
+
+:exhibitsBehavior a owl:ObjectProperty ;
+    rdfs:label "exhibits behavior" ;
+    rdfs:comment "Relates a software artifact to a behavior it exhibits." ;
+    rdfs:domain :SoftwareArtifact ;
+    rdfs:range :Behavior .
+
+:indicatesVulnerability a owl:ObjectProperty ;
+    rdfs:label "indicates vulnerability" ;
+    rdfs:comment "Relates a behavior to a supply chain vulnerability that it helps detect or indicate." ;
+    rdfs:domain :Behavior ;
+    rdfs:range :SupplyChainVulnerability .
+
+:nameString a owl:DatatypeProperty ;
+    rdfs:label "name string" ;
+    rdfs:comment "The textual form of a recovered or user-assigned name." ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string .
+
+:symbolAddress a owl:DatatypeProperty ;
+    rdfs:label "symbol address" ;
+    rdfs:comment "The address associated with a symbol in the executable representation." ;
+    rdfs:domain :Symbol ;
+    rdfs:range xsd:string .

@@ -1,0 +1,255 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "WISDOM stress detection ontology design pattern" ;
+    rdfs:comment "An ontology design pattern for representing stress detection experiments and datasets by linking subjects, stressors, stress states, physiological responses, sensors, signal channels, measurements, activity phases, contextual factors, and dataset-specific labels." .
+
+:Subject a owl:Class ;
+    rdfs:label "Subject" ;
+    rdfs:comment "A person or participant whose stress-related condition, physiology, or measurements are represented." .
+
+:Dataset a owl:Class ;
+    rdfs:label "Dataset" ;
+    rdfs:comment "A collection of stress-related records or annotations produced in a study or data collection setting." .
+
+:DatasetLabel a owl:Class ;
+    rdfs:label "Dataset label" ;
+    rdfs:comment "A dataset-specific label used to classify or annotate phases, tasks, conditions, or related aspects without implying automatic equivalence across datasets." .
+
+:Sensor a owl:Class ;
+    rdfs:label "Sensor" ;
+    rdfs:comment "A sensor used to capture physiological or behavioral signals relevant to stress detection." .
+
+:WearableDevice a owl:Class ;
+    rdfs:label "Wearable device" ;
+    rdfs:comment "A wearable device that contains or uses one or more sensors for stress-related data collection." .
+
+:SignalChannel a owl:Class ;
+    rdfs:label "Signal channel" ;
+    rdfs:comment "A signal channel through which a sensor records a specific observable property." .
+
+:ObservableProperty a owl:Class ;
+    rdfs:label "Observable property" ;
+    rdfs:comment "A physiological or behavioral property that can be observed or measured by a sensor or signal channel." .
+
+:Measurement a owl:Class ;
+    rdfs:label "Measurement" ;
+    rdfs:comment "A sensor-derived observation or recorded value that provides an indirect cue about stress through physiological or behavioral responses." .
+
+:PhysiologicalResponse a owl:Class ;
+    rdfs:label "Physiological response" ;
+    rdfs:comment "A physiological change or response that may reflect stress but may also arise from other causes such as physical activity." .
+
+:StressState a owl:Class ;
+    rdfs:label "Stress state" ;
+    rdfs:comment "A stress-related condition or state of a subject." .
+
+:Stressor a owl:Class ;
+    rdfs:label "Stressor" ;
+    rdfs:comment "An event, condition, or stimulus that has the potential to induce stress in a subject." .
+
+:ActivityPhase a owl:Class ;
+    rdfs:label "Activity phase" ;
+    rdfs:comment "A phase of an experiment, task, or activity during which measurements and stress-related conditions are observed." .
+
+:ContextualFactor a owl:Class ;
+    rdfs:label "Contextual factor" ;
+    rdfs:comment "A contextual aspect that influences the interpretation of stressors, stress states, physiological responses, or measurements." .
+
+:ExperimentalProtocol a owl:Class ;
+    rdfs:label "Experimental protocol" ;
+    rdfs:comment "A protocol describing how stress-related data are collected in an experiment or study." .
+
+:hasSensor a owl:ObjectProperty ;
+    rdfs:label "has sensor" ;
+    rdfs:comment "Relates a wearable device to a sensor it contains or uses." ;
+    rdfs:domain :WearableDevice ;
+    rdfs:range :Sensor .
+
+:hasSignalChannel a owl:ObjectProperty ;
+    rdfs:label "has signal channel" ;
+    rdfs:comment "Relates a sensor to a signal channel through which data are recorded." ;
+    rdfs:domain :Sensor ;
+    rdfs:range :SignalChannel .
+
+:observesProperty a owl:ObjectProperty ;
+    rdfs:label "observes property" ;
+    rdfs:comment "Relates a sensor or signal channel to the observable property it captures." ;
+    rdfs:range :ObservableProperty .
+
+:isAboutSubject a owl:ObjectProperty ;
+    rdfs:label "is about subject" ;
+    rdfs:comment "Relates a measurement, physiological response, stress state, or activity phase annotation to the subject concerned." ;
+    rdfs:range :Subject .
+
+:hasMeasurement a owl:ObjectProperty ;
+    rdfs:label "has measurement" ;
+    rdfs:comment "Relates a signal channel to a measurement recorded through that channel." ;
+    rdfs:domain :SignalChannel ;
+    rdfs:range :Measurement .
+
+:indicatesResponse a owl:ObjectProperty ;
+    rdfs:label "indicates response" ;
+    rdfs:comment "Relates a measurement to a physiological response that it may indicate indirectly." ;
+    rdfs:domain :Measurement ;
+    rdfs:range :PhysiologicalResponse .
+
+:associatedWithStressState a owl:ObjectProperty ;
+    rdfs:label "associated with stress state" ;
+    rdfs:comment "Relates a measurement, physiological response, activity phase, or dataset label to a stress state." ;
+    rdfs:range :StressState .
+
+:hasPotentialStressor a owl:ObjectProperty ;
+    rdfs:label "has potential stressor" ;
+    rdfs:comment "Relates an activity phase or stress state to a stressor that may induce stress." ;
+    rdfs:range :Stressor .
+
+:occursDuringPhase a owl:ObjectProperty ;
+    rdfs:label "occurs during phase" ;
+    rdfs:comment "Relates a measurement, physiological response, or stress state to the activity phase during which it occurs or is observed." ;
+    rdfs:range :ActivityPhase .
+
+:hasContextualFactor a owl:ObjectProperty ;
+    rdfs:label "has contextual factor" ;
+    rdfs:comment "Relates a stressor, stress state, physiological response, measurement, or activity phase to a contextual factor relevant for interpretation." ;
+    rdfs:range :ContextualFactor .
+
+:recordedBySensor a owl:ObjectProperty ;
+    rdfs:label "recorded by sensor" ;
+    rdfs:comment "Relates a measurement to the sensor that recorded it." ;
+    rdfs:domain :Measurement ;
+    rdfs:range :Sensor .
+
+:includedInDataset a owl:ObjectProperty ;
+    rdfs:label "included in dataset" ;
+    rdfs:comment "Relates a measurement, signal channel, or annotation resource to the dataset in which it is included." ;
+    rdfs:range :Dataset .
+
+:usesProtocol a owl:ObjectProperty ;
+    rdfs:label "uses protocol" ;
+    rdfs:comment "Relates a dataset to the experimental protocol used for data collection." ;
+    rdfs:domain :Dataset ;
+    rdfs:range :ExperimentalProtocol .
+
+:hasDatasetLabel a owl:ObjectProperty ;
+    rdfs:label "has dataset label" ;
+    rdfs:comment "Relates a dataset, activity phase, stress state, stressor, or measurement context to a dataset-specific label." ;
+    rdfs:range :DatasetLabel .
+
+:alignedWithActivityPhase a owl:ObjectProperty ;
+    rdfs:label "aligned with activity phase" ;
+    rdfs:comment "Relates a dataset-specific label to an activity phase concept in the shared semantic structure." ;
+    rdfs:domain :DatasetLabel ;
+    rdfs:range :ActivityPhase .
+
+:alignedWithStressState a owl:ObjectProperty ;
+    rdfs:label "aligned with stress state" ;
+    rdfs:comment "Relates a dataset-specific label to a stress state concept in the shared semantic structure." ;
+    rdfs:domain :DatasetLabel ;
+    rdfs:range :StressState .
+
+:alignedWithStressor a owl:ObjectProperty ;
+    rdfs:label "aligned with stressor" ;
+    rdfs:comment "Relates a dataset-specific label to a stressor concept in the shared semantic structure." ;
+    rdfs:domain :DatasetLabel ;
+    rdfs:range :Stressor .
+
+:labelValue a owl:DatatypeProperty ;
+    rdfs:label "label value" ;
+    rdfs:comment "The literal value of a dataset-specific label." ;
+    rdfs:domain :DatasetLabel ;
+    rdfs:range xsd:string .
+
+:measurementValue a owl:DatatypeProperty ;
+    rdfs:label "measurement value" ;
+    rdfs:comment "A literal value recorded in a measurement." ;
+    rdfs:domain :Measurement ;
+    rdfs:range xsd:string .
+
+:Subject owl:disjointWith :Dataset,
+        :DatasetLabel,
+        :Sensor,
+        :WearableDevice,
+        :SignalChannel,
+        :ObservableProperty,
+        :Measurement,
+        :PhysiologicalResponse,
+        :StressState,
+        :Stressor,
+        :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:Dataset owl:disjointWith :DatasetLabel,
+        :Sensor,
+        :WearableDevice,
+        :SignalChannel,
+        :ObservableProperty,
+        :Measurement,
+        :PhysiologicalResponse,
+        :StressState,
+        :Stressor,
+        :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:DatasetLabel owl:disjointWith :Sensor,
+        :WearableDevice,
+        :SignalChannel,
+        :ObservableProperty,
+        :Measurement,
+        :PhysiologicalResponse,
+        :StressState,
+        :Stressor,
+        :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:Sensor owl:disjointWith :WearableDevice,
+        :SignalChannel,
+        :ObservableProperty,
+        :Measurement,
+        :PhysiologicalResponse,
+        :StressState,
+        :Stressor,
+        :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:SignalChannel owl:disjointWith :ObservableProperty,
+        :Measurement,
+        :PhysiologicalResponse,
+        :StressState,
+        :Stressor,
+        :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:Measurement owl:disjointWith :PhysiologicalResponse,
+        :StressState,
+        :Stressor,
+        :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:PhysiologicalResponse owl:disjointWith :StressState,
+        :Stressor,
+        :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:StressState owl:disjointWith :Stressor,
+        :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:Stressor owl:disjointWith :ActivityPhase,
+        :ContextualFactor,
+        :ExperimentalProtocol .
+
+:ActivityPhase owl:disjointWith :ContextualFactor,
+        :ExperimentalProtocol .

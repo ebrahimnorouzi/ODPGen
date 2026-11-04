@@ -1,0 +1,247 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "WISDOM Stress Detection Ontology Design Pattern" ;
+    rdfs:comment "A formalized and extensible conceptual data model for representing stress conditions, stressors, physiological responses, sensors, and contextual factors to support physiology-based stress detection and dataset harmonization." .
+
+### Classes ###
+
+:ActivityPhase a owl:Class ;
+    rdfs:label "Activity Phase" ;
+    rdfs:comment "A specific period or task within an experimental protocol, such as baseline, stress, or recovery." .
+
+:BaselinePhase a owl:Class ;
+    rdfs:subClassOf :ActivityPhase ;
+    rdfs:label "Baseline Phase" ;
+    rdfs:comment "An activity phase representing the baseline state of a subject before any stressor is applied." .
+
+:BehavioralResponse a owl:Class ;
+    rdfs:subClassOf :Response ;
+    owl:disjointWith :PhysiologicalResponse ;
+    rdfs:label "Behavioral Response" ;
+    rdfs:comment "An observable behavioral change or action exhibited by a subject." .
+
+:CognitiveStress a owl:Class ;
+    rdfs:subClassOf :StressCondition ;
+    rdfs:label "Cognitive Stress" ;
+    rdfs:comment "A stress state induced by cognitive workload or mental tasks." .
+
+:CognitiveStressor a owl:Class ;
+    rdfs:subClassOf :Stressor ;
+    rdfs:label "Cognitive Stressor" ;
+    rdfs:comment "A stimulus or task designed to induce cognitive stress." .
+
+:ContextualFactor a owl:Class ;
+    rdfs:label "Contextual Factor" ;
+    rdfs:comment "Information regarding the environment or situation that influences whether a stressor induces a stress state." .
+
+:Dataset a owl:Class ;
+    rdfs:label "Dataset" ;
+    rdfs:comment "A collection of data, typically containing physiological records and sensor measurements from stress research experiments." .
+
+:DatasetLabel a owl:Class ;
+    rdfs:label "Dataset Label" ;
+    rdfs:comment "A specific classification or tag used within a dataset (e.g., 'stress', 'cognitive workload') that can be mapped to shared semantic concepts." .
+
+:ObservableProperty a owl:Class ;
+    rdfs:label "Observable Property" ;
+    rdfs:comment "A specific physiological or physical phenomenon that can be observed and measured, such as electrodermal activity or heart rate." .
+
+:PhysicalStress a owl:Class ;
+    rdfs:subClassOf :StressCondition ;
+    rdfs:label "Physical Stress" ;
+    rdfs:comment "A stress state induced by physical activity or exertion." .
+
+:PhysicalStressor a owl:Class ;
+    rdfs:subClassOf :Stressor ;
+    rdfs:label "Physical Stressor" ;
+    rdfs:comment "A physical activity or condition that induces physical stress." .
+
+:PhysiologicalRecord a owl:Class ;
+    rdfs:label "Physiological Record" ;
+    rdfs:comment "A structured record of physiological data that can be semantically annotated with subject, sensor, channel, and condition information." .
+
+:PhysiologicalResponse a owl:Class ;
+    rdfs:subClassOf :Response ;
+    rdfs:label "Physiological Response" ;
+    rdfs:comment "A physiological change in a subject, such as decreased heart rate variability, which may reflect stress or physical activity." .
+
+:RecoveryPhase a owl:Class ;
+    rdfs:subClassOf :ActivityPhase ;
+    rdfs:label "Recovery Phase" ;
+    rdfs:comment "An activity phase following a stressor where the subject returns to a resting state." .
+
+:RelaxationPhase a owl:Class ;
+    rdfs:subClassOf :ActivityPhase ;
+    rdfs:label "Relaxation Phase" ;
+    rdfs:comment "An activity phase dedicated to relaxing the subject." .
+
+:Response a owl:Class ;
+    rdfs:label "Response" ;
+    rdfs:comment "A physiological or behavioral reaction exhibited by a subject." .
+
+:Sensor a owl:Class ;
+    rdfs:label "Sensor" ;
+    rdfs:comment "A device or component that detects and responds to some type of input from the physical environment, used to capture physiological or behavioral responses." .
+
+:SensorMeasurement a owl:Class ;
+    rdfs:label "Sensor Measurement" ;
+    rdfs:comment "An observation or value recorded by a sensor, providing indirect cues to stress by capturing responses." .
+
+:SignalChannel a owl:Class ;
+    rdfs:label "Signal Channel" ;
+    rdfs:comment "A specific data stream or channel originating from a sensor, linked to an observable property." .
+
+:SocioEvaluativeStress a owl:Class ;
+    rdfs:subClassOf :StressCondition ;
+    rdfs:label "Socio-evaluative Stress" ;
+    rdfs:comment "A stress state induced by social evaluation or pressure." .
+
+:SocioEvaluativeStressor a owl:Class ;
+    rdfs:subClassOf :Stressor ;
+    rdfs:label "Socio-evaluative Stressor" ;
+    rdfs:comment "A stimulus involving social evaluation designed to induce socio-evaluative stress." .
+
+:StressCondition a owl:Class ;
+    rdfs:label "Stress Condition" ;
+    rdfs:comment "The subjective stress state experienced by a subject, which may be cognitive, physical, or socio-evaluative." .
+
+:StressPhase a owl:Class ;
+    rdfs:subClassOf :ActivityPhase ;
+    rdfs:label "Stress Phase" ;
+    rdfs:comment "An activity phase during which a stressor is actively applied to the subject." .
+
+:Stressor a owl:Class ;
+    rdfs:label "Stressor" ;
+    rdfs:comment "An event, condition, or stimulus that has the potential to induce stress in a subject." .
+
+:Subject a owl:Class ;
+    rdfs:label "Subject" ;
+    rdfs:comment "An individual participating in a stress detection experiment or monitoring scenario." .
+
+:WearableDevice a owl:Class ;
+    rdfs:subClassOf :Sensor ;
+    rdfs:label "Wearable Device" ;
+    rdfs:comment "A sensor or collection of sensors worn on the body to capture physiological data." .
+
+### Disjointness Axioms ###
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :CognitiveStress :PhysicalStress :SocioEvaluativeStress ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :CognitiveStressor :PhysicalStressor :SocioEvaluativeStressor ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :BaselinePhase :RecoveryPhase :RelaxationPhase :StressPhase ) .
+
+### Object Properties ###
+
+:alignsWithConcept a owl:ObjectProperty ;
+    rdfs:domain :DatasetLabel ;
+    rdfs:label "aligns with concept" ;
+    rdfs:comment "Maps a dataset-specific label to a shared semantic concept in the ontology (e.g., an ActivityPhase or StressCondition)." .
+
+:arisesFromActivity a owl:ObjectProperty ;
+    rdfs:domain :PhysiologicalResponse ;
+    rdfs:range :ActivityPhase ;
+    rdfs:label "arises from activity" ;
+    rdfs:comment "Indicates the activity phase that caused or contributed to a physiological response." .
+
+:associatedWithCondition a owl:ObjectProperty ;
+    rdfs:domain :SignalChannel ;
+    rdfs:range :StressCondition ;
+    rdfs:label "associated with condition" ;
+    rdfs:comment "Links a signal channel to the stress condition present during its recording." .
+
+:capturesResponse a owl:ObjectProperty ;
+    rdfs:domain :SensorMeasurement ;
+    rdfs:range :Response ;
+    rdfs:label "captures response" ;
+    rdfs:comment "Links a sensor measurement to the physiological or behavioral response it indirectly captures." .
+
+:dependsOnContext a owl:ObjectProperty ;
+    rdfs:domain :StressCondition ;
+    rdfs:range :ContextualFactor ;
+    rdfs:label "depends on context" ;
+    rdfs:comment "Indicates the contextual factors that influence whether a stressor successfully induces a stress condition." .
+
+:generatedBySensor a owl:ObjectProperty ;
+    rdfs:domain :SignalChannel ;
+    rdfs:range :Sensor ;
+    rdfs:label "generated by sensor" ;
+    rdfs:comment "Links a signal channel to the sensor that produces it." .
+
+:hasDatasetLabel a owl:ObjectProperty ;
+    rdfs:domain :Dataset ;
+    rdfs:range :DatasetLabel ;
+    rdfs:label "has dataset label" ;
+    rdfs:comment "Links a dataset to the specific labels or taxonomies it uses." .
+
+:hasSignalChannel a owl:ObjectProperty ;
+    rdfs:domain :PhysiologicalRecord ;
+    rdfs:range :SignalChannel ;
+    rdfs:label "has signal channel" ;
+    rdfs:comment "Links a physiological record to its corresponding signal channel." .
+
+:inducesCondition a owl:ObjectProperty ;
+    rdfs:domain :Stressor ;
+    rdfs:range :StressCondition ;
+    rdfs:label "induces condition" ;
+    rdfs:comment "Indicates the stress condition that a stressor has the potential to induce." .
+
+:observesProperty a owl:ObjectProperty ;
+    rdfs:domain :SignalChannel ;
+    rdfs:range :ObservableProperty ;
+    rdfs:label "observes property" ;
+    rdfs:comment "Links a signal channel to the specific physiological or physical property it measures." .
+
+:recordedDuringPhase a owl:ObjectProperty ;
+    rdfs:domain :SignalChannel ;
+    rdfs:range :ActivityPhase ;
+    rdfs:label "recorded during phase" ;
+    rdfs:comment "Links a signal channel to the experimental activity phase during which it was recorded." .
+
+:recordedFromSubject a owl:ObjectProperty ;
+    rdfs:domain :SignalChannel ;
+    rdfs:range :Subject ;
+    rdfs:label "recorded from subject" ;
+    rdfs:comment "Links a signal channel to the subject being monitored." .
+
+:reflectsCondition a owl:ObjectProperty ;
+    rdfs:domain :PhysiologicalResponse ;
+    rdfs:range :StressCondition ;
+    rdfs:label "reflects condition" ;
+    rdfs:comment "Indicates the stress condition that a physiological response may reflect." .
+
+### Datatype Properties ###
+
+:hasLabelName a owl:DatatypeProperty ;
+    rdfs:domain :DatasetLabel ;
+    rdfs:range xsd:string ;
+    rdfs:label "has label name" ;
+    rdfs:comment "The literal string value of a dataset-specific label." .
+```
+
+### Documentation
+
+**Intent:**
+The WISDOM Ontology Design Pattern provides a formalized, machine-readable semantic structure for physiology-based stress detection, explicitly linking stressors, stress states, physiological responses, sensors, and contextual information to enable dataset harmonization, contextual interpretation, and the development of physiological digital twins.
+
+**Covered Requirements:**
+*   **Core Stress Modeling:** Represents stressors (stimuli), stress conditions (states), physiological/behavioral responses, and contextual factors.
+*   **Sensor & Wearable Data Structures:** Models sensors, wearable devices, signal channels, observable properties, and sensor measurements.
+*   **Semantic Annotation:** Enables the linking of physiological records and signal channels to subjects, sensors, observable properties, activity phases, and stress conditions.
+*   **Dataset Harmonization:** Provides structures (`Dataset`, `DatasetLabel`, `alignsWithConcept`) to map heterogeneous, dataset-specific labels to shared semantic concepts without overwriting original taxonomies.
+*   **Contextual Interpretation:** Differentiates between physiological changes arising from physical activity versus cognitive/socio-evaluative stress through explicit relationships (`arisesFromActivity`, `reflectsCondition`).
+*   **Digital Twin Support:** Establishes a structural backbone for simulating physiological responses to specific stress stimuli and recovery phases by distinguishing between different types of stress (Cognitive, Physical, Socio-evaluative).
+
+**Known Assumptions and Exclusions:**
+*   **Manual Alignment Assumption:** The pattern assumes that ambiguous dataset labels cannot be resolved automatically and require manual expert alignment; thus, `alignsWithConcept` is provided as a flexible mapping property rather than enforcing strict equivalence (`owl:equivalentClass`).
+*   **Indirect Measurement:** It is assumed that sensors do not measure stress directly; they capture physiological or behavioral responses (`capturesResponse`), which in turn reflect stress conditions (`reflectsCondition`).
+*   **Exclusion of Raw Data Values:** The pattern focuses on the semantic structure and metadata of stress experiments. It does not define complex time-series data structures or raw numerical arrays for the sensor measurements themselves, leaving that to specialized time-series ontologies (e.g., SSN/SOSA).

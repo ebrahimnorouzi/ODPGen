@@ -1,0 +1,166 @@
+Here is the Turtle ontology design pattern (ODP) that supports the given competency questions:
+
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Variable Model Ontology" ;
+  rdfs:comment "An ontology for modeling variables and their relationships.".
+
+# Dimensional Space
+:DimensionalSpace a owl:Class ;
+  rdfs:label "Dimensional Space" ;
+  rdfs:comment "The space on which a variable takes its values.".
+
+:Continuous a owl:Class ;
+  rdfs:label "Continuous" ;
+  rdfs:comment "A continuous dimensional space." ;
+  rdf:type owl:SubClassOf [ a owl:Restriction ;
+                              owl:onProperty :hasResolution ;
+                              owl:allValuesFrom <http://www.w3.org/2001/XMLSchema#float> ].
+
+:Discrete a owl:Class ;
+  rdfs:label "Discrete" ;
+  rdfs:comment "A discrete dimensional space." ;
+  rdf:type owl:SubClassOf [ a owl:Restriction ;
+                              owl:onProperty :hasResolution ;
+                              owl:allValuesFrom <http://www.w3.org/2001/XMLSchema#integer> ].
+
+:Bounded a owl:Class ;
+  rdfs:label "Bounded" ;
+  rdfs:comment "A bounded dimensional space." ;
+  rdf:type owl:SubClassOf [ a owl:Restriction ;
+                              owl:onProperty :hasBoundingRegion ;
+                              owl:allValuesFrom owl:Thing ].
+
+:Finite a owl:Class ;
+  rdfs:label "Finite" ;
+  rdfs:comment "A finite dimensional space." ;
+  rdf:type owl:SubClassOf [ a owl:Restriction ;
+                              owl:onProperty :isFullyEnumerable ;
+                              owl:allValuesFrom xsd:boolean ;
+                              owl:someValuesFrom [ a owl:Literal ; xsd:boolean "true" ] ].
+
+:HasResolution a owl:ObjectProperty ;
+  rdfs:label "Has Resolution" ;
+  rdfs:comment "The resolution of a dimensional space.".
+
+:HasBoundingRegion a owl:ObjectProperty ;
+  rdfs:label "Has Bounding Region" ;
+  rdfs:comment "The bounding region of a dimensional space.".
+
+:IsFullyEnumerable a owl:ObjectProperty ;
+  rdfs:label "Is Fully Enumerable" ;
+  rdfs:comment "Whether a dimensional space is fully enumerable with finite resources.".
+
+# Variable
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "A variable that takes values in a dimensional space.".
+
+:IndependentVariable a owl:Class ;
+  rdfs:label "Independent Variable" ;
+  rdfs:comment "An independent variable that does not depend on other variables." ;
+  rdf:type owl:SubClassOf :Variable.
+
+:DependentVariable a owl:Class ;
+  rdfs:label "Dependent Variable" ;
+  rdfs:comment "A dependent variable that depends on one or more independent variables." ;
+  rdf:type owl:SubClassOf :Variable.
+
+:DerivedVariable a owl:Class ;
+  rdfs:label "Derived Variable" ;
+  rdfs:comment "A variable that is derived from one or more other variables." ;
+  rdf:type owl:SubClassOf :Variable.
+
+:RescaledVariable a owl:Class ;
+  rdfs:label "Rescaled Variable" ;
+  rdfs:comment "A variable that is a rescaled version of another variable." ;
+  rdf:type owl:SubClassOf :Variable.
+
+:ComponentVariable a owl:Class ;
+  rdfs:label "Component Variable" ;
+  rdfs:comment "A variable that is a component of a composite variable." ;
+  rdf:type owl:SubClassOf :Variable.
+
+:HasComponentVariable a owl:ObjectProperty ;
+  rdfs:label "Has Component Variable" ;
+  rdfs:comment "The component variables of a composite variable.".
+
+:DependsOn a owl:ObjectProperty ;
+  rdfs:label "Depends On" ;
+  rdfs:comment "The independent variables that a dependent variable depends on.".
+
+:IsDerivedFrom a owl:ObjectProperty ;
+  rdfs:label "Is Derived From" ;
+  rdfs:comment "The variable from which a derived variable is derived.".
+
+:IsRescaledFrom a owl:ObjectProperty ;
+  rdfs:label "Is Rescaled From" ;
+  rdfs:comment "The original variable of a rescaled variable.".
+
+# Specialization
+:Specialization a owl:Class ;
+  rdfs:label "Specialization" ;
+  rdfs:comment "A specialization of a more general variable.".
+
+:RestrictedSpecialization a owl:Class ;
+  rdfs:label "Restricted Specialization" ;
+  rdfs:comment "A specialization of a more general variable with a fixed value for a specific independent variable." ;
+  rdf:type owl:SubClassOf :Specialization.
+
+:ConstrainedBy a owl:ObjectProperty ;
+  rdfs:label "Constrained By" ;
+  rdfs:comment "The independent variable that a specialization is constrained to a specific value for.".
+
+# Aggregation
+:Aggregation a owl:Class ;
+  rdfs:label "Aggregation" ;
+  rdfs:comment "A function that aggregates values of a variable.".
+
+:Aggregates a owl:ObjectProperty ;
+  rdfs:label "Aggregates" ;
+  rdfs:comment "The variable that is being aggregated.".
+
+:SuggestedQuantization a owl:ObjectProperty ;
+  rdfs:label "Suggested Quantization" ;
+  rdfs:comment "The suggested quantization(s) for a variable or aggregation.".
+
+# Data
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A collection of data instances.".
+
+:HasDataFormat a owl:ObjectProperty ;
+  rdfs:label "Has Data Format" ;
+  rdfs:comment "The data format(s) in which a dataset is available.".
+
+:HasDataProvider a owl:ObjectProperty ;
+  rdfs:label "Has Data Provider" ;
+  rdfs:comment "The data source(s) that offer a serialization of a dataset.".
+
+:GeneratedBy a owl:ObjectProperty ;
+  rdfs:label "Generated By" ;
+  rdfs:comment "The process by which a dataset was generated.".
+
+:Consumes a owl:ObjectProperty ;
+  rdfs:label "Consumes" ;
+  rdfs:comment "The dataset(s) that are consumed as input by a process.".
+
+# Equivalence
+:EquivalentVariables a owl:Class ;
+  rdfs:label "Equivalent Variables" ;
+  rdfs:comment "Two variables that are asserted to always coincide in value.".
+
+:AlwaysCoincide a owl:ObjectProperty ;
+  rdfs:label "Always Coincide" ;
+  rdfs:comment "Two variables that are always equivalent.".
+```
+
+CQ-to-axiom mapping table:
+
+| CQ

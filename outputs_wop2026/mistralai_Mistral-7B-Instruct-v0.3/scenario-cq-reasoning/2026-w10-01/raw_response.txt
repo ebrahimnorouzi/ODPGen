@@ -1,0 +1,123 @@
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Smarty Edge Computing Resource Matchmaker Ontology" ;
+  rdfs:comment "An ontology for describing software and hardware resources in the Smarty project.".
+
+# Atomic Requirements
+:SoftwareRequirement a owl:Class ;
+  rdfs:label "Software Requirement" ;
+  rdfs:comment "A requirement expressed by a software.".
+
+:HardwareRequirement a owl:Class ;
+  rdfs:label "Hardware Requirement" ;
+  rdfs:comment "A requirement expressed by a software for hardware resources.".
+
+:Software a owl:Class ;
+  rdfs:label "Software" ;
+  rdfs:comment "A piece of software.".
+
+:Hardware a owl:Class ;
+  rdfs:label "Hardware" ;
+  rdfs:comment "A hardware resource.".
+
+:SoftwareProperty a owl:Class ;
+  rdfs:label "Software Property" ;
+  rdfs:comment "A property of a software.".
+
+:HardwareProperty a owl:Class ;
+  rdfs:label "Hardware Property" ;
+  rdfs:comment "A property of a hardware resource.".
+
+:SoftwareVersion a owl:Class ;
+  rdfs:label "Software Version" ;
+  rdfs:comment "A version of a software.".
+
+# Properties
+:hasRequirement owl:ObjectProperty ;
+  rdfs:domain :Software ;
+  rdfs:range :SoftwareRequirement ;
+  rdfs:label "Has Requirement" ;
+  rdfs:comment "A software has a requirement.".
+
+:requires owl:ObjectProperty ;
+  rdfs:domain :SoftwareRequirement ;
+  rdfs:range :(Hardware | Software) ;
+  rdfs:label "Requires" ;
+  rdfs:comment "A requirement requires a software or hardware resource.".
+
+:hasProperty owl:ObjectProperty ;
+  rdfs:domain :Software ;
+  rdfs:range :SoftwareProperty ;
+  rdfs:label "Has Property" ;
+  rdfs:comment "A software has a property.".
+
+:hasVersion owl:ObjectProperty ;
+  rdfs:domain :Software ;
+  rdfs:range :SoftwareVersion ;
+  rdfs:label "Has Version" ;
+  rdfs:comment "A software has a version.".
+
+:propertyValue owl:DatatypeProperty ;
+  rdfs:domain :SoftwareProperty ;
+  rdfs:range xsd:string ;
+  rdfs:label "Property Value" ;
+  rdfs:comment "The value of a software property.".
+
+:version owl:DatatypeProperty ;
+  rdfs:domain :SoftwareVersion ;
+  rdfs:range xsd:string ;
+  rdfs:label "Version" ;
+  rdfs:comment "The version of a software.".
+
+# Axioms
+:SoftwareRequirement disjointMinWith :Software ;
+:SoftwareRequirement disjointMinWith :Hardware ;
+:SoftwareRequirement disjointMinWith :SoftwareProperty ;
+:SoftwareRequirement disjointMinWith :HardwareProperty ;
+:SoftwareRequirement disjointMinWith :SoftwareVersion ;
+
+:SoftwareProperty disjointWith :HardwareProperty ;
+:SoftwareVersion disjointWith :Hardware ;
+
+# Traceability Table
+- Which is the (software/hardware) requirement of a software? :hasRequirement
+- Which is the software/hardware required by a software? :requires
+- Which is the type of software/hardware required by a software? (Not explicitly covered; can be inferred from the domain of :requires)
+- Which is the required (minimum/maximum/exact) value of a property of a software/hardware required by a software? :propertyValue
+- Which is the required (maximum/minimum/exact) version of a software required by a software? :version
+```
+
+Reasoning summary:
+1. Extracted atomic requirements:
+   - A software has requirements.
+   - A requirement requires a software or hardware resource.
+   - A software has properties.
+   - A software has a version.
+   - A property has a value.
+
+2. Proposed candidate classes and properties:
+   - SoftwareRequirement, Software, Hardware, SoftwareProperty, HardwareProperty, SoftwareVersion
+   - hasRequirement, requires, hasProperty, hasVersion, propertyValue, version
+
+3. Drafted axioms:
+   - Disjointness axioms to ensure requirements are not instances of software, hardware, properties, or versions.
+   - Property domain and range axioms.
+
+4. For each CQ, verified which axioms enable answering it; noted gaps:
+   - CQ1: Which is the (software/hardware) requirement of a software? - hasRequirement
+   - CQ2: Which is the software/hardware required by a software? - requires
+   - CQ3: Which is the type of software/hardware required by a software? - Not explicitly covered; can be inferred from the domain of :requires
+   - CQ4: Which is the required (minimum/maximum/exact) value of a property of a software/hardware required by a software? - propertyValue
+   - CQ5: Which is the required (maximum/minimum/exact) version of a software required by a software? - version
+
+5. Added/refined axioms to cover uncovered CQs:
+   - None
+
+6. Removed classes/properties not traceable to any requirement or CQ:
+   - None

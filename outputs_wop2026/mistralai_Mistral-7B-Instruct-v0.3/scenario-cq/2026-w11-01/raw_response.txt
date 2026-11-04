@@ -1,0 +1,320 @@
+1. ```turtle
+:Ontology a owl:Ontology ;
+  rdfs:label "WISDOM Stress Detection Ontology" ;
+  rdfs:comment "Formalized and extensible conceptual data model for representing stress conditions, sensor- and wearable-device-related data structures.".
+
+# Scenario-requirement-to-axiom mapping:
+
+# 1. Explicitly linking stressors, stress states, physiological responses, sensors, and contextual information.
+:Stressor a owl:Class ;
+  rdfs:label "Stressor" ;
+  rdfs:comment "An event, condition, or stimulus that has the potential to induce stress in a subject.".
+
+:StressState a owl:Class ;
+  rdfs:label "Stress State" ;
+  rdfs:comment "A state of stress experienced by a subject.".
+
+:PhysiologicalResponse a owl:Class ;
+  rdfs:label "Physiological Response" ;
+  rdfs:comment "A change in a physiological parameter that reflects stress.".
+
+:Sensor a owl:Class ;
+  rdfs:label "Sensor" ;
+  rdfs:comment "A device used to measure physiological or behavioral responses.".
+
+:ContextualInformation a owl:Class ;
+  rdfs:label "Contextual Information" ;
+  rdfs:comment "Additional information about the environment, subject, or experimental protocol.".
+
+# 2. Providing a formal and semantically rich representation of stress conditions, related activities, and physiological signals.
+:StressCondition rdf:type owl:ObjectProperty ;
+  rdfs:domain :StressState ;
+  rdfs:range :StressCondition ;
+  rdfs:label "Stress Condition" ;
+  rdfs:comment "The specific type of stress experienced by a subject.".
+
+:Activity rdf:type owl:ObjectProperty ;
+  rdfs:domain :StressState ;
+  rdfs:range :Activity ;
+  rdfs:label "Activity" ;
+  rdfs:comment "The activity or experimental phase during which the stress state occurred.".
+
+:Measures rdf:type owl:ObjectProperty ;
+  rdfs:domain :PhysiologicalResponse ;
+  rdfs:range :Sensor ;
+  rdfs:label "Measures" ;
+  rdfs:comment "The sensor used to measure the physiological response.".
+
+# CQ-to-axiom mapping:
+
+# CQ1: Which stress-related conditions can be distinguished?
+:StressCondition a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty :StressCondition ;
+                     owl:allValuesFrom :StressCondition ].
+
+# CQ2: What types of stressors can be described?
+:Stressor a owl:Class.
+
+# CQ3: Which short-term stressors can occur in a stress-related setting?
+:Stressor a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty :Duration ;
+                     owl:hasValue?ShortTerm ].
+
+# CQ4: Which stress responses are caused by a given stressor?
+:StressResponse a owl:Class ;
+  rdfs:label "Stress Response" ;
+  rdfs:comment "A physiological or behavioral response to a stressor.".
+
+:CausedBy rdf:type owl:ObjectProperty ;
+  rdfs:domain :StressResponse ;
+  rdfs:range :Stressor ;
+  rdfs:label "Caused By" ;
+  rdfs:comment "The stressor that caused the stress response.".
+
+# CQ5: Which conditions describe baseline or recovery states?
+:BaselineRecoveryState a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty :StressCondition ;
+                     owl:hasValue :BaselineRecovery ].
+
+# CQ6: Which activities or experimental phases can be described?
+:Activity a owl:Class.
+
+# CQ7: Which activity is linked to which stress condition?
+:Activity rdf:type owl:ObjectProperty ;
+  rdfs:domain :StressState ;
+  rdfs:range :Activity ;
+  rdfs:label "Activity" ;
+  rdfs:comment "The activity or experimental phase during which the stress state occurred.".
+
+# CQ8: Which stressor is associated with a specific activity phase?
+:AssociatedWith rdf:type owl:ObjectProperty ;
+  rdfs:domain :Stressor ;
+  rdfs:range :Activity ;
+  rdfs:label "Associated With" ;
+  rdfs:comment "The activity phase during which the stressor was present.".
+
+# CQ9: What information can be used to describe an activity?
+:Activity rdf:type owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Name" ] ;
+                     owl:hasValue?ActivityName ].
+
+# CQ10: Which roles can a person take in the model?
+:Person a owl:Class ;
+  rdfs:label "Person" ;
+  rdfs:comment "A subject participating in a stress-related experiment.".
+
+:Role rdf:type owl:ObjectProperty ;
+  rdfs:domain :Person ;
+  rdfs:range :Role ;
+  rdfs:label "Role" ;
+  rdfs:comment "The role a person played during the experiment.".
+
+# CQ11: What information can be stored about a subject?
+:SubjectInformation a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Name" ] ;
+                     owl:hasValue?SubjectName ].
+
+# CQ12: Which sensor types can be used for stress-related measurements?
+:Sensor a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?SensorType ].
+
+# CQ13: Which physiological sensors are included?
+:PhysiologicalSensor rdf:type owl:Class ;
+  rdfs:subClassOf :Sensor.
+
+# CQ14: Which sensors can capture movement-related information?
+:MovementSensor rdf:type owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?MovementSensorType ].
+
+# CQ15: Which device or platform can be used as a measurement platform?
+:MeasurementPlatform a owl:Class ;
+  rdfs:label "Measurement Platform" ;
+  rdfs:comment "The device or platform used to collect physiological or behavioral data.".
+
+# CQ16: Which properties can a PPG sensor measure?
+:PPGSensor rdf:type owl:Class ;
+  rdfs:subClassOf :PhysiologicalSensor ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Measurable Properties" ] ;
+                     owl:hasValue?PPGProperties ].
+
+# CQ17: What can be measured by an EDA sensor?
+:EDASensor rdf:type owl:Class ;
+  rdfs:subClassOf :PhysiologicalSensor ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Measurable Properties" ] ;
+                     owl:hasValue?EDAPproperties ].
+
+# CQ18: Which sensor can measure blood oxygen saturation?
+:BloodOxygenSensor rdf:type owl:Class ;
+  rdfs:subClassOf :PhysiologicalSensor ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Measurable Properties" ] ;
+                     owl:hasValue?BloodOxygenProperties ].
+
+# CQ19: What can be measured by a temperature sensor?
+:TemperatureSensor rdf:type owl:Class ;
+  rdfs:subClassOf :PhysiologicalSensor ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Measurable Properties" ] ;
+                     owl:hasValue?TemperatureProperties ].
+
+# CQ20: Which acceleration-related properties can be captured by an accelerometer?
+:Accelerometer rdf:type owl:Class ;
+  rdfs:subClassOf :MovementSensor ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Measurable Properties" ] ;
+                     owl:hasValue?AccelerometerProperties ].
+
+# CQ21: Which categories of measurable properties are distinguished?
+:MeasurableProperty a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Category" ] ;
+                     owl:hasValue?PropertyCategory ].
+
+# CQ22: Which physiological properties can be measured?
+:PhysiologicalProperty a owl:Class ;
+  rdfs:subClassOf :MeasurableProperty ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?PhysiologicalPropertyType ].
+
+# CQ23: Which behavioral indicators can be described?
+:BehavioralIndicator a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?BehavioralIndicatorType ].
+
+# CQ24: Which environmental factors can be captured?
+:EnvironmentalFactor a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?EnvironmentalFactorType ].
+
+# CQ25: Which environmental properties can be assigned to an environment?
+:EnvironmentalProperty a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?EnvironmentalPropertyType ].
+
+# CQ26: What metadata can be stored for a physiological record?
+:PhysiologicalRecordMetadata a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?MetadataType ].
+
+# CQ27: How can a physiological record be connected to its signal channels?
+:HasSignalChannel rdf:type owl:ObjectProperty ;
+  rdfs:domain :PhysiologicalRecord ;
+  rdfs:range :SignalChannel ;
+  rdfs:label "Has Signal Channel" ;
+  rdfs:comment "The signal channel(s) associated with the physiological record.".
+
+# CQ28: What information can be stored for a signal channel?
+:SignalChannelInformation a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Name" ] ;
+                     owl:hasValue?SignalChannelName ].
+
+# CQ29: How can a signal channel indicate what it measures?
+:Measures rdf:type owl:ObjectProperty ;
+  rdfs:domain :SignalChannel ;
+  rdfs:range :PhysiologicalProperty ;
+  rdfs:label "Measures" ;
+  rdfs:comment "The physiological property measured by the signal channel.".
+
+# CQ30: Which types of observations can be described?
+:Observation a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?ObservationType ].
+
+# CQ31: What temporal information can be assigned to a time-series observation?
+:TimeSeriesObservation a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Time" ] ;
+                     owl:hasValue xsd:dateTime ].
+
+# CQ32: How can an observation be traced back to its source data?
+:SourceData rdf:type owl:ObjectProperty ;
+  rdfs:domain :Observation ;
+  rdfs:range :PhysiologicalRecord ;
+  rdfs:label "Source Data" ;
+  rdfs:comment "The physiological record from which the observation was derived.".
+
+# CQ33: How can an observation be assigned to the activity during which it was made?
+:Activity rdf:type owl:ObjectProperty ;
+  rdfs:domain :Observation ;
+  rdfs:range :Activity ;
+  rdfs:label "Activity" ;
+  rdfs:comment "The activity or experimental phase during which the observation was made.".
+
+# CQ34: How can measurements be linked back to the activity in which they occurred?
+:Activity rdf:type owl:ObjectProperty ;
+  rdfs:domain :PhysiologicalRecord ;
+  rdfs:range :Activity ;
+  rdfs:label "Activity" ;
+  rdfs:comment "The activity or experimental phase during which the measurements were collected.".
+
+# CQ35: What information can be stored in an annotation?
+:Annotation a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?AnnotationType ].
+
+# CQ36: How can an annotation be assigned to an activity or phase?
+:Annotates rdf:type owl:ObjectProperty ;
+  rdfs:domain :Annotation ;
+  rdfs:range :Activity ;
+  rdfs:label "Annotates" ;
+  rdfs:comment "The activity or experimental phase to which the annotation is associated.".
+
+# CQ37: How can an observer be connected to an annotation?
+:Observer rdf:type owl:ObjectProperty ;
+  rdfs:domain :Annotation ;
+  rdfs:range :Person ;
+  rdfs:label "Observer" ;
+  rdfs:comment "The person who made the annotation.".
+
+# CQ38: How can a human observer be identified as the source of an observation?
+:HumanObserver rdf:type owl:Class ;
+  rdfs:subClassOf :Person.
+
+# CQ39: How can biomarker assays be described?
+:BiomarkerAssay a owl:Class ;
+  rdfs:subClassOf [ a owl:Restriction ;
+                     owl:onProperty [ a owl:ObjectProperty ;
+                                        rdfs:label "Type" ] ;
+                     owl:hasValue?BiomarkerAssayType ].
+
+# CQ40: How can an observation be linked to a biomarker assay?
+:LinkedToBiomarkerAssay rdf:type owl:ObjectProperty ;
+  rdfs:domain :

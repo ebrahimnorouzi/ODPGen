@@ -1,0 +1,204 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Reverse Engineering and Malware Behavior Ontology" ;
+    rdfs:comment "An ontology design pattern for representing binary executable symbols, dependencies, and malware-specific behaviors to assist in reverse engineering and vulnerability detection." .
+
+# --- Classes ---
+
+:ExecutableFile a owl:Class ;
+    rdfs:label "Executable File" ;
+    rdfs:comment "A binary executable file being analyzed or reverse engineered." .
+
+:Symbol a owl:Class ;
+    rdfs:label "Symbol" ;
+    rdfs:comment "A symbol extracted from the symbol table of a binary executable, such as a function, variable, or label." .
+
+:Function a owl:Class ;
+    rdfs:subClassOf :Symbol ;
+    rdfs:label "Function" ;
+    rdfs:comment "A sequence of instructions packaged as a unit within the executable." .
+
+:ImportedFunction a owl:Class ;
+    rdfs:subClassOf :Function ;
+    rdfs:label "Imported Function" ;
+    rdfs:comment "A function that is imported from an external library or module." .
+
+:Variable a owl:Class ;
+    rdfs:subClassOf :Symbol ;
+    rdfs:label "Variable" ;
+    rdfs:comment "A named storage location in memory represented in the symbol table." .
+
+:Behavior a owl:Class ;
+    rdfs:label "Behavior" ;
+    rdfs:comment "An observable action, pattern, or activity exhibited by an executable or its components." .
+
+:APICall a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "API Call" ;
+    rdfs:comment "The behavior of invoking an Application Programming Interface." .
+
+:PersistentAPICall a owl:Class ;
+    rdfs:subClassOf :APICall ;
+    rdfs:label "Persistent API Call" ;
+    rdfs:comment "An API call pattern designed to maintain persistence within a system." .
+
+:MaliciousPersistentAPICall a owl:Class ;
+    rdfs:subClassOf :PersistentAPICall ;
+    rdfs:label "Malicious Persistent API Call" ;
+    rdfs:comment "A persistent API call that is identified as malicious." .
+
+:SuspiciousAPICall a owl:Class ;
+    rdfs:subClassOf :APICall ;
+    rdfs:label "Suspicious API Call" ;
+    rdfs:comment "An API call that exhibits suspicious characteristics potentially indicative of malware." .
+
+:NetworkingActivity a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "Networking Activity" ;
+    rdfs:comment "Behavior involving network communication." .
+
+:SuspiciousNetworkingActivity a owl:Class ;
+    rdfs:subClassOf :NetworkingActivity ;
+    rdfs:label "Suspicious Networking Activity" ;
+    rdfs:comment "Network communication that is anomalous or indicative of malicious intent." .
+
+:ControlFlowPattern a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "Control Flow Pattern" ;
+    rdfs:comment "A specific pattern in the execution order of instructions." .
+
+:IndirectControlFlow a owl:Class ;
+    rdfs:subClassOf :ControlFlowPattern ;
+    rdfs:label "Indirect Control Flow" ;
+    rdfs:comment "A control flow pattern where the target address is computed dynamically, often used to obscure execution paths." .
+
+:DecodeLoop a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "Decode Loop" ;
+    rdfs:comment "A loop structure used to decode or decrypt data or instructions at runtime." .
+
+:SelfReferentialDecodeLoop a owl:Class ;
+    rdfs:subClassOf :DecodeLoop ;
+    rdfs:label "Self-Referential Decode Loop" ;
+    rdfs:comment "A decode loop that references its own memory space, often used for data obfuscation." .
+
+:FileSystemAbuse a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "File System Abuse" ;
+    rdfs:comment "Malicious or unauthorized manipulation of the host file system." .
+
+:MemoryJump a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "Memory Jump" ;
+    rdfs:comment "An instruction that transfers control to a different memory location." .
+
+:SuspiciousMemoryJump a owl:Class ;
+    rdfs:subClassOf :MemoryJump ;
+    rdfs:label "Suspicious Memory Jump" ;
+    rdfs:comment "A memory jump that targets unusual or restricted memory segments." .
+
+:CryptographicActivity a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "Cryptographic Activity" ;
+    rdfs:comment "Behavior involving encryption, decryption, or hashing algorithms." .
+
+:Encryption a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "Encryption" ;
+    rdfs:comment "The process of encoding information to hide its original content." .
+
+:DataObfuscation a owl:Class ;
+    rdfs:subClassOf :Behavior ;
+    rdfs:label "Data Obfuscation" ;
+    rdfs:comment "Techniques used to make data or code difficult to understand or analyze." .
+
+:Vulnerability a owl:Class ;
+    rdfs:label "Vulnerability" ;
+    rdfs:comment "A weakness in the software or supply chain that can be exploited." .
+
+# --- Object Properties ---
+
+:containsSymbol a owl:ObjectProperty ;
+    rdfs:label "contains symbol" ;
+    rdfs:comment "Links an executable file to a symbol found within its symbol table." ;
+    rdfs:domain :ExecutableFile ;
+    rdfs:range :Symbol .
+
+:dependsOn a owl:ObjectProperty ;
+    rdfs:label "depends on" ;
+    rdfs:comment "Indicates a dependency relationship between two symbols (e.g., a function calling another function)." ;
+    rdfs:domain :Symbol ;
+    rdfs:range :Symbol .
+
+:exhibitsBehavior a owl:ObjectProperty ;
+    rdfs:label "exhibits behavior" ;
+    rdfs:comment "Links an executable file or a specific symbol to a behavior it demonstrates." ;
+    rdfs:range :Behavior .
+
+:indicatesVulnerability a owl:ObjectProperty ;
+    rdfs:label "indicates vulnerability" ;
+    rdfs:comment "Links a specific behavior or pattern to a vulnerability it suggests." ;
+    rdfs:domain :Behavior ;
+    rdfs:range :Vulnerability .
+
+:indicatesBehavior a owl:ObjectProperty ;
+    rdfs:label "indicates behavior" ;
+    rdfs:comment "Links one behavior (like a decode loop) to another higher-level behavior it implies (like data obfuscation)." ;
+    rdfs:domain :Behavior ;
+    rdfs:range :Behavior .
+
+# --- Datatype Properties ---
+
+:hasUserName a owl:DatatypeProperty ;
+    rdfs:label "has user name" ;
+    rdfs:comment "The custom name assigned to a symbol by a user during reverse engineering." ;
+    rdfs:domain :Symbol ;
+    rdfs:range xsd:string .
+
+:hasUniqueOpcodeCount a owl:DatatypeProperty ;
+    rdfs:label "has unique opcode count" ;
+    rdfs:comment "The number of distinct opcodes used within a function." ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:integer .
+
+:hasTotalInstructionCount a owl:DatatypeProperty ;
+    rdfs:label "has total instruction count" ;
+    rdfs:comment "The total number of instructions contained within a function." ;
+    rdfs:domain :Function ;
+    rdfs:range xsd:integer .
+```
+
+### Reasoning Summary
+1. Extracted atomic requirements focusing on binary executables, symbol tables, user renaming, dependencies, malware behaviors, and supply chain vulnerabilities.
+2. Proposed candidate classes (e.g., `ExecutableFile`, `Symbol`, `Behavior`, `Vulnerability`) and properties (e.g., `containsSymbol`, `exhibitsBehavior`, `hasUserName`) to represent the domain.
+3. Drafted schema axioms including subclass hierarchies for specific behaviors, domain/range constraints for properties, and datatype properties for metrics.
+4. Verified axioms against CQs, identifying gaps such as missing specific behavior subclasses (e.g., `SuspiciousNetworkingActivity`, `ImportedFunction`) and metric properties.
+5. Refined the ontology by adding specific subclasses for API calls, memory jumps, control flows, and properties for opcode counts to fully cover all CQs.
+6. Removed overly broad supply chain concepts not directly queried, ensuring the model remains minimal and strictly traceable to the provided scenario and CQs.
+
+### Traceability Table
+
+| Requirement / Competency Question | Covering Axiom(s) |
+| :--- | :--- |
+| **R1:** Represent binary executable files | `:ExecutableFile a owl:Class` |
+| **R2:** Represent symbols from a symbol table | `:Symbol a owl:Class`, `:containsSymbol a owl:ObjectProperty` |
+| **R3:** Users can rename symbols | `:hasUserName a owl:DatatypeProperty` |
+| **R4:** Visualize how data fits together (dependencies) | `:dependsOn a owl:ObjectProperty` |
+| **R5:** Connect malware-specific behavior | `:Behavior a owl:Class`, `:exhibitsBehavior a owl:ObjectProperty` |
+| **R6:** Detect vulnerabilities in software supply chain | `:Vulnerability a owl:Class`, `:indicatesVulnerability a owl:ObjectProperty` |
+| **CQ1:** Detect malicious persistent API calls | `:MaliciousPersistentAPICall rdfs:subClassOf :PersistentAPICall` |
+| **CQ2:** Suspicious networking activity | `:SuspiciousNetworkingActivity rdfs:subClassOf :NetworkingActivity` |
+| **CQ3:** Indirect control flow patterns indicating vulnerable code | `:IndirectControlFlow rdfs:subClassOf :ControlFlowPattern`, `:indicatesVulnerability rdfs:domain :Behavior` |
+| **CQ4:** Ratio of unique opcodes to total instructions in a function | `:hasUniqueOpcodeCount rdfs:domain :Function`, `:hasTotalInstructionCount rdfs:domain :Function` |
+| **CQ5:** Self-referential decode loops to detect data obfuscation | `:SelfReferentialDecodeLoop rdfs:subClassOf :DecodeLoop`, `:DataObfuscation a owl:Class`, `:indicatesBehavior a owl:ObjectProperty` |
+| **CQ6:** Detect file system abuse | `:FileSystemAbuse rdfs:subClassOf :Behavior` |
+| **CQ7:** Suspicious jumps into memory | `:SuspiciousMemoryJump rdfs:subClassOf :MemoryJump` |
+| **CQ8:** Other suspicious API calls | `:SuspiciousAPICall rdfs:subClassOf :APICall` |
+| **CQ9:** Cryptographic activity indicating encryption | `:CryptographicActivity rdfs:subClassOf :Behavior`, `:Encryption a owl:Class`, `:indicatesBehavior a owl:ObjectProperty` |
+| **CQ10:** Percentage of functions imported | `:ImportedFunction rdfs:subClassOf :Function` |

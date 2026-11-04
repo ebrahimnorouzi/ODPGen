@@ -1,0 +1,187 @@
+Here is the Turtle ontology design pattern for the given competency questions:
+
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix piirrite: <http://example.org/piirrite#>.
+@prefix saref: <http://www.saref-project.org/ontology#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "PIIRRITE Ontology" ;
+  rdfs:comment "Ontology for modelling navigable environment, points of interest, and user requirements.".
+
+# Spatial Entities
+:SpatialEntity a owl:Class ;
+  rdfs:label "Spatial Entity" ;
+  rdfs:comment "Base class for all spatial entities.".
+
+:NavigableEntity a owl:Class ;
+  rdfs:label "Navigable Entity" ;
+  rdfs:comment "Subclass of SpatialEntity representing entities that can be navigated.".
+
+:SpatialPoint a owl:Class ;
+  rdfs:label "Spatial Point" ;
+  rdfs:comment "Subclass of SpatialEntity representing points in space.".
+
+:SpatialPolyline a owl:Class ;
+  rdfs:label "Spatial Polyline" ;
+  rdfs:comment "Subclass of SpatialEntity representing lines in space.".
+
+:SpatialPolygon a owl:Class ;
+  rdfs:label "Spatial Polygon" ;
+  rdfs:comment "Subclass of SpatialEntity representing polygons in space.".
+
+:SpatialGeometry a owl:Class ;
+  rdfs:label "Spatial Geometry" ;
+  rdfs:comment "Superclass for all spatial entities with a geometric type.".
+
+:Point a owl:ObjectProperty ;
+  rdfs:domain :SpatialPoint ;
+  rdfs:range :SpatialGeometry ;
+  rdfs:label "Point" ;
+  rdfs:comment "Property to get the geometric representation of a point.".
+
+:Polyline a owl:ObjectProperty ;
+  rdfs:domain :SpatialPolyline ;
+  rdfs:range :SpatialGeometry ;
+  rdfs:label "Polyline" ;
+  rdfs:comment "Property to get the geometric representation of a polyline.".
+
+:Polygon a owl:ObjectProperty ;
+  rdfs:domain :SpatialPolygon ;
+  rdfs:range :SpatialGeometry ;
+  rdfs:label "Polygon" ;
+  rdfs:comment "Property to get the geometric representation of a polygon.".
+
+# Topological Relations
+:TopologicalRelation a owl:ObjectProperty ;
+  rdfs:domain [ a :NavigableEntity ; owl:oneOf ( :SpatialPoint, :SpatialPolyline ) ] ;
+  rdfs:range [ a :NavigableEntity ; owl:oneOf ( :SpatialPoint, :SpatialPolyline ) ] ;
+  rdfs:label "Topological Relation" ;
+  rdfs:comment "Property to represent topological relations between navigable entities.".
+
+# Points of Interest
+:PointOfInterest a owl:Class ;
+  rdfs:label "Point of Interest" ;
+  rdfs:comment "Subclass of SpatialEntity representing points of interest.".
+
+# Navigable Paths
+:NavigablePath a owl:Class ;
+  rdfs:label "Navigable Path" ;
+  rdfs:comment "Subclass of SpatialPolyline representing navigable paths.".
+
+:AssociatedPath a owl:ObjectProperty ;
+  rdfs:domain :PointOfInterest ;
+  rdfs:range :NavigablePath ;
+  rdfs:label "Associated Path" ;
+  rdfs:comment "Property to associate a point of interest with a navigable path.".
+
+# Contextual Properties
+:ContextualProperty a owl:Class ;
+  rdfs:label "Contextual Property" ;
+  rdfs:comment "Base class for all properties that can be attached to a spatial entity.".
+
+:QualitativeProperty a owl:Class ;
+  rdfs:label "Qualitative Property" ;
+  rdfs:comment "Subclass of ContextualProperty representing properties with categorical values.".
+
+:TemporalProperty a owl:Class ;
+  rdfs:label "Temporal Property" ;
+  rdfs:comment "Subclass of ContextualProperty representing properties with temporal validity.".
+
+:ValueDomain a owl:ObjectProperty ;
+  rdfs:domain :QualitativeProperty ;
+  rdfs:range :Class ;
+  rdfs:label "Value Domain" ;
+  rdfs:comment "Property to specify the domain of possible values for a qualitative property.".
+
+:TemporalValidity a owl:Class ;
+  rdfs:label "Temporal Validity" ;
+  rdfs:comment "Class representing the temporal validity of a contextual property value.".
+
+:Start a owl:DatatypeProperty ;
+  rdfs:domain :TemporalValidity ;
+  rdfs:range xsd:dateTime ;
+  rdfs:label "Start" ;
+  rdfs:comment "Property to represent the start of the temporal validity interval.".
+
+:End a owl:DatatypeProperty ;
+  rdfs:domain :TemporalValidity ;
+  rdfs:range xsd:dateTime ;
+  rdfs:label "End" ;
+  rdfs:comment "Property to represent the end of the temporal validity interval.".
+
+:HasValue a owl:ObjectProperty ;
+  rdfs:domain :ContextualProperty ;
+  rdfs:range :saref:PropertyValue ;
+  rdfs:label "Has Value" ;
+  rdfs:comment "Property to associate a contextual property with its value.".
+
+:HasTemporalValidity a owl:ObjectProperty ;
+  rdfs:domain :saref:PropertyValue ;
+  rdfs:range :TemporalValidity ;
+  rdfs:label "Has Temporal Validity" ;
+  rdfs:comment "Property to associate a saref:PropertyValue with its temporal validity.".
+
+# Accessibility
+:Accessible a owl:ObjectProperty ;
+  rdfs:domain :SpatialEntity ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "Accessible" ;
+  rdfs:comment "Property to indicate whether a spatial entity is wheelchair-accessible.".
+
+# Vending Machines and Bicycle Parkings
+:VendingMachine a owl:Class ;
+  rdfs:label "Vending Machine" ;
+  rdfs:comment "Subclass of SpatialEntity representing vending machines.".
+
+:BicycleParking a owl:Class ;
+  rdfs:label "Bicycle Parking" ;
+  rdfs:comment "Subclass of SpatialEntity representing bicycle parkings.".
+
+:Capacity a owl:DatatypeProperty ;
+  rdfs:domain :BicycleParking ;
+  rdfs:range xsd:nonNegativeInteger ;
+  rdfs:label "Capacity" ;
+  rdfs:comment "Property to get the capacity of a bicycle parking.".
+
+# Requirements
+:Requirement a owl:Class ;
+  rdfs:label "Requirement" ;
+  rdfs:comment "Class representing a user requirement.".
+
+:UserProfile a owl:Class ;
+  rdfs:label "User Profile" ;
+  rdfs:comment "Class representing a user profile.".
+
+:Condition a owl:Class ;
+  rdfs:label "Condition" ;
+  rdfs:comment "Class representing a condition in a requirement.".
+
+:ComposedCondition a owl:Class ;
+  rdfs:label "Composed Condition" ;
+  rdfs:comment "Class representing a composed condition in a requirement.".
+
+:ComparisonOperator a owl:Class ;
+  rdfs:label "Comparison Operator" ;
+  rdfs:comment "Class representing comparison operators.".
+
+:LogicalOperator a owl:Class ;
+  rdfs:label "Logical Operator" ;
+  rdfs:comment "Class representing logical operators.".
+
+:DistanceRequisite a owl:Class ;
+  rdfs:label "Distance Requisite" ;
+  rdfs:comment "Class representing distance requirements.".
+
+:DistanceFactor a owl:Class ;
+  rdfs:label "Distance Factor" ;
+  rdfs:comment "Class representing distance factors in a distance requirement.".
+```
+
+CQ-to-axiom mapping table:
+
+| CQ

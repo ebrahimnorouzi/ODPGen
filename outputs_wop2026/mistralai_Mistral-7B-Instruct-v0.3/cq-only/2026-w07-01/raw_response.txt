@@ -1,0 +1,223 @@
+Here is the OWL ontology design pattern (ODP) in Turtle syntax that supports the competency questions:
+
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Pedagogical Framework and Element Ontology" ;
+  rdfs:comment "An ontology for modeling pedagogical frameworks, elements, learning objectives, instructional steps, media resources, and learner characteristics.".
+
+# Pedagogical Framework
+:PedagogicalFramework a owl:Class ;
+  rdfs:label "Pedagogical Framework" ;
+  rdfs:comment "A structured approach to teaching and learning.".
+
+:hasFramework rdf:property ;
+  rdfs:domain :LearningResource ;
+  rdfs:range :PedagogicalFramework ;
+  rdfs:label "Has Pedagogical Framework" ;
+  rdfs:comment "The pedagogical framework associated with a learning resource.".
+
+# Pedagogical Element
+:PedagogicalElement a owl:Class ;
+  rdfs:label "Pedagogical Element" ;
+  rdfs:comment "A component of a pedagogical framework.".
+
+:isElementOf rdf:property ;
+  rdfs:domain :PedagogicalFramework ;
+  rdfs:range :PedagogicalElement ;
+  rdfs:label "Is Element Of" ;
+  rdfs:comment "The pedagogical elements that make up a pedagogical framework.".
+
+# Instructional Step
+:InstructionalStep a owl:Class ;
+  rdfs:label "Instructional Step" ;
+  rdfs:comment "A specific action or activity in a learning process.".
+
+:precedes rdf:property ;
+  rdfs:domain :InstructionalStep ;
+  rdfs:range :InstructionalStep ;
+  rdfs:label "Precedes" ;
+  rdfs:comment "The instructional step that comes before another instructional step.".
+
+:supports rdf:property ;
+  rdfs:domain :InstructionalStep ;
+  rdfs:range :LearningObjective ;
+  rdfs:label "Supports" ;
+  rdfs:comment "The learning objective(s) that an instructional step helps to achieve.".
+
+# Learning Objective
+:LearningObjective a owl:Class ;
+  rdfs:label "Learning Objective" ;
+  rdfs:comment "A specific goal or outcome of a learning process.".
+
+:requires rdf:property ;
+  rdfs:domain :LearningObjective ;
+  rdfs:range :Topic ;
+  rdfs:label "Requires" ;
+  rdfs:comment "The topic(s) that a learning objective requires prior knowledge of.".
+
+:develops rdf:property ;
+  rdfs:domain :LearningObjective ;
+  rdfs:range :Skill ;
+  rdfs:label "Develops" ;
+  rdfs:comment "The skill(s) that a learning objective helps to develop.".
+
+# Pedagogical Technique
+:PedagogicalTechnique a owl:Class ;
+  rdfs:label "Pedagogical Technique" ;
+  rdfs:comment "A method or strategy used to facilitate learning.".
+
+:supports rdf:property ;
+  rdfs:domain :PedagogicalTechnique ;
+  rdfs:range :LearningObjective ;
+  rdfs:label "Supports" ;
+  rdfs:comment "The learning objective(s) that a pedagogical technique helps to achieve.".
+
+# Learning Strategy
+:LearningStrategy a owl:Class ;
+  rdfs:label "Learning Strategy" ;
+  rdfs:comment "A plan or approach for learning.".
+
+:uses rdf:property ;
+  rdfs:domain :LearningStrategy ;
+  rdfs:range :PedagogicalTechnique ;
+  rdfs:label "Uses" ;
+  rdfs:comment "The pedagogical techniques used by a learning strategy.".
+
+# Media Resource
+:MediaResource a owl:Class ;
+  rdfs:label "Media Resource" ;
+  rdfs:comment "A resource that can be used to support learning, such as a video, article, or interactive activity.".
+
+:alignsTo rdf:property ;
+  rdfs:domain :MediaResource ;
+  rdfs:range :LearningObjective ;
+  rdfs:label "Aligns To" ;
+  rdfs:comment "The learning objective(s) that a media resource is aligned to.".
+
+# Topic
+:Topic a owl:Class ;
+  rdfs:label "Topic" ;
+  rdfs:comment "A subject area or domain of knowledge.".
+
+:requires rdf:property ;
+  rdfs:domain :LearningObjective ;
+  rdfs:range :Topic ;
+  rdfs:label "Requires" ;
+  rdfs:comment "The topic(s) that a learning objective requires prior knowledge of.".
+
+# Skill
+:Skill a owl:Class ;
+  rdfs:label "Skill" ;
+  rdfs:comment "A ability or competency that a learner can develop.".
+
+:develops rdf:property ;
+  rdfs:domain :LearningObjective ;
+  rdfs:range :Skill ;
+  rdfs:label "Develops" ;
+  rdfs:comment "The skill(s) that a learning objective helps to develop.".
+```
+
+CQ-to-axiom mapping table:
+
+| Competency Question | Classes | Properties |
+|---------------------|---------|------------|
+| What are all the available pedagogical frameworks? | :PedagogicalFramework | - |
+| What pedagogical elements are a pedagogical framework? | :PedagogicalElement | :isElementOf |
+| What pedagogical element(s) follows another pedagogical element? | :InstructionalStep | :precedes |
+| What pedagogical framework(s) contain pedagogical element 'X'? | :PedagogicalFramework | :isElementOf |
+| Which instructional steps can support a learner working toward a given learning objective? | :InstructionalStep | :supports |
+| What pedagogical frameworks are available for organizing an instructional intervention? | :PedagogicalFramework | - |
+| Given a selected pedagogical framework, what instructional step should occur first? | :InstructionalStep | - |
+| Given the current instructional step, what step should occur next? | :InstructionalStep | :precedes |
+| Which instructional steps support a given learning objective? | :InstructionalStep | :supports |
+| Given the selected technique and learner situation, what instructional step should occur next? | :InstructionalStep | - |
+| What are all the available pedagogical techniques? | :PedagogicalTechnique | - |
+| What pedagogical element(s) can help in achieving a learning objective? | :PedagogicalElement | :supports |
+| What modules are aligned to a learning objective? | :MediaResource | :alignsTo |
+| What media are aligned to a learning objective? | :MediaResource | :alignsTo |
+| What learning objectives require prior knowledge of a topic? | :LearningObjective | :requires |
+| What learning objectives develop a skill? | :LearningObjective | :develops |
+| What learning objectives should be pursued by a learner for a target goal? | :LearningObjective | - |
+| What learning objectives should be pursued by a learner for a target skill? | :LearningObjective | :develops |
+| What topics require prior knowledge for a learner for their goal? | :Topic | :requires |
+| Which pedagogical techniques can be used to support a learner working toward a given learning objective? | :PedagogicalTechnique | :supports |
+| What instructional purpose does a selected pedagogical technique serve? | :PedagogicalTechnique | - |
+| What learning objectives are relevant to the learner’s current goal? | :LearningObjective | - |
+| What learning objectives are relevant to the learner’s target skill? | :LearningObjective | :develops |
+| What prior topic knowledge is needed before the learner attempts a learning objective? | :Topic | :requires |
+| Which learning strategy is appropriate for a learner working toward a given objective? | :LearningStrategy | :uses |
+| Which pedagogical techniques are used by that learning strategy? | :PedagogicalTechnique | :uses |
+| Which modules support the learning objective selected for the learner? | :MediaResource | :alignsTo |
+| Which media resources support the learning objective selected for the learner? | :MediaResource | :alignsTo |
+| Given the learner’s goal, current awareness, preferences, and challenges, what learning objective should be pursued next? | :LearningObjective | - |
+| Given the learner’s current awareness and selected learning objective, what pedagogical technique is appropriate? | :PedagogicalTechnique | - |
+| What information supports the system’s selection of a learning objective, pedagogical technique, resource, or feedback response? | - |
+| What learning objectives does an assessment exercise evaluate? | :LearningObjective | - |
+| What learning objectives are assessed by an evaluation technique? | :LearningObjective | - |
+| What evaluation metrics are used by an evaluation technique? | - |
+| What evaluation technique type does an evaluation technique belong to? | - |
+| What are the available assessment exercises that use a given evaluation technique? | :MediaResource | :alignsTo |
+| What modules contain assessment exercises? | :MediaResource | :alignsTo |
+| What media resources contain assessment exercises? | :MediaResource | :alignsTo |
+| What topics are evaluated by an assessment exercise? | :Topic | - |
+| What evaluation result(s) contribute to a learner awareness observation? | - |
+| What assessment exercises can be used to evaluate the learner’s progress toward a learning objective? | :MediaResource | :alignsTo |
+| What assessment exercises evaluate the topic or skill currently being learned? | :MediaResource | :alignsTo |
+| What evaluation method was used to assess the learner’s progress? | - |
+| What evaluation evidence is available for deciding whether the learner should continue, review, or receive feedback? | - |
+| What metric was used to interpret the assessment result? | - |
+| What assessment results indicate low awareness or difficulty for the learner? | :LearningObjective | - |
+| Given assessment evidence and feedback history, should the learner continue, review, or receive additional support? | - |
+| What learning feedback was given from an evaluation technique? | - |
+| What types of learning feedback are available/retrieved? | - |
+| When is the feedback delivered? | - |
+| When is the response delivered? | - |
+| What feedbacks are corrective? | - |
+| What feedbacks are motivational? | - |
+| What responses originated from a human? | - |
+| What feedback should be given based on the learner’s assessment evidence? | - |
+| What type of feedback was given to the learner? | - |
+| When was feedback delivered to the learner? | - |
+| When was the response delivered to the learner? | - |
+| Who or what produced the response? | - |
+| Which responses came from a human source? | - |
+| Which responses came from an automated or AI source? | - |
+| What feedback may affect the learner’s next learning strategy? | - |
+| How did the learner’s awareness change after feedback or response? | - |
+| What learner goals does a learner have? | - |
+| What skills are targeted by a learner goal? | - |
+| What learner preferences does a learner have? | - |
+| What learner challenges does a learner have? | - |
+| What accessibility issues does a learner have? | - |
+| What media satisfy both learner preferences and accessibility challenges? | :MediaResource | - |
+| What module(s) satisfy both learner preferences and accessibility challenges? | :MediaResource | - |
+| What learner situation should be considered when selecting a learning objective? | - |
+| Which media resources satisfy both the learner’s preferences and accessibility needs? | :MediaResource | - |
+| Which modules satisfy both the learner’s preferences and accessibility needs? | :MediaResource | - |
+| Which learning resources are appropriate for the learner’s current situation? | :MediaResource | - |
+| What goals is the learner currently pursuing? | - |
+| What skills are targeted by the learner’s goals? | - |
+| What preferences should be considered when selecting resources or activities for the learner? | - |
+| What learning challenges should be considered when selecting resources or activities? | - |
+| What accessibility needs should be considered when selecting resources or activities? | - |
+| What learner context should be considered before selecting the next instructional step? | - |
+| Given learner preferences and accessibility needs, what resource should be selected for the next instructional step? | :MediaResource | - |
+| What is the learner's current awareness level for a topic? | - |
+| What is the learner's current awareness level of a skill? | - |
+| What topics have low awareness for a learner? | :Topic | - |
+| What skills have low awareness for a learner? | :Skill | - |
+| What awareness observations are most latest? | - |
+| Which modules or media address the topics where the learner has low awareness? | :MediaResource | - |
+| What is the learner’s current awareness level for a topic? | - |
+| What is the learner’s current awareness level for a skill? | - |
+| Which topics show low awareness for the learner? | :Topic | - |
+| Which skills show low awareness for the learner? | :Skill | - |
+| What awareness observations are available for the learner over time? | - |
+| What is the most recent awareness observation for the learner? | - |
+| What assessment evidence contributed to the learner’s current awareness observation? | - |

@@ -1,0 +1,141 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Software and hardware matchmaking ontology design pattern" ;
+  rdfs:comment "An ontology design pattern for describing software, service requests, hardware resources, catalogues, characteristics, and requirements used by a matchmaker to identify candidate resources for executing, supporting, or deploying software." .
+
+:DigitalAsset a owl:Class ;
+  rdfs:label "Digital Asset" ;
+  rdfs:comment "A digital asset managed semantically for interoperability purposes, including software." .
+
+:Software a owl:Class ;
+  rdfs:label "Software" ;
+  rdfs:comment "Software that may have characteristics and requirements and may be executed, supported, or deployed on hardware resources." ;
+  rdfs:subClassOf :DigitalAsset .
+
+:ServiceRequest a owl:Class ;
+  rdfs:label "Service Request" ;
+  rdfs:comment "An incoming service request considered by the matchmaker for resource allocation." .
+
+:HardwareResource a owl:Class ;
+  rdfs:label "Hardware Resource" ;
+  rdfs:comment "A hardware resource described in a catalogue and considered by the matchmaker as a candidate resource." .
+
+:DPU a owl:Class ;
+  rdfs:label "DPU" ;
+  rdfs:comment "A data processing unit considered as a kind of hardware resource." ;
+  rdfs:subClassOf :HardwareResource .
+
+:GPU a owl:Class ;
+  rdfs:label "GPU" ;
+  rdfs:comment "A graphics processing unit considered as a kind of hardware resource." ;
+  rdfs:subClassOf :HardwareResource .
+
+:Catalogue a owl:Class ;
+  rdfs:label "Catalogue" ;
+  rdfs:comment "A catalogue describing software and hardware resources used by the matchmaker." .
+
+:Requirement a owl:Class ;
+  rdfs:label "Requirement" ;
+  rdfs:comment "A requirement expressed for software or in relation to a service request for matchmaking." .
+
+:Characteristic a owl:Class ;
+  rdfs:label "Characteristic" ;
+  rdfs:comment "A characteristic describing software or hardware resources for comparison during matchmaking." .
+
+:CandidateResource a owl:Class ;
+  rdfs:label "Candidate Resource" ;
+  rdfs:comment "A hardware resource identified by the matchmaker as suitable to execute, support, or deploy software." ;
+  rdfs:subClassOf :HardwareResource .
+
+:DPU owl:disjointWith :GPU .
+
+:describedInCatalogue a owl:ObjectProperty ;
+  rdfs:label "described in catalogue" ;
+  rdfs:comment "Relates software or hardware resources to the catalogue in which they are described." ;
+  rdfs:range :Catalogue .
+
+:describesSoftware a owl:ObjectProperty ;
+  rdfs:label "describes software" ;
+  rdfs:comment "Relates a catalogue to software described in it." ;
+  rdfs:domain :Catalogue ;
+  rdfs:range :Software ;
+  owl:inverseOf :describedInCatalogue .
+
+:describesHardwareResource a owl:ObjectProperty ;
+  rdfs:label "describes hardware resource" ;
+  rdfs:comment "Relates a catalogue to hardware resources described in it." ;
+  rdfs:domain :Catalogue ;
+  rdfs:range :HardwareResource ;
+  owl:inverseOf :describedInCatalogue .
+
+:hasRequirement a owl:ObjectProperty ;
+  rdfs:label "has requirement" ;
+  rdfs:comment "Relates software or a service request to a requirement used in matchmaking." ;
+  rdfs:range :Requirement .
+
+:hasCharacteristic a owl:ObjectProperty ;
+  rdfs:label "has characteristic" ;
+  rdfs:comment "Relates software or a hardware resource to a characteristic used in matchmaking." ;
+  rdfs:range :Characteristic .
+
+:requestsSoftware a owl:ObjectProperty ;
+  rdfs:label "requests software" ;
+  rdfs:comment "Relates a service request to the software that is requested." ;
+  rdfs:domain :ServiceRequest ;
+  rdfs:range :Software .
+
+:targetsSoftware a owl:ObjectProperty ;
+  rdfs:label "targets software" ;
+  rdfs:comment "Relates a requirement to the software for which it is expressed." ;
+  rdfs:domain :Requirement ;
+  rdfs:range :Software .
+
+:hasCandidateResource a owl:ObjectProperty ;
+  rdfs:label "has candidate resource" ;
+  rdfs:comment "Relates software or a service request to a hardware resource identified as a candidate by the matchmaker." ;
+  rdfs:range :CandidateResource .
+
+:canExecuteSoftware a owl:ObjectProperty ;
+  rdfs:label "can execute software" ;
+  rdfs:comment "Relates a hardware resource to software that it can execute." ;
+  rdfs:domain :HardwareResource ;
+  rdfs:range :Software .
+
+:canSupportSoftware a owl:ObjectProperty ;
+  rdfs:label "can support software" ;
+  rdfs:comment "Relates a hardware resource to software that it can support." ;
+  rdfs:domain :HardwareResource ;
+  rdfs:range :Software .
+
+:canDeploySoftware a owl:ObjectProperty ;
+  rdfs:label "can deploy software" ;
+  rdfs:comment "Relates a hardware resource to software that it can deploy." ;
+  rdfs:domain :HardwareResource ;
+  rdfs:range :Software .
+```
+
+**Intent:** Model the core concepts needed for matchmaking between software/service requests and catalogue-described hardware resources based on requirements and characteristics.
+
+**Covered requirements:**
+- Represent digital assets including software.
+- Represent incoming service requests.
+- Represent hardware resources, specifically DPU and GPU.
+- Represent catalogues describing software and hardware resources.
+- Represent requirements expressed for software and used in matchmaking.
+- Represent characteristics of software and hardware resources.
+- Represent candidate resources identified by the matchmaker.
+- Represent the goal of finding resources that can execute, support, or deploy software.
+- Support comparison between software requirements and actual software/hardware characteristics at schema level.
+
+**Known assumptions and exclusions:**
+- The pattern stays at schema level only and does not include individuals or matchmaking results as instances.
+- “Candidate resource” is modeled as a subclass of hardware resource rather than as a separate process outcome entity.
+- No explicit class for the matchmaker process or project context is included, since the scenario focuses on the resource/software matching domain.
+- Requirement and characteristic values, metrics, constraints, and comparison logic are not modeled, because they are not specified in the scenario.
+- Domain axioms were kept minimal where properties are intentionally reusable across more than one class.

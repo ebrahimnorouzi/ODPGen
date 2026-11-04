@@ -1,0 +1,502 @@
+@prefix : <https://w3id.org/lcanet/core#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <https://w3id.org/lcanet/core#> .
+
+<https://w3id.org/lcanet/core> rdf:type owl:Ontology ;
+                                owl:versionIRI <https://w3id.org/lcanet/core/2.2.0> ;
+                                owl:imports <https://w3id.org/lcanet/activity> ,
+                                            <https://w3id.org/lcanet/actor> ,
+                                            <https://w3id.org/lcanet/ia> ,
+                                            <https://w3id.org/lcanet/property> ,
+                                            <https://w3id.org/lcanet/st> ;
+                                <http://purl.org/dc/terms/contributor> <https://orcid.org/0000-0002-4553-3930> ,
+                                                                       <https://orcid.org/0000-0003-3896-7295> ,
+                                                                       <https://orcid.org/0009-0002-7928-9902> ,
+                                                                       "Emmanuelle Core" ;
+                                <http://purl.org/dc/terms/creator> <https://orcid.org/0000-0002-0438-6831> ;
+                                <http://purl.org/dc/terms/description> """The Core module is the central module of the LCAnet ontology proposed by the SmartACV Carnot Project.
+            It defines the basic elements of a LCA study based on ISO 14040 and ISO 14044 such as the goal, scope, etc. 
+            It also imports and links the other LCAnet ontology modules (Activity, Actor, Property, Spatiotemporal, and Impact Assessment)
+            providing an integration layer between the modules.
+            Thus, it serves as a semantic backbone for consistent modeling and reasoning over LCA knowledge.""" ;
+                                <http://purl.org/dc/terms/issued> "2026-05-20"^^xsd:date ;
+                                <http://purl.org/dc/terms/license> <https://creativecommons.org/licenses/by/4.0/> ;
+                                <http://purl.org/dc/terms/publisher> <https://www.cea.fr> ;
+                                <http://purl.org/dc/terms/title> "The Core module of the Life Cycle Assessment Network Ontology (LCAnet)."@en ;
+                                <http://purl.org/vocab/vann/preferredNamespacePrefix> "core" ;
+                                <http://purl.org/vocab/vann/preferredNamespaceUri> "https://w3id.org/lcanet/core#" ;
+                                rdfs:comment """This ontology imports:
+            - Activity module: https://w3id.org/lcanet/activity#
+            - Actor module: https://w3id.org/lcanet/actor#
+            - Impact Assessment module: https://w3id.org/lcanet/ia#
+            - Property module: https://w3id.org/lcanet/property#
+            - Spatiotemporal module: https://w3id.org/lcanet/st#
+        """ ;
+                                rdfs:label "LCAnet-Core" ;
+                                owl:priorVersion "2.1.0" ;
+                                owl:versionInfo "2.2.0" .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/terms/contributor
+<http://purl.org/dc/terms/contributor> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/creator
+<http://purl.org/dc/terms/creator> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/description
+<http://purl.org/dc/terms/description> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/issued
+<http://purl.org/dc/terms/issued> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/license
+<http://purl.org/dc/terms/license> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/publisher
+<http://purl.org/dc/terms/publisher> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/title
+<http://purl.org/dc/terms/title> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespacePrefix
+<http://purl.org/vocab/vann/preferredNamespacePrefix> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespaceUri
+<http://purl.org/vocab/vann/preferredNamespaceUri> rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Datatypes
+#################################################################
+
+###  http://www.w3.org/2001/XMLSchema#date
+xsd:date rdf:type rdfs:Datatype .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  https://w3id.org/lcanet/core#activityBelongsToLCstage
+:activityBelongsToLCstage rdf:type owl:ObjectProperty ;
+                          rdfs:domain <https://w3id.org/lcanet/activity#Activity> ;
+                          rdfs:range :LifeCycleStage ;
+                          rdfs:label "activity belongs to LC stage" .
+
+
+###  https://w3id.org/lcanet/core#activityHasImpactResult
+:activityHasImpactResult rdf:type owl:ObjectProperty ;
+                         owl:inverseOf :impactResultConcernsActivity ;
+                         rdfs:domain <https://w3id.org/lcanet/activity#Activity> ;
+                         rdfs:range <https://w3id.org/lcanet/ia#LcaResult> ;
+                         rdfs:label "activity has Impact Result" .
+
+
+###  https://w3id.org/lcanet/core#flowHasImpactResult
+:flowHasImpactResult rdf:type owl:ObjectProperty ;
+                     owl:inverseOf :impactResultConcernsFlow ;
+                     rdfs:domain <https://w3id.org/lcanet/activity#Flow> ;
+                     rdfs:range <https://w3id.org/lcanet/ia#LcaResult> ;
+                     rdfs:label "flow has Impact Result" .
+
+
+###  https://w3id.org/lcanet/core#hasFlowCategory
+:hasFlowCategory rdf:type owl:ObjectProperty ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( <https://w3id.org/lcanet/ia#LcaResult>
+                                             <https://w3id.org/lcanet/ia#OverallImpactResult>
+                                           )
+                             ] ;
+                 rdfs:range <https://w3id.org/lcanet/activity#FlowTag> ;
+                 rdfs:label "has Flow Category" .
+
+
+###  https://w3id.org/lcanet/core#hasProperty
+:hasProperty rdf:type owl:ObjectProperty ;
+             rdfs:domain [ rdf:type owl:Class ;
+                           owl:unionOf ( <https://w3id.org/lcanet/activity#Activity>
+                                         <https://w3id.org/lcanet/activity#Flow>
+                                         <https://w3id.org/lcanet/actor#Agent>
+                                         :LcaModel
+                                       )
+                         ] ;
+             rdfs:range <https://w3id.org/lcanet/property#Property> ;
+             rdfs:label "has Property" .
+
+
+###  https://w3id.org/lcanet/core#hasSpatialAspect
+:hasSpatialAspect rdf:type owl:ObjectProperty ;
+                  rdfs:domain <https://w3id.org/lcanet/activity#Activity> ;
+                  rdfs:range <https://w3id.org/lcanet/st#Location> ;
+                  rdfs:label "has Spatial Aspect" .
+
+
+###  https://w3id.org/lcanet/core#hasTemporalAspect
+:hasTemporalAspect rdf:type owl:ObjectProperty ;
+                   rdfs:domain <https://w3id.org/lcanet/activity#Activity> ;
+                   rdfs:range <http://www.w3.org/2006/time#TemporalEntity> ;
+                   rdfs:label "has Temporal Aspect" .
+
+
+###  https://w3id.org/lcanet/core#impactResultConcernsActivity
+:impactResultConcernsActivity rdf:type owl:ObjectProperty ;
+                              rdfs:domain <https://w3id.org/lcanet/ia#LcaResult> ;
+                              rdfs:range <https://w3id.org/lcanet/activity#Activity> ;
+                              rdfs:label "impact Result Concerns Activity" .
+
+
+###  https://w3id.org/lcanet/core#impactResultConcernsFlow
+:impactResultConcernsFlow rdf:type owl:ObjectProperty ;
+                          rdfs:domain <https://w3id.org/lcanet/ia#LcaResult> ;
+                          rdfs:range <https://w3id.org/lcanet/activity#Flow> ;
+                          rdfs:label "impact Result Concerns Flow" .
+
+
+###  https://w3id.org/lcanet/core#interpretationContainsOIR
+:interpretationContainsOIR rdf:type owl:ObjectProperty ;
+                           rdfs:domain :Interpretation ;
+                           rdfs:range <https://w3id.org/lcanet/ia#OverallImpactResult> ;
+                           rdfs:label "interpretation contains OIR" .
+
+
+###  https://w3id.org/lcanet/core#interpretationDefinedBy
+:interpretationDefinedBy rdf:type owl:ObjectProperty ;
+                         rdfs:domain :Interpretation ;
+                         rdfs:range <https://w3id.org/lcanet/actor#Agent> ;
+                         rdfs:label "interpretation defined by" .
+
+
+###  https://w3id.org/lcanet/core#lcaModeHasScope
+:lcaModeHasScope rdf:type owl:ObjectProperty ;
+                 rdfs:domain :LcaModel ;
+                 rdfs:range :Scope ;
+                 rdfs:label "lca model has scope" .
+
+
+###  https://w3id.org/lcanet/core#lcaModelConcernsLCStage
+:lcaModelConcernsLCStage rdf:type owl:ObjectProperty ;
+                         rdfs:domain :LcaModel ;
+                         rdfs:range :LifeCycleStage ;
+                         rdfs:label "lca model concerns LC stage" .
+
+
+###  https://w3id.org/lcanet/core#lcaModelHasAuthor
+:lcaModelHasAuthor rdf:type owl:ObjectProperty ;
+                   rdfs:domain :LcaModel ;
+                   rdfs:range <https://w3id.org/lcanet/actor#Agent> ;
+                   rdfs:label "lca model has author" .
+
+
+###  https://w3id.org/lcanet/core#lcaModelResultsInInterpretation
+:lcaModelResultsInInterpretation rdf:type owl:ObjectProperty ;
+                                 rdfs:domain :LcaModel ;
+                                 rdfs:range :Interpretation ;
+                                 rdfs:label "lca model results in interpretation" .
+
+
+###  https://w3id.org/lcanet/core#methodologyAssessesTopic
+:methodologyAssessesTopic rdf:type owl:ObjectProperty ;
+                          rdfs:domain [ rdf:type owl:Class ;
+                                        owl:unionOf ( <https://w3id.org/lcanet/ia#Method>
+                                                      <https://w3id.org/lcanet/ia#Methodology>
+                                                    )
+                                      ] ;
+                          rdfs:range :Scope ;
+                          rdfs:label "methodology assesses topic" .
+
+
+###  https://w3id.org/lcanet/core#realizedBy
+:realizedBy rdf:type owl:ObjectProperty ;
+            owl:inverseOf :realizesActivity ;
+            rdfs:domain <https://w3id.org/lcanet/activity#Activity> ;
+            rdfs:range <https://w3id.org/lcanet/actor#Agent> ;
+            rdfs:label "realized by" .
+
+
+###  https://w3id.org/lcanet/core#realizesActivity
+:realizesActivity rdf:type owl:ObjectProperty ;
+                  rdfs:domain <https://w3id.org/lcanet/actor#Agent> ;
+                  rdfs:range <https://w3id.org/lcanet/activity#Activity> ;
+                  rdfs:label "realizes activity" .
+
+
+###  https://w3id.org/lcanet/core#scopeDefinedBy
+:scopeDefinedBy rdf:type owl:ObjectProperty ;
+                rdfs:domain :Scope ;
+                rdfs:range <https://w3id.org/lcanet/actor#Agent> ;
+                rdfs:label "scope defined by" .
+
+
+###  https://w3id.org/lcanet/core#scopeHasReferenceFlow
+:scopeHasReferenceFlow rdf:type owl:ObjectProperty ;
+                       rdfs:domain :Scope ;
+                       rdfs:range <https://w3id.org/lcanet/activity#ProductFlow> ;
+                       rdfs:label "scope has reference flow" .
+
+
+###  https://w3id.org/lcanet/core#scopeHasSpatialScale
+:scopeHasSpatialScale rdf:type owl:ObjectProperty ;
+                      rdfs:domain :Scope ;
+                      rdfs:range <https://w3id.org/lcanet/st#SpatialScale> ;
+                      rdfs:label "scope has spatial scale" .
+
+
+###  https://w3id.org/lcanet/core#scopeHasTemporalScale
+:scopeHasTemporalScale rdf:type owl:ObjectProperty ;
+                       rdfs:domain :Scope ;
+                       rdfs:range <http://www.w3.org/2006/time#TemporalEntity> ;
+                       rdfs:label "scope has temporal scale" .
+
+
+###  https://w3id.org/lcanet/core#usedBy
+:usedBy rdf:type owl:ObjectProperty ;
+        rdfs:domain <https://w3id.org/lcanet/activity#Flow> ;
+        rdfs:range <https://w3id.org/lcanet/actor#Agent> ;
+        rdfs:label "used by" .
+
+
+###  https://w3id.org/lcanet/ia#assessIC
+<https://w3id.org/lcanet/ia#assessIC> rdf:type owl:ObjectProperty .
+
+
+###  https://w3id.org/lcanet/ia#calculatedByCM
+<https://w3id.org/lcanet/ia#calculatedByCM> rdf:type owl:ObjectProperty .
+
+
+###  https://w3id.org/lcanet/ia#calculatesCF
+<https://w3id.org/lcanet/ia#calculatesCF> rdf:type owl:ObjectProperty .
+
+
+###  https://w3id.org/lcanet/ia#hasIC
+<https://w3id.org/lcanet/ia#hasIC> rdf:type owl:ObjectProperty .
+
+
+###  https://w3id.org/lcanet/ia#quantifiedByCF
+<https://w3id.org/lcanet/ia#quantifiedByCF> rdf:type owl:ObjectProperty .
+
+
+###  https://w3id.org/lcanet/ia#quantifiesICI
+<https://w3id.org/lcanet/ia#quantifiesICI> rdf:type owl:ObjectProperty .
+
+
+###  https://w3id.org/lcanet/ia#usesCM
+<https://w3id.org/lcanet/ia#usesCM> rdf:type owl:ObjectProperty .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://qudt.org/schema/qudt#numericValue
+<http://qudt.org/schema/qudt#numericValue> rdf:type owl:DatatypeProperty .
+
+
+###  https://w3id.org/lcanet/core#lcaModelHasGoal
+:lcaModelHasGoal rdf:type owl:DatatypeProperty ;
+                 rdfs:domain :LcaModel ;
+                 rdfs:range xsd:string ;
+                 rdfs:comment "The lcaModelHasGoal data property represents the objective of the LCA study, defined as a textual description that specifies the intended purpose and use of the LCA results." ;
+                 rdfs:label "lca Model Has Goal" .
+
+
+###  https://w3id.org/lcanet/core#lcaModelHasId
+:lcaModelHasId rdf:type owl:DatatypeProperty ;
+               rdfs:domain :LcaModel ;
+               rdfs:range xsd:string ;
+               rdfs:label "lca Model Has Id" .
+
+
+###  https://w3id.org/lcanet/core#scopeHasAssumption
+:scopeHasAssumption rdf:type owl:DatatypeProperty ;
+                    rdfs:domain :Scope ;
+                    rdfs:range xsd:string ;
+                    rdfs:label "scope Has Assumption" .
+
+
+###  https://w3id.org/lcanet/core#scopeHasFunctionalUnit
+:scopeHasFunctionalUnit rdf:type owl:DatatypeProperty ;
+                        rdfs:domain :Scope ;
+                        rdfs:range xsd:string ;
+                        rdfs:label "scope Has Functional Unit" .
+
+
+###  https://w3id.org/lcanet/core#scopeHasSystemBoundary
+:scopeHasSystemBoundary rdf:type owl:DatatypeProperty ;
+                        rdfs:domain :Scope ;
+                        rdfs:range xsd:string ;
+                        rdfs:label "Scope Has System Boundary" .
+
+
+###  https://w3id.org/lcanet/property#hasUnit
+<https://w3id.org/lcanet/property#hasUnit> rdf:type owl:DatatypeProperty .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.w3.org/2006/time#TemporalEntity
+<http://www.w3.org/2006/time#TemporalEntity> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/activity#Activity
+<https://w3id.org/lcanet/activity#Activity> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/activity#ActivityTag
+<https://w3id.org/lcanet/activity#ActivityTag> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/activity#Biosphere
+<https://w3id.org/lcanet/activity#Biosphere> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/activity#Flow
+<https://w3id.org/lcanet/activity#Flow> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/activity#FlowTag
+<https://w3id.org/lcanet/activity#FlowTag> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/activity#ProductFlow
+<https://w3id.org/lcanet/activity#ProductFlow> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/activity#Technosphere
+<https://w3id.org/lcanet/activity#Technosphere> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/actor#Agent
+<https://w3id.org/lcanet/actor#Agent> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/core#Interpretation
+:Interpretation rdf:type owl:Class ;
+                owl:disjointWith :LcaModel ,
+                                 :LifeCycleStage ,
+                                 :Scope ;
+                rdfs:comment "The Interpretation class connects the LCA model to the Impact Assessment module, representing the analysis and interpretation of results to support decision-making, conclusions, and recommendations." ;
+                rdfs:label "Interpretation" .
+
+
+###  https://w3id.org/lcanet/core#LcaModel
+:LcaModel rdf:type owl:Class ;
+          owl:disjointWith :LifeCycleStage ,
+                           :Scope ,
+                           <https://w3id.org/lcanet/ia#LcaResult> ;
+          rdfs:comment """The LCA model class represents a complete Life Cycle Assessment instance within the LCAnet ontology network. 
+Its instance ID encapsulates all aspects of the LCA study, linking to scope, goal, life cycle stages, and interpretation results.""" ;
+          rdfs:label "LCA Model" .
+
+
+###  https://w3id.org/lcanet/core#LifeCycleStage
+:LifeCycleStage rdf:type owl:Class ;
+                owl:disjointWith :Scope ,
+                                 <https://w3id.org/lcanet/ia#LcaResult> ;
+                rdfs:comment "The LifeCycle stage class enumerates the standard stages of a product or service life cycle, providing an exhaustive list of the five possible stages for classification and analysis within the LCA." ;
+                rdfs:label "Life Cycle Stage" .
+
+
+###  https://w3id.org/lcanet/core#Scope
+:Scope rdf:type owl:Class ;
+       owl:disjointWith <https://w3id.org/lcanet/ia#LcaResult> ;
+       rdfs:comment "The Scope class captures the boundaries and context of an LCA study, including spatial and temporal aspects, functional unit, system boundaries, and assumptions, and a reference flow. Each element is represented via data properties connecting the Scope class to its corresponding values." ;
+       rdfs:label "Scope" .
+
+
+###  https://w3id.org/lcanet/ia#CharacterizationFactor
+<https://w3id.org/lcanet/ia#CharacterizationFactor> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/ia#CharacterizationModel
+<https://w3id.org/lcanet/ia#CharacterizationModel> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/ia#ImpactCategory
+<https://w3id.org/lcanet/ia#ImpactCategory> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/ia#ImpactCategoryIndicator
+<https://w3id.org/lcanet/ia#ImpactCategoryIndicator> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/ia#LcaResult
+<https://w3id.org/lcanet/ia#LcaResult> rdf:type owl:Class ;
+                                       owl:equivalentClass [ rdf:type owl:Class ;
+                                                             owl:unionOf ( [ owl:intersectionOf ( <https://w3id.org/lcanet/ia#LcaResult>
+                                                                                                  [ rdf:type owl:Restriction ;
+                                                                                                    owl:onProperty :hasFlowCategory ;
+                                                                                                    owl:someValuesFrom <https://w3id.org/lcanet/activity#FlowTag>
+                                                                                                  ]
+                                                                                                ) ;
+                                                                             rdf:type owl:Class
+                                                                           ]
+                                                                           [ owl:intersectionOf ( <https://w3id.org/lcanet/ia#LcaResult>
+                                                                                                  [ rdf:type owl:Restriction ;
+                                                                                                    owl:onProperty <https://w3id.org/lcanet/ia#hasIC> ;
+                                                                                                    owl:someValuesFrom <https://w3id.org/lcanet/ia#ImpactCategory>
+                                                                                                  ]
+                                                                                                ) ;
+                                                                             rdf:type owl:Class
+                                                                           ]
+                                                                         )
+                                                           ] .
+
+
+###  https://w3id.org/lcanet/ia#Method
+<https://w3id.org/lcanet/ia#Method> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/ia#Methodology
+<https://w3id.org/lcanet/ia#Methodology> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/ia#OverallImpactResult
+<https://w3id.org/lcanet/ia#OverallImpactResult> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/property#BalanceableProperty
+<https://w3id.org/lcanet/property#BalanceableProperty> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/property#DataQualityProperty
+<https://w3id.org/lcanet/property#DataQualityProperty> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/property#Property
+<https://w3id.org/lcanet/property#Property> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/property#QualitativeProperty
+<https://w3id.org/lcanet/property#QualitativeProperty> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/property#QuantitativeProperty
+<https://w3id.org/lcanet/property#QuantitativeProperty> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/st#Location
+<https://w3id.org/lcanet/st#Location> rdf:type owl:Class .
+
+
+###  https://w3id.org/lcanet/st#SpatialScale
+<https://w3id.org/lcanet/st#SpatialScale> rdf:type owl:Class .
+
+
+###  Generated by the OWL API (version 5.1.18) https://github.com/owlcs/owlapi/

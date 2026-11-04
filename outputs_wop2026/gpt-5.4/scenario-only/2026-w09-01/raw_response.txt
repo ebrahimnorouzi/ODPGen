@@ -1,0 +1,187 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ndf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Climate dataset publication pattern" ;
+  rdfs:comment "An ontology design pattern for describing the publication of a climate dataset consisting of average daily maximum near-surface air temperature values for a whole region over a given year, derived from some process, with one independent variable (time) and one dependent variable." .
+
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A published dataset." .
+
+:ClimateDataset a owl:Class ;
+  rdfs:label "Climate dataset" ;
+  rdfs:comment "A dataset in the climate services domain." ;
+  rdfs:subClassOf :Dataset .
+
+:DatasetPublication a owl:Class ;
+  rdfs:label "Dataset publication" ;
+  rdfs:comment "The publication of a dataset." .
+
+:DerivationProcess a owl:Class ;
+  rdfs:label "Derivation process" ;
+  rdfs:comment "A process from which a dataset is derived, possibly including observations, simulations, aggregations, or similar steps." .
+
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "A variable represented in a dataset." .
+
+:IndependentVariable a owl:Class ;
+  rdfs:label "Independent variable" ;
+  rdfs:comment "A variable that serves as an independent variable in a dataset." ;
+  rdfs:subClassOf :Variable .
+
+:DependentVariable a owl:Class ;
+  rdfs:label "Dependent variable" ;
+  rdfs:comment "A variable that serves as a dependent variable in a dataset." ;
+  rdfs:subClassOf :Variable ;
+  owl:disjointWith :IndependentVariable .
+
+:TimeVariable a owl:Class ;
+  rdfs:label "Time variable" ;
+  rdfs:comment "An independent variable representing time." ;
+  rdfs:subClassOf :IndependentVariable .
+
+:TemperatureVariable a owl:Class ;
+  rdfs:label "Temperature variable" ;
+  rdfs:comment "A dependent variable representing temperature." ;
+  rdfs:subClassOf :DependentVariable .
+
+:NearSurfaceAirTemperatureVariable a owl:Class ;
+  rdfs:label "Near-surface air temperature variable" ;
+  rdfs:comment "A temperature variable representing near-surface air temperature." ;
+  rdfs:subClassOf :TemperatureVariable .
+
+:DailyMaximumNearSurfaceAirTemperatureVariable a owl:Class ;
+  rdfs:label "Daily maximum near-surface air temperature variable" ;
+  rdfs:comment "A near-surface air temperature variable representing daily maximum values." ;
+  rdfs:subClassOf :NearSurfaceAirTemperatureVariable .
+
+:SpatialExtent a owl:Class ;
+  rdfs:label "Spatial extent" ;
+  rdfs:comment "A geographic area over which a dataset is defined." .
+
+:TemporalExtent a owl:Class ;
+  rdfs:label "Temporal extent" ;
+  rdfs:comment "A time interval over which a dataset is defined." .
+
+:RegionalAggregateDataset a owl:Class ;
+  rdfs:label "Regional aggregate dataset" ;
+  rdfs:comment "A dataset providing values aggregated for a whole region rather than for a spatial grid." ;
+  rdfs:subClassOf :ClimateDataset .
+
+:hasPublishedDataset a owl:ObjectProperty ;
+  rdfs:label "has published dataset" ;
+  rdfs:comment "Relates a dataset publication to the dataset that is published." ;
+  rdfs:domain :DatasetPublication ;
+  rdfs:range :Dataset .
+
+:isDerivedFromProcess a owl:ObjectProperty ;
+  rdfs:label "is derived from process" ;
+  rdfs:comment "Relates a dataset to the process from which it is derived." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :DerivationProcess .
+
+:hasIndependentVariable a owl:ObjectProperty ;
+  rdfs:label "has independent variable" ;
+  rdfs:comment "Relates a dataset to an independent variable it uses." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :IndependentVariable .
+
+:hasDependentVariable a owl:ObjectProperty ;
+  rdfs:label "has dependent variable" ;
+  rdfs:comment "Relates a dataset to a dependent variable it provides." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :DependentVariable .
+
+:hasSpatialExtent a owl:ObjectProperty ;
+  rdfs:label "has spatial extent" ;
+  rdfs:comment "Relates a dataset to the geographic area it covers." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :SpatialExtent .
+
+:hasTemporalExtent a owl:ObjectProperty ;
+  rdfs:label "has temporal extent" ;
+  rdfs:comment "Relates a dataset to the time interval it covers." ;
+  rdfs:domain :Dataset ;
+  rdfs:range :TemporalExtent .
+
+:hasTemporalResolution a owl:DatatypeProperty ;
+  rdfs:label "has temporal resolution" ;
+  rdfs:comment "Specifies the temporal resolution of the dataset, such as daily." ;
+  rdfs:domain :Dataset ;
+  rdfs:range xsd:string .
+
+:hasSpatialRepresentation a owl:DatatypeProperty ;
+  rdfs:label "has spatial representation" ;
+  rdfs:comment "Specifies how values are spatially represented in the dataset, such as whole-region aggregate rather than grid." ;
+  rdfs:domain :Dataset ;
+  rdfs:range xsd:string .
+
+:hasValueCountPerTimeStep a owl:DatatypeProperty ;
+  rdfs:label "has value count per time step" ;
+  rdfs:comment "Specifies the number of values provided for each time step in the dataset." ;
+  rdfs:domain :Dataset ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:hasYear a owl:DatatypeProperty ;
+  rdfs:label "has year" ;
+  rdfs:comment "Specifies a calendar year associated with a temporal extent." ;
+  rdfs:domain :TemporalExtent ;
+  rdfs:range xsd:gYear .
+
+:hasRegionName a owl:DatatypeProperty ;
+  rdfs:label "has region name" ;
+  rdfs:comment "Specifies the name of the region covered by a spatial extent." ;
+  rdfs:domain :SpatialExtent ;
+  rdfs:range xsd:string .
+
+:RegionalAggregateDataset rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasIndependentVariable ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :IndependentVariable
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasDependentVariable ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :DependentVariable
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasSpatialExtent ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :SpatialExtent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasTemporalExtent ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :TemporalExtent
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasValueCountPerTimeStep ;
+    owl:hasValue "1"^^xsd:nonNegativeInteger
+  ] .
+```
+
+**Intent:** Model the publication of a climate dataset that provides one daily aggregated temperature value for a whole region over a year, derived from some process, with one independent variable and one dependent variable.
+
+**Covered requirements:**
+- Models a dataset publication.
+- Models a climate dataset in the climate services domain.
+- Captures derivation from some process.
+- Represents a dataset of average daily maximum near-surface air temperature.
+- Represents coverage over the whole of a region rather than a spatial grid.
+- Represents coverage over a year.
+- Constrains the dataset to one independent variable.
+- Constrains the dataset to one dependent variable.
+- Constrains the dataset to one value per time step.
+
+**Known assumptions and exclusions:**
+- “Italy” and “2024” are not instantiated, since only schema axioms were requested; they are represented generically via spatial and temporal extent classes and datatype properties.
+- The pattern does not distinguish among specific derivation subtypes such as observation, simulation, or aggregation beyond the generic derivation process class.
+- “Average” is reflected only in the overall scenario comment and not modeled as a separate concept, to avoid adding structure not strictly required by the scenario.
+- No units, encoding formats, publishers, or distribution metadata are included because they are not explicitly required by the scenario.

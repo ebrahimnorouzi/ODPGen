@@ -1,0 +1,138 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Climate Services Domain Ontology" ;
+  rdfs:comment "An ontology for the climate services domain.".
+
+# Classes
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "An observable or computable quantity.".
+
+:DependentVariable a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Dependent Variable" ;
+  rdfs:comment "A variable that depends on one or more independent variables.".
+
+:IndependentVariable a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Independent Variable" ;
+  rdfs:comment "A variable that does not depend on any other variable.".
+
+:RescaledVariable a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Rescaled Variable" ;
+  rdfs:comment "A variable that is a rescaled version of another variable.".
+
+:CompositeVariable a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Composite Variable" ;
+  rdfs:comment "A variable that is composed of one or more component variables.".
+
+:Specialization a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Specialization" ;
+  rdfs:comment "A variable that is a specialization of a more general variable.".
+
+:Aggregation a owl:Class ;
+  rdfs:label "Aggregation" ;
+  rdfs:comment "A process that combines values of a variable into a single value.".
+
+:Quantization a owl:Class ;
+  rdfs:label "Quantization" ;
+  rdfs:comment "A discretization of a continuous dimensional space.".
+
+:Dataset a owl:Class ;
+  rdfs:label "Dataset" ;
+  rdfs:comment "A collection of data values organized for a specific purpose.".
+
+:DataFormat a owl:Class ;
+  rdfs:label "Data Format" ;
+  rdfs:comment "A format for serializing data.".
+
+:DataSource a owl:Class ;
+  rdfs:label "Data Source" ;
+  rdfs:comment "A provider of data.".
+
+# Properties
+:hasDimensionalSpace rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:range :DimensionalSpace ;
+  rdfs:label "Has Dimensional Space" ;
+  rdfs:comment "The dimensional space on which a variable takes its values.".
+
+:isIndependent rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "Is Independent" ;
+  rdfs:comment "Indicates whether a variable is independent or dependent.".
+
+:dependsOn rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :DependentVariable ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :IndependentVariable ] ;
+  rdfs:label "Depends On" ;
+  rdfs:comment "The independent variables on which a dependent variable depends.".
+
+:isRescaledFrom rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :RescaledVariable ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Rescaled From" ;
+  rdfs:comment "The original (non-rescaled) variable from which a rescaled variable is derived.".
+
+:isComposedOf rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :CompositeVariable ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Composed Of" ;
+  rdfs:comment "The component variables of a composite variable.".
+
+:isSpecializationOf rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Specialization ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Specialization Of" ;
+  rdfs:comment "The more general variable from which a specialization is derived.".
+
+:isConstrainedBy rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Specialization ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :IndependentVariable ] ;
+  rdfs:label "Is Constrained By" ;
+  rdfs:comment "The independent variable that is constrained by a specialization.".
+
+:isAggregatedBy rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Aggregation ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Aggregated By" ;
+  rdfs:comment "The variable being aggregated by an aggregation.".
+
+:hasAggregationGroup rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Aggregation ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :IndependentVariable ] ;
+  rdfs:label "Has Aggregation Group" ;
+  rdfs:comment "The independent variable over which a given aggregation groups values.".
+
+:hasQuantization rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Quantization ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :DimensionalSpace ] ;
+  rdfs:label "Has Quantization" ;
+  rdfs:comment "The discretization of a continuous dimensional space.".
+
+:hasDataFormat rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Dataset ] ;
+  rdfs:range :DataFormat ;
+  rdfs:label "Has Data Format" ;
+  rdfs:comment "The format in which a dataset is serialized.".
+
+:hasDataSource rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Dataset ] ;
+  rdfs:range :DataSource ;
+  rdfs:label "Has Data Source" ;
+  rdfs:comment "The provider of a dataset.".
+
+:isDerivedFrom rdf:Property ;
+  rdfs:domain [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:range [ a owl:Class ; rdfs:subClassOf :Variable ] ;
+  rdfs:label "Is Derived From" ;
+  rdfs:comment "Two independently modelled variables that are asserted to always coincide in value.".

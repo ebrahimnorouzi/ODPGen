@@ -1,0 +1,176 @@
+Here is the Turtle ontology design pattern for the given competency questions:
+
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Stress Model Ontology" ;
+    rdfs:comment "An ontology for modeling stress-related conditions, stressors, stress responses, activities, sensors, and observations.".
+
+# Stress-related concepts
+:StressCondition a owl:Class ;
+    rdfs:label "Stress Condition" ;
+    rdfs:comment "A type of stress-related condition.".
+
+:Stressor a owl:Class ;
+    rdfs:label "Stressor" ;
+    rdfs:comment "A type of stressor that can cause stress-related conditions.".
+
+:ShortTermStressor a owl:Class ;
+    rdfs:label "Short-Term Stressor" ;
+    rdfs:comment "A type of stressor that can cause short-term stress-related conditions.".
+
+:StressResponse a owl:Class ;
+    rdfs:label "Stress Response" ;
+    rdfs:comment "A response to a stressor that can be caused by a stress-related condition.".
+
+:BaselineState a owl:Class ;
+    rdfs:label "Baseline State" ;
+    rdfs:comment "A state of normal physiological functioning, often used as a reference point.".
+
+:RecoveryState a owl:Class ;
+    rdfs:label "Recovery State" ;
+    rdfs:comment "A state of physiological recovery after a stress-related condition.".
+
+# Activity concepts
+:Activity a owl:Class ;
+    rdfs:label "Activity" ;
+    rdfs:comment "An activity or experimental phase that can be associated with a stress-related condition.".
+
+:StressActivity a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Activity ] ;
+    rdfs:label "Stress Activity" ;
+    rdfs:comment "An activity that is known to induce stress-related conditions.".
+
+:NonStressActivity a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Activity ] ;
+    rdfs:label "Non-Stress Activity" ;
+    rdfs:comment "An activity that is not known to induce stress-related conditions.".
+
+:ActivityPhase a owl:Class ;
+    rdfs:label "Activity Phase" ;
+    rdfs:comment "A specific phase or segment of an activity.".
+
+# Relationships between concepts
+:occursIn rdf:Property ;
+    rdfs:domain :StressCondition ;
+    rdfs:range :ActivityPhase ;
+    rdfs:label "Occurs in" ;
+    rdfs:comment "The activity phase during which a stress-related condition occurred.".
+
+:isAssociatedWith rdf:Property ;
+    rdfs:domain :Stressor ;
+    rdfs:range :ActivityPhase ;
+    rdfs:label "Is associated with" ;
+    rdfs:comment "The activity phase during which a stressor was present.".
+
+:causes rdf:Property ;
+    rdfs:domain :Stressor ;
+    rdfs:range :StressResponse ;
+    rdfs:label "Causes" ;
+    rdfs:comment "The stress response caused by a specific stressor.".
+
+# Subject concepts
+:Subject a owl:Class ;
+    rdfs:label "Subject" ;
+    rdfs:comment "A person or animal being studied in a stress-related setting.".
+
+# Sensor concepts
+:Sensor a owl:Class ;
+    rdfs:label "Sensor" ;
+    rdfs:comment "A device or platform used for stress-related measurements.".
+
+:PhysiologicalSensor a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Sensor ] ;
+    rdfs:label "Physiological Sensor" ;
+    rdfs:comment "A sensor that measures physiological properties.".
+
+:MovementSensor a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Sensor ] ;
+    rdfs:label "Movement Sensor" ;
+    rdfs:comment "A sensor that captures movement-related information.".
+
+:MeasurementPlatform a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Sensor ] ;
+    rdfs:label "Measurement Platform" ;
+    rdfs:comment "A device or platform used to collect measurements from multiple sensors.".
+
+# Sensor property concepts
+:measures rdf:Property ;
+    rdfs:domain :Sensor ;
+    rdfs:range :MeasurableProperty ;
+    rdfs:label "Measures" ;
+    rdfs:comment "The measurable property that a sensor is designed to capture.".
+
+# Measurable property concepts
+:MeasurableProperty a owl:Class ;
+    rdfs:label "Measurable Property" ;
+    rdfs:comment "A property that can be measured by a sensor.".
+
+:PhysiologicalProperty a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :MeasurableProperty ] ;
+    rdfs:label "Physiological Property" ;
+    rdfs:comment "A measurable property related to physiology.".
+
+:BehavioralIndicator a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :MeasurableProperty ] ;
+    rdfs:label "Behavioral Indicator" ;
+    rdfs:comment "A measurable property related to behavior.".
+
+:EnvironmentalProperty a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :MeasurableProperty ] ;
+    rdfs:label "Environmental Property" ;
+    rdfs:comment "A measurable property related to the environment.".
+
+# Sensor-specific properties
+:PPGSensorProperties a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :MeasurableProperty ] ;
+    rdfs:label "PPG Sensor Properties" ;
+    rdfs:comment "Properties that can be measured by a PPG sensor.".
+
+:EDASensorProperties a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :MeasurableProperty ] ;
+    rdfs:label "EDA Sensor Properties" ;
+    rdfs:comment "Properties that can be measured by an EDA sensor.".
+
+:BloodOxygenSensor a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :MeasurableProperty ] ;
+    rdfs:label "Blood Oxygen Sensor" ;
+    rdfs:comment "A sensor that measures blood oxygen saturation.".
+
+:TemperatureSensor a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :MeasurableProperty ] ;
+    rdfs:label "Temperature Sensor" ;
+    rdfs:comment "A sensor that measures temperature.".
+
+:AccelerometerProperties a owl:Class ;
+    rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :MeasurableProperty ] ;
+    rdfs:label "Accelerometer Properties" ;
+    rdfs:comment "Properties that can be captured by an accelerometer.".
+
+# Categories of measurable properties
+:AccelerationCategory a owl:Class ;
+    rdfs:label "Acceleration Category" ;
+    rdfs:comment "A category of measurable properties related to acceleration.".
+
+# Relationships between classes
+:hasSensor rdf:Property ;
+    rdfs:domain :MeasurableProperty ;
+    rdfs:range :Sensor ;
+    rdfs:label "Has Sensor" ;
+    rdfs:comment "The sensor used to measure a specific measurable property.".
+
+:hasProperty rdf:Property ;
+    rdfs:domain :Sensor ;
+    rdfs:range :MeasurableProperty ;
+    rdfs:label "Has Property" ;
+    rdfs:comment "The measurable property that a sensor is designed to capture.".
+```
+
+CQ-to-axiom mapping table:
+
+| CQ

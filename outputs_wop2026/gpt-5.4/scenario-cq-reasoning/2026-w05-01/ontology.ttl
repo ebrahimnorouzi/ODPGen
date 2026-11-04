@@ -1,0 +1,311 @@
+# ODPGEN-TRUNCATED: this generation was cut off before the model finished.
+# ODPGEN-TRUNCATION-SIGNALS: finish_reason=incomplete:max_output_tokens
+# Do NOT score this file as a complete ontology; see metadata.json.
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Prompting and foundation model selection ODP" ;
+  rdfs:comment "An ontology design pattern for representing tasks, prompting techniques, foundation models, modalities, constraints, chats, prompts, responses, and lightweight usage statistics for prompt engineering and analysis." .
+
+:Task a owl:Class ;
+  rdfs:label "Task" ;
+  rdfs:comment "A task to be solved using prompting of a foundation model." .
+
+:PromptingTechnique a owl:Class ;
+  rdfs:label "Prompting technique" ;
+  rdfs:comment "A technique used to formulate or structure prompts." .
+
+:FoundationModel a owl:Class ;
+  rdfs:label "Foundation model" ;
+  rdfs:comment "A foundation model to which prompts can be submitted." .
+
+:ModelArchitecture a owl:Class ;
+  rdfs:label "Model architecture" ;
+  rdfs:comment "An architectural category or design of a foundation model." .
+
+:ModelFamily a owl:Class ;
+  rdfs:label "Model family" ;
+  rdfs:comment "A family grouping related foundation models." .
+
+:ModelVariant a owl:Class ;
+  rdfs:label "Model variant" ;
+  rdfs:comment "A variant of a foundation model." .
+
+:ModelEvolution a owl:Class ;
+  rdfs:label "Model evolution" ;
+  rdfs:comment "An evolution or successor form of a foundation model." .
+
+:DataModality a owl:Class ;
+  rdfs:label "Data modality" ;
+  rdfs:comment "A modality of data involved in a task or processable by a model." .
+
+:Constraint a owl:Class ;
+  rdfs:label "Constraint" ;
+  rdfs:comment "A constraint relevant to a task or model selection." .
+
+:ConstraintVariable a owl:Class ;
+  rdfs:label "Constraint variable" ;
+  rdfs:comment "A variable or dimension on which a constraint is imposed." .
+
+:Resource a owl:Class ;
+  rdfs:label "Resource" ;
+  rdfs:comment "An available resource influencing model architecture choices." .
+
+:Chat a owl:Class ;
+  rdfs:label "Chat" ;
+  rdfs:comment "A prior or ongoing chat containing prompts and responses." .
+
+:Prompt a owl:Class ;
+  rdfs:label "Prompt" ;
+  rdfs:comment "A prompt submitted in a chat to a foundation model." .
+
+:Response a owl:Class ;
+  rdfs:label "Response" ;
+  rdfs:comment "A response generated for a prompt." .
+
+:Statistic a owl:Class ;
+  rdfs:label "Statistic" ;
+  rdfs:comment "A statistical summary derived from chats, prompts, or responses." .
+
+:AveragePromptCountPerChatStatistic a owl:Class ;
+  rdfs:label "Average prompt count per chat statistic" ;
+  rdfs:comment "A statistic representing the average number of prompts per chat." ;
+  rdfs:subClassOf :Statistic .
+
+:AverageResponseCountPerChatStatistic a owl:Class ;
+  rdfs:label "Average response count per chat statistic" ;
+  rdfs:comment "A statistic representing the average number of responses per chat." ;
+  rdfs:subClassOf :Statistic .
+
+:ChatCountPerModelStatistic a owl:Class ;
+  rdfs:label "Chat count per model statistic" ;
+  rdfs:comment "A statistic representing the number of chats conducted per foundation model." ;
+  rdfs:subClassOf :Statistic .
+
+:hasDataModality a owl:ObjectProperty ;
+  rdfs:label "has data modality" ;
+  rdfs:comment "Relates a task or foundation model to a data modality." ;
+  rdfs:domain [
+    a owl:Class ;
+    owl:unionOf ( :Task :FoundationModel )
+  ] ;
+  rdfs:range :DataModality .
+
+:hasConstraint a owl:ObjectProperty ;
+  rdfs:label "has constraint" ;
+  rdfs:comment "Relates a task to a relevant constraint." ;
+  rdfs:domain :Task ;
+  rdfs:range :Constraint .
+
+:isSuitableForTask a owl:ObjectProperty ;
+  rdfs:label "is suitable for task" ;
+  rdfs:comment "Relates a prompting technique to a task for which it is suitable." ;
+  rdfs:domain :PromptingTechnique ;
+  rdfs:range :Task .
+
+:hasArchitecture a owl:ObjectProperty ;
+  rdfs:label "has architecture" ;
+  rdfs:comment "Relates a foundation model to its architecture." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :ModelArchitecture .
+
+:dependsOnResource a owl:ObjectProperty ;
+  rdfs:label "depends on resource" ;
+  rdfs:comment "Relates a model architecture to a resource on which it depends." ;
+  rdfs:domain :ModelArchitecture ;
+  rdfs:range :Resource .
+
+:hasFamily a owl:ObjectProperty ;
+  rdfs:label "has family" ;
+  rdfs:comment "Relates a foundation model to a model family." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :ModelFamily .
+
+:hasVariant a owl:ObjectProperty ;
+  rdfs:label "has variant" ;
+  rdfs:comment "Relates a foundation model to one of its variants." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :ModelVariant .
+
+:hasEvolution a owl:ObjectProperty ;
+  rdfs:label "has evolution" ;
+  rdfs:comment "Relates a foundation model to one of its evolutions." ;
+  rdfs:domain :FoundationModel ;
+  rdfs:range :ModelEvolution .
+
+:usesTechnique a owl:ObjectProperty ;
+  rdfs:label "uses technique" ;
+  rdfs:comment "Relates a prompt to the prompting technique on which it is based." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :PromptingTechnique .
+
+:hasResponse a owl:ObjectProperty ;
+  rdfs:label "has response" ;
+  rdfs:comment "Relates a prompt to its response." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :Response ;
+  owl:inverseOf :isResponseTo .
+
+:isResponseTo a owl:ObjectProperty ;
+  rdfs:label "is response to" ;
+  rdfs:comment "Relates a response to the prompt it answers." ;
+  rdfs:domain :Response ;
+  rdfs:range :Prompt .
+
+:submittedToModel a owl:ObjectProperty ;
+  rdfs:label "submitted to model" ;
+  rdfs:comment "Relates a prompt to the foundation model to which it is submitted." ;
+  rdfs:domain :Prompt ;
+  rdfs:range :FoundationModel .
+
+:partOfChat a owl:ObjectProperty ;
+  rdfs:label "part of chat" ;
+  rdfs:comment "Relates a prompt or response to the chat it belongs to." ;
+  rdfs:domain [
+    a owl:Class ;
+    owl:unionOf ( :Prompt :Response )
+  ] ;
+  rdfs:range :Chat .
+
+:hasPrompt a owl:ObjectProperty ;
+  rdfs:label "has prompt" ;
+  rdfs:comment "Relates a chat to a prompt it contains." ;
+  rdfs:domain :Chat ;
+  rdfs:range :Prompt ;
+  owl:inverseOf :partOfChat .
+
+:hasConstraintVariable a owl:ObjectProperty ;
+  rdfs:label "has constraint variable" ;
+  rdfs:comment "Relates a constraint to the variable on which it imposes a restriction." ;
+  rdfs:domain :Constraint ;
+  rdfs:range :ConstraintVariable .
+
+:aboutModel a owl:ObjectProperty ;
+  rdfs:label "about model" ;
+  rdfs:comment "Relates a statistic to the foundation model it concerns." ;
+  rdfs:domain :Statistic ;
+  rdfs:range :FoundationModel .
+
+:computedFromChat a owl:ObjectProperty ;
+  rdfs:label "computed from chat" ;
+  rdfs:comment "Relates a statistic to a chat from which it is computed." ;
+  rdfs:domain :Statistic ;
+  rdfs:range :Chat .
+
+:computedFromPrompt a owl:ObjectProperty ;
+  rdfs:label "computed from prompt" ;
+  rdfs:comment "Relates a statistic to prompts from which it is computed." ;
+  rdfs:domain :Statistic ;
+  rdfs:range :Prompt .
+
+:computedFromResponse a owl:ObjectProperty ;
+  rdfs:label "computed from response" ;
+  rdfs:comment "Relates a statistic to responses from which it is computed." ;
+  rdfs:domain :Statistic ;
+  rdfs:range :Response .
+
+:averageValue a owl:DatatypeProperty ;
+  rdfs:label "average value" ;
+  rdfs:comment "The numeric average represented by a statistic." ;
+  rdfs:domain :Statistic ;
+  rdfs:range xsd:decimal .
+
+:countValue a owl:DatatypeProperty ;
+  rdfs:label "count value" ;
+  rdfs:comment "The numeric count represented by a statistic." ;
+  rdfs:domain :Statistic ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:Task rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :hasDataModality ;
+  owl:someValuesFrom :DataModality
+] .
+
+:Task rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :hasConstraint ;
+  owl:someValuesFrom :Constraint
+] .
+
+:Prompt rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :usesTechnique ;
+  owl:someValuesFrom :PromptingTechnique
+] .
+
+:Prompt rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :submittedToModel ;
+  owl:someValuesFrom :FoundationModel
+] .
+
+:Prompt rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :hasResponse ;
+  owl:someValuesFrom :Response
+] .
+
+:PromptingTechnique rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :isSuitableForTask ;
+  owl:someValuesFrom :Task
+] .
+
+:FoundationModel rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :hasArchitecture ;
+  owl:someValuesFrom :ModelArchitecture
+] .
+
+:FoundationModel rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :hasDataModality ;
+  owl:someValuesFrom :DataModality
+] .
+
+:Constraint rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :hasConstraintVariable ;
+  owl:someValuesFrom :ConstraintVariable
+] .
+
+:AveragePromptCountPerChatStatistic rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :averageValue ;
+  owl:someValuesFrom xsd:decimal
+] .
+
+:AverageResponseCountPerChatStatistic rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :averageValue ;
+  owl:someValuesFrom xsd:decimal
+] .
+
+:ChatCountPerModelStatistic rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :countValue ;
+  owl:someValuesFrom xsd:nonNegativeInteger
+] .
+
+:ChatCountPerModelStatistic rdfs:subClassOf [
+  a owl:Restriction ;
+  owl:onProperty :aboutModel ;
+  owl:someValuesFrom :FoundationModel
+] .
+
+:Task owl:disjointWith :PromptingTechnique, :FoundationModel, :ModelArchitecture, :ModelFamily, :ModelVariant, :ModelEvolution, :DataModality, :Constraint, :ConstraintVariable, :Resource, :Chat, :Prompt, :Response, :Statistic .
+
+:PromptingTechnique owl:disjointWith :FoundationModel, :ModelArchitecture, :ModelFamily, :ModelVariant, :ModelEvolution, :DataModality, :Constraint, :ConstraintVariable, :Resource, :Chat, :Prompt, :Response, :Statistic .
+
+:FoundationModel owl:disjointWith :ModelArchitecture, :ModelFamily, :ModelVariant, :ModelEvolution, :DataModality, :Constraint, :ConstraintVariable, :Resource, :Chat, :Prompt, :Response, :Statistic .
+
+:Chat owl:disjointWith :Prompt, :Response, :Statistic .
+
+:Prompt owl:disjointWith :Response, :Statistic .
+
+:Constraint owl:disjointWith :ConstraintVariable, :Resource .

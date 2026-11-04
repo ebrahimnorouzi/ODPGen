@@ -1,0 +1,329 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix saref: <https://saref.etsi.org/core/> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "PIIRRITE Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern representing the PIIRRITE navigable environment, spatial entities, contextual properties, and user requirements." .
+
+### Classes ###
+
+saref:Property a owl:Class ;
+    rdfs:label "Property" ;
+    rdfs:comment "A property as defined by the SAREF ontology." .
+
+saref:PropertyValue a owl:Class ;
+    rdfs:label "Property Value" ;
+    rdfs:comment "A value associated with a SAREF property." ;
+    rdfs:subClassOf 
+        [ a owl:Restriction ;
+          owl:onProperty :isLinkedToProperty ;
+          owl:someValuesFrom saref:Property ] ,
+        [ a owl:Restriction ;
+          owl:onProperty :hasTemporalValidityInterval ;
+          owl:cardinality "1"^^xsd:nonNegativeInteger ] .
+
+:SpatialEntity a owl:Class ;
+    rdfs:label "Spatial Entity" ;
+    rdfs:comment "A spatial entity within the navigable environment." .
+
+:NavigableEnvironment a owl:Class ;
+    rdfs:label "Navigable Environment" ;
+    rdfs:comment "The overall environment that can be navigated by users." .
+
+:NavigablePath a owl:Class ;
+    rdfs:label "Navigable Path" ;
+    rdfs:comment "A path that can be navigated." ;
+    rdfs:subClassOf :SpatialEntity ,
+        [ a owl:Restriction ;
+          owl:onProperty :associatedWithPOI ;
+          owl:someValuesFrom :PointOfInterest ] .
+
+:NavigablePolyline a owl:Class ;
+    rdfs:label "Navigable Polyline" ;
+    rdfs:comment "A navigable path represented as a polyline." ;
+    rdfs:subClassOf :NavigablePath .
+
+:PointOfInterest a owl:Class ;
+    rdfs:label "Point of Interest" ;
+    rdfs:comment "A specific point location that someone may find useful or interesting." ;
+    rdfs:subClassOf :SpatialEntity .
+
+:AreaOfInterest a owl:Class ;
+    rdfs:label "Area of Interest" ;
+    rdfs:comment "A specific area that someone may find useful or interesting." ;
+    rdfs:subClassOf :SpatialEntity .
+
+:UserPosition a owl:Class ;
+    rdfs:label "User Position" ;
+    rdfs:comment "The spatial position of a user." .
+
+:Campus a owl:Class ;
+    rdfs:label "Campus" ;
+    rdfs:comment "A university or institutional campus." .
+
+:GeometricType a owl:Class ;
+    rdfs:label "Geometric Type" ;
+    rdfs:comment "The geometric representation type of a spatial entity." .
+
+:ContextualProperty a owl:Class ;
+    rdfs:label "Contextual Property" ;
+    rdfs:comment "A property providing context to a spatial entity." ;
+    rdfs:subClassOf saref:Property .
+
+:CategoricalProperty a owl:Class ;
+    rdfs:label "Categorical Property" ;
+    rdfs:comment "A contextual property that takes qualitative or categorical values." ;
+    rdfs:subClassOf :ContextualProperty .
+
+:AdmissibleValue a owl:Class ;
+    rdfs:label "Admissible Value" ;
+    rdfs:comment "An allowed value for a categorical property." .
+
+:VendingMachine a owl:Class ;
+    rdfs:label "Vending Machine" ;
+    rdfs:comment "A machine that dispenses items." ;
+    rdfs:subClassOf :PointOfInterest .
+
+:BicycleParking a owl:Class ;
+    rdfs:label "Bicycle Parking" ;
+    rdfs:comment "A designated area for parking bicycles." ;
+    rdfs:subClassOf :PointOfInterest .
+
+:TemporalValidityConstraint a owl:Class ;
+    rdfs:label "Temporal Validity Constraint" ;
+    rdfs:comment "A constraint defining when a property or value is valid." .
+
+:TemporalValidityInterval a owl:Class ;
+    rdfs:label "Temporal Validity Interval" ;
+    rdfs:comment "A specific time interval during which a value is valid." .
+
+:RainfallProperty a owl:Class ;
+    rdfs:label "Rainfall Property" ;
+    rdfs:comment "A contextual property representing rainfall." ;
+    rdfs:subClassOf :ContextualProperty .
+
+:PollenLevelProperty a owl:Class ;
+    rdfs:label "Pollen Level Property" ;
+    rdfs:comment "A contextual property representing pollen levels." ;
+    rdfs:subClassOf :ContextualProperty .
+
+:Requirement a owl:Class ;
+    rdfs:label "Requirement" ;
+    rdfs:comment "A requirement specified by a user." .
+
+:TargetProperty a owl:Class ;
+    rdfs:label "Target Property" ;
+    rdfs:comment "The property targeted by a requirement." .
+
+:ExpectedValue a owl:Class ;
+    rdfs:label "Expected Value" ;
+    rdfs:comment "The value expected by a user for a target property." .
+
+:UserProfile a owl:Class ;
+    rdfs:label "User Profile" ;
+    rdfs:comment "A profile representing a user and their requirements." ;
+    rdfs:subClassOf 
+        [ a owl:Restriction ;
+          owl:onProperty :hasRequirement ;
+          owl:someValuesFrom :Requirement ] .
+
+:Condition a owl:Class ;
+    rdfs:label "Condition" ;
+    rdfs:comment "A condition that makes up a requirement." .
+
+:ComposedCondition a owl:Class ;
+    rdfs:label "Composed Condition" ;
+    rdfs:comment "A condition composed of other sub-conditions." ;
+    rdfs:subClassOf :Condition .
+
+:DistanceRequisite a owl:Class ;
+    rdfs:label "Distance Requisite" ;
+    rdfs:comment "A requisite based on distance." .
+
+:DistanceType a owl:Class ;
+    rdfs:label "Distance Type" ;
+    rdfs:comment "The type of distance measurement." .
+
+:ComparisonOperator a owl:Class ;
+    rdfs:label "Comparison Operator" ;
+    rdfs:comment "An operator used to compare values (e.g., EQUAL)." .
+
+:LogicalOperator a owl:Class ;
+    rdfs:label "Logical Operator" ;
+    rdfs:comment "An operator used for logical conjunctions (e.g., AND)." .
+
+:DistanceFactor a owl:Class ;
+    rdfs:label "Distance Factor" ;
+    rdfs:comment "A factor related to distance used in requirements." .
+
+### Object Properties ###
+
+:constitutesEnvironment a owl:ObjectProperty ;
+    rdfs:label "constitutes environment" ;
+    rdfs:comment "Relates a spatial entity to the navigable environment it is part of." ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range :NavigableEnvironment .
+
+:topologicalRelation a owl:ObjectProperty ;
+    rdfs:label "topological relation" ;
+    rdfs:comment "A topological relationship between two spatial entities." ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range :SpatialEntity .
+
+:associatedWithPOI a owl:ObjectProperty ;
+    rdfs:label "associated with POI" ;
+    rdfs:comment "Relates a navigable path to a point of interest." ;
+    rdfs:domain :NavigablePath ;
+    rdfs:range :PointOfInterest .
+
+:passesBy a owl:ObjectProperty ;
+    rdfs:label "passes by" ;
+    rdfs:comment "Relates a navigable polyline to a point of interest it passes by." ;
+    rdfs:domain :NavigablePolyline ;
+    rdfs:range :PointOfInterest .
+
+:passesThrough a owl:ObjectProperty ;
+    rdfs:label "passes through" ;
+    rdfs:comment "Relates a navigable path to an area of interest it passes through." ;
+    rdfs:domain :NavigablePath ;
+    rdfs:range :AreaOfInterest .
+
+:locatedOnCampus a owl:ObjectProperty ;
+    rdfs:label "located on campus" ;
+    rdfs:comment "Relates an entity to the campus it is located on." ;
+    rdfs:range :Campus .
+
+:hasGeometricType a owl:ObjectProperty ;
+    rdfs:label "has geometric type" ;
+    rdfs:comment "Relates a spatial entity to its geometric type." ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range :GeometricType .
+
+:hasContextualProperty a owl:ObjectProperty ;
+    rdfs:label "has contextual property" ;
+    rdfs:comment "Relates a spatial entity to a contextual property." ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range :ContextualProperty .
+
+:hasAdmissibleValue a owl:ObjectProperty ;
+    rdfs:label "has admissible value" ;
+    rdfs:comment "Relates a categorical property to its admissible values." ;
+    rdfs:domain :CategoricalProperty ;
+    rdfs:range :AdmissibleValue .
+
+:isLinkedToProperty a owl:ObjectProperty ;
+    rdfs:label "is linked to property" ;
+    rdfs:comment "Relates a property value to the property it instantiates." ;
+    rdfs:domain saref:PropertyValue ;
+    rdfs:range saref:Property .
+
+:hasTemporalValidityConstraint a owl:ObjectProperty ;
+    rdfs:label "has temporal validity constraint" ;
+    rdfs:comment "Relates a property to its temporal validity constraint." ;
+    rdfs:range :TemporalValidityConstraint .
+
+:hasTemporalValidityInterval a owl:ObjectProperty ;
+    rdfs:label "has temporal validity interval" ;
+    rdfs:comment "Relates a property value to its temporal validity interval." ;
+    rdfs:domain saref:PropertyValue ;
+    rdfs:range :TemporalValidityInterval .
+
+:hasRelevantProperty a owl:ObjectProperty ;
+    rdfs:label "has relevant property" ;
+    rdfs:comment "Relates a requirement to a relevant contextual property." ;
+    rdfs:domain :Requirement ;
+    rdfs:range :ContextualProperty .
+
+:leftOperand a owl:ObjectProperty ;
+    rdfs:label "left operand" ;
+    rdfs:comment "The left operand in a comparison." .
+
+:rightOperand a owl:ObjectProperty ;
+    rdfs:label "right operand" ;
+    rdfs:comment "The right operand in a comparison." .
+
+:hasTargetProperty a owl:ObjectProperty ;
+    rdfs:label "has target property" ;
+    rdfs:comment "Relates an entity to a target property." ;
+    rdfs:range :TargetProperty .
+
+:hasExpectedValue a owl:ObjectProperty ;
+    rdfs:label "has expected value" ;
+    rdfs:comment "Relates an entity to an expected value." ;
+    rdfs:range :ExpectedValue .
+
+:hasRequirement a owl:ObjectProperty ;
+    rdfs:label "has requirement" ;
+    rdfs:comment "Relates a user profile to a requirement." ;
+    rdfs:domain :UserProfile ;
+    rdfs:range :Requirement .
+
+:hasCondition a owl:ObjectProperty ;
+    rdfs:label "has condition" ;
+    rdfs:comment "Relates a requirement to a condition." ;
+    rdfs:domain :Requirement ;
+    rdfs:range :Condition .
+
+:hasSubCondition a owl:ObjectProperty ;
+    rdfs:label "has sub-condition" ;
+    rdfs:comment "Relates a composed condition to its nested sub-conditions." ;
+    rdfs:domain :ComposedCondition ;
+    rdfs:range :Condition .
+
+:hasDistanceType a owl:ObjectProperty ;
+    rdfs:label "has distance type" ;
+    rdfs:comment "Relates a distance requisite to a distance type." ;
+    rdfs:domain :DistanceRequisite ;
+    rdfs:range :DistanceType .
+
+:usesDistanceFactor a owl:ObjectProperty ;
+    rdfs:label "uses distance factor" ;
+    rdfs:comment "Relates a requirement to a distance factor." ;
+    rdfs:domain :Requirement ;
+    rdfs:range :DistanceFactor .
+
+### Datatype Properties ###
+
+:distanceInMeters a owl:DatatypeProperty ;
+    rdfs:label "distance in meters" ;
+    rdfs:comment "A distance measurement in meters." ;
+    rdfs:range xsd:decimal .
+
+:isWheelchairAccessible a owl:DatatypeProperty ;
+    rdfs:label "is wheelchair accessible" ;
+    rdfs:comment "Indicates if an area of interest is wheelchair accessible." ;
+    rdfs:domain :AreaOfInterest ;
+    rdfs:range xsd:boolean .
+
+:capacity a owl:DatatypeProperty ;
+    rdfs:label "capacity" ;
+    rdfs:comment "The capacity of a facility, such as bicycle parking." ;
+    rdfs:domain :BicycleParking ;
+    rdfs:range xsd:integer .
+
+:importance a owl:DatatypeProperty ;
+    rdfs:label "importance" ;
+    rdfs:comment "The importance level of a requirement." ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal .
+
+:flexibility a owl:DatatypeProperty ;
+    rdfs:label "flexibility" ;
+    rdfs:comment "The flexibility level of a requirement." ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal .
+```
+
+### CQ-to-Axiom Mapping Table
+
+| Competency Question | Classes & Properties Used |
+| :--- | :--- |
+| What types of spatial entities constitute the navigable environment modelled by PIIRRITE? | `:SpatialEntity`, `:NavigableEnvironment`, `:constitutesEnvironment` |
+| What topological relations between spatial entities does the ontology represent? | `:SpatialEntity`, `:topologicalRelation` |
+| Is every navigable path associated with at least one point of interest? | `:NavigablePath`, `:PointOfInterest`, `:associatedWithPOI`, `owl:Restriction` |
+| What are the points of interest located within a 100-meter radius of a given user position? | `:UserPosition`, `:PointOfInterest`, `:distanceInMeters` |

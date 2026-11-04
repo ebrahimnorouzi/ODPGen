@@ -1,0 +1,172 @@
+```turtle
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+@prefix :     <http://example.org/odp#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Software Reverse Engineering Ontology" ;
+  rdfs:comment "An ontology for software reverse engineering, focusing on symbol tables and vulnerability detection.".
+
+# Atomic Requirements
+:Symbol a owl:Class ;
+  rdfs:label "Symbol" ;
+  rdfs:comment "A named entity in a binary file, such as a function or variable.".
+
+:BinaryFile a owl:Class ;
+  rdfs:label "BinaryFile" ;
+  rdfs:comment "A file containing executable code.".
+
+:APICall a owl:Class ;
+  rdfs:label "API Call" ;
+  rdfs:comment "A function call to an operating system or library function.".
+
+:NetworkActivity a owl:Class ;
+  rdfs:label "Network Activity" ;
+  rdfs:comment "Communication between the executable and network resources.".
+
+:ControlFlowPattern a owl:Class ;
+  rdfs:label "Control Flow Pattern" ;
+  rdfs:comment "A sequence of instructions that control the flow of execution.".
+
+:Entropy a owl:Class ;
+  rdfs:label "Entropy" ;
+  rdfs:comment "A measure of randomness in a sequence of instructions.".
+
+:DecodeLoop a owl:Class ;
+  rdfs:label "Decode Loop" ;
+  rdfs:comment "A loop used for data obfuscation.".
+
+:FileSystemAbuse a owl:Class ;
+  rdfs:label "File System Abuse" ;
+  rdfs:comment "Unusual or malicious activity involving the file system.".
+
+:MemoryAccess a owl:Class ;
+  rdfs:label "Memory Access" ;
+  rdfs:comment "Reading or writing to memory locations.".
+
+:CryptographicActivity a owl:Class ;
+  rdfs:label "Cryptographic Activity" ;
+  rdfs:comment "Encryption or decryption of data within the executable.".
+
+:ImportedFunction a owl:Class ;
+  rdfs:label "Imported Function" ;
+  rdfs:comment "A function defined in a separate library or module.".
+
+# Properties
+:hasSymbol rdf:Property ;
+  rdfs:domain :BinaryFile ;
+  rdfs:range :Symbol ;
+  rdfs:label "Has Symbol" ;
+  rdfs:comment "A binary file contains one or more symbols.".
+
+:makesAPICall rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range :APICall ;
+  rdfs:label "Makes API Call" ;
+  rdfs:comment "A symbol performs an API call.".
+
+:hasNetworkActivity rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range :NetworkActivity ;
+  rdfs:label "Has Network Activity" ;
+  rdfs:comment "A symbol performs network activity.".
+
+:hasControlFlowPattern rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range :ControlFlowPattern ;
+  rdfs:label "Has Control Flow Pattern" ;
+  rdfs:comment "A symbol follows a specific control flow pattern.".
+
+:hasEntropy rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range xsd:float ;
+  rdfs:label "Has Entropy" ;
+  rdfs:comment "A symbol has a certain level of entropy.".
+
+:hasDecodeLoop rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range :DecodeLoop ;
+  rdfs:label "Has Decode Loop" ;
+  rdfs:comment "A symbol contains a self-referential decode loop.".
+
+:hasFileSystemAbuse rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range :FileSystemAbuse ;
+  rdfs:label "Has File System Abuse" ;
+  rdfs:comment "A symbol exhibits file system abuse.".
+
+:hasMemoryAccess rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range :MemoryAccess ;
+  rdfs:label "Has Memory Access" ;
+  rdfs:comment "A symbol accesses memory.".
+
+:hasCryptographicActivity rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range :CryptographicActivity ;
+  rdfs:label "Has Cryptographic Activity" ;
+  rdfs:comment "A symbol performs cryptographic activity.".
+
+:isImportedFunction rdf:Property ;
+  rdfs:domain :Symbol ;
+  rdfs:range :ImportedFunction ;
+  rdfs:label "Is Imported Function" ;
+  rdfs:comment "A symbol is an imported function.".
+
+# Axioms
+:BinaryFile a owl:Class ;
+:Symbol a owl:Class ;
+:APICall a owl:Class ;
+:NetworkActivity a owl:Class ;
+:ControlFlowPattern a owl:Class ;
+:Entropy a owl:Class ;
+:DecodeLoop a owl:Class ;
+:FileSystemAbuse a owl:Class ;
+:MemoryAccess a owl:Class ;
+:CryptographicActivity a owl:Class ;
+:ImportedFunction a owl:Class ;
+
+:hasSymbol a owl:ObjectProperty ;
+:makesAPICall a owl:ObjectProperty ;
+:hasNetworkActivity a owl:ObjectProperty ;
+:hasControlFlowPattern a owl:ObjectProperty ;
+:hasEntropy a owl:DatatypeProperty ;
+:hasDecodeLoop a owl:ObjectProperty ;
+:hasFileSystemAbuse a owl:ObjectProperty ;
+:hasMemoryAccess a owl:ObjectProperty ;
+:hasCryptographicActivity a owl:ObjectProperty ;
+:isImportedFunction a owl:ObjectProperty ;
+
+:BinaryFile disjoint :Symbol ;
+:Symbol disjoint :APICall ;
+:Symbol disjoint :NetworkActivity ;
+:Symbol disjoint :ControlFlowPattern ;
+:Symbol disjoint :Entropy ;
+:Symbol disjoint :DecodeLoop ;
+:Symbol disjoint :FileSystemAbuse ;
+:Symbol disjoint :MemoryAccess ;
+:Symbol disjoint :CryptographicActivity ;
+:Symbol disjoint :ImportedFunction ;
+
+# Traceability Table
+- Can the ontology detect malicious persistent API calls within the executable? :hasAPICall
+- Is there any suspicious networking activity within the executable? :hasNetworkActivity
+- Are there any indirect control flow patterns in the executable file indicating vulnerable code? :hasControlFlowPattern
+- Can sections of entropy be detected through the ratio of unique opcodes to the total number of instructions in a function? :hasEntropy
+- Can patterns of self-referential decode loops be found to detect data obfuscation? :hasDecodeLoop
+- Can the ontology detect file system abuse? :hasFileSystemAbuse
+- Are there any suspicious jumps into memory in the executable? :hasMemoryAccess
+- Are there any other suspicious API calls contained in the executable file? :isImportedFunction
+- Is there cryptographic activity within the executable that can indicate encryption to hide parts of the program? :hasCryptographicActivity
+- What percentage of the functions in the binary file are imported (i.e., external)? :isImportedFunction
+```
+
+Reasoning summary:
+1. Extracted atomic requirements from the scenario.
+2. Proposed candidate classes and properties per requirement.
+3. Drafted axioms (subclass, domain, range, cardinality, disjointness).
+4. For each CQ, verified which axioms enable answering it; noted gaps.
+5. Added/refined axioms to cover uncovered CQs.
+6. Removed classes/properties not traceable to any requirement or CQ.

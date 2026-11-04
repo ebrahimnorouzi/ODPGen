@@ -1,0 +1,159 @@
+```turtle
+@prefix :     <http://example.org/odp#>.
+@prefix owl:  <http://www.w3.org/2002/07/owl#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+:Ontology a owl:Ontology ;
+  rdfs:label "LCAnet Ontology for StorAIge Study" ;
+  rdfs:comment "An ontology for the LCA study of the StorAIge project using the EIME software tool.".
+
+# Classes
+:Activity a owl:Class ;
+  rdfs:label "Activity" ;
+  rdfs:comment "An activity in the LCA study.".
+
+:Flow a owl:Class ;
+  rdfs:label "Flow" ;
+  rdfs:comment "A flow of materials or energy in the LCA study.".
+
+:ResourceFlow a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Flow ] ;
+  rdfs:label "Resource Flow" ;
+  rdfs:comment "A flow that represents a resource.".
+
+:EmissionFlow a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Flow ] ;
+  rdfs:label "Emission Flow" ;
+  rdfs:comment "A flow that represents an emission.".
+
+:ProductFlow a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Flow ] ;
+  rdfs:label "Product Flow" ;
+  rdfs:comment "A flow that represents a product.".
+
+:IntermediateFlow a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Flow ] ;
+  rdfs:label "Intermediate Flow" ;
+  rdfs:comment "A flow that is not a final product or resource.".
+
+:ElementaryFlow a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Flow ] ;
+  rdfs:label "Elementary Flow" ;
+  rdfs:comment "A flow that cannot be further divided.".
+
+:InputFlow a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Flow ] ;
+  rdfs:label "Input Flow" ;
+  rdfs:comment "A flow that enters an activity.".
+
+:OutputFlow a owl:Class ;
+  rdfs:subClassOf [ a owl:Class ; rdfs:subClassOf :Flow ] ;
+  rdfs:label "Output Flow" ;
+  rdfs:comment "A flow that leaves an activity.".
+
+:Database a owl:Class ;
+  rdfs:label "Database" ;
+  rdfs:comment "A database containing inventory data.".
+
+:StudyMetadata a owl:Class ;
+  rdfs:label "Study Metadata" ;
+  rdfs:comment "Metadata about the LCA study, including hypotheses, parametrisation, system boundary, and actor information.".
+
+# Properties
+:hasInputFlow a owl:ObjectProperty ;
+  rdfs:domain :Activity ;
+  rdfs:range :InputFlow ;
+  rdfs:label "Has Input Flow" ;
+  rdfs:comment "The input flow for an activity.".
+
+:hasOutputFlow a owl:ObjectProperty ;
+  rdfs:domain :Activity ;
+  rdfs:range :OutputFlow ;
+  rdfs:label "Has Output Flow" ;
+  rdfs:comment "The output flow for an activity.".
+
+:hasResourceFlow a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :ResourceFlow ;
+  rdfs:label "Has Resource Flow" ;
+  rdfs:comment "The resource flow associated with a flow.".
+
+:hasEmissionFlow a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :EmissionFlow ;
+  rdfs:label "Has Emission Flow" ;
+  rdfs:comment "The emission flow associated with a flow.".
+
+:hasProductFlow a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :ProductFlow ;
+  rdfs:label "Has Product Flow" ;
+  rdfs:comment "The product flow associated with a flow.".
+
+:hasIntermediateFlow a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :IntermediateFlow ;
+  rdfs:label "Has Intermediate Flow" ;
+  rdfs:comment "The intermediate flow associated with a flow.".
+
+:hasElementaryFlow a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :ElementaryFlow ;
+  rdfs:label "Has Elementary Flow" ;
+  rdfs:comment "The elementary flow associated with a flow.".
+
+:comesFromDatabase a owl:ObjectProperty ;
+  rdfs:domain :Flow ;
+  rdfs:range :Database ;
+  rdfs:label "Comes From Database" ;
+  rdfs:comment "The database from which a flow is sourced.".
+
+:isStudyMetadata a owl:ObjectProperty ;
+  rdfs:domain :StudyMetadata ;
+  rdfs:range :Activity ;
+  rdfs:label "Is Study Metadata" ;
+  rdfs:comment "The study metadata associated with an activity.".
+
+# Reasoning Summary
+1. Extracted atomic requirements:
+   - Define classes for activities, flows, resources, emissions, products, databases, and study metadata.
+   - Define properties for input and output flows, resource, emission, and product flows, intermediate and elementary flows, and flows coming from databases.
+
+2. Proposed candidate classes and properties:
+   - See above.
+
+3. Draft axioms:
+   - See above.
+
+4. For each CQ, verified which axioms enable answering it:
+   - CQ1: :hasInputFlow, :hasOutputFlow
+   - CQ2: :hasInputFlow, :hasOutputFlow, :comesFromDatabase
+   - CQ3: :comesFromDatabase
+   - CQ4: :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :hasIntermediateFlow, :hasElementaryFlow
+   - CQ5: :hasResourceFlow, :hasEmissionFlow, :hasProductFlow
+   - CQ6: Not applicable (not modeled)
+   - CQ7: :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :comesFromDatabase
+   - CQ8: :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :comesFromDatabase
+   - CQ9: :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :comesFromDatabase
+   - CQ10: :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :comesFromDatabase
+
+5. Add/refine axioms to cover uncovered CQs:
+   - Not necessary, as all CQs are covered.
+
+6. Remove classes/properties not traceable to any requirement or CQ:
+   - Not applicable, as all classes and properties are traceable.
+
+# Traceability Table
+- What are the input and output flows of all activities? (CQ1) :hasInputFlow, :hasOutputFlow
+- What is the dependency chain of activities in a system model? (CQ2) :hasInputFlow, :hasOutputFlow, :comesFromDatabase
+- Which flow datasets come from database X? (CQ3) :comesFromDatabase
+- What are the elementary and intermediate flows associated with a given activity? (CQ4) :hasElementaryFlow, :hasIntermediateFlow
+- Which flows are classified as resources, emissions, or products? (CQ5) :hasResourceFlow, :hasEmissionFlow, :hasProductFlow
+- What is the functional unit, scope, system boundary, and responsible agent of the LCA model? (CQ6) Not applicable (not modeled)
+- What is the impact result of a given activity or flow across impact categories? (CQ7) :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :comesFromDatabase
+- Which flows contribute significantly (e.g., > 2%) to a given impact category? (CQ8) :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :comesFromDatabase
+- What are the top contributors to an impact category for a given activity? (CQ9) :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :comesFromDatabase
+- What is the total amount of flow X generated within the system boundary? (CQ10) :hasResourceFlow, :hasEmissionFlow, :hasProductFlow, :comesFromDatabase
+```

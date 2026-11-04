@@ -1,0 +1,293 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix saref: <https://saref.etsi.org/core/> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "PIIRRITE Routing Ontology" ;
+    rdfs:comment "An ontology design pattern for inclusive pedestrian routing, modeling spatial entities, contextual properties, and user requirements." .
+
+### External Classes (SAREF) ###
+
+saref:Property a owl:Class ;
+    rdfs:label "Property" ;
+    rdfs:comment "A SAREF property representing an aspect of an entity." .
+
+saref:PropertyValue a owl:Class ;
+    rdfs:label "Property Value" ;
+    rdfs:comment "A SAREF property value." .
+
+### Classes ###
+
+:SpatialEntity a owl:Class ;
+    rdfs:label "Spatial Entity" ;
+    rdfs:comment "A spatial entity constituting the navigable environment." .
+
+:NavigablePath a owl:Class ;
+    rdfs:subClassOf :SpatialEntity ;
+    rdfs:label "Navigable Path" ;
+    rdfs:comment "A path that can be navigated by a user." .
+
+:NavigablePolyline a owl:Class ;
+    rdfs:subClassOf :NavigablePath ;
+    rdfs:label "Navigable Polyline" ;
+    rdfs:comment "A navigable path represented geometrically as a polyline." .
+
+:PointOfInterest a owl:Class ;
+    rdfs:subClassOf :SpatialEntity ;
+    rdfs:label "Point of Interest" ;
+    rdfs:comment "A specific point location that someone may find useful or interesting." .
+
+:Amenity a owl:Class ;
+    rdfs:subClassOf :PointOfInterest ;
+    rdfs:label "Amenity" ;
+    rdfs:comment "A useful feature or facility within the environment." .
+
+:RestArea a owl:Class ;
+    rdfs:subClassOf :Amenity ;
+    rdfs:label "Rest Area" ;
+    rdfs:comment "A designated quiet or resting space." .
+
+:VendingMachine a owl:Class ;
+    rdfs:subClassOf :Amenity ;
+    rdfs:label "Vending Machine" ;
+    rdfs:comment "A machine dispensing items." .
+
+:Toilet a owl:Class ;
+    rdfs:subClassOf :Amenity ;
+    rdfs:label "Toilet" ;
+    rdfs:comment "A restroom facility." .
+
+:ReceptionBoard a owl:Class ;
+    rdfs:subClassOf :Amenity ;
+    rdfs:label "Reception Board" ;
+    rdfs:comment "An information or reception board." .
+
+:BicycleParking a owl:Class ;
+    rdfs:subClassOf :Amenity ;
+    rdfs:label "Bicycle Parking" ;
+    rdfs:comment "A designated area for parking bicycles." .
+
+:VerticalTransition a owl:Class ;
+    rdfs:subClassOf :SpatialEntity ;
+    rdfs:label "Vertical Transition" ;
+    rdfs:comment "A spatial entity facilitating vertical movement." .
+
+:Stairs a owl:Class ;
+    rdfs:subClassOf :VerticalTransition ;
+    rdfs:label "Stairs" ;
+    rdfs:comment "A set of steps leading from one level to another." .
+
+:Elevator a owl:Class ;
+    rdfs:subClassOf :VerticalTransition ;
+    rdfs:label "Elevator" ;
+    rdfs:comment "A platform or compartment housed in a shaft for raising and lowering people." .
+
+:Escalator a owl:Class ;
+    rdfs:subClassOf :VerticalTransition ;
+    rdfs:label "Escalator" ;
+    rdfs:comment "A moving staircase." .
+
+:Geometry a owl:Class ;
+    rdfs:label "Geometry" ;
+    rdfs:comment "The geometric representation of a spatial entity." .
+
+:ContextualProperty a owl:Class ;
+    rdfs:subClassOf saref:Property ;
+    rdfs:label "Contextual Property" ;
+    rdfs:comment "An environmental or contextual characteristic (e.g., noise, weather, crowdedness)." .
+
+:TemporalInterval a owl:Class ;
+    rdfs:label "Temporal Interval" ;
+    rdfs:comment "A time interval defining the temporal validity of a property value." .
+
+:UserProfile a owl:Class ;
+    rdfs:label "User Profile" ;
+    rdfs:comment "A profile representing a user's routing preferences and constraints." .
+
+:Requirement a owl:Class ;
+    rdfs:label "Requirement" ;
+    rdfs:comment "A specific routing requirement derived from a user profile." .
+
+:Condition a owl:Class ;
+    rdfs:label "Condition" ;
+    rdfs:comment "A condition that evaluates an environmental property against an expected value." .
+
+:ComposedCondition a owl:Class ;
+    rdfs:subClassOf :Condition ;
+    rdfs:label "Composed Condition" ;
+    rdfs:comment "A condition recursively composed of multiple sub-conditions." .
+
+:TargetProperty a owl:Class ;
+    rdfs:label "Target Property" ;
+    rdfs:comment "The specific property targeted by a condition." .
+
+:ExpectedValue a owl:Class ;
+    rdfs:label "Expected Value" ;
+    rdfs:comment "The value expected by the user for a target property." .
+
+:DistanceRequisite a owl:Class ;
+    rdfs:label "Distance Requisite" ;
+    rdfs:comment "A requirement factor based on distance." .
+
+:DistanceType a owl:Class ;
+    rdfs:label "Distance Type" ;
+    rdfs:comment "The type of distance measurement (e.g., radius, path length)." .
+
+:ComparisonOperator a owl:Class ;
+    rdfs:label "Comparison Operator" ;
+    rdfs:comment "An operator used to compare an expected value with an actual property value." .
+
+:LogicalOperator a owl:Class ;
+    rdfs:label "Logical Operator" ;
+    rdfs:comment "A logical operator used to combine conditions in a composed condition." .
+
+### Object Properties ###
+
+:hasTopologicalRelation a owl:ObjectProperty ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range :SpatialEntity ;
+    rdfs:label "has topological relation" ;
+    rdfs:comment "Relates two spatial entities topologically." .
+
+:hasGeometry a owl:ObjectProperty ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range :Geometry ;
+    rdfs:label "has geometry" ;
+    rdfs:comment "Links a spatial entity to its geometric representation." .
+
+:passesBy a owl:ObjectProperty ;
+    rdfs:domain :NavigablePath ;
+    rdfs:range :PointOfInterest ;
+    rdfs:label "passes by" ;
+    rdfs:comment "Indicates that a navigable path passes by a point of interest." .
+
+:passesThrough a owl:ObjectProperty ;
+    rdfs:domain :NavigablePath ;
+    rdfs:range :SpatialEntity ;
+    rdfs:label "passes through" ;
+    rdfs:comment "Indicates that a navigable path passes through a spatial area." .
+
+:hasPropertyValue a owl:ObjectProperty ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range saref:PropertyValue ;
+    rdfs:label "has property value" ;
+    rdfs:comment "Links a spatial entity to a specific property value." .
+
+:isPropertyOf a owl:ObjectProperty ;
+    rdfs:domain saref:PropertyValue ;
+    rdfs:range saref:Property ;
+    rdfs:label "is property of" ;
+    rdfs:comment "Links a property value to the property it instantiates." .
+
+:hasTemporalValidity a owl:ObjectProperty ;
+    rdfs:domain saref:PropertyValue ;
+    rdfs:range :TemporalInterval ;
+    rdfs:label "has temporal validity" ;
+    rdfs:comment "Links a property value to its temporal validity interval." .
+
+:hasRequirement a owl:ObjectProperty ;
+    rdfs:domain :UserProfile ;
+    rdfs:range :Requirement ;
+    rdfs:label "has requirement" ;
+    rdfs:comment "Links a user profile to a routing requirement." .
+
+:hasCondition a owl:ObjectProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range :Condition ;
+    rdfs:label "has condition" ;
+    rdfs:comment "Links a requirement to a condition." .
+
+:hasSubCondition a owl:ObjectProperty ;
+    rdfs:domain :ComposedCondition ;
+    rdfs:range :Condition ;
+    rdfs:label "has sub-condition" ;
+    rdfs:comment "Links a composed condition to its constituent sub-conditions." .
+
+:hasTargetProperty a owl:ObjectProperty ;
+    rdfs:domain :Condition ;
+    rdfs:range :TargetProperty ;
+    rdfs:label "has target property" ;
+    rdfs:comment "Links a condition to the property it targets." .
+
+:hasExpectedValue a owl:ObjectProperty ;
+    rdfs:domain :Condition ;
+    rdfs:range :ExpectedValue ;
+    rdfs:label "has expected value" ;
+    rdfs:comment "Links a condition to the user's expected value." .
+
+:hasDistanceRequisite a owl:ObjectProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range :DistanceRequisite ;
+    rdfs:label "has distance requisite" ;
+    rdfs:comment "Links a requirement to a distance requisite." .
+
+:hasDistanceType a owl:ObjectProperty ;
+    rdfs:domain :DistanceRequisite ;
+    rdfs:range :DistanceType ;
+    rdfs:label "has distance type" ;
+    rdfs:comment "Links a distance requisite to its specific distance type." .
+
+:hasComparisonOperator a owl:ObjectProperty ;
+    rdfs:domain :Condition ;
+    rdfs:range :ComparisonOperator ;
+    rdfs:label "has comparison operator" ;
+    rdfs:comment "Links a condition to its comparison operator." .
+
+:hasLogicalOperator a owl:ObjectProperty ;
+    rdfs:domain :ComposedCondition ;
+    rdfs:range :LogicalOperator ;
+    rdfs:label "has logical operator" ;
+    rdfs:comment "Links a composed condition to its logical operator." .
+
+### Datatype Properties ###
+
+:capacity a owl:DatatypeProperty ;
+    rdfs:domain :BicycleParking ;
+    rdfs:range xsd:integer ;
+    rdfs:label "capacity" ;
+    rdfs:comment "The numerical capacity of a bicycle parking facility." .
+
+:isWheelchairAccessible a owl:DatatypeProperty ;
+    rdfs:domain :SpatialEntity ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is wheelchair accessible" ;
+    rdfs:comment "Boolean flag indicating if a spatial entity is accessible by wheelchair." .
+
+:importance a owl:DatatypeProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "importance" ;
+    rdfs:comment "The degree of importance of a requirement." .
+
+:flexibility a owl:DatatypeProperty ;
+    rdfs:domain :Requirement ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "flexibility" ;
+    rdfs:comment "The degree of flexibility of a requirement." .
+```
+
+### Validation Report
+1. **Turtle syntax is valid**: PASS (All statements are correctly terminated with dots, and semicolons are used properly for predicate-object lists).
+2. **All prefixes used in the body are declared at the top**: PASS (`owl:`, `rdf:`, `rdfs:`, `xsd:`, `saref:`, and `:` are all declared and used).
+3. **Every property with a domain or range declaration uses only classes defined in this ontology or well-known external vocabularies**: PASS (All domains and ranges map to classes defined in the schema or the imported `saref:` namespace).
+4. **No two classes or properties are defined with contradictory restrictions**: PASS (The hierarchy is simple and strictly additive; no disjointness or contradictory domain/range axioms exist).
+5. **Every CQ is traceable to at least one class or property in the ontology**: PASS (Concepts like `ComposedCondition`, `DistanceRequisite`, `BicycleParking`, `capacity`, `TemporalInterval`, and `isWheelchairAccessible` directly answer the CQs).
+6. **No concept appears in the ontology that is not grounded in the scenario or CQs**: PASS (Every class and property is directly extracted from the provided text and competency questions).
+
+### Scope Report
+**a) Requirements from the scenario that are covered:**
+- **Spatial Entities & Topology:** Covered via `SpatialEntity`, `NavigablePath`, `NavigablePolyline`, `hasTopologicalRelation`, `passesBy`, and `passesThrough`.
+- **Points of Interest & Amenities:** Covered via `PointOfInterest`, `Amenity`, and specific subclasses (`RestArea`, `VendingMachine`, `Toilet`, `ReceptionBoard`, `BicycleParking`) along with the `capacity` property.
+- **Physical Accessibility:** Covered via `VerticalTransition` (and subclasses `Stairs`, `Elevator`, `Escalator`) and the `isWheelchairAccessible` datatype property.
+- **Contextual Properties & Temporal Validity:** Covered via `ContextualProperty`, integration with `saref:Property` and `saref:PropertyValue`, and `TemporalInterval`.
+- **User Profiles & Requirements:** Covered via `UserProfile`, `Requirement`, `Condition`, `ComposedCondition`, `TargetProperty`, `ExpectedValue`, `importance`, and `flexibility`.
+- **Operators & Distance:** Covered via `ComparisonOperator`, `LogicalOperator`, `DistanceRequisite`, and `DistanceType`.
+
+**b) Scenario concepts explicitly excluded and why:**
+- **Individual Instances (e.g., Anna, Sacha, EQUAL, AND, 1 May 2026):** Excluded to strictly comply with the modeling constraint "Do NOT create individual instances; output schema axioms only." The CQs mention `piirrite:EQUAL` and `piirrite:AND` as instances of operators, but they are omitted here in favor of defining their parent classes (`ComparisonOperator`, `LogicalOperator`).
+- **Specific Weather/Pollen Data:** Excluded because specific weather events (e.g., "rained past two days") or pollen levels are operational instance data (A-Box), not schema-level (T-Box) definitions. The schema supports them via `ContextualProperty` and `TemporalInterval`.
+- **Routing Algorithms/Logic:** Excluded as OWL is used for knowledge representation (schema), not for procedural routing logic or calculating the "average flexibility" (which is a query/application-level operation).

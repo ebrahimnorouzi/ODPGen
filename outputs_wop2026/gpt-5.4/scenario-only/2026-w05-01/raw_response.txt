@@ -1,0 +1,249 @@
+1. ```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Prompting solution design and prior chat analysis ontology pattern" ;
+    rdfs:comment "An ontology design pattern for representing tasks solved by prompting foundation models, including prompting techniques, data modalities, constraints, model families and variants, and analysis of prior chats for adoption frequencies, conversation length statistics, and prompt-response retrieval." .
+
+:Person a owl:Class ;
+    rdfs:label "Person" ;
+    rdfs:comment "A human agent involved in designing or analyzing prompting-based solutions." .
+
+:Task a owl:Class ;
+    rdfs:label "Task" ;
+    rdfs:comment "A task to be solved by prompting a foundation model." .
+
+:FoundationModel a owl:Class ;
+    rdfs:label "Foundation model" ;
+    rdfs:comment "A foundation model used or considered for solving a task." .
+
+:PromptingTechnique a owl:Class ;
+    rdfs:label "Prompting technique" ;
+    rdfs:comment "A prompting technique that can be used with a foundation model for a task." .
+
+:DataModality a owl:Class ;
+    rdfs:label "Data modality" ;
+    rdfs:comment "A specific data modality involved in a task." .
+
+:Constraint a owl:Class ;
+    rdfs:label "Constraint" ;
+    rdfs:comment "A constraint relevant to task solving or model selection." .
+
+:ModelArchitectureConstraint a owl:Class ;
+    rdfs:label "Model architecture constraint" ;
+    rdfs:comment "A constraint concerning model architecture." ;
+    rdfs:subClassOf :Constraint .
+
+:Resource a owl:Class ;
+    rdfs:label "Resource" ;
+    rdfs:comment "An available resource on which model architecture constraints depend." .
+
+:ModelFamily a owl:Class ;
+    rdfs:label "Model family" ;
+    rdfs:comment "A family of related foundation models explored for experimentation." .
+
+:ModelVariant a owl:Class ;
+    rdfs:label "Model variant" ;
+    rdfs:comment "A variant of a model family or model considered during experimentation." .
+
+:ModelEvolution a owl:Class ;
+    rdfs:label "Model evolution" ;
+    rdfs:comment "An evolution of a model family or model considered during experimentation." .
+
+:PriorChatAnalysis a owl:Class ;
+    rdfs:label "Prior chat analysis" ;
+    rdfs:comment "An analysis based on prior chats used to design a prompting solution." .
+
+:Chat a owl:Class ;
+    rdfs:label "Chat" ;
+    rdfs:comment "A prior conversation that can be analyzed for usage patterns and outcomes." .
+
+:Prompt a owl:Class ;
+    rdfs:label "Prompt" ;
+    rdfs:comment "A prompt used in a chat or for experimentation." .
+
+:Response a owl:Class ;
+    rdfs:label "Response" ;
+    rdfs:comment "A response returned for a prompt." .
+
+:UsagePattern a owl:Class ;
+    rdfs:label "Usage pattern" ;
+    rdfs:comment "A pattern derived from prior chat usage, such as adoption frequencies or conversation length statistics." .
+
+:AdoptionFrequency a owl:Class ;
+    rdfs:label "Adoption frequency" ;
+    rdfs:comment "A usage pattern describing how frequently models or prompting techniques are adopted for tasks." ;
+    rdfs:subClassOf :UsagePattern .
+
+:ConversationLengthStatistic a owl:Class ;
+    rdfs:label "Conversation length statistic" ;
+    rdfs:comment "A usage pattern describing statistics on conversation length." ;
+    rdfs:subClassOf :UsagePattern .
+
+:Person owl:disjointWith :Task, :FoundationModel, :PromptingTechnique, :DataModality, :Constraint, :Resource, :PriorChatAnalysis, :Chat, :Prompt, :Response, :UsagePattern .
+:Task owl:disjointWith :FoundationModel, :PromptingTechnique, :DataModality, :Constraint, :Resource, :PriorChatAnalysis, :Chat, :Prompt, :Response, :UsagePattern .
+:FoundationModel owl:disjointWith :PromptingTechnique, :DataModality, :Constraint, :Resource, :PriorChatAnalysis, :Chat, :Prompt, :Response, :UsagePattern .
+:Prompt owl:disjointWith :Response .
+:Chat owl:disjointWith :PriorChatAnalysis, :UsagePattern .
+
+:needsPromptingTechnique a owl:ObjectProperty ;
+    rdfs:label "needs prompting technique" ;
+    rdfs:comment "Relates a task to a prompting technique suitable for solving it." ;
+    rdfs:domain :Task ;
+    rdfs:range :PromptingTechnique .
+
+:usesFoundationModel a owl:ObjectProperty ;
+    rdfs:label "uses foundation model" ;
+    rdfs:comment "Relates a task to a foundation model used to solve it." ;
+    rdfs:domain :Task ;
+    rdfs:range :FoundationModel .
+
+:hasDataModality a owl:ObjectProperty ;
+    rdfs:label "has data modality" ;
+    rdfs:comment "Relates a task to the specific data modality it involves." ;
+    rdfs:domain :Task ;
+    rdfs:range :DataModality .
+
+:hasConstraint a owl:ObjectProperty ;
+    rdfs:label "has constraint" ;
+    rdfs:comment "Relates a task to a constraint to which it is subject." ;
+    rdfs:domain :Task ;
+    rdfs:range :Constraint .
+
+:dependsOnResource a owl:ObjectProperty ;
+    rdfs:label "depends on resource" ;
+    rdfs:comment "Relates a model architecture constraint to the available resources on which it depends." ;
+    rdfs:domain :ModelArchitectureConstraint ;
+    rdfs:range :Resource .
+
+:exploresModelFamily a owl:ObjectProperty ;
+    rdfs:label "explores model family" ;
+    rdfs:comment "Relates a person to a model family explored for prompt experimentation." ;
+    rdfs:domain :Person ;
+    rdfs:range :ModelFamily .
+
+:exploresModelVariant a owl:ObjectProperty ;
+    rdfs:label "explores model variant" ;
+    rdfs:comment "Relates a person to a model variant explored for prompt experimentation." ;
+    rdfs:domain :Person ;
+    rdfs:range :ModelVariant .
+
+:exploresModelEvolution a owl:ObjectProperty ;
+    rdfs:label "explores model evolution" ;
+    rdfs:comment "Relates a person to a model evolution explored for prompt experimentation." ;
+    rdfs:domain :Person ;
+    rdfs:range :ModelEvolution .
+
+:experimentsWithPrompt a owl:ObjectProperty ;
+    rdfs:label "experiments with prompt" ;
+    rdfs:comment "Relates a person to a prompt used in experimentation." ;
+    rdfs:domain :Person ;
+    rdfs:range :Prompt .
+
+:reliesOnAnalysis a owl:ObjectProperty ;
+    rdfs:label "relies on analysis" ;
+    rdfs:comment "Relates a person to an analysis of prior chats used to design a solution." ;
+    rdfs:domain :Person ;
+    rdfs:range :PriorChatAnalysis .
+
+:analyzesChat a owl:ObjectProperty ;
+    rdfs:label "analyzes chat" ;
+    rdfs:comment "Relates a prior chat analysis to a chat that it analyzes." ;
+    rdfs:domain :PriorChatAnalysis ;
+    rdfs:range :Chat .
+
+:identifiesAdoptionFrequency a owl:ObjectProperty ;
+    rdfs:label "identifies adoption frequency" ;
+    rdfs:comment "Relates a prior chat analysis to an adoption frequency it identifies." ;
+    rdfs:domain :PriorChatAnalysis ;
+    rdfs:range :AdoptionFrequency .
+
+:identifiesConversationLengthStatistic a owl:ObjectProperty ;
+    rdfs:label "identifies conversation length statistic" ;
+    rdfs:comment "Relates a prior chat analysis to a conversation length statistic it identifies." ;
+    rdfs:domain :PriorChatAnalysis ;
+    rdfs:range :ConversationLengthStatistic .
+
+:forTask a owl:ObjectProperty ;
+    rdfs:label "for task" ;
+    rdfs:comment "Relates an adoption frequency to the task for which adoption is measured." ;
+    rdfs:domain :AdoptionFrequency ;
+    rdfs:range :Task .
+
+:forModel a owl:ObjectProperty ;
+    rdfs:label "for model" ;
+    rdfs:comment "Relates an adoption frequency to the foundation model whose adoption is measured." ;
+    rdfs:domain :AdoptionFrequency ;
+    rdfs:range :FoundationModel .
+
+:forPromptingTechnique a owl:ObjectProperty ;
+    rdfs:label "for prompting technique" ;
+    rdfs:comment "Relates an adoption frequency to the prompting technique whose adoption is measured." ;
+    rdfs:domain :AdoptionFrequency ;
+    rdfs:range :PromptingTechnique .
+
+:hasPrompt a owl:ObjectProperty ;
+    rdfs:label "has prompt" ;
+    rdfs:comment "Relates a chat to a prompt occurring in it." ;
+    rdfs:domain :Chat ;
+    rdfs:range :Prompt .
+
+:hasResponse a owl:ObjectProperty ;
+    rdfs:label "has response" ;
+    rdfs:comment "Relates a chat to a response occurring in it." ;
+    rdfs:domain :Chat ;
+    rdfs:range :Response .
+
+:respondsToPrompt a owl:ObjectProperty ;
+    rdfs:label "responds to prompt" ;
+    rdfs:comment "Relates a response to the specific prompt it answers." ;
+    rdfs:domain :Response ;
+    rdfs:range :Prompt .
+
+:retrievesResponseToPrompt a owl:ObjectProperty ;
+    rdfs:label "retrieves response to prompt" ;
+    rdfs:comment "Relates a prior chat analysis to a response retrieved for a specific prompt." ;
+    rdfs:domain :PriorChatAnalysis ;
+    rdfs:range :Response .
+
+:conversationLengthValue a owl:DatatypeProperty ;
+    rdfs:label "conversation length value" ;
+    rdfs:comment "A numeric value representing a conversation length statistic." ;
+    rdfs:domain :ConversationLengthStatistic ;
+    rdfs:range xsd:decimal .
+
+:adoptionFrequencyValue a owl:DatatypeProperty ;
+    rdfs:label "adoption frequency value" ;
+    rdfs:comment "A numeric value representing how frequently a model or prompting technique is adopted." ;
+    rdfs:domain :AdoptionFrequency ;
+    rdfs:range xsd:decimal .
+```
+
+2. **Documentation**
+
+**Intent:**  
+This pattern models how a person designs a prompting-based solution for a task using foundation models, prompting techniques, task constraints, and prior chat analysis.
+
+**Covered requirements:**
+- A person needs to solve a task by prompting a foundation model.
+- A task needs a prompting technique suitable for it.
+- A task involves a specific data modality.
+- A task is subject to constraints.
+- A model architecture constraint depends on available resources.
+- A person may explore model families, variants, and evolutions to experiment with prompts.
+- A person relies on analysis of prior chats to design the solution.
+- Prior chat analysis can identify which models are most frequently adopted for different tasks.
+- Prior chat analysis can identify which prompting techniques are most frequently adopted for different tasks.
+- Prior chat analysis can capture statistics on conversation length.
+- Prior chat analysis can support retrieving responses to specific prompts.
+
+**Known assumptions and exclusions:**
+- “Mike” is generalized as `:Person`; no individual instances are created.
+- The pattern does not model detailed prompt contents, response contents, timestamps, or full conversation sequencing, since these are not explicitly required.
+- Model family, variant, and evolution are represented as separate classes without additional hierarchy because the scenario only states that they may be explored.
+- Adoption frequency and conversation length are modeled as usage-pattern classes with numeric values, without prescribing a specific statistical method.
+- “Suitable for the task” is represented structurally through `:needsPromptingTechnique` rather than with a separate suitability class or rule.

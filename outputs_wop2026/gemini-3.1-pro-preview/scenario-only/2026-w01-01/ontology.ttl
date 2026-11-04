@@ -1,0 +1,182 @@
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Life Cycle Assessment (LCA) Study Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern representing a Life Cycle Assessment (LCA) study, including its project context, evaluated prototypes, software tools, data sources, methodologies, resulting data, and metadata." .
+
+### Classes ###
+
+:LCAStudy a owl:Class ;
+    rdfs:label "LCA Study" ;
+    rdfs:comment "A Life Cycle Assessment study aimed at evaluating the environmental impact of a product or prototype." .
+
+:Project a owl:Class ;
+    rdfs:label "Project" ;
+    rdfs:comment "A collaborative enterprise or research project within which the LCA study is conducted." .
+
+:Prototype a owl:Class ;
+    rdfs:label "Prototype" ;
+    rdfs:comment "An early sample, model, or release of a product built to test a concept or process, evaluated by the LCA study." .
+
+:Technology a owl:Class ;
+    rdfs:label "Technology" ;
+    rdfs:comment "The underlying technology upon which a prototype is based." .
+
+:SoftwareTool a owl:Class ;
+    rdfs:label "Software Tool" ;
+    rdfs:comment "A software application used to conduct the LCA study." .
+
+:BillOfMaterials a owl:Class ;
+    rdfs:label "Bill of Materials" ;
+    rdfs:comment "A comprehensive inventory of the raw materials, assemblies, subassemblies, parts and components needed to manufacture a product." .
+
+:ElectronicComponent a owl:Class ;
+    rdfs:label "Electronic Component" ;
+    rdfs:comment "An individual electronic part or component described within a Bill of Materials." .
+
+:Database a owl:Class ;
+    rdfs:label "Database" ;
+    rdfs:comment "A structured set of data held in a computer, used as a source for inventory data." .
+
+:Methodology a owl:Class ;
+    rdfs:label "Methodology" ;
+    rdfs:comment "A system of methods used in a particular area of study or activity, specifically for environmental impact calculations." .
+
+:LCAData a owl:Class ;
+    rdfs:label "LCA Data" ;
+    rdfs:comment "Data produced as a result of the LCA study." .
+
+:InventoryData a owl:Class ;
+    rdfs:subClassOf :LCAData ;
+    rdfs:label "Inventory Data" ;
+    rdfs:comment "Data concerning the inputs and outputs of materials and energy associated with a product system." ;
+    owl:disjointWith :ImpactData .
+
+:ImpactData a owl:Class ;
+    rdfs:subClassOf :LCAData ;
+    rdfs:label "Impact Data" ;
+    rdfs:comment "Data representing the calculated environmental impacts of a product system." .
+
+:StudyMetadata a owl:Class ;
+    rdfs:label "Study Metadata" ;
+    rdfs:comment "A collection of contextual information and parameters defining the scope and assumptions of the LCA study." .
+
+:Hypothesis a owl:Class ;
+    rdfs:label "Hypothesis" ;
+    rdfs:comment "A proposed explanation or assumption made as a starting point for the LCA study." .
+
+:Parametrisation a owl:Class ;
+    rdfs:label "Parametrisation" ;
+    rdfs:comment "The set of parameters and variables defined for the LCA study." .
+
+:SystemBoundary a owl:Class ;
+    rdfs:label "System Boundary" ;
+    rdfs:comment "The definition of which unit processes are included within the LCA study." .
+
+:ActorInformation a owl:Class ;
+    rdfs:label "Actor Information" ;
+    rdfs:comment "Information regarding the individuals, organizations, or stakeholders involved in the LCA study." .
+
+### Object Properties ###
+
+:conductedWithinProject a owl:ObjectProperty ;
+    rdfs:label "conducted within project" ;
+    rdfs:comment "Relates an LCA study to the broader project it belongs to." ;
+    rdfs:domain :LCAStudy ;
+    rdfs:range :Project .
+
+:evaluatesPrototype a owl:ObjectProperty ;
+    rdfs:label "evaluates prototype" ;
+    rdfs:comment "Relates an LCA study to the prototype whose environmental impact is being evaluated." ;
+    rdfs:domain :LCAStudy ;
+    rdfs:range :Prototype .
+
+:basedOnTechnology a owl:ObjectProperty ;
+    rdfs:label "based on technology" ;
+    rdfs:comment "Relates a prototype to its underlying technology." ;
+    rdfs:domain :Prototype ;
+    rdfs:range :Technology .
+
+:conductedUsingSoftware a owl:ObjectProperty ;
+    rdfs:label "conducted using software" ;
+    rdfs:comment "Relates an LCA study to the software tool used to perform it." ;
+    rdfs:domain :LCAStudy ;
+    rdfs:range :SoftwareTool .
+
+:connectedToBillOfMaterials a owl:ObjectProperty ;
+    rdfs:label "connected to bill of materials" ;
+    rdfs:comment "Relates a software tool to the Bill of Materials it uses for component data." ;
+    rdfs:domain :SoftwareTool ;
+    rdfs:range :BillOfMaterials .
+
+:describesComponent a owl:ObjectProperty ;
+    rdfs:label "describes component" ;
+    rdfs:comment "Relates a Bill of Materials to the electronic components it lists." ;
+    rdfs:domain :BillOfMaterials ;
+    rdfs:range :ElectronicComponent .
+
+:sourcedFromDatabase a owl:ObjectProperty ;
+    rdfs:label "sourced from database" ;
+    rdfs:comment "Relates inventory data to the database from which it was extracted." ;
+    rdfs:domain :InventoryData ;
+    rdfs:range :Database .
+
+:usesMethodology a owl:ObjectProperty ;
+    rdfs:label "uses methodology" ;
+    rdfs:comment "Relates an LCA study to the methodology used for environmental impact calculations." ;
+    rdfs:domain :LCAStudy ;
+    rdfs:range :Methodology .
+
+:producesInventoryData a owl:ObjectProperty ;
+    rdfs:label "produces inventory data" ;
+    rdfs:comment "Relates an LCA study to the inventory data it generates." ;
+    rdfs:domain :LCAStudy ;
+    rdfs:range :InventoryData .
+
+:producesImpactData a owl:ObjectProperty ;
+    rdfs:label "produces impact data" ;
+    rdfs:comment "Relates an LCA study to the environmental impact data it generates." ;
+    rdfs:domain :LCAStudy ;
+    rdfs:range :ImpactData .
+
+:hasStudyMetadata a owl:ObjectProperty ;
+    rdfs:label "has study metadata" ;
+    rdfs:comment "Relates an LCA study to its associated metadata." ;
+    rdfs:domain :LCAStudy ;
+    rdfs:range :StudyMetadata .
+
+:includesHypothesis a owl:ObjectProperty ;
+    rdfs:label "includes hypothesis" ;
+    rdfs:comment "Relates study metadata to a specific hypothesis." ;
+    rdfs:domain :StudyMetadata ;
+    rdfs:range :Hypothesis .
+
+:includesParametrisation a owl:ObjectProperty ;
+    rdfs:label "includes parametrisation" ;
+    rdfs:comment "Relates study metadata to its parametrisation details." ;
+    rdfs:domain :StudyMetadata ;
+    rdfs:range :Parametrisation .
+
+:includesSystemBoundary a owl:ObjectProperty ;
+    rdfs:label "includes system boundary" ;
+    rdfs:comment "Relates study metadata to the defined system boundaries." ;
+    rdfs:domain :StudyMetadata ;
+    rdfs:range :SystemBoundary .
+
+:includesActorInformation a owl:ObjectProperty ;
+    rdfs:label "includes actor information" ;
+    rdfs:comment "Relates study metadata to information about the actors involved." ;
+    rdfs:domain :StudyMetadata ;
+    rdfs:range :ActorInformation .
+
+### Datatype Properties ###
+
+:databaseVersion a owl:DatatypeProperty ;
+    rdfs:label "database version" ;
+    rdfs:comment "Specifies the version string of a database." ;
+    rdfs:domain :Database ;
+    rdfs:range xsd:string .

@@ -1,0 +1,169 @@
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+    rdfs:label "Climate Dataset Ontology Design Pattern" ;
+    rdfs:comment "An ontology design pattern representing the publication of a dataset derived from a process, featuring independent and dependent variables, spatial and temporal coverage, and individual data points." .
+
+### Classes ###
+
+:Dataset a owl:Class ;
+    rdfs:label "Dataset" ;
+    rdfs:comment "A collection of data published as a single unit, covering a specific region and time period." ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :hasIndependentVariable ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] ,
+    [
+        a owl:Restriction ;
+        owl:onProperty :hasDependentVariable ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] .
+
+:DataPoint a owl:Class ;
+    rdfs:label "Data Point" ;
+    rdfs:comment "A single record or value within the dataset, corresponding to a specific time." ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty :hasTimeReference ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] ,
+    [
+        a owl:Restriction ;
+        owl:onProperty :hasNumericValue ;
+        owl:cardinality "1"^^xsd:nonNegativeInteger
+    ] .
+
+:Process a owl:Class ;
+    rdfs:label "Process" ;
+    rdfs:comment "A series of actions, such as observations or simulations, taken to derive the dataset." .
+
+:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "A process involving the measurement or viewing of phenomena." ;
+    rdfs:subClassOf :Process .
+
+:Simulation a owl:Class ;
+    rdfs:label "Simulation" ;
+    rdfs:comment "A process involving the imitation of the operation of a real-world process or system." ;
+    rdfs:subClassOf :Process .
+
+:Aggregation a owl:Class ;
+    rdfs:label "Aggregation" ;
+    rdfs:comment "A process involving the collection or gathering of data together." ;
+    rdfs:subClassOf :Process .
+
+:Region a owl:Class ;
+    rdfs:label "Region" ;
+    rdfs:comment "A spatial area or geographic extent (e.g., the whole of Italy)." .
+
+:TimePeriod a owl:Class ;
+    rdfs:label "Time Period" ;
+    rdfs:comment "A length or portion of time (e.g., a day, a year)." .
+
+:Variable a owl:Class ;
+    rdfs:label "Variable" ;
+    rdfs:comment "A characteristic, number, or quantity that can be measured or counted." .
+
+:IndependentVariable a owl:Class ;
+    rdfs:label "Independent Variable" ;
+    rdfs:comment "A variable whose variation does not depend on that of another (e.g., time)." ;
+    rdfs:subClassOf :Variable .
+
+:DependentVariable a owl:Class ;
+    rdfs:label "Dependent Variable" ;
+    rdfs:comment "A variable whose value depends on that of another (e.g., temperature)." ;
+    rdfs:subClassOf :Variable .
+
+:TimeVariable a owl:Class ;
+    rdfs:label "Time Variable" ;
+    rdfs:comment "A specific independent variable representing time." ;
+    rdfs:subClassOf :IndependentVariable .
+
+:TemperatureVariable a owl:Class ;
+    rdfs:label "Temperature Variable" ;
+    rdfs:comment "A specific dependent variable representing temperature." ;
+    rdfs:subClassOf :DependentVariable .
+
+### Disjointness ###
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :DataPoint :Dataset :Process :Region :TimePeriod :Variable ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :DependentVariable :IndependentVariable ) .
+
+### Object Properties ###
+
+:isDerivedFromProcess a owl:ObjectProperty ;
+    rdfs:label "is derived from process" ;
+    rdfs:comment "Links a dataset to the process used to create or derive it." ;
+    rdfs:domain :Dataset ;
+    rdfs:range :Process .
+
+:hasIndependentVariable a owl:ObjectProperty ;
+    rdfs:label "has independent variable" ;
+    rdfs:comment "Links a dataset to its independent variable." ;
+    rdfs:domain :Dataset ;
+    rdfs:range :IndependentVariable .
+
+:hasDependentVariable a owl:ObjectProperty ;
+    rdfs:label "has dependent variable" ;
+    rdfs:comment "Links a dataset to its dependent variable." ;
+    rdfs:domain :Dataset ;
+    rdfs:range :DependentVariable .
+
+:coversRegion a owl:ObjectProperty ;
+    rdfs:label "covers region" ;
+    rdfs:comment "Links a dataset to the spatial region it applies to." ;
+    rdfs:domain :Dataset ;
+    rdfs:range :Region .
+
+:coversTimePeriod a owl:ObjectProperty ;
+    rdfs:label "covers time period" ;
+    rdfs:comment "Links a dataset to its overall temporal coverage." ;
+    rdfs:domain :Dataset ;
+    rdfs:range :TimePeriod .
+
+:containsDataPoint a owl:ObjectProperty ;
+    rdfs:label "contains data point" ;
+    rdfs:comment "Links a dataset to the individual data points it contains." ;
+    rdfs:domain :Dataset ;
+    rdfs:range :DataPoint .
+
+:hasTimeReference a owl:ObjectProperty ;
+    rdfs:label "has time reference" ;
+    rdfs:comment "Links a data point to its specific time period (e.g., a specific day)." ;
+    rdfs:domain :DataPoint ;
+    rdfs:range :TimePeriod .
+
+### Datatype Properties ###
+
+:hasNumericValue a owl:DatatypeProperty ;
+    rdfs:label "has numeric value" ;
+    rdfs:comment "Links a data point to its actual measured or derived numeric value." ;
+    rdfs:domain :DataPoint ;
+    rdfs:range xsd:decimal .
+```
+
+### Documentation
+
+**Intent:**
+This Ontology Design Pattern (ODP) models the structure and provenance of a time-series dataset that records a single dependent variable (such as temperature) against an independent variable (time) over a fixed spatial region, derived from specific data-generating processes.
+
+**Covered requirements:**
+*   Represent a published dataset covering a specific spatial region (e.g., Italy) and an overall time period (e.g., year 2024).
+*   Capture the provenance of the dataset as being derived from a process, which may include observations, simulations, or aggregations.
+*   Model the dataset's schema as having exactly one independent variable (time) and one dependent variable (temperature).
+*   Represent the dataset's granularity as a collection of individual data points, each having a single numeric value per time reference (e.g., daily).
+
+**Known assumptions and exclusions:**
+*   **Assumption:** The spatial region is constant for the entire dataset (as opposed to a spatial grid). Therefore, individual data points do not need their own spatial reference; they inherit the region from the parent dataset.
+*   **Assumption:** The dependent variable's value is numeric and is modeled using `xsd:decimal`.
+*   **Exclusion:** Specific instances (like "Italy", "2024", or actual temperature values) are excluded, as this is strictly a schema-level pattern.
+*   **Exclusion:** Complex spatial grid representations are explicitly excluded as per the scenario's constraints.

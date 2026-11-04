@@ -1,0 +1,387 @@
+1. The complete Turtle ontology wrapped in a ```turtle ... ``` code block.
+
+```turtle
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Reverse Engineering Symbol and Behavior ODP" ;
+  rdfs:comment "A minimal ontology design pattern for representing executable files, symbols, functions, variables, calls, control-flow and behavioral indicators derived from reverse engineering artifacts such as symbol tables, to support analysis of suspicious and malicious patterns." .
+
+### Classes
+
+:ExecutableFile a owl:Class ;
+  rdfs:label "Executable file" ;
+  rdfs:comment "A binary executable artifact being analyzed." .
+
+:ProgramElement a owl:Class ;
+  rdfs:label "Program element" ;
+  rdfs:comment "A generic element identified in an executable during reverse engineering." .
+
+:Symbol a owl:Class ;
+  rdfs:label "Symbol" ;
+  rdfs:comment "A named or unnamed symbol recovered from an executable or reverse engineering tool output." ;
+  rdfs:subClassOf :ProgramElement .
+
+:Function a owl:Class ;
+  rdfs:label "Function" ;
+  rdfs:comment "A function identified in an executable." ;
+  rdfs:subClassOf :Symbol .
+
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "A variable or data symbol identified in an executable." ;
+  rdfs:subClassOf :Symbol .
+
+:ImportedFunction a owl:Class ;
+  rdfs:label "Imported function" ;
+  rdfs:comment "A function that is external to the executable and imported from another binary or library." ;
+  rdfs:subClassOf :Function .
+
+:InternalFunction a owl:Class ;
+  rdfs:label "Internal function" ;
+  rdfs:comment "A function implemented within the executable itself." ;
+  rdfs:subClassOf :Function .
+
+:Instruction a owl:Class ;
+  rdfs:label "Instruction" ;
+  rdfs:comment "A machine instruction belonging to a function or code region." ;
+  rdfs:subClassOf :ProgramElement .
+
+:CallSite a owl:Class ;
+  rdfs:label "Call site" ;
+  rdfs:comment "A program point where one function invokes another function or API." ;
+  rdfs:subClassOf :ProgramElement .
+
+:ControlFlowPattern a owl:Class ;
+  rdfs:label "Control-flow pattern" ;
+  rdfs:comment "A pattern describing control-flow behavior observed in an executable." .
+
+:IndirectControlFlowPattern a owl:Class ;
+  rdfs:label "Indirect control-flow pattern" ;
+  rdfs:comment "A control-flow pattern involving indirect calls, indirect jumps, or similar dynamic transfer of control." ;
+  rdfs:subClassOf :ControlFlowPattern .
+
+:JumpIntoMemoryPattern a owl:Class ;
+  rdfs:label "Jump into memory pattern" ;
+  rdfs:comment "A control-flow pattern involving suspicious jumps into memory regions." ;
+  rdfs:subClassOf :IndirectControlFlowPattern .
+
+:DecodeLoopPattern a owl:Class ;
+  rdfs:label "Decode loop pattern" ;
+  rdfs:comment "A loop pattern associated with decoding or deobfuscation behavior." ;
+  rdfs:subClassOf :ControlFlowPattern .
+
+:SelfReferentialDecodeLoopPattern a owl:Class ;
+  rdfs:label "Self-referential decode loop pattern" ;
+  rdfs:comment "A decode loop pattern in which code or data processing refers back to itself, often indicating obfuscation." ;
+  rdfs:subClassOf :DecodeLoopPattern .
+
+:BehaviorIndicator a owl:Class ;
+  rdfs:label "Behavior indicator" ;
+  rdfs:comment "An abstract indicator of behavior inferred from code structure, calls, or metrics." .
+
+:MaliciousPersistentAPICallIndicator a owl:Class ;
+  rdfs:label "Malicious persistent API call indicator" ;
+  rdfs:comment "An indicator that a function or executable contains API usage associated with persistence mechanisms." ;
+  rdfs:subClassOf :BehaviorIndicator .
+
+:SuspiciousNetworkingActivityIndicator a owl:Class ;
+  rdfs:label "Suspicious networking activity indicator" ;
+  rdfs:comment "An indicator that networking-related behavior appears suspicious." ;
+  rdfs:subClassOf :BehaviorIndicator .
+
+:FileSystemAbuseIndicator a owl:Class ;
+  rdfs:label "File system abuse indicator" ;
+  rdfs:comment "An indicator that file system operations may be abusive or malicious." ;
+  rdfs:subClassOf :BehaviorIndicator .
+
+:SuspiciousAPICallIndicator a owl:Class ;
+  rdfs:label "Suspicious API call indicator" ;
+  rdfs:comment "A generic indicator that an API call is suspicious." ;
+  rdfs:subClassOf :BehaviorIndicator .
+
+:CryptographicActivityIndicator a owl:Class ;
+  rdfs:label "Cryptographic activity indicator" ;
+  rdfs:comment "An indicator that cryptographic operations are present and may be used to hide program content." ;
+  rdfs:subClassOf :BehaviorIndicator .
+
+:EntropyIndicator a owl:Class ;
+  rdfs:label "Entropy indicator" ;
+  rdfs:comment "An indicator derived from instruction diversity or related metrics suggesting high-entropy or packed code regions." ;
+  rdfs:subClassOf :BehaviorIndicator .
+
+:OpcodeMetric a owl:Class ;
+  rdfs:label "Opcode metric" ;
+  rdfs:comment "A metric describing opcode diversity or instruction composition for a function or code region." .
+
+:APICategory a owl:Class ;
+  rdfs:label "API category" ;
+  rdfs:comment "A category used to classify APIs by behavioral relevance, such as networking, persistence, file system, or cryptography." .
+
+### Disjointness
+
+:Function owl:disjointWith :Variable .
+:ImportedFunction owl:disjointWith :InternalFunction .
+
+### Object Properties
+
+:containsSymbol a owl:ObjectProperty ;
+  rdfs:label "contains symbol" ;
+  rdfs:comment "Relates an executable file to a symbol identified within it." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range :Symbol .
+
+:containsFunction a owl:ObjectProperty ;
+  rdfs:label "contains function" ;
+  rdfs:comment "Relates an executable file to a function identified within it." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range :Function ;
+  rdfs:subPropertyOf :containsSymbol .
+
+:containsVariable a owl:ObjectProperty ;
+  rdfs:label "contains variable" ;
+  rdfs:comment "Relates an executable file to a variable identified within it." ;
+  rdfs:domain :ExecutableFile ;
+  rdfs:range :Variable ;
+  rdfs:subPropertyOf :containsSymbol .
+
+:hasInstruction a owl:ObjectProperty ;
+  rdfs:label "has instruction" ;
+  rdfs:comment "Relates a function to an instruction that belongs to it." ;
+  rdfs:domain :Function ;
+  rdfs:range :Instruction .
+
+:hasCallSite a owl:ObjectProperty ;
+  rdfs:label "has call site" ;
+  rdfs:comment "Relates a function to a call site occurring within it." ;
+  rdfs:domain :Function ;
+  rdfs:range :CallSite .
+
+:callsFunction a owl:ObjectProperty ;
+  rdfs:label "calls function" ;
+  rdfs:comment "Relates a function to another function that it calls." ;
+  rdfs:domain :Function ;
+  rdfs:range :Function .
+
+:targetsFunction a owl:ObjectProperty ;
+  rdfs:label "targets function" ;
+  rdfs:comment "Relates a call site to the function it targets." ;
+  rdfs:domain :CallSite ;
+  rdfs:range :Function .
+
+:hasPattern a owl:ObjectProperty ;
+  rdfs:label "has pattern" ;
+  rdfs:comment "Relates an executable or function to an observed control-flow pattern." .
+
+:hasIndicator a owl:ObjectProperty ;
+  rdfs:label "has indicator" ;
+  rdfs:comment "Relates an executable or function to a behavioral indicator inferred from analysis." .
+
+:hasOpcodeMetric a owl:ObjectProperty ;
+  rdfs:label "has opcode metric" ;
+  rdfs:comment "Relates a function to an opcode metric computed for it." ;
+  rdfs:domain :Function ;
+  rdfs:range :OpcodeMetric .
+
+:hasAPICategory a owl:ObjectProperty ;
+  rdfs:label "has API category" ;
+  rdfs:comment "Relates a function, typically an imported function, to an API category describing its behavioral role." ;
+  rdfs:domain :Function ;
+  rdfs:range :APICategory .
+
+### Datatype Properties
+
+:originalName a owl:DatatypeProperty ;
+  rdfs:label "original name" ;
+  rdfs:comment "The original recovered name of a symbol, if known from analysis artifacts." ;
+  rdfs:domain :Symbol ;
+  rdfs:range xsd:string .
+
+:currentName a owl:DatatypeProperty ;
+  rdfs:label "current name" ;
+  rdfs:comment "The current analyst-assigned or tool-assigned name of a symbol." ;
+  rdfs:domain :Symbol ;
+  rdfs:range xsd:string .
+
+:address a owl:DatatypeProperty ;
+  rdfs:label "address" ;
+  rdfs:comment "The address or offset associated with a program element." ;
+  rdfs:domain :ProgramElement ;
+  rdfs:range xsd:string .
+
+:instructionCount a owl:DatatypeProperty ;
+  rdfs:label "instruction count" ;
+  rdfs:comment "The total number of instructions considered in an opcode metric." ;
+  rdfs:domain :OpcodeMetric ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:uniqueOpcodeCount a owl:DatatypeProperty ;
+  rdfs:label "unique opcode count" ;
+  rdfs:comment "The number of distinct opcodes considered in an opcode metric." ;
+  rdfs:domain :OpcodeMetric ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:uniqueOpcodeRatio a owl:DatatypeProperty ;
+  rdfs:label "unique opcode ratio" ;
+  rdfs:comment "The ratio of unique opcodes to total instructions for a function or code region." ;
+  rdfs:domain :OpcodeMetric ;
+  rdfs:range xsd:decimal .
+
+:isExternal a owl:DatatypeProperty ;
+  rdfs:label "is external" ;
+  rdfs:comment "Boolean flag indicating whether a function is external to the executable." ;
+  rdfs:domain :Function ;
+  rdfs:range xsd:boolean .
+
+### Annotation Properties
+
+:cqNote a owl:AnnotationProperty ;
+  rdfs:label "competency question note" ;
+  rdfs:comment "An annotation used to document linkage between ontology elements and competency questions." .
+
+### Class Axioms
+
+:ExecutableFile rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :containsSymbol ;
+    owl:allValuesFrom :Symbol
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :containsFunction ;
+    owl:allValuesFrom :Function
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :containsVariable ;
+    owl:allValuesFrom :Variable
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasIndicator ;
+    owl:allValuesFrom :BehaviorIndicator
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasPattern ;
+    owl:allValuesFrom :ControlFlowPattern
+  ] .
+
+:Function rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :hasInstruction ;
+    owl:allValuesFrom :Instruction
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasCallSite ;
+    owl:allValuesFrom :CallSite
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :callsFunction ;
+    owl:allValuesFrom :Function
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasIndicator ;
+    owl:allValuesFrom :BehaviorIndicator
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasPattern ;
+    owl:allValuesFrom :ControlFlowPattern
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasOpcodeMetric ;
+    owl:allValuesFrom :OpcodeMetric
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :hasAPICategory ;
+    owl:allValuesFrom :APICategory
+  ] .
+
+:CallSite rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :targetsFunction ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :Function
+  ] .
+
+:OpcodeMetric rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :instructionCount ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :uniqueOpcodeCount ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] ,
+  [ a owl:Restriction ;
+    owl:onProperty :uniqueOpcodeRatio ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger
+  ] .
+
+:ImportedFunction rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :isExternal ;
+    owl:hasValue "true"^^xsd:boolean
+  ] .
+
+:InternalFunction rdfs:subClassOf
+  [ a owl:Restriction ;
+    owl:onProperty :isExternal ;
+    owl:hasValue "false"^^xsd:boolean
+  ] .
+
+### CQ-oriented annotations
+
+:MaliciousPersistentAPICallIndicator
+  :cqNote "Supports CQ about detecting malicious persistent API calls." .
+
+:SuspiciousNetworkingActivityIndicator
+  :cqNote "Supports CQ about suspicious networking activity." .
+
+:IndirectControlFlowPattern
+  :cqNote "Supports CQ about indirect control flow patterns indicating vulnerable code." .
+
+:EntropyIndicator
+  :cqNote "Supports CQ about entropy detection via unique opcode ratio." .
+
+:SelfReferentialDecodeLoopPattern
+  :cqNote "Supports CQ about self-referential decode loops and data obfuscation." .
+
+:FileSystemAbuseIndicator
+  :cqNote "Supports CQ about file system abuse." .
+
+:JumpIntoMemoryPattern
+  :cqNote "Supports CQ about suspicious jumps into memory." .
+
+:SuspiciousAPICallIndicator
+  :cqNote "Supports CQ about other suspicious API calls." .
+
+:CryptographicActivityIndicator
+  :cqNote "Supports CQ about cryptographic activity indicating hidden program parts." .
+
+:ImportedFunction
+  :cqNote "Supports CQ about percentage of imported functions in a binary file." .
+```
+
+2. Reasoning summary: one bullet per step 1–6.
+- 1. Extracted requirements around executable structure, recovered symbols, analyst renaming, function/import distinction, and suspicious behavior/pattern indicators needed by the CQs.
+- 2. Proposed a minimal core of executable, symbol, function, variable, instruction, call site, pattern, indicator, opcode metric, and API category classes with containment and analysis properties.
+- 3. Added subclass, domain/range, disjointness, all-values restrictions, qualified cardinality for call targets, and boolean/value restrictions for imported vs internal functions.
+- 4. Verified each CQ is answerable by querying indicators, patterns, metrics, or imported-function classification; noted need for explicit metric and import modeling.
+- 5. Refined with OpcodeMetric plus ratio/count datatypes and ImportedFunction/InternalFunction axioms using isExternal to support percentage and entropy-related CQs.
+- 6. Removed broader supply-chain and malware-family concepts not directly required by the scenario’s initial scope or the listed CQs.
+
+3. Traceability table: for each requirement/CQ, list the axiom(s) that cover it.
+
+| Requirement / CQ | Covering axiom(s) |
+|---|---|
+| R1. Represent a binary executable being analyzed. | `:ExecutableFile a owl:Class .` |
+| R2. Represent symbols collected from a symbol table. | `:Symbol a owl:Class ; rdfs:subClassOf :ProgramElement .` ; `:containsSymbol a owl:ObjectProperty ; rdfs:domain :ExecutableFile ; rdfs:range :Symbol .` |
+| R3. Distinguish functions and variables among symbols. | `:Function rdfs:subClassOf :Symbol .` ; `:Variable rdfs:subClassOf :Symbol .` ; `:Function owl:disjointWith :Variable .` |
+| R4. Link executable files to contained functions and variables. | `:containsFunction rdfs:subPropertyOf :containsSymbol ; rdfs:domain :ExecutableFile ; rdfs:range :Function .` ; `:containsVariable rdfs:subPropertyOf :containsSymbol ; rdfs:domain :ExecutableFile ; rdfs:range :Variable .` |
+| R5. Capture original and analyst-assigned/current names for recovered symbols. | `:originalName a owl:DatatypeProperty ; rdfs:domain :Symbol ; rdfs:range xsd:string .` ; `:currentName a owl:DatatypeProperty ; rdfs:domain :Symbol ; rdfs:range xsd:string .` |
+| R6. Represent addresses/offsets of recovered program elements. | `:address a owl:DatatypeProperty ; rdfs:domain :ProgramElement ; rdfs:range xsd:string .` |
+| R7. Represent instructions belonging to functions. | `:Instruction a owl:Class .` ; `:hasInstruction a owl:ObjectProperty ; rdfs:domain :Function ; rdfs:range :Instruction .` ; `:Function rdfs:subClassOf [ owl:onProperty :hasInstruction ; owl:allValuesFrom :Instruction ] .` |
+| R8. Represent calls and call targets. | `:CallSite a owl:Class .` ; `:hasCallSite a owl:ObjectProperty ; rdfs:domain :Function ; rdfs:range :CallSite .` ; `:targetsFunction a owl:ObjectProperty ; rdfs:domain :CallSite ; rdfs:range :Function .` ; `:CallSite rdfs:subClassOf [ owl:onProperty :targetsFunction ; owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ; owl:onClass :Function ] .` |
+| R9. Represent direct function-to-function calling relations. | `:callsFunction a owl:ObjectProperty ; rdfs:domain :Function ; rdfs:range :Function .` ; `:Function rdfs:subClassOf [ owl:onProperty :callsFunction ; owl:allValuesFrom :Function ] .` |
+| R10. Support behavioral analysis through reusable indicators. | `:BehaviorIndicator a owl:Class

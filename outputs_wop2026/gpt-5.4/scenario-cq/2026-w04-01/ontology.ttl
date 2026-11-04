@@ -1,0 +1,244 @@
+# ODPGEN-TRUNCATED: this generation was cut off before the model finished.
+# ODPGEN-TRUNCATION-SIGNALS: finish_reason=incomplete:max_output_tokens
+# Do NOT score this file as a complete ontology; see metadata.json.
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/odp#> .
+
+:Ontology a owl:Ontology ;
+  rdfs:label "Reverse Engineering Symbol and Behavior Analysis ODP" ;
+  rdfs:comment "An ontology design pattern for representing binary executables, their symbols, functions, variables, instructions, API calls, control-flow and behavior-oriented features derived from reverse engineering data, supporting analysis of suspicious and malicious patterns." .
+
+:BinaryExecutable a owl:Class ;
+  rdfs:label "Binary Executable" ;
+  rdfs:comment "A binary executable file being analyzed through reverse engineering." .
+
+:Symbol a owl:Class ;
+  rdfs:label "Symbol" ;
+  rdfs:comment "A symbol collected from reverse engineering data such as a symbol table." .
+
+:Function a owl:Class ;
+  rdfs:label "Function" ;
+  rdfs:comment "A function identified in a binary executable." .
+
+:Variable a owl:Class ;
+  rdfs:label "Variable" ;
+  rdfs:comment "A variable identified in a binary executable." .
+
+:Instruction a owl:Class ;
+  rdfs:label "Instruction" ;
+  rdfs:comment "An instruction belonging to a function in the executable." .
+
+:APICall a owl:Class ;
+  rdfs:label "API Call" ;
+  rdfs:comment "A call from the executable to an application programming interface." .
+
+:ControlFlowPattern a owl:Class ;
+  rdfs:label "Control Flow Pattern" ;
+  rdfs:comment "A pattern describing control-flow behavior observed in the executable." .
+
+:DecodeLoopPattern a owl:Class ;
+  rdfs:label "Decode Loop Pattern" ;
+  rdfs:comment "A pattern representing a decode loop used for data decoding or obfuscation." ;
+  rdfs:subClassOf :ControlFlowPattern .
+
+:EntropyRegion a owl:Class ;
+  rdfs:label "Entropy Region" ;
+  rdfs:comment "A region or function-level analytical result characterized by opcode diversity relative to instruction count." .
+
+:BehaviorCategory a owl:Class ;
+  rdfs:label "Behavior Category" ;
+  rdfs:comment "A category of behavior used to classify API calls or patterns, such as persistence, networking, file system, or cryptographic activity." .
+
+:MalwareBehavior a owl:Class ;
+  rdfs:label "Malware Behavior" ;
+  rdfs:comment "A malware-specific behavior represented beyond a single artifact or executable." .
+
+:Artifact a owl:Class ;
+  rdfs:label "Artifact" ;
+  rdfs:comment "An analyzed software artifact, such as an executable, used when connecting behavior across artifacts." .
+
+:SoftwareSupplyChain a owl:Class ;
+  rdfs:label "Software Supply Chain" ;
+  rdfs:comment "A software supply chain context in which vulnerabilities may be detected across connected artifacts and behaviors." .
+
+:VulnerabilityIndicator a owl:Class ;
+  rdfs:label "Vulnerability Indicator" ;
+  rdfs:comment "An indicator suggesting vulnerable or suspicious code or behavior." .
+
+:hasSymbol a owl:ObjectProperty ;
+  rdfs:label "has symbol" ;
+  rdfs:comment "Relates a binary executable to a symbol identified in it." ;
+  rdfs:domain :BinaryExecutable ;
+  rdfs:range :Symbol .
+
+:hasFunction a owl:ObjectProperty ;
+  rdfs:label "has function" ;
+  rdfs:comment "Relates a binary executable to a function identified in it." ;
+  rdfs:domain :BinaryExecutable ;
+  rdfs:range :Function .
+
+:hasVariable a owl:ObjectProperty ;
+  rdfs:label "has variable" ;
+  rdfs:comment "Relates a binary executable to a variable identified in it." ;
+  rdfs:domain :BinaryExecutable ;
+  rdfs:range :Variable .
+
+:containsInstruction a owl:ObjectProperty ;
+  rdfs:label "contains instruction" ;
+  rdfs:comment "Relates a function to an instruction it contains." ;
+  rdfs:domain :Function ;
+  rdfs:range :Instruction .
+
+:hasAPICall a owl:ObjectProperty ;
+  rdfs:label "has API call" ;
+  rdfs:comment "Relates a function to an API call it contains or performs." ;
+  rdfs:domain :Function ;
+  rdfs:range :APICall .
+
+:hasControlFlowPattern a owl:ObjectProperty ;
+  rdfs:label "has control flow pattern" ;
+  rdfs:comment "Relates a function to a control-flow pattern observed in it." ;
+  rdfs:domain :Function ;
+  rdfs:range :ControlFlowPattern .
+
+:hasEntropyRegion a owl:ObjectProperty ;
+  rdfs:label "has entropy region" ;
+  rdfs:comment "Relates a function to an entropy-related analytical region or result." ;
+  rdfs:domain :Function ;
+  rdfs:range :EntropyRegion .
+
+:hasBehaviorCategory a owl:ObjectProperty ;
+  rdfs:label "has behavior category" ;
+  rdfs:comment "Relates an API call or pattern to a behavior category used for analysis." ;
+  rdfs:range :BehaviorCategory .
+
+:indicates a owl:ObjectProperty ;
+  rdfs:label "indicates" ;
+  rdfs:comment "Relates an observed pattern, API call, or analytical result to a vulnerability indicator or malware behavior." .
+
+:renamedTo a owl:DatatypeProperty ;
+  rdfs:label "renamed to" ;
+  rdfs:comment "Stores a user-assigned replacement name for a symbol after reverse engineering analysis." ;
+  rdfs:domain :Symbol ;
+  rdfs:range xsd:string .
+
+:originalOrRecoveredName a owl:DatatypeProperty ;
+  rdfs:label "original or recovered name" ;
+  rdfs:comment "Stores the current available name of a symbol, whether original, recovered, or tool-provided." ;
+  rdfs:domain :Symbol ;
+  rdfs:range xsd:string .
+
+:isImported a owl:DatatypeProperty ;
+  rdfs:label "is imported" ;
+  rdfs:comment "Indicates whether a function is imported from outside the binary, i.e., external." ;
+  rdfs:domain :Function ;
+  rdfs:range xsd:boolean .
+
+:opcode a owl:DatatypeProperty ;
+  rdfs:label "opcode" ;
+  rdfs:comment "Stores the opcode of an instruction." ;
+  rdfs:domain :Instruction ;
+  rdfs:range xsd:string .
+
+:instructionCount a owl:DatatypeProperty ;
+  rdfs:label "instruction count" ;
+  rdfs:comment "Stores the total number of instructions in a function or analytical region." ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:uniqueOpcodeCount a owl:DatatypeProperty ;
+  rdfs:label "unique opcode count" ;
+  rdfs:comment "Stores the number of distinct opcodes observed in a function or analytical region." ;
+  rdfs:range xsd:nonNegativeInteger .
+
+:uniqueOpcodeRatio a owl:DatatypeProperty ;
+  rdfs:label "unique opcode ratio" ;
+  rdfs:comment "Stores the ratio of unique opcodes to total instructions for entropy-oriented analysis." ;
+  rdfs:domain :EntropyRegion ;
+  rdfs:range xsd:decimal .
+
+:hasCallName a owl:DatatypeProperty ;
+  rdfs:label "has call name" ;
+  rdfs:comment "Stores the name of an API call." ;
+  rdfs:domain :APICall ;
+  rdfs:range xsd:string .
+
+:isPersistent a owl:DatatypeProperty ;
+  rdfs:label "is persistent" ;
+  rdfs:comment "Indicates whether an API call or pattern is associated with persistence behavior." ;
+  rdfs:range xsd:boolean .
+
+:isNetworkingRelated a owl:DatatypeProperty ;
+  rdfs:label "is networking related" ;
+  rdfs:comment "Indicates whether an API call or pattern is related to networking activity." ;
+  rdfs:range xsd:boolean .
+
+:isFileSystemRelated a owl:DatatypeProperty ;
+  rdfs:label "is file system related" ;
+  rdfs:comment "Indicates whether an API call or pattern is related to file system activity." ;
+  rdfs:range xsd:boolean .
+
+:isCryptographic a owl:DatatypeProperty ;
+  rdfs:label "is cryptographic" ;
+  rdfs:comment "Indicates whether an API call or pattern is related to cryptographic activity." ;
+  rdfs:range xsd:boolean .
+
+:isSuspicious a owl:DatatypeProperty ;
+  rdfs:label "is suspicious" ;
+  rdfs:comment "Indicates whether an observed API call, pattern, or indicator is considered suspicious." ;
+  rdfs:range xsd:boolean .
+
+:isIndirectControlFlow a owl:DatatypeProperty ;
+  rdfs:label "is indirect control flow" ;
+  rdfs:comment "Indicates whether a control-flow pattern involves indirect control flow." ;
+  rdfs:domain :ControlFlowPattern ;
+  rdfs:range xsd:boolean .
+
+:isSelfReferential a owl:DatatypeProperty ;
+  rdfs:label "is self referential" ;
+  rdfs:comment "Indicates whether a decode loop pattern is self-referential." ;
+  rdfs:domain :DecodeLoopPattern ;
+  rdfs:range xsd:boolean .
+
+:hasJumpIntoMemory a owl:DatatypeProperty ;
+  rdfs:label "has jump into memory" ;
+  rdfs:comment "Indicates whether a control-flow pattern includes jumps into memory." ;
+  rdfs:domain :ControlFlowPattern ;
+  rdfs:range xsd:boolean .
+
+:describesArtifact a owl:ObjectProperty ;
+  rdfs:label "describes artifact" ;
+  rdfs:comment "Relates malware behavior to an artifact in which the behavior is observed." ;
+  rdfs:domain :MalwareBehavior ;
+  rdfs:range :Artifact .
+
+:connectedToBehavior a owl:ObjectProperty ;
+  rdfs:label "connected to behavior" ;
+  rdfs:comment "Relates an artifact or supply-chain context to malware behavior connected across artifacts." .
+
+:hasVulnerabilityIndicator a owl:ObjectProperty ;
+  rdfs:label "has vulnerability indicator" ;
+  rdfs:comment "Relates an artifact or supply-chain context to a vulnerability indicator." ;
+  rdfs:range :VulnerabilityIndicator .
+
+:partOfSupplyChain a owl:ObjectProperty ;
+  rdfs:label "part of supply chain" ;
+  rdfs:comment "Relates an artifact to the software supply chain context it belongs to." ;
+  rdfs:domain :Artifact ;
+  rdfs:range :SoftwareSupplyChain .
+
+:BinaryExecutable rdfs:subClassOf :Artifact .
+:Function rdfs:subClassOf :Symbol .
+:Variable rdfs:subClassOf :Symbol .
+
+:hasBehaviorCategory rdfs:domain :APICall .
+:hasBehaviorCategory rdfs:domain :ControlFlowPattern .
+:hasBehaviorCategory rdfs:domain :DecodeLoopPattern .
+
+:instructionCount rdfs:domain :Function .
+:instructionCount rdfs:domain :EntropyRegion .
+
+:uniqueOpcodeCount rdfs:domain :Function .
+:uniqueOpcodeCount rdfs:domain :EntropyRegion .
