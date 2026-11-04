@@ -19,11 +19,20 @@ Usage:
     # Filter to specific configs or scenarios
     python -m eval_judge.run_evaluation --configs cq-only scenario-cq \
         --scenarios 2023-133-01 2023-134-01
+
+    # Filter by generating model (output directory names under --outputs-dir)
+    python -m eval_judge.run_evaluation --exclude-models bigscience_bloomz-7b1
+
+Results are cached per ODP. A cached result is reused only while the candidate's
+ontology.ttl is unchanged (SHA-256 stored in the result), so the pipeline can be
+re-run while generation is still in progress, and re-judges regenerated outputs.
+A judge response without parseable scores is not cached and is retried next run.
 """
 from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import sys
 import os
@@ -46,6 +55,10 @@ from eval_judge.data_loader import (
 from eval_judge.judge import JudgeLLM, check_judge_independence
 
 
+def _sha256(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Single-candidate evaluation
 # ─────────────────────────────────────────────────────────────────────────────
@@ -59,6 +72,8 @@ def run_single_evaluation(
     configs_filter: list[str] | None = None,
     scenarios_filter: list[str] | None = None,
     skip_existing: bool = True,
+    models_filter: list[str] | None = None,
+    exclude_models: list[str] | None = None,
 ) -> list[dict]:
     """Evaluate every generated ODP individually against its ground truth."""
     print(f"[pipeline] Loading scenarios from {scenarios_path}")
@@ -74,6 +89,10 @@ def run_single_evaluation(
         odps = [o for o in odps if o.config in configs_filter]
     if scenarios_filter:
         odps = [o for o in odps if o.scenario_id in scenarios_filter]
+    if models_filter:
+        odps = [o for o in odps if o.model in models_filter]
+    if exclude_models:
+        odps = [o for o in odps if o.model not in exclude_models]
 
     print(f"[pipeline] Evaluating {len(odps)} ODPs with judge={judge.model}\n")
 
@@ -91,13 +110,18 @@ def run_single_evaluation(
             print(f"  [{idx}/{total}] SKIP {odp.model}/{odp.config}/{odp.scenario_id} — judge conflicts with generator family")
             continue
 
-        # Check for existing result
+        # Check for existing result. Results written before candidate hashing was
+        # added carry no hash and are always reused.
         result_path = results_dir / "single" / odp.model / odp.config / f"{odp.scenario_id}.json"
+        raw_path = result_path.with_suffix(".raw.txt")
+        cand_hash = _sha256(odp.ontology_text)
         if skip_existing and result_path.exists():
-            print(f"  [{idx}/{total}] CACHED {odp.model}/{odp.config}/{odp.scenario_id}")
             cached = json.loads(result_path.read_text(encoding="utf-8"))
-            summary_rows.append(cached)
-            continue
+            if cached.get("candidate_sha256", cand_hash) == cand_hash:
+                print(f"  [{idx}/{total}] CACHED {odp.model}/{odp.config}/{odp.scenario_id}")
+                summary_rows.append(cached)
+                continue
+            print(f"  [{idx}/{total}] STALE  {odp.model}/{odp.config}/{odp.scenario_id} — ontology.ttl changed since it was judged")
 
         print(f"  [{idx}/{total}] Evaluating {odp.model} / {odp.config} / {odp.scenario_id} ...", end=" ", flush=True)
 
@@ -108,12 +132,22 @@ def run_single_evaluation(
                 candidate=odp.ontology_text,
             )
 
+            # Scores are clamped to 1-10 when present; 0 means the judge response
+            # had no parseable scores. Keep the raw text for inspection but do not
+            # cache the result, so the next run retries it.
+            if result.overall_score == 0:
+                raw_path.parent.mkdir(parents=True, exist_ok=True)
+                raw_path.write_text(result.raw_response or "", encoding="utf-8")
+                print(f"PARSE FAILED (not cached, retried next run; raw: {raw_path})")
+                continue
+
             row = {
                 "model": odp.model,
                 "config": odp.config,
                 "scenario_id": odp.scenario_id,
                 "judge_model": judge.model,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
+                "candidate_sha256": cand_hash,
                 **result.to_dict(),
             }
 
@@ -125,7 +159,6 @@ def run_single_evaluation(
             )
 
             # Also save raw judge response for auditability
-            raw_path = result_path.with_suffix(".raw.txt")
             raw_path.write_text(result.raw_response, encoding="utf-8")
 
             summary_rows.append(row)
@@ -244,9 +277,11 @@ def write_summary_csv(rows: list[dict], path: Path) -> None:
         print("[pipeline] No results to write.")
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = list(rows[0].keys())
+    # Union of keys in first-seen order: cached rows from older runs may lack
+    # columns (e.g. candidate_sha256) that newer rows have.
+    fieldnames = list(dict.fromkeys(k for r in rows for k in r))
     with path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, restval="")
         writer.writeheader()
         writer.writerows(rows)
     print(f"\n[pipeline] Summary written to {path}  ({len(rows)} rows)")
@@ -275,6 +310,14 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument("--configs", nargs="*", default=None, help="Filter to specific configs.")
     p.add_argument("--scenarios", nargs="*", default=None, help="Filter to specific scenario IDs.")
+    p.add_argument(
+        "--models", nargs="*", default=None,
+        help="Single mode: only judge these generating models (directory names under --outputs-dir).",
+    )
+    p.add_argument(
+        "--exclude-models", nargs="*", default=None,
+        help="Single mode: skip these generating models (e.g. bigscience_bloomz-7b1, as in the paper).",
+    )
     p.add_argument("--no-skip-existing", action="store_true", help="Re-evaluate already cached results.")
 
     # Pairwise-specific
@@ -311,6 +354,8 @@ def main() -> None:
             configs_filter=args.configs,
             scenarios_filter=args.scenarios,
             skip_existing=not args.no_skip_existing,
+            models_filter=args.models,
+            exclude_models=args.exclude_models,
         )
         write_summary_csv(
             rows,

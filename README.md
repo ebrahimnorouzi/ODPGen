@@ -316,6 +316,14 @@ GROUP=api  nohup bash scripts/run_wop2026.sh > logs/wop2026_api.log  2>&1 &   # 
 
 Scoring reads CQs only from `data/scenarios/pattern_scenarios.json`, so the items have to be merged into that file before they are evaluated (`batch_evaluate.py`, `download_ground_truth.py`).
 
+The LLM judge takes the scenario file as an argument, so it runs on the extension directly:
+
+```bash
+nohup bash scripts/run_wop2026_judge.sh > logs/wop2026_judge.log 2>&1 &
+```
+
+It uses the paper's judge settings: GPT-4o at temperature 0, single-candidate mode, GPT-5.4 skipped as same-family, BLOOMZ excluded. It needs `OPENAI_API_KEY` in `.env` and `pip install -r requirements_judge.txt`. Results go to `eval_judge_results_wop2026/gpt-4o/`, with the report in `aggregated/judge_report.md`. Each judged ODP is cached together with the SHA-256 of its `ontology.ttl`, so the script can be started while generation is still running. Re-running it judges only new outputs or outputs whose file changed.
+
 ---
 
 ## Tests
