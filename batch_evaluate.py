@@ -2317,9 +2317,77 @@ def _parse_oops_response(raw_rdfxml: str) -> Dict[str, Any]:
     return summary
 
 
+_OOPS_FORM_RESULT_RE = re.compile(
+    r"Results for (P\d+):\s*(.*?)\s*<span[^>]*class=\"badge[^\"]*\"[^>]*>\s*"
+    r"(Critical|Important|Minor)\s*</span>", re.S)
+
+
+def _is_oops_web_form(url: str) -> bool:
+    return url.split("?")[0].rstrip("/").endswith("response.jsp")
+
+
+def run_oops_form_scan(ontology_text: str, form_url: str, timeout: float = 180) -> Dict[str, Any]:
+    """OOPS! through its web form (``.../response.jsp``) instead of the REST service.
+
+    In November 2026 oops.linkeddata.es no longer answered and the REST service
+    of the deployment at https://oops.inf.uva.es/ returned ``wrong_execution``
+    for every request, while its web form scanned normally. The form gets the
+    same RDF/XML as the REST request, scans all pitfalls (the REST call sent an
+    empty pitfall list, which also means all), and keeps no copy of the
+    ontology (``saveOntology`` is left unset). Its HTML result is reduced to the
+    fields ``_parse_oops_response`` produces, so the record is scored as before.
+    """
+    graph = None
+    for fmt in ("turtle", "xml", "n3", "nt", "json-ld"):
+        try:
+            g = Graph()
+            g.parse(data=ontology_text, format=fmt)
+            graph = g
+            break
+        except Exception:
+            continue
+    if graph is None:
+        return {"error": "RDF/XML conversion failed: ontology does not parse"}
+    if len(graph) == 0:
+        return {"skipped": True, "reason": "empty graph: nothing for OOPS! to scan"}
+    rdfxml = _strip_xml_declaration(graph.serialize(format="xml")).strip()
+    try:
+        r = requests.post(form_url, data={"uri": "", "RDF": rdfxml, "button": "Scan"},
+                          timeout=timeout)
+    except requests.RequestException as e:
+        return {"error": str(e)}
+    text = r.text
+    if r.status_code != 200 or "Evaluation results" not in text or "something went wrong" in text:
+        return {"error": f"OOPS! web form failed (status {r.status_code})",
+                "raw_response": re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text))[:500]}
+    matches = _OOPS_FORM_RESULT_RE.findall(text)
+    if not matches and text.count("Results for ") > 0:
+        return {"error": "OOPS! web form result could not be parsed",
+                "raw_response": re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text))[:500]}
+    pitfalls, minor = [], 0
+    for code, name, importance in matches:
+        if importance == "Minor":
+            minor += 1
+            continue
+        pitfalls.append({"code": code, "importance": importance,
+                         "name": re.sub(r"\s+", " ", name).strip().rstrip(".")})
+    codes = sorted({p["code"] for p in pitfalls})
+    return {
+        "status_code": 200, "endpoint": form_url, "interface": "web form",
+        "pitfall_codes": codes,
+        "pitfall_instance_counts": {c: sum(p["code"] == c for p in pitfalls) for c in codes},
+        "pitfalls_total": len(pitfalls), "pitfalls": pitfalls,
+        "minor_pitfalls_skipped": minor,
+        "important_count": sum(p["importance"] == "Important" for p in pitfalls),
+        "critical_count": sum(p["importance"] == "Critical" for p in pitfalls),
+    }
+
+
 def run_oops_scan(ontology_text: str, oops_url: str, timeout: float = 120) -> Dict[str, Any]:
     if not oops_url:
         return {"skipped": True, "reason": "pass --oops-url to enable"}
+    if _is_oops_web_form(oops_url):
+        return run_oops_form_scan(ontology_text, oops_url)
     try:
         body = _build_oops_request_xml(ontology_text)
     except Exception as e:

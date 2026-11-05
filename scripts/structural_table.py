@@ -74,7 +74,8 @@ def table(recs: list[dict], count_empty: bool, by_config: bool) -> list[dict]:
         n_parse = sum(parsed(r, count_empty) for r in rs)
         n_cons = sum(parsed(r, count_empty) and (r.get("reasoner") or {}).get("consistent") is True
                      for r in rs)
-        comps = [c for c in (oops_component(r.get("oops")) for r in rs) if c is not None]
+        comps = [c for c in (oops_component(r.get("oops")) for r in rs
+                             if parsed(r, count_empty)) if c is not None]
         oops = sum(comps) / len(comps) if comps else None
         cons = n_cons / n
         rows.append({
